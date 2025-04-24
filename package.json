@@ -1,0 +1,25 @@
+{
+  "name": "pooja",
+  "version": "1.0.0",
+  "description": "pooja",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Samiker69/pooja.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Samiker69/pooja/issues"
+  },
+  "homepage": "https://github.com/Samiker69/pooja#readme",
+  "dependencies": {
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.5.0"
+  }
+}

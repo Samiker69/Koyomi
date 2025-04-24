@@ -1,7 +1,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
-const { token } = require('./config.json');
+require('dotenv').config();
+
+if (!process.env.token) return console.error(`[ERROR]: Переменная token в .env отсутсвтует!`);
 
 const client = new Client({
 	intents: [
@@ -47,4 +49,4 @@ for (const file of eventFiles) {
 	}
 }
 
-client.login(token);
+client.login(process.env.token);
