@@ -20,8 +20,12 @@ module.exports = {
                 .setMaxValue(50))  
         .addBooleanOption(option =>
             option.setName('invisible')
-                .setDescription('Set to true if you want no one to see what you are searching for')
-                ),
+            .setDescription('Set to true if you want no one to see what you are searching for')
+        )
+        .addBooleanOption(option =>
+            option.setName("no_ai")
+            .setDescription('Set True if you don\'t want to see ai images')
+        ),
                 
 
 	async execute(interaction) {
@@ -29,6 +33,7 @@ module.exports = {
         const pageid = interaction.options.getInteger('page');
         const val = interaction.options.getInteger('ammount') | 1;
         const invis = interaction.options.getBoolean('invisible') | false;
+        const no_ai = interaction.options.getBoolean('no_ai') | false;
 
         const filter = (i) => {
             // Проверяем customId и пользователя
@@ -45,8 +50,9 @@ module.exports = {
         if (!interaction.channel.nsfw) return await interaction.reply({content: 'Это не NSFW канал, чертов дрочун малолетний', flags: MessageFlags.Ephemeral});
 
         await interaction.deferReply()
-
-        const url = await fetch(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&pid=${pageid}&limit=${val}&tags=${tags}&json=1`);
+        let finalyTags = tags
+        if (no_ai) finalyTags += ' -ai_generated -thick -lactation -fart -futanari -peeing -big_belly -breast_bigger_than_head -pregnant -gigantic_breasts -huge_breasts -thick_thighs -thick_ass -gigantic_ass -huge_ass'
+        const url = await fetch(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&pid=${pageid}&limit=${val}&tags=${finalyTags}&json=1`);
         let response = await url.text()
         
         if (response.length < 1) return await interaction.editReply('Кажется, ничего не удалось найти. Проверьте правильность написания тегов');
@@ -125,13 +131,6 @@ module.exports = {
                 console.error("Не удалось отредактировать сообщение после завершения коллектора:", error);
             }
         })
-
-        const urls = urlList.join('\n');
-        if (invis) {
-            await interaction.editReply({content: urls, flags: MessageFlags.Ephemeral})
-        } else {
-            await interaction.editReply(urls)
-        }
         async function changePage(pageIndex) {
             const currentEmbed = pages[pageIndex].setFooter({ text: `page ${pageIndex + 1} of ${pages.length}` });
         
