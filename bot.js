@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 
 if (!process.env.token) return console.error(`[ERROR]: Переменная token в .env отсутсвтует!`);
@@ -51,22 +51,5 @@ for (const file of eventFiles) {
 		client.on(event.name, (...args) => event.execute(...args));
 	}
 }
-
-// Регистр команд
-client.once('ready', async () => {
-	console.log(`[INFO] ${client.user.tag} запущен`);
-	const rest = new REST().setToken(process.env.token);
-
-	try {
-		console.log(`[INFO] Регистрация ${commandsForRegister.length} глобальных слэш-команд...`);
-		await rest.put(
-			Routes.applicationCommands(process.env.clientId),
-			{ body: commandsForRegister }
-		);
-		console.log('[INFO] Глобальные слэш-команды успешно зарегистрированы.');
-	} catch (error) {
-		console.error('[ERROR] Ошибка при регистрации команд:', error);
-	}
-});
 
 client.login(process.env.token);
