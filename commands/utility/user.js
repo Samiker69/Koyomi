@@ -87,7 +87,7 @@ const data = new SlashCommandBuilder()
 
                         if (!await interaction.member.permissions.has([PermissionsBitField.Flags.MoveMembers, PermissionsBitField.Flags.MuteMembers, PermissionsBitField.Flags.DeafenMembers])) return await interaction.reply({content: 'У вас недостаточно прав', flags: MessageFlags.Ephemeral});  
 
-                        if (!member.voice.channel) return await interaction.reply({ content: 'Участник не находится в голосовом канале!', ephemeral:true });
+                        if (!member.voice.channel) return await interaction.reply({ content: 'Участник не находится в голосовом канале!', flags: MessageFlags.Ephemeral });
 
                         if (!channel && kick) {
                             let text = `${member} кикнут из ${member.voice.channel}.`

@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType, MessageFlags } = require('discord.js');
+const { changePage } = require('../../functions/changePage');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 module.exports = {
@@ -36,7 +37,6 @@ module.exports = {
         const no_ai = interaction.options.getBoolean('no_ai') | false;
 
         const filter = (i) => {
-            // Проверяем customId и пользователя
              if (i.customId === 'previous_page' || i.customId === 'next_page') {
                  if (i.user.id !== interaction.user.id) {
                     i.reply({ content: `Только ${interaction.user.username} может взаимодействовать`, flags: MessageFlags.Ephemeral });
@@ -78,7 +78,7 @@ module.exports = {
             }
         }
         let page = 0
-        const message = await interaction.editReply(await changePage(page));
+        const message = await interaction.editReply(await changePage(page, pages));
 
         const collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button, 
@@ -98,7 +98,7 @@ module.exports = {
             }
 
             // Обновляем сообщение с новой страницей и состоянием кнопок
-            const updatedMessagePayload = await changePage(page);
+            const updatedMessagePayload = await changePage(page, pages);
             try {
                 await button.update(updatedMessagePayload);
             } catch (error) {
@@ -131,25 +131,6 @@ module.exports = {
                 console.error("Не удалось отредактировать сообщение после завершения коллектора:", error);
             }
         })
-        async function changePage(pageIndex) {
-            const currentEmbed = pages[pageIndex].setFooter({ text: `page ${pageIndex + 1} of ${pages.length}` });
-        
-            const previousButton = new ButtonBuilder()
-                .setCustomId('previous_page')
-                .setLabel('⬅️')
-                .setStyle(ButtonStyle.Primary)
-                .setDisabled(pageIndex === 0); // Отключаем кнопку "Назад" на первой странице
-        
-            const nextButton = new ButtonBuilder()
-                .setCustomId('next_page')
-                .setLabel('➡️')
-                .setStyle(ButtonStyle.Primary)
-                .setDisabled(pageIndex === pages.length - 1); // Отключаем кнопку "Вперед" на последней странице
-        
-            const row = new ActionRowBuilder().addComponents(previousButton, nextButton);
-        
-            return { embeds: [currentEmbed], components: [row], withResponse: true };
-        };
 	}
 }
 

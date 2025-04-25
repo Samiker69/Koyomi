@@ -100,7 +100,6 @@ const data = new SlashCommandBuilder()
                             
                         default:
                             await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
-
                             break;
                     }
                 }

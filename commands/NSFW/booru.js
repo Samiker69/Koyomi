@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType, MessageFlags } = require('discord.js');
 const booru = require('booru');
+const { changePage, activeTime } = require('../../functions/changePage');
 
 module.exports = {
     cooldown: 10,
@@ -83,26 +84,6 @@ module.exports = {
              return false; // Игнорируем другие типы компонентов
         };
 
-        const changePage = async (pageIndex) => {
-            const currentEmbed = pages[pageIndex].setFooter({ text: `page ${pageIndex + 1} of ${pages.length}` });
-        
-            const previousButton = new ButtonBuilder()
-                .setCustomId('previous_page')
-                .setLabel('⬅️')
-                .setStyle(ButtonStyle.Primary)
-                .setDisabled(pageIndex === 0); // Отключаем кнопку "Назад" на первой странице
-        
-            const nextButton = new ButtonBuilder()
-                .setCustomId('next_page')
-                .setLabel('➡️')
-                .setStyle(ButtonStyle.Primary)
-                .setDisabled(pageIndex === pages.length - 1); // Отключаем кнопку "Вперед" на последней странице
-        
-            const row = new ActionRowBuilder().addComponents(previousButton, nextButton);
-        
-            return { embeds: [currentEmbed], components: [row], withResponse: true };
-        };
-
         try {
             const tags = await interaction.options.getString('tags');
             const limit = await interaction.options.getNumber('limit') | 1;
@@ -123,7 +104,7 @@ module.exports = {
                 pages.push(a)
             }
 
-            const message = await interaction.editReply(await changePage(page));
+            const message = await interaction.editReply(await changePage(page, pages));
 
             const collector = message.createMessageComponentCollector({
                 componentType: ComponentType.Button, 
@@ -143,7 +124,7 @@ module.exports = {
                 }
     
                 // Обновляем сообщение с новой страницей и состоянием кнопок
-                const updatedMessagePayload = await changePage(page);
+                const updatedMessagePayload = await changePage(page, pages);
                 try {
                     await button.update(updatedMessagePayload);
                 } catch (error) {
@@ -183,14 +164,3 @@ module.exports = {
        }
    },
 };
-
-async function activeTime(pages_length) {
-    if (pages_length <= 10) {
-        return 1000*pages_length*60 //минимум - минута, максимум - 10 минут
-    } else if (pages_length <= 30) {
-        return 1000*pages_length*6 //минимум - 66 секунд, максимум 3 минуты
-    } else if (pages_length <= 101) {
-        return 1000*pages_length*10 //минимум 5 минут 10 секунд, максимум 16 минут
-    }
-    return 60*1000 //если каким-то блять хуем пошло не так, то будет минута
-}
