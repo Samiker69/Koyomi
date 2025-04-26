@@ -12,16 +12,16 @@ module.exports = {
 		.setDescription('Изменить настройки бота')
             .addSubcommand(subcommand => 
                 subcommand.setName('welcomechannel').setDescription('Канал для уведомления о новых участниках')
-                    .addChannelOption(option => option.setName('channel').setDescription('Канал').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild).setDMPermission(false)
+                    .addChannelOption(option => option.setName('channel').setDescription('Канал').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
             .addSubcommand(subcommand => 
                 subcommand.setName('invite-logger-channel').setDescription('Канал для логироавния ссылок приглашений')
-                        .addChannelOption(option => option.setName('channel').setDescription('Канал').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild).setDMPermission(false)
+                        .addChannelOption(option => option.setName('channel').setDescription('Канал').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
             .addSubcommand(subcommand => 
                 subcommand.setName('allowlogging').setDescription('Отправлять сообщения об использованной ссылке?')
-                    .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild).setDMPermission(false)
+                    .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
             .addSubcommand(subcommand => 
                 subcommand.setName('allowmembersaddlogging').setDescription('Отправлять сообщения о новых/ушедших участниках')
-                    .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild).setDMPermission(false),
+                    .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
 	async execute(interaction) {
         const channel = interaction.options.getChannel('channel');
