@@ -28,11 +28,11 @@ module.exports = {
     if (!config.privateAccess.includes(interaction.user.id)) {
       return interaction.reply({
         content: 'У вас нет доступа к этой команде.',
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     }
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const text = interaction.options.getString('text', true);
     const image = interaction.options.getAttachment('image');
@@ -52,13 +52,13 @@ module.exports = {
       await interaction.channel.send(sendOptions);
       await interaction.editReply({
         content: 'Сообщение успешно отправлено.',
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     } catch (err) {
       console.error('Error in /say:', err);
       await interaction.editReply({
         content: 'Не удалось отправить сообщение.',
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     }
   }
