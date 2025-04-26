@@ -6,6 +6,10 @@ require('dotenv').config();
 if (!process.env.token) return console.error(`[ERROR]: Переменная token в .env отсутсвтует!`);
 if (!process.env.clientId) return console.error(`[ERROR]: Переменная clientId в .env отсутсвтует!`);
 
+if (!fs.existsSync('./database')) {
+	fs.mkdirSync('./database')
+}
+
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,

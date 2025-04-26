@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder } = require('discord.js');
-
+const ModerationDB = require('../../functions/db/case');
+const db = new ModerationDB('./database/cases.db')
 
 const data = new SlashCommandBuilder()
     .setName('moderation')
@@ -110,7 +111,7 @@ const data = new SlashCommandBuilder()
                 }
                 try {
                     await member.ban({ reason: reason + ` | by ${interaction.user.username}(${interaction.user.id})` });
-                    /*await addModCase({
+                    await db.addModCase({
                         serverId: interaction.guild.id,
                         targetId: targetUser.id,
                         moderatorId: interaction.user.id,
@@ -119,11 +120,11 @@ const data = new SlashCommandBuilder()
                         timestamp: new Date()
                     });
         
-                    const caseCount = await getServerModCaseCount(interaction.guild.id);*/
+                    const latestCase = db.getServerModCases(interaction.guild.id)
         
                     const embed = {
                         color: 0xff0000,
-                        //title: localization.ban_success.replace('{caseCount}', caseCount),
+                        title: `Case \`#${latestCase[0].caseNum}\``,
                         thumbnail: { url: interaction.guild.iconURL() || '' },
                         fields: [
                             { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
@@ -200,7 +201,7 @@ const data = new SlashCommandBuilder()
 
                 try {
                     await member.timeout(durationMs, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
-                    /*await addModCase({
+                    await db.addModCase({
                       serverId: interaction.guild.id,
                       targetId: targetUser.id,
                       moderatorId: interaction.user.id,
@@ -209,11 +210,11 @@ const data = new SlashCommandBuilder()
                       timestamp: new Date()
                     });
                     
-                    const caseCount = await getServerModCaseCount(interaction.guild.id);*/
+                    const latestCase = db.getServerModCases(interaction.guild.id)
                     
                     const embed = new EmbedBuilder()
                       .setColor(0x808080)
-                      //.setTitle(localization.mute_success.replace('{caseCount}', caseCount))
+                      .setTitle(`Case \`#${latestCase[0].caseNum}\``)
                       .setThumbnail(interaction.guild.iconURL() || '')
                       .addFields(
                         { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
@@ -269,7 +270,7 @@ const data = new SlashCommandBuilder()
                 
                 try {
                     await member.kick(reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
-                    /*await addModCase({
+                    await db.addModCase({
                         serverId: interaction.guild.id,
                         targetId: targetUser.id,
                         moderatorId: interaction.user.id,
@@ -278,11 +279,11 @@ const data = new SlashCommandBuilder()
                         timestamp: new Date()
                     });
                     
-                    const caseCount = await getServerModCaseCount(interaction.guild.id);*/
+                    const latestCase = db.getServerModCases(interaction.guild.id)
                     
                     const embed = new EmbedBuilder()
                         .setColor(0xffa500)
-                        //.setTitle(localization.kick_success.replace('{caseCount}', caseCount))
+                        .setTitle(`Case \`#${latestCase[0].caseNum}\``)
                         .setThumbnail(interaction.guild.iconURL() || '')
                         .addFields(
                             { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
