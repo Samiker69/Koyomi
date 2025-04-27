@@ -3,7 +3,7 @@ const Database = require('better-sqlite3');
 class ModerationDB {
     constructor(dbPath = 'cases.db') {
         // Открываем или создаем файл БД
-        this.db = new Database(dbPath, { verbose: console.log });
+        this.db = new Database(dbPath, /*{ verbose: console.log }*/);
         console.log(`Подключено к SQLite базе данных: ${dbPath}`);
         this.initSchema(); // Инициализируем структуру таблицы при создании объекта
     }

@@ -10,7 +10,7 @@ if (!process.env.clientId) return console.error(`[ERROR]: Переменная c
 if (!fs.existsSync('./database')) {
 	fs.mkdirSync('./database')
 }
-const {close} = new ModerationDB('./database/cases.db')
+const db = new ModerationDB('./database/cases.db')
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -73,11 +73,11 @@ client.once('ready', async () => {
 
 client.login(process.env.token);
 process.on('SIGINT', () => {
-    close();
+    db.close();
     process.exit(0);
 });
 
 process.on('SIGTERM', () => {
-    close();
+    db.close();
     process.exit(0);
 });
