@@ -130,7 +130,7 @@ const data = new SlashCommandBuilder()
                 const modCases = db.getTargetModCases(interaction.guild.id, targetUser.id);
                 
                 if (!modCases || modCases.length === 0) {
-                    await interaction.reply({ content: `У ${targetUser} нет наказаний`, ephemeral: true });
+                    await interaction.reply({ content: `У ${targetUser} нет наказаний`, flsgs: MessageFlags.Ephemeral });
                     return;
                 }
                 

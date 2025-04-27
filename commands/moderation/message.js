@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
 
 const data = new SlashCommandBuilder()
     .setName('message')
@@ -43,6 +43,23 @@ const data = new SlashCommandBuilder()
             .setDescription('emoji')
             .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
+
+    .addSubcommand(subcommand => 
+        subcommand.setName('purge')
+        .setDescription('Удаляет указанное количество сообщений от конкретного пользователя')
+        .addUserOption(option =>
+          option.setName('target')
+            .setDescription('Пользователь, чьи сообщения нужно удалить')
+            .setRequired(true)
+        )
+        .addIntegerOption(option =>
+          option.setName('amount')
+            .setDescription('Количество сообщений для удаления (от 1 до 100)')
+            .setRequired(true)
+            .setMinValue(1)
+            .setMaxValue(100)
+        )
+    ).setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     module.exports = {
         cooldown: 5,
@@ -95,6 +112,50 @@ const data = new SlashCommandBuilder()
 
                     await interaction.channel.messages.unpin(message);
                     await interaction.reply(`Сообщение было открепленно ||вы потратили ~3 секунды просто так!!1||`);
+                    break;
+                }
+
+                case "purge": {
+                    if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageMessages)) return await interaction.reply({content: 'Недостаточно прав для действия', flags: MessageFlags.Ephemeral});
+                  
+                      const target = interaction.options.getUser('target', true);
+                      const amount = interaction.options.getInteger('amount', true);
+                      const channel = interaction.channel;
+                  
+                      try {
+                        // Получаем последние 100 сообщений в канале
+                        const fetchedMessages = await channel.messages.fetch({ limit: 100 });
+                        // Фильтруем сообщения, оставляем только от указанного пользователя
+                        const targetMessages = fetchedMessages.filter(msg => msg.author.id === target.id);
+                        const messagesToDelete = targetMessages.first(amount);
+                  
+                        if (!messagesToDelete || messagesToDelete.length === 0) {
+                          await interaction.reply({
+                            content: `Не найдено сообщений от ${target} среди последних 100 сообщений.`,
+                            flags: MessageFlags.Ephemeral
+                          });
+                          return;
+                        }
+                  
+                        await channel.bulkDelete(messagesToDelete, true);
+                        
+                        const embed = new EmbedBuilder()
+                          .setColor(0xFF0000)
+                          .setTitle("Очистка сообщений")
+                          .addFields(
+                            { name: "Модератор", value: `<@${interaction.user.id}>`, inline: true },
+                            { name: "Пользователь", value: `<@${target.id}>`, inline: true },
+                            { name: "Канал", value: `<#${channel.id}>`, inline: true },
+                            { name: "Удалено сообщений", value: `${messagesToDelete.length}`, inline: true }
+                          )
+                          .setFooter({ text: "Очистка завершена", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+                          .setTimestamp();
+                  
+                        await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+                      } catch (error) {
+                        console.error('Ошибка при очистке сообщений:', error);
+                        await interaction.reply({ content: "Произошла ошибка при попытке удалить сообщения.", flags: MessageFlags.Ephemeral });
+                      }
                     break;
                 }
                     
