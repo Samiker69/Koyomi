@@ -3,5 +3,7 @@
     "newMemberChannelId": "",
     "inviteLoggerChannel": "",
     "allowInviteLogging": false,
-    "allowLogingMembersAdd": false
+    "allowLogingMembersAdd": false,
+    "mainVoiceChannelId": "1303458270702338083",
+    "voiceCategoryId": "1303458270702338081"
 }
