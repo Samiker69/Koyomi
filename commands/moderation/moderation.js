@@ -67,6 +67,44 @@ const data = new SlashCommandBuilder()
                 .setRequired(false)
         )
     )
+    .addSubcommand(sub => 
+        sub.setName('unmute')
+        .setDescription('Снять мут (таймаут) с пользователя')
+        .addUserOption(option =>
+          option.setName('пользователь')
+            .setDescription('Пользователь, у которого снимают мут')
+            .setRequired(true)
+        )
+        .addStringOption(option =>
+          option.setName('причина')
+            .setDescription('Причина снятия мута')
+            .setRequired(false)
+        )
+        .addAttachmentOption(option =>
+          option.setName('доказательства')
+            .setDescription('Прикрепите доказательства (если есть)')
+            .setRequired(false)
+        )
+    )
+    .addSubcommand(sub =>
+        sub.setName('unban')
+        .setDescription('Разбанить пользователя по ID')
+        .addUserOption(option =>
+          option.setName('userid')
+            .setDescription('ID пользователя для разбанивания')
+            .setRequired(true)
+        )
+        .addStringOption(option =>
+          option.setName('reason')
+            .setDescription('Причина разбана')
+            .setRequired(false)
+        )
+        .addAttachmentOption(option =>
+          option.setName('evidence')
+            .setDescription('Прикрепите доказательства (если есть)')
+            .setRequired(false)
+        )
+    )
 
 
     module.exports = {
@@ -306,7 +344,120 @@ const data = new SlashCommandBuilder()
                 }
                 break;
             }
+            case "unmute": {
+                const targetUser = interaction.options.getUser('пользователь');
+                if (targetUser.id === interaction.user.id) {
+                  await interaction.reply({ content: "Ты не можешь размутить самого себя", flags: MessageFlags.Ephemeral });
+                  return;
+                }
                 
+                const reason = interaction.options.getString('причина') || 'Без причины';
+                const evidence = interaction.options.getAttachment('доказательства');
+                
+                const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
+                if (!member) {
+                  await interaction.reply({ content: "Участник не найден", flags: MessageFlags.Ephemeral });
+                  return;
+                }
+                
+                if (!interaction.memberPermissions.has('Administrator') &&
+                    interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) {
+                        await interaction.reply({ content: "Позиция вашей роли ниже чем роль выбранного участника", flags: MessageFlags.Ephemeral });
+                        return;
+                    }
+                
+                if (!member.moderatable) {
+                  await interaction.reply({ content: "Я не могу размутить этого участника", ephemeral: true });
+                  return;
+                }
+                
+                try {
+                  await member.timeout(null, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
+                  
+                  await db.addModCase({
+                    serverId: interaction.guild.id,
+                    targetId: targetUser.id,
+                    moderatorId: interaction.user.id,
+                    action: 'unmute',
+                    reason: reason,
+                    timestamp: new Date()
+                  });
+                  
+                  const latestCase = db.getServerModCases(interaction.guild.id)
+                  
+                  const embed = new EmbedBuilder()
+                    .setColor(0x00ff00)
+                    .setTitle(`Case \`#${latestCase[0].caseNum}\``)
+                    .setThumbnail(interaction.guild.iconURL() || '')
+                    .addFields(
+                      { name: "Модератор", value: `<@${interaction.user.id}>`, inline: true },
+                      { name: "Пользователь", value: `<@${targetUser.id}>`, inline: true },
+                      { name: "Причина", value: reason, inline: false },
+                      { name: "Время", value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+                    )
+                    .setFooter({ text: "Размут выполнен", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+                    .setTimestamp();
+                  
+                  if (evidence) {
+                    embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
+                    embed.setImage(evidence.url);
+                  }
+                  
+                  await interaction.reply({ embeds: [embed] });
+                } catch (error) {
+                  console.error('Ошибка при снятии мута:', error);
+                  await interaction.reply({ content: "Не удалось размутить участника", ephemeral: true });
+                }
+                break;
+            }
+            case "unban": {
+                const user = interaction.options.getUser('userid');
+                const reason = interaction.options.getString('reason') || 'Без причины';
+                const evidence = interaction.options.getAttachment('evidence');
+            
+                try {
+                  await interaction.guild.members.unban(user.id, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
+                  await db.addModCase({
+                    serverId: interaction.guild.id,
+                    targetId: user.id,
+                    moderatorId: interaction.user.id,
+                    action: 'unban',
+                    reason: reason,
+                    timestamp: new Date()
+                  });
+            
+                  const latestCase = db.getServerModCases(interaction.guild.id)
+            
+                  const embed = new EmbedBuilder()
+                    .setColor(0x00ff00)
+                    .setTitle(`Case \`#${latestCase[0].caseNum}\``)
+                    .setThumbnail(interaction.guild.iconURL() || '')
+                    .addFields(
+                      { name: "Модератор", value: `<@${interaction.user.id}>`, inline: true },
+                      { name: "Пользователь", value: user.id, inline: true },
+                      { name: "Причина", value: reason, inline: false },
+                      { name: "Время", value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+                    )
+                    .setFooter({ text: "Разбан выполнен", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+                    .setTimestamp();
+            
+                  if (evidence) {
+                    embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
+                    embed.setImage(evidence.url);
+                  }
+            
+                  await interaction.reply({ embeds: [embed] });
+                } catch (error) {
+                  if (error.code === 10026) {
+                    await interaction.reply({ content: "Участник не забанен", ephemeral: true });
+                  } else {
+                    console.error('Ошибка при разбане пользователя:', error);
+                    await interaction.reply({ content: "Не удалось разбанить участника", ephemeral: true });
+                  }
+                }
+                break;
+            }
+
             default:
                 await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;
