@@ -161,7 +161,7 @@ const data = new SlashCommandBuilder()
                 }
                 
                 const timeInput = interaction.options.getString('время');
-                const reason = interaction.options.getString('причина') || localization.default_reason;
+                const reason = interaction.options.getString('причина') || "Без причины"
                 const evidence = interaction.options.getAttachment('доказательства');
                 
                 let durationMinutes = 10;

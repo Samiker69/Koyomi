@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
+const ModerationDB = require('./functions/db/case');
 require('dotenv').config();
 
 if (!process.env.token) return console.error(`[ERROR]: Переменная token в .env отсутсвтует!`);
@@ -9,7 +10,7 @@ if (!process.env.clientId) return console.error(`[ERROR]: Переменная c
 if (!fs.existsSync('./database')) {
 	fs.mkdirSync('./database')
 }
-
+const {close} = new ModerationDB('./database/cases.db')
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -71,3 +72,12 @@ client.once('ready', async () => {
 });
 
 client.login(process.env.token);
+process.on('SIGINT', () => {
+    close();
+    process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+    close();
+    process.exit(0);
+});
