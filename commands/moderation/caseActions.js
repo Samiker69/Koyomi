@@ -60,21 +60,31 @@ const data = new SlashCommandBuilder()
             return;
         }
 
-        const caseNum = interaction.options.getInteger('num') | 1;
+        const caseNum = interaction.options.getInteger('num');
         const reason = interaction.options.getString('reason');
 
         switch (interaction.options.getSubcommand()) {
             case "remove": {
-
+                const Promise = db.deleteModCase(interaction.guild.id, caseNum)
+                if (Promise) {
+                    await interaction.reply(`Кейс \`#${caseNum}\` удалён`)
+                } else {
+                    await interaction.reply(`Кейс \`#${caseNum}\` не был удалён. Возможно, вы указали неверный номер кейса`)
+                }
                 break;
             }
             case "reason": {
-
+                const Promise = db.updateModCaseReason(interaction.guild.id, caseNum, reason);
+                if (Promise) {
+                    await interaction.reply(`Причина кейса \`#${caseNum}\` обновлена`)
+                } else {
+                    await interaction.reply(`Причина кейса \`#${caseNum}\` не обновлена. Возможно, вы указали неверный номер кейса`)
+                }
                 break;
             }
             case "view": {
                 const caseObj = db.getModCase(interaction.guild.id, caseNum);
-                if (!caseObj) await interaction.reply({ content: "Кейс не найден!", flags: MessageFlags.Ephemeral })
+                if (!caseObj) return await interaction.reply({ content: "Кейс не найден!", flags: MessageFlags.Ephemeral })
 
                 const moderator = await interaction.guild.members.fetch(caseObj.moderatorId)
                 let action;
