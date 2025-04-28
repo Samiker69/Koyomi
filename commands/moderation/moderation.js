@@ -367,7 +367,7 @@ const data = new SlashCommandBuilder()
                     }
                 
                 if (!member.moderatable) {
-                  await interaction.reply({ content: "Я не могу размутить этого участника", ephemeral: true });
+                  await interaction.reply({ content: "Я не могу размутить этого участника", flags: MessageFlags.Ephemeral });
                   return;
                 }
                 
@@ -406,7 +406,7 @@ const data = new SlashCommandBuilder()
                   await interaction.reply({ embeds: [embed] });
                 } catch (error) {
                   console.error('Ошибка при снятии мута:', error);
-                  await interaction.reply({ content: "Не удалось размутить участника", ephemeral: true });
+                  await interaction.reply({ content: "Не удалось размутить участника", flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
@@ -449,17 +449,17 @@ const data = new SlashCommandBuilder()
                   await interaction.reply({ embeds: [embed] });
                 } catch (error) {
                   if (error.code === 10026) {
-                    await interaction.reply({ content: "Участник не забанен", ephemeral: true });
+                    await interaction.reply({ content: "Участник не забанен", flags: MessageFlags.Ephemeral });
                   } else {
                     console.error('Ошибка при разбане пользователя:', error);
-                    await interaction.reply({ content: "Не удалось разбанить участника", ephemeral: true });
+                    await interaction.reply({ content: "Не удалось разбанить участника", flags: MessageFlags.Ephemeral });
                   }
                 }
                 break;
             }
 
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({content: 'Кажется, такой саб-команды не существует', D})
                 break;
         }
     }
