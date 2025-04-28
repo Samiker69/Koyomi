@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
 const ModerationDB = require('./functions/db/case');
+const settings = require('./functions/db/settings')
 require('dotenv').config();
 
 if (!process.env.token) return console.error(`[ERROR]: Переменная token в .env отсутсвтует!`);
@@ -11,18 +12,8 @@ if (!fs.existsSync('./database')) {
 	fs.mkdirSync('./database')
 	console.log('[INFO]: Папка database создана')
 }
-if (!fs.existsSync('settings.json')) {
-	fs.writeFileSync('settings.json', [{
-		"logchannel": "",
-		"newMemberChannelId": "",
-		"inviteLoggerChannel": "",
-		"allowInviteLogging": false,
-		"allowLogingMembersAdd": false,
-		"mainVoiceChannelId": "",
-		"voiceCategoryId": ""
-	}])
-	console.log('[INFO]: Файл settings.json создан')
-}
+
+const Sdb = new settings('./database/settings.db')
 const db = new ModerationDB('./database/cases.db')
 const client = new Client({
 	intents: [
@@ -88,10 +79,12 @@ client.once('ready', async () => {
 client.login(process.env.token);
 process.on('SIGINT', () => {
     db.close();
+	Sdb.close()
     process.exit(0);
 });
 
 process.on('SIGTERM', () => {
     db.close();
+	Sdb.close()
     process.exit(0);
 });

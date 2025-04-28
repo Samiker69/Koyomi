@@ -1,11 +1,12 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const fs = require('node:fs');
-const { ChangeSettings } = require('../functions/ChangeSettings');
+const settings = require('../functions/db/settings')
+
+const Sdb = new settings('./database/settings.db')
 
 module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
-        let data = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
+        const data = Sdb.getSettings(member.guild.id)
             
         const client = await member.guild.members.me;
         
@@ -13,7 +14,7 @@ module.exports = {
             const channel = await member.guild.channels.fetch(data.newMemberChannelId);
             if (!channel) {
                 console.error('[ERROR]: newMemberChannelId пуст либо указан неверно для данного сервера! отключаем функцию...')
-                await ChangeSettings('allowLogingMembersAdd', false)
+                Sdb.updateSetting(member.guild.id, 'allowLogingMembersAdd', false)
             }
 
             const embed = new EmbedBuilder()
@@ -42,7 +43,7 @@ module.exports = {
             const logChannel = await member.guild.channels.fetch(data.inviteLoggerChannel);
             if (!logChannel) {
                 console.error('[ERROR]: inviteLoggerChannel пуст либо указан неверно для данного сервера! отключаем функцию...')
-                await ChangeSettings('allowInviteLogging', false)
+                Sdb.updateSetting(member.guild.id, 'allowInviteLogging', false)
             }
 
             if (inviteUsed) {

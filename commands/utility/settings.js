@@ -1,9 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const fs = require('node:fs');
+const settings = require('../../functions/db/settings')
 
-const { ChangeSettings } = require('../../functions/ChangeSettings');
-
-let data = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
+const Sdb = new settings('./database/settings.db')
 
 module.exports = {
 	cooldown: 10,
@@ -42,7 +40,7 @@ module.exports = {
         switch (interaction.options.getSubcommand()) {
             case "welcomechannel":
                 try {
-                    await ChangeSettings('newMemberChannelId', channel.id);
+                    Sdb.updateSetting(interaction.guild.id, 'newMemberChannelId', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как канал для отслеживания участников`);
                 } catch (error) {
                     console.error(error);
@@ -52,7 +50,7 @@ module.exports = {
 
             case 'invite-logger-channel':
                 try {
-                    await ChangeSettings('inviteLoggerChannel', channel.id);
+                    Sdb.updateSetting(interaction.guild.id, 'inviteLoggerChannel', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как канал для отслеживания приглашений`);
                 } catch (error) {
                     console.error(error);
@@ -62,9 +60,10 @@ module.exports = {
 
             case 'allowlogging':
                 try {
+                    const data = Sdb.getSettings(interaction.guild.id)
                     if (data.allowInviteLogging === bool) return await interaction.reply('Этот параметр уже установлен на ' + bool);
                     let answerLog;
-                    await ChangeSettings('allowInviteLogging', bool);
+                    Sdb.updateSetting(interaction.guild.id, 'allowInviteLogging', bool);
                     if (bool) {answerLog = 'Теперь бот будет уведомлять об использованной ссылке-приглашения';} 
                     else {answerLog = 'Теперь бот не будет уведомлять об использованной ссылке-приглашения';}
                     await interaction.reply(answerLog);
@@ -76,9 +75,10 @@ module.exports = {
 
             case 'allowmembersaddlogging':
                 try {
+                    const data = Sdb.getSettings(interaction.guild.id)
                     if (data.allowLogingMembersAdd === bool) return await interaction.reply('Этот параметр уже установлен на ' + bool);
                     let answerMemberLog;
-                    await ChangeSettings('allowLogingMembersAdd', bool);
+                    Sdb.updateSetting(interaction.guild.id, 'allowLogingMembersAdd', bool);
                     if (bool) {answerMemberLog = 'Теперь бот будет уведомлять о новых/ушедших участниках';} 
                     else {answerMemberLog = 'Теперь бот не будет уведомлять о новых/ушедших участниках';}
                     await interaction.reply(answerMemberLog);
@@ -91,7 +91,7 @@ module.exports = {
             case 'set-voice-category':
                 try {
                     if (category.type !== 4) return await interaction.reply('Выберите именно категорию!');
-                    await ChangeSettings('voiceCategoryId', category.id);
+                    Sdb.updateSetting(interaction.guild.id, 'voiceCategoryId', category.id);
                     await interaction.reply(`Теперь ${category} выбрана как категория для новых войс-каналов`);
                 } catch (error) {
                     console.error(error);
@@ -102,7 +102,7 @@ module.exports = {
             case 'set-main-voice':
                 try {
                     if (channel.type !== 2) return await interaction.reply('Выберите именно голосовой канал!');
-                    await ChangeSettings('mainVoiceChannelId', channel.id);
+                    Sdb.updateSetting(interaction.guild.id, 'mainVoiceChannelId', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как основной голосовой канал для создания комнат`);
                 } catch (error) {
                     console.error(error);

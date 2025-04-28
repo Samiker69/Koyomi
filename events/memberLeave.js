@@ -1,17 +1,19 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const fs = require('node:fs');
-let data = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
+const settings = require('../functions/db/settings')
+
+const Sdb = new settings('./database/settings.db')
 
 module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
+        const data = Sdb.getSettings(member.guild.id)
         const client = await member.guild.members.me;
         if (member.id === client.user.id) return;
 
         const channel = await member.guild.channels.fetch(data.newMemberChannelId);
         if (!channel) {
             console.error('[ERROR]: newMemberChannelId пуст либо указан неверно для данного сервера! отключаем функцию...')
-            await ChangeSettings('allowLogingMembersAdd', false)
+            Sdb.updateSetting(member.guild.id, 'allowLogingMembersAdd', false)
         }
 
         if (data.allowLogingMembersAdd === true) {

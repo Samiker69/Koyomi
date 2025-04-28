@@ -1,7 +1,7 @@
 const { Events, ChannelType, PermissionFlagsBits } = require('discord.js');
-const fs = require('node:fs');
+const settings = require('../functions/db/settings')
 
-const data = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
+const Sdb = new settings('./database/settings.db')
 
 module.exports = {
   name: Events.VoiceStateUpdate,
@@ -11,6 +11,7 @@ module.exports = {
       newChannel: newState.channelId
     });
 
+    const data = Sdb.getSettings(newState.guild.id)
     const mainVoiceChannelId = data.mainVoiceChannelId;
     const categoryId = data.voiceCategoryId;
 
