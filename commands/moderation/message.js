@@ -65,6 +65,10 @@ const data = new SlashCommandBuilder()
         cooldown: 5,
         data,
         async execute(interaction) {
+            if (!(interaction.memberPermissions.has('ManageMessages') || interaction.memberPermissions.has('Administrator'))) {
+                await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                return;
+            }
             switch (interaction.options.getSubcommand()) {
                 case "clear": {
                     const amount = interaction.options.getInteger('amount');

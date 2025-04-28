@@ -44,7 +44,6 @@ const data = new SlashCommandBuilder()
             module.exports = {
                 data,
                 async execute(interaction) {
-                    console.log(privateAccess, interaction.user.id)
                     if (!privateAccess.includes(interaction.user.id)) return await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral})
 
                     switch (interaction.options.getSubcommand()) {

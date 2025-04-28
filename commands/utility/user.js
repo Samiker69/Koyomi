@@ -1,83 +1,38 @@
-const { SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField, EmbedBuilder, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField, MessageFlags } = require('discord.js');
 
 const data = new SlashCommandBuilder()
         .setName('user')
         .setDescription('info about target')
-        .addSubcommand(sub =>
-            sub
-              .setName('info')
-              .setDescription('Информация о пользователе')
-              .addUserOption(opt =>
-                opt
-                  .setName('target')
-                  .setDescription('Пользователь (необязательно)')
-                  .setRequired(false)
-              )
-          )
-            .addSubcommand(subcommand=>
-                subcommand.setName('voice')
-                .setDescription('edit a user in the voice channel')
-                .addUserOption(option => option.setName('target').setDescription('select a user'))
-                .addChannelOption(option => option.setName('channel').setDescription('Moves the member to a different channel'))
-                .addBooleanOption(option => option.setName('deaf').setDescription('Deafens/undeafens the member of this voice state.'))
-                .addBooleanOption(option => option.setName('mute').setDescription('Mutes/unmutes the member of this voice state.'))
-                .addBooleanOption(option => 
-                    option.setName('kick')
-                    .setDescription('Кикает участника из войса')
-                )
-            ).setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+        .addSubcommand(subcommand=>
+            subcommand.setName('voice')
+            .setDescription('edit a user in the voice channel')
+            .addUserOption(option => option.setName('target').setDescription('select a user'))
+            .addChannelOption(option => option.setName('channel').setDescription('Moves the member to a different channel'))
+            .addBooleanOption(option => option.setName('deaf').setDescription('Deafens/undeafens the member of this voice state.'))
+            .addBooleanOption(option => option.setName('mute').setDescription('Mutes/unmutes the member of this voice state.'))
+            .addBooleanOption(option => 
+                option.setName('kick')
+                .setDescription('Кикает участника из войса')
+            )
+        ).setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 
-            .addSubcommand(subcommand=>subcommand.setName('addrole').setDescription('Adds a role (or multiple roles) to the member.')
-                .addUserOption(option => option.setName('target').setDescription('select a user').setRequired(true))
-                .addRoleOption(option => option.setName('role').setDescription('select a role').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-            .addSubcommand(subcommand=>subcommand.setName('removerole').setDescription('remove a role (or multiple roles) to the member.')
-                .addUserOption(option => option.setName('target').setDescription('select a user').setRequired(true))
-                .addRoleOption(option => option.setName('role').setDescription('select a role').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+        .addSubcommand(subcommand=>subcommand.setName('addrole').setDescription('Adds a role (or multiple roles) to the member.')
+            .addUserOption(option => option.setName('target').setDescription('select a user').setRequired(true))
+            .addRoleOption(option => option.setName('role').setDescription('select a role').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+        .addSubcommand(subcommand=>subcommand.setName('removerole').setDescription('remove a role (or multiple roles) to the member.')
+            .addUserOption(option => option.setName('target').setDescription('select a user').setRequired(true))
+            .addRoleOption(option => option.setName('role').setDescription('select a role').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 
 
         module.exports = {
             data,
             cooldown: 5,
             async execute(interaction) {
+                if (!(interaction.memberPermissions.has('ManageMembers') || interaction.memberPermissions.has('Administrator'))) {
+                    await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                    return;
+                }
                 switch (interaction.options.getSubcommand()) {
-                    case "info": {
-                        const statusMap = {
-                            online: 'В сети',
-                            idle: 'Не активен',
-                            dnd: 'Не беспокоить',
-                            offline: 'Не в сети'
-                        };
-
-                        const member = interaction.options.getMember('target') || interaction.member;
-                        const user = member.user;
-
-                        const createdTs = Math.floor(user.createdAt.getTime() / 1000);
-                        const joinedTs  = Math.floor(member.joinedAt.getTime() / 1000);
-                        const rawStatus = member.presence?.status || 'offline';
-                        const statusText = statusMap[rawStatus] || rawStatus;
-
-                        const roles = member.roles.cache
-                            .filter(r => r.id !== interaction.guild.id)
-                            .map(r => r.name)
-                            .join(', ') || '—';
-
-                        const embed = new EmbedBuilder()
-                            .setColor(0x9B59B6)
-                            .setAuthor({ name: user.tag, iconURL: user.avatarURL({ dynamic: true }) })
-                            .setThumbnail(user.avatarURL({ dynamic: true }))
-                            .setTitle('Информация о пользователе')
-                            .addFields(
-                            { name: 'ID',                 value: user.id,                              inline: true },
-                            { name: 'Аккаунт создан',     value: `<t:${createdTs}:F> (<t:${createdTs}:R>)`, inline: true },
-                            { name: 'Вступил на сервер',  value: `<t:${joinedTs}:F> (<t:${joinedTs}:R>)`,  inline: true },
-                            { name: 'Статус',             value: statusText,                            inline: true },
-                            { name: 'Роли',               value: roles,                                 inline: false }
-                            );
-
-                        await interaction.reply({ embeds: [embed] });
-                        break;
-                    }
-                    
                     case "voice": {
                         const member = interaction.options.getMember("target");
                         const channel = interaction.options.getChannel("channel");

@@ -13,7 +13,7 @@ module.exports = {
             const channel = await member.guild.channels.fetch(data.newMemberChannelId);
             if (!channel) {
                 console.error('[ERROR]: newMemberChannelId пуст либо указан неверно для данного сервера! отключаем функцию...')
-                ChangeSettings('allowLogingMembersAdd', false)
+                await ChangeSettings('allowLogingMembersAdd', false)
             }
 
             const embed = new EmbedBuilder()
@@ -42,7 +42,7 @@ module.exports = {
             const logChannel = await member.guild.channels.fetch(data.inviteLoggerChannel);
             if (!logChannel) {
                 console.error('[ERROR]: inviteLoggerChannel пуст либо указан неверно для данного сервера! отключаем функцию...')
-                ChangeSettings('allowInviteLogging', false)
+                await ChangeSettings('allowInviteLogging', false)
             }
 
             if (inviteUsed) {

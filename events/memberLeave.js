@@ -11,7 +11,7 @@ module.exports = {
         const channel = await member.guild.channels.fetch(data.newMemberChannelId);
         if (!channel) {
             console.error('[ERROR]: newMemberChannelId пуст либо указан неверно для данного сервера! отключаем функцию...')
-            ChangeSettings('allowLogingMembersAdd', false)
+            await ChangeSettings('allowLogingMembersAdd', false)
         }
 
         if (data.allowLogingMembersAdd === true) {

@@ -31,6 +31,10 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
 	async execute(interaction) {
+        if (!(interaction.memberPermissions.has('ManageGuild') || interaction.memberPermissions.has('Administrator'))) {
+            await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+            return;
+        }
         const channel = interaction.options.getChannel('channel');
         const category = interaction.options.getChannel('category');
         const bool = interaction.options.getBoolean('bool');
@@ -38,7 +42,7 @@ module.exports = {
         switch (interaction.options.getSubcommand()) {
             case "welcomechannel":
                 try {
-                    ChangeSettings('newMemberChannelId', channel.id);
+                    await ChangeSettings('newMemberChannelId', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как канал для отслеживания участников`);
                 } catch (error) {
                     console.error(error);
@@ -48,7 +52,7 @@ module.exports = {
 
             case 'invite-logger-channel':
                 try {
-                    ChangeSettings('inviteLoggerChannel', channel.id);
+                    await ChangeSettings('inviteLoggerChannel', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как канал для отслеживания приглашений`);
                 } catch (error) {
                     console.error(error);
@@ -60,7 +64,7 @@ module.exports = {
                 try {
                     if (data.allowInviteLogging === bool) return await interaction.reply('Этот параметр уже установлен на ' + bool);
                     let answerLog;
-                    ChangeSettings('allowInviteLogging', bool);
+                    await ChangeSettings('allowInviteLogging', bool);
                     if (bool) {answerLog = 'Теперь бот будет уведомлять об использованной ссылке-приглашения';} 
                     else {answerLog = 'Теперь бот не будет уведомлять об использованной ссылке-приглашения';}
                     await interaction.reply(answerLog);
@@ -74,7 +78,7 @@ module.exports = {
                 try {
                     if (data.allowLogingMembersAdd === bool) return await interaction.reply('Этот параметр уже установлен на ' + bool);
                     let answerMemberLog;
-                    ChangeSettings('allowLogingMembersAdd', bool);
+                    await ChangeSettings('allowLogingMembersAdd', bool);
                     if (bool) {answerMemberLog = 'Теперь бот будет уведомлять о новых/ушедших участниках';} 
                     else {answerMemberLog = 'Теперь бот не будет уведомлять о новых/ушедших участниках';}
                     await interaction.reply(answerMemberLog);
@@ -87,7 +91,7 @@ module.exports = {
             case 'set-voice-category':
                 try {
                     if (category.type !== 4) return await interaction.reply('Выберите именно категорию!');
-                    ChangeSettings('voiceCategoryId', category.id);
+                    await ChangeSettings('voiceCategoryId', category.id);
                     await interaction.reply(`Теперь ${category} выбрана как категория для новых войс-каналов`);
                 } catch (error) {
                     console.error(error);
@@ -98,7 +102,7 @@ module.exports = {
             case 'set-main-voice':
                 try {
                     if (channel.type !== 2) return await interaction.reply('Выберите именно голосовой канал!');
-                    ChangeSettings('mainVoiceChannelId', channel.id);
+                    await ChangeSettings('mainVoiceChannelId', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как основной голосовой канал для создания комнат`);
                 } catch (error) {
                     console.error(error);
