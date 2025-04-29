@@ -9,7 +9,8 @@ const VALID_SETTINGS = [
     'allowInviteLogging',
     'allowLogingMembersAdd',
     'mainVoiceChannelId',
-    'voiceCategoryId'
+    'voiceCategoryId',
+    'prefix'
 ];
 const BOOLEAN_SETTINGS = ['allowInviteLogging', 'allowLogingMembersAdd'];
 
@@ -53,7 +54,8 @@ class SettingsDatabase {
                 allowInviteLogging INTEGER DEFAULT 0,  -- 0 for false, 1 for true
                 allowLogingMembersAdd INTEGER DEFAULT 0, -- 0 for false, 1 for true
                 mainVoiceChannelId TEXT DEFAULT '',
-                voiceCategoryId TEXT DEFAULT ''
+                voiceCategoryId TEXT DEFAULT '',
+                prefix TEXT DEFAULT '..'
             );
         `;
         this.db.exec(createTableQuery);
@@ -179,6 +181,7 @@ class SettingsDatabase {
                 console.log(`Настройки для сервера ${guildId} удалены из БД.`);
             } else {
                 console.log(`Сервер ${guildId} не найден в БД для удаления.`);
+                return false
             }
             return result;
         } catch (err) {

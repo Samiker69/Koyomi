@@ -26,7 +26,10 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand.setName('set-main-voice').setDescription('Установить основной голосовой канал для создания комнат')
                 .addChannelOption(option => option.setName('channel').setDescription('Основной войс').setRequired(true)))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+        .addSubcommand(subcommand =>
+            subcommand.setName('to-default').setDescription('Безвозвратно сбрасывает настройки сервера')
+        ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
 	async execute(interaction) {
         if (!(interaction.memberPermissions.has('ManageGuild') || interaction.memberPermissions.has('Administrator'))) {
@@ -109,6 +112,16 @@ module.exports = {
                     await interaction.reply('Не удалось изменить параметр.');
                 }
                 break;
+            case "to-default": {
+                //todo: должно вылезти подтверждение выполнения действия
+                const Promise = Sdb.removeServer(interaction.guild.id)
+                if (Promise) {
+                    Sdb.addServer(interaction.guild.id)
+                    await interaction.reply('Настройки сервера были сброшены!')
+                } else {
+                    await interaction.reply('Ничего не произошло, возможно, вашего сервера ещё не было в бд.')
+                }
+            }
 
             default:
                 break;
