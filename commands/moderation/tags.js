@@ -4,21 +4,10 @@ const {
     EmbedBuilder,
     MessageFlags
   } = require('discord.js');
-  const Database = require('better-sqlite3');
   const path = require('path');
-  
-  // Инициализация БД и таблицы
-  const dbPath = path.resolve(__dirname, '../../database/tags.db');
-  const db = new Database(dbPath);
-  db.pragma('journal_mode = "WAL"');
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS tags (
-      serverId TEXT NOT NULL,
-      name     TEXT NOT NULL,
-      content  TEXT NOT NULL,
-      PRIMARY KEY (serverId, name)
-    );
-  `);
+const TagsDB = require('../../functions/db/tags');
+
+const tags = new TagsDB(path.resolve(__dirname, '../../database/tags.db'))
   
   module.exports = {
     data: new SlashCommandBuilder()
@@ -91,22 +80,16 @@ const {
             const name = interaction.options.getString('name').toLowerCase();
             const content = interaction.options.getString('content');
   
-            const exists = db.prepare(
-              'SELECT 1 FROM tags WHERE serverId = ? AND name = ?'
-            ).get(guildId, name);
+            const exists = tags.add(guildId, name, content)
   
-            if (exists) {
-              return interaction.reply({
+            if (!exists) {
+              return await interaction.reply({
                 content: `Тег \`${name}\` уже существует.`,
                 flags: MessageFlags.Ephemeral
               });
             }
   
-            db.prepare(
-              'INSERT INTO tags(serverId, name, content) VALUES(?, ?, ?)'
-            ).run(guildId, name, content);
-  
-            return interaction.reply({
+            return await interaction.reply({
               content: `Тег \`${name}\` создан.`,
               flags: MessageFlags.Ephemeral
             });
@@ -114,18 +97,16 @@ const {
   
           case 'remove': {
             const name = interaction.options.getString('name').toLowerCase();
-            const result = db.prepare(
-              'DELETE FROM tags WHERE serverId = ? AND name = ?'
-            ).run(guildId, name);
+            const result = tags.remove(guildId, name)
   
-            if (result.changes === 0) {
-              return interaction.reply({
+            if (!result) {
+              return await interaction.reply({
                 content: `Тег \`${name}\` не найден.`,
                 flags: MessageFlags.Ephemeral
               });
             }
   
-            return interaction.reply({
+            return await interaction.reply({
               content: `Тег \`${name}\` удалён.`,
               flags: MessageFlags.Ephemeral
             });
@@ -134,18 +115,16 @@ const {
           case 'edit': {
             const name = interaction.options.getString('name').toLowerCase();
             const newContent = interaction.options.getString('content');
-            const result = db.prepare(
-              'UPDATE tags SET content = ? WHERE serverId = ? AND name = ?'
-            ).run(newContent, guildId, name);
+            const result = tags.edit(guildId, name, { content: newContent} )
   
-            if (result.changes === 0) {
-              return interaction.reply({
-                content: `Тег \`${name}\` не найден.`,
+            if (!result) {
+              return await interaction.reply({
+                content: `Тег \`${name}\` не найден или ничего не изменено.`,
                 flags: MessageFlags.Ephemeral
               });
             }
   
-            return interaction.reply({
+            return await interaction.reply({
               content: `Содержимое тега \`${name}\` обновлено.`,
               flags: MessageFlags.Ephemeral
             });
@@ -153,12 +132,10 @@ const {
   
           case 'get': {
             const name = interaction.options.getString('name').toLowerCase();
-            const row = db.prepare(
-              'SELECT content FROM tags WHERE serverId = ? AND name = ?'
-            ).get(guildId, name);
+            const row = tags.get(guildId, name)
   
             if (!row) {
-              return interaction.reply({
+              return await interaction.reply({
                 content: `Тег \`${name}\` не найден.`,
                 flags: MessageFlags.Ephemeral
               });
@@ -169,16 +146,16 @@ const {
               .setDescription(row.content)
               .setColor(0x9B59B6);
   
-            return interaction.reply({ embeds: [embed] });
+            return await interaction.reply({ embeds: [embed] });
           }
   
           case 'list': {
-            const rows = db.prepare(
+            const rows = tags.db.prepare(
               'SELECT name FROM tags WHERE serverId = ? ORDER BY name'
             ).all(guildId);
   
             if (rows.length === 0) {
-              return interaction.reply({
+              return await interaction.reply({
                 content: 'На этом сервере нет тегов.',
                 flags: MessageFlags.Ephemeral
               });
@@ -189,11 +166,11 @@ const {
               .setDescription(rows.map(r => `\`${r.name}\``).join(', '))
               .setColor(0x9B59B6);
   
-            return interaction.reply({ embeds: [embed] });
+            return await interaction.reply({ embeds: [embed] });
           }
   
           default:
-            return interaction.reply({
+            return await interaction.reply({
               content: 'Неизвестная подкоманда.',
               flags: MessageFlags.Ephemeral
             });

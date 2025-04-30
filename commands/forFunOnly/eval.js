@@ -44,7 +44,7 @@ const data = new SlashCommandBuilder()
             module.exports = {
                 data,
                 async execute(interaction) {
-                    if (!privateAccess.includes(interaction.user.id)) return await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral})
+                    if (!privateAccess.includes(interaction.user.id)) return await await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral})
 
                     switch (interaction.options.getSubcommand()) {
                         case "status": {
@@ -55,9 +55,9 @@ const data = new SlashCommandBuilder()
                                 //вот тут можно выбрать только статус(не в сети/в сети/итд) и текст активности, но нельзя выбрать активность(наблюдает, слушает итд)
                                 //поэтому пока что так. потом надо тут сделать либо доп сабкоманду как было раньше, но сделать так, чтобы текст активности не сбрасывался
                                 await interaction.client.user.setPresence({ activities: [{ name: nameactivity }], status: presence });
-                                await interaction.reply({content: `статус изменён. ${presence}, ${nameactivity}`, flags: MessageFlags.Ephemeral });
+                                await await interaction.reply({content: `статус изменён. ${presence}, ${nameactivity}`, flags: MessageFlags.Ephemeral });
                             } catch (error) {
-                                await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
+                                await await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
                                 console.log(error);
                             }
                             break;
@@ -68,12 +68,12 @@ const data = new SlashCommandBuilder()
                             const image = (attachment.url);
     
                             await interaction.client.user.setAvatar(image);
-                            await interaction.reply({content: `Аватар изменён`, flags: MessageFlags.Ephemeral});
+                            await await interaction.reply({content: `Аватар изменён`, flags: MessageFlags.Ephemeral});
                             break;
                         }
                     
                         default:
-                            await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                            await await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                             break;
                     }
                 }

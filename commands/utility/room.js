@@ -58,14 +58,14 @@ module.exports = {
     const channel = interaction.member.voice.channel;
 
     if (!channel) {
-      return interaction.reply({
+      return await interaction.reply({
         content: 'Вы не находитесь в голосовом канале.',
         flags: MessageFlags.Ephemeral
       });
     }
 
     if (channel.parentId !== cfg.voiceCategoryId || channel.id === cfg.mainVoiceChannelId) {
-      return interaction.reply({
+      return await interaction.reply({
         content: 'Это не динамическая комната.',
         flags: MessageFlags.Ephemeral
       });
@@ -73,7 +73,7 @@ module.exports = {
 
     // Проверяем, что пользователь — тот, кому бот выдал право ManageChannels при создании
     if (!interaction.member.permissionsIn(channel).has(PermissionFlagsBits.ManageChannels)) {
-      return interaction.reply({
+      return await interaction.reply({
         content: 'Только создатель этой комнаты может управлять её настройками.',
         flags: MessageFlags.Ephemeral
       });
@@ -84,7 +84,7 @@ module.exports = {
         case 'rename': {
           const newName = interaction.options.getString('name');
           await channel.setName(newName);
-          return interaction.reply({
+          return await interaction.reply({
             content: `Название комнаты изменено на «${newName}».`,
             flags: MessageFlags.Ephemeral
           });
@@ -92,7 +92,7 @@ module.exports = {
         case 'limit': {
           const num = interaction.options.getInteger('number');
           await channel.setUserLimit(num);
-          return interaction.reply({
+          return await interaction.reply({
             content: `Лимит участников установлен: ${num}.`,
             flags: MessageFlags.Ephemeral
           });
@@ -102,7 +102,7 @@ module.exports = {
             Connect: false,
             ViewChannel: false
           });
-          return interaction.reply({
+          return await interaction.reply({
             content: 'Комната закрыта для всех, кроме вас.',
             flags: MessageFlags.Ephemeral
           });
@@ -112,7 +112,7 @@ module.exports = {
             Connect: true,
             ViewChannel: true
           });
-          return interaction.reply({
+          return await interaction.reply({
             content: 'Комната открыта для всех.',
             flags: MessageFlags.Ephemeral
           });
@@ -128,7 +128,7 @@ module.exports = {
               ViewChannel: true
             });
           }
-          return interaction.reply({
+          return await interaction.reply({
             content: 'Комната сделана приватной для указанной роли.',
             flags: MessageFlags.Ephemeral
           });
@@ -138,20 +138,20 @@ module.exports = {
             Connect: true,
             ViewChannel: true
           });
-          return interaction.reply({
+          return await interaction.reply({
             content: 'Комната сделана публичной.',
             flags: MessageFlags.Ephemeral
           });
         }
         default:
-          return interaction.reply({
+          return await interaction.reply({
             content: 'Неизвестная подкоманда.',
             flags: MessageFlags.Ephemeral
           });
       }
     } catch (err) {
       console.error('[ERROR] room command:', err);
-      return interaction.reply({
+      return await interaction.reply({
         content: 'Произошла ошибка при выполнении команды.',
         flags: MessageFlags.Ephemeral
       });

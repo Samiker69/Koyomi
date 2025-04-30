@@ -3,22 +3,17 @@ const path = require('path');
 
 class TagsDB {
     /**
-     * @param {string} dbName Имя файла базы данных (например, 'configs.db')
+     * @param {string} dbName Имя файла базы данных (например, 'tags.db')
      */
     constructor(dbName = 'tags.db') {
-        // Определяем путь к файлу БД относительно текущего скрипта
-        // Можно также использовать абсолютный путь
-        const dbPath = path.resolve(__dirname, dbName);
-        console.log(`[DB] Инициализация базы данных по пути: ${dbPath}`);
-
         // Инициализация соединения с БД
         try {
-            this.db = new Database(dbPath, { /* verbose: console.log */ });
+            this.db = new Database(dbName, { /* verbose: console.log */ });
             this.db.pragma('journal_mode = WAL');
             this._initDb();
         } catch (error) {
             console.error('[DB] Ошибка при инициализации базы данных:', error);
-            throw error; // Пробрасываем ошибку дальше, чтобы приложение знало о проблеме
+            throw error;
         }
     }
 
@@ -28,19 +23,20 @@ class TagsDB {
      */
     _initDb() {
         const createTableQuery = `
-            CREATE TABLE IF NOT EXISTS server_configs (
+            CREATE TABLE IF NOT EXISTS tags (
                 serverId TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
-                description TEXT,
+                content TEXT,
                 disallowedChannelsId TEXT DEFAULT '',
-                allowedChannelId TEXT DEFAULT ''
+                allowedChannelId TEXT DEFAULT '',
+                PRIMARY KEY (serverId, name)
             );
         `;
         try {
             this.db.exec(createTableQuery);
-            console.log('[DB] Таблица server_configs успешно проверена/создана.');
+            console.log('[DB] Таблица tags успешно проверена/создана.');
         } catch (error) {
-            console.error('[DB] Ошибка при создании таблицы server_configs:', error);
+            console.error('[DB] Ошибка при создании таблицы tags:', error);
             throw error;
         }
     }
@@ -104,10 +100,10 @@ class TagsDB {
      * @param {Array<string|number>} [allowedChannelId=[]] Массив ID разрешенных каналов.
      * @returns {boolean} true в случае успеха, false в случае ошибки.
      */
-    setConfig(serverId, name, description, disallowedChannelsId = [], allowedChannelId = []) {
+    add(serverId, name, description, disallowedChannelsId = [], allowedChannelId = []) {
         const insertQuery = `
-            INSERT OR REPLACE INTO server_configs
-            (serverId, name, description, disallowedChannelsId, allowedChannelId)
+            INSERT OR REPLACE INTO tags
+            (serverId, name, content, disallowedChannelsId, allowedChannelId)
             VALUES (?, ?, ?, ?, ?)
         `;
         try {
@@ -132,11 +128,11 @@ class TagsDB {
      * @param {string} serverId Идентификатор сервера.
      * @returns {object|null} Объект конфигурации или null, если не найден.
      */
-     getConfig(serverId) {
-        const selectQuery = 'SELECT * FROM server_configs WHERE serverId = ?';
+     get(serverId, name) {
+        const selectQuery = 'SELECT content FROM tags WHERE serverId = ? AND name = ?';
         try {
             const stmt = this.db.prepare(selectQuery);
-            const row = stmt.get(serverId);
+            const row = stmt.get(serverId, name);
             return this._formatOutput(row);
         } catch (error) {
             console.error(`[DB] Ошибка при получении конфигурации для serverId ${serverId}:`, error);
@@ -150,13 +146,13 @@ class TagsDB {
      * Можно передавать только те поля, которые нужно изменить.
      *
      * @param {string} serverId Идентификатор сервера для обновления.
-     * @param {object} updates Объект с полями для обновления (например, { name: 'Новое имя', description: 'Новое описание' }).
-     *                         Может содержать name, description, disallowedChannelsId, allowedChannelId.
+     * @param {object} updates Объект с полями для обновления (например, { name: 'Новое имя', content: 'Новое описание' }).
+     *                         Может содержать name, content, disallowedChannelsId, allowedChannelId.
      * @returns {boolean} true если обновление прошло успешно (и запись существовала), false иначе.
      */
-    updateConfig(serverId, updates) {
+    edit(serverId, name, updates) {
         // Проверяем, есть ли что обновлять
-        const validKeys = ['name', 'description', 'disallowedChannelsId', 'allowedChannelId'];
+        const validKeys = ['content', 'disallowedChannelsId', 'allowedChannelId'];
         const keysToUpdate = Object.keys(updates).filter(key => validKeys.includes(key) && updates[key] !== undefined);
 
         if (keysToUpdate.length === 0) {
@@ -177,12 +173,12 @@ class TagsDB {
         });
 
         // Добавляем serverId в конец параметров для WHERE клаузы
-        params.push(serverId);
+        params.push(serverId, name);
 
         const updateQuery = `
-            UPDATE server_configs
+            UPDATE tags
             SET ${setClauses.join(', ')}
-            WHERE serverId = ?
+            WHERE serverId = ? AND name = ?
         `;
 
         try {
@@ -197,16 +193,15 @@ class TagsDB {
     }
 
     /**
-     * Удаляет конфигурацию сервера по ID.
+     * Удаляет тег
      * @param {string} serverId Идентификатор сервера для удаления.
      * @returns {boolean} true если удаление прошло успешно (и запись существовала), false иначе.
      */
-    deleteConfig(serverId) {
-        const deleteQuery = 'DELETE FROM server_configs WHERE serverId = ?';
+    remove(serverId, name) {
+        const deleteQuery = 'DELETE FROM tags WHERE serverId = ? AND name = ?';
         try {
             const stmt = this.db.prepare(deleteQuery);
-            const result = stmt.run(serverId);
-            // result.changes > 0 означает, что строка была найдена и удалена
+            const result = stmt.run(serverId, name);
             return result.changes > 0;
         } catch (error) {
             console.error(`[DB] Ошибка при удалении конфигурации для serverId ${serverId}:`, error);
@@ -229,8 +224,8 @@ class TagsDB {
      * Получает все конфигурации. Полезно для отладки или администрирования.
      * @returns {Array<object>} Массив всех конфигураций.
      */
-    getAllConfigs() {
-        const selectAllQuery = 'SELECT * FROM server_configs';
+    getAllTags() {
+        const selectAllQuery = 'SELECT * FROM tags';
         try {
             const stmt = this.db.prepare(selectAllQuery);
             const rows = stmt.all();

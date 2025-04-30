@@ -10,7 +10,7 @@ module.exports = {
             const page = parseInt(pageStr, 10);
 
             if (interaction.user.id !== ownerId) {
-                return interaction.reply({ content: 'Это не ваша галерея!', flags: MessageFlags.Ephemeral });
+                return await interaction.reply({ content: 'Это не ваша галерея!', flags: MessageFlags.Ephemeral });
             }
 
             let newPage = page;
