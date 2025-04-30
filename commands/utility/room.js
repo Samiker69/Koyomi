@@ -4,6 +4,7 @@ const Settings = require('../../functions/db/settings');
 const Sdb = new Settings('./database/settings.db');
 
 module.exports = {
+  cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('room')
     .setDescription('Управление вашей динамической голосовой комнатой')

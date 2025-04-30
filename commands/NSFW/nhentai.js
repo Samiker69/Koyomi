@@ -7,11 +7,13 @@ const {
   const { fetchDoujin } = require('../../functions/fetchDoujin');
   
   module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder()
       .setName('hentai')
       .setDescription('Случайная галерея с nhentai'),
   
     async execute(interaction) {
+      if (!interaction.channel.nsfw) return await interaction.reply({content: 'Это не NSFW канал, чертов дрочун малолетний', flags: MessageFlags.Ephemeral});
       await interaction.deferReply();
   
       const id = Math.floor(Math.random() * 500_000) + 1;

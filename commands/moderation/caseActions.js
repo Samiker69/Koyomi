@@ -52,7 +52,7 @@ const data = new SlashCommandBuilder()
 
 
     module.exports = {
-    cooldown: 5,
+    cooldown: 3,
     data,
     async execute(interaction) {
         if (!(interaction.memberPermissions.has('BanMembers') || interaction.memberPermissions.has('Administrator'))) {

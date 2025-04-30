@@ -8,6 +8,7 @@ const {
   } = require('discord.js');
   
   module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
       .setName('help')
       .setDescription('Показать список команд с пагинацией и учётом подкоманд'),

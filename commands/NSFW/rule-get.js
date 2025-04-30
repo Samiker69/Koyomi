@@ -3,6 +3,7 @@ const { changePage } = require('../../functions/changePage');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 module.exports = {
+    cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('getrule')
         .setNSFW(false)

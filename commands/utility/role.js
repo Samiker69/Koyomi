@@ -32,7 +32,7 @@ const data = new SlashCommandBuilder()
             //    .addRoleOption(option => option.setName('role').setDescription('Select role or text role id').setRequired(true))).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
             module.exports = {
-                cooldown: 10,
+                cooldown: 5,
                 data,
                 async execute(interaction) {
                     switch (interaction.options.getSubcommand()) {

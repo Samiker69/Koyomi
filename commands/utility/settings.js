@@ -4,7 +4,7 @@ const settings = require('../../functions/db/settings')
 const Sdb = new settings('./database/settings.db')
 
 module.exports = {
-	cooldown: 10,
+	cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('settings')
 		.setDescription('Изменить настройки бота')

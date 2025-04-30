@@ -9,6 +9,7 @@ const {
 } = require('discord.js');
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName('tictactoe')
         .setDescription('Игра в Крестики-нолики против другого участника')

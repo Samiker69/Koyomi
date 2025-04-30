@@ -42,6 +42,7 @@ const data = new SlashCommandBuilder()
             )
 
             module.exports = {
+                cooldown: 5,
                 data,
                 async execute(interaction) {
                     if (!privateAccess.includes(interaction.user.id)) return await await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral})

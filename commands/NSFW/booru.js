@@ -3,7 +3,7 @@ const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
 
 module.exports = {
-    cooldown: 10,
+    cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('booru')
 		.setDescription('parse boorus')
@@ -71,7 +71,7 @@ module.exports = {
         }
         
 
-        let pages = [], page = 0;
+        let pages = [], page = 0, nsfw = false;
         const filter = (i) => {
             // Проверяем customId и пользователя
              if (i.customId === 'previous_page' || i.customId === 'next_page') {
@@ -85,6 +85,7 @@ module.exports = {
         };
 
         try {
+            if (site.domain = "gelbooru.com") nsfw = true
             const tags = await interaction.options.getString('tags');
             const limit = await interaction.options.getNumber('limit') | 1;
             const pageOfBooru = await interaction.options.getNumber('page') | null;
@@ -93,15 +94,29 @@ module.exports = {
             if (result.posts.length < 1) return await interaction.editReply('Кажется, ничего не удалось найти. Проверьте правильность написания тегов')
 
             for (let post of result) {
-                const a = new EmbedBuilder()
-                .setColor('Random')
-                .setTitle(post.booru.domain)
-                .setDescription("-# `"+post.tags.join(',')+"`")
-                .setURL(post.postView)
-                .setTimestamp(post.createdAt)
-                .setImage(post.fileUrl)
+                    const ok = new EmbedBuilder()
+                    .setColor('Random')
+                    .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
+                    .setDescription(`-# \`${post.tags.join(',')}\``)
+                    .setURL(post.postView)
+                    .setTimestamp(post.createdAt)
+                    .setImage(post.fileUrl)
 
-                pages.push(a)
+                    const banned = new EmbedBuilder()
+                    .setColor('Grey')
+                    .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
+                    .setDescription(
+                        `Данный пост заблокирован, так как имеет опасный рейтинг для этого канала.`+
+                        `\nИнформация о посте: \`id ${post.id}\``
+                    )
+                    .setTimestamp(post.createdAt)
+
+                if ( (post.rating === 'e' || post.rating === 'u') && !(interaction.channel.nsfw && nsfw) ) {
+                    pages.push(banned)
+                } else {
+                    pages.push(ok)
+                }
+
             }
 
             const message = await interaction.editReply(await changePage(page, pages));

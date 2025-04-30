@@ -62,7 +62,7 @@ const data = new SlashCommandBuilder()
     ).setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     module.exports = {
-        cooldown: 5,
+        cooldown: 3,
         data,
         async execute(interaction) {
             if (!(interaction.memberPermissions.has('ManageMessages') || interaction.memberPermissions.has('Administrator'))) {
