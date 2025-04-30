@@ -15,7 +15,7 @@ const {
     async execute(interaction) {
       const cmds = Array.from(interaction.client.commands.values());
       if (cmds.length === 0) {
-        return interaction.reply({ content: 'Команды не найдены.' });
+        return await interaction.reply({ content: 'Команды не найдены.' });
       }
   
       const pageSize = 4;

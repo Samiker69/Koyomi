@@ -26,7 +26,7 @@ module.exports = {
 
   async execute(interaction) {
     if (!config.privateAccess.includes(interaction.user.id)) {
-      return interaction.reply({
+      return await interaction.reply({
         content: 'У вас нет доступа к этой команде.',
         flags: MessageFlags.Ephemeral
       });

@@ -29,7 +29,7 @@ module.exports = {
 
             if (now < expirationTime) {
                 const expiredTimestamp = Math.round(expirationTime / 1000);
-                return interaction.reply({
+                return await interaction.reply({
                     content: `Не так быстро! вы слишком часто использовали \`${command.data.name}\`. Ты снова сможешь использовать её <t:${expiredTimestamp}:R>.`,
                     flags: MessageFlags.Ephemeral
                 });

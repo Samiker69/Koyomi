@@ -59,7 +59,7 @@ module.exports = {
           { name: 'Роли',               value: roles,                                 inline: false }
         );
 
-      return interaction.reply({ embeds: [embed] });
+      return await interaction.reply({ embeds: [embed] });
     }
 
     if (sub === 'serverinfo') {
@@ -81,9 +81,9 @@ module.exports = {
           { name: 'Локаль',      value: guild.preferredLocale,                 inline: true }
         );
 
-      return interaction.reply({ embeds: [embed] });
+      return await interaction.reply({ embeds: [embed] });
     }
 
-    return interaction.reply({ content: 'Неизвестная подкоманда.', flags: MessageFlags.Ephemeral });
+    return await interaction.reply({ content: 'Неизвестная подкоманда.', flags: MessageFlags.Ephemeral });
   }
 };
