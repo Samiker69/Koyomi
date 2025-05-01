@@ -1,5 +1,4 @@
-const { Events, MessageFlags, Collection, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { fetchDoujin } = require('../functions/fetchDoujin');
+const { Events, MessageFlags, Collection } = require('discord.js');
 
 module.exports = {
     name: Events.InteractionCreate,

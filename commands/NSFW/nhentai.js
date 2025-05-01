@@ -2,7 +2,8 @@ const {
     SlashCommandBuilder,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
+    MessageFlags
   } = require('discord.js');
   const { fetchDoujin } = require('../../functions/fetchDoujin');
   

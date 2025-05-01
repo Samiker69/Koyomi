@@ -1,97 +1,79 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType, MessageFlags } = require('discord.js');
 const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
+const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
+const {nsfw} = require('../../locales/descriptions/nsfw')
 
 module.exports = {
     cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('booru')
-		.setDescription('parse boorus')
-        .addSubcommand(sc=>
-            sc.setName('safebooru').setDescription('parse safebooru.org')
+		.setDescription(nsfw.booru.description.ru)
+        .setDescriptionLocalizations(nsfw.booru.description)
+        .addSubcommand(sub =>
+            sub.setName('search')
+            .setDescription(nsfw.booru.search.description.ru)
+            .setDescriptionLocalizations(nsfw.booru.search.description)
+            .addStringOption(o =>
+                o.setName('site')
+                .setDescription(nsfw.booru.options.site.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.site.description)
+                .setAutocomplete(true)
+                .setRequired(true)
+            )
             .addStringOption(o =>
                 o.setName('tags')
-                .setDescription('Теги. Между тегами оставляйте только пробелы!')
+                .setDescription(nsfw.booru.options.tags.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.tags.description)
                 .setRequired(true)
             )
             .addNumberOption(o => 
                 o.setName('limit')
-                .setDescription('Сколько всего будет артов')
+                .setDescription(nsfw.booru.options.limit.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.limit.description)
                 .setMaxValue(100)
                 .setMinValue(1)
             )
             .addNumberOption(o => 
                 o.setName('page')
-                .setDescription('Страница')
+                .setDescription(nsfw.booru.options.page.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.page.description)
                 .setMinValue(0)
             )
         )
-        .addSubcommand(sc=>
-            sc.setName('gelbooru').setDescription('parse gelbooru.com')
+        .addSubcommand(sub =>
+            sub.setName('random')
+            .setDescription(nsfw.booru.random.description.ru)
+            .setDescriptionLocalizations(nsfw.booru.random.description)
             .addStringOption(o =>
-                o.setName('tags')
-                .setDescription('Теги. Между тегами оставляйте только пробелы!')
+                o.setName('site')
+                .setDescription(nsfw.booru.options.site.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.site.description)
+                .setAutocomplete(true)
                 .setRequired(true)
             )
-            .addNumberOption(o => 
-                o.setName('limit')
-                .setDescription('Сколько всего будет артов')
-                .setMaxValue(100)
-                .setMinValue(1)
-            )
-            .addNumberOption(o => 
-                o.setName('page')
-                .setDescription('Страница')
-                .setMinValue(0)
+            .addStringOption(o =>
+                o.setName('tags')
+                .setDescription(nsfw.booru.options.tags.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.tags.description)
             )
         )
-        .addSubcommand(sc=>
-            sc.setName('danbooru').setDescription('parse danbooru.donmai.us')
-            .addStringOption(o =>
-                o.setName('tags')
-                .setDescription('Теги. Между тегами оставляйте только пробелы!')
-                .setRequired(true)
-            )
-            .addNumberOption(o => 
-                o.setName('limit')
-                .setDescription('Сколько всего будет артов')
-                .setMaxValue(100)
-                .setMinValue(1)
-            )
-            .addNumberOption(o => 
-                o.setName('page')
-                .setDescription('Страница')
-                .setMinValue(0)
-            )
-        ),
+,
+    async autocomplete(interaction) {
+        const focusedOption = interaction.options.getFocused(true); // Получаем опцию, на которой сфокусирован пользователь
+        let choices = [];
+
+        if (focusedOption.name === 'site') {
+            const focusedValue = focusedOption.value.toLowerCase();
+            choices = uniqueSiteChoices
+                .filter(choice => choice.name.toLowerCase().includes(focusedValue)) // Фильтруем по вводу пользователя
+                .slice(0, 25); // Discord показывает не более 25 подсказок
+        }
+        await interaction.respond(choices);
+    },
 
 	async execute(interaction) {
-        //if (!interaction.channel.nsfw) return await interaction.reply({ content: 'Эта команда может быть использована только в NSFW каналах!', flags: MessageFlags.Ephemeral})
         await interaction.deferReply();
-
-        let site;
-        switch (await interaction.options.getSubcommand()) {
-            case "safebooru": {
-                site = booru.forSite('sb')
-                break;
-            }
-                
-            case "gelbooru": {
-                site = booru.forSite('gb')
-                break;
-            }
-
-            case "danbooru": {
-                site = booru.forSite('db')
-                break;
-            }
-        
-            default:
-                await interaction.editReply('Что-то пошло не так... Выбран поисковик: safebooru')
-                site = booru.forSite('sb')
-                break;
-        }
-        
 
         let pages = [], page = 0, nsfw = false;
         const filter = (i) => {
@@ -107,12 +89,20 @@ module.exports = {
         };
 
         try {
-            if (site.domain === "gelbooru.com" || site.domain === "danbooru.donmai.us`") nsfw = true
+            const siteOfbooru = await interaction.options.getString('site');
             const tags = await interaction.options.getString('tags');
             const limit = await interaction.options.getNumber('limit') | 1;
             const pageOfBooru = await interaction.options.getNumber('page') | null;
 
-            const result = await site.search(tags.split(' '), { limit: limit, page: pageOfBooru });
+            const canonicalSite = siteLookup.get(siteOfbooru.toLowerCase());
+            if (!canonicalSite) return await interaction.reply({content: `Не удалось найти ${canonicalSite}. Убедитесь, что вы ввели верное название`, flags: MessageFlags.Ephemeral});
+            const site = booru.forSite(canonicalSite);
+            let result, rndtag = []
+            if (tags) rndtag = tags
+
+            if (interaction.options.getSubcommand() === "search") result = await site.search(tags.split(' '), { limit: limit, page: pageOfBooru });
+            else if (interaction.options.getSubcommand() === "random") result = await site.search(rndtag, { random: true })
+
             if (result.posts.length < 1) return await interaction.editReply('Кажется, ничего не удалось найти. Проверьте правильность написания тегов')
 
             for (let post of result) {
@@ -133,7 +123,7 @@ module.exports = {
                     )
                     .setTimestamp(post.createdAt)
 
-                if ( (post.rating === 'e' || post.rating === 'u') && !(interaction.channel.nsfw && nsfw) ) {
+                if ( (post.rating === 'u' || post.rating === 'e' || post.rating === 'q') && !interaction.channel.nsfw ) {
                     pages.push(banned)
                 } else {
                     pages.push(ok)

@@ -5,7 +5,28 @@ const nsfw = {
       "ru": "parse boorus",
       "uk": "Аналізувати booru-сайти"
     },
+    "search": {
+      "description": {
+          "en-US": "Search boorus",
+          "ru": "Поиск бору",
+          "uk": "Пошук бору"
+        }
+    },
+    "random": {
+      "description": {
+          "en-US": "Random booru",
+          "ru": "Рандомный бору",
+          "uk": "Рандомний бору"
+        }
+    },
     "options": {
+      "site": {
+        "description": {
+          "en-US": "Site to be used for the search",
+          "ru": "Сайт, который будет использоваться для поиска",
+          "uk": "Сайт, який буде використовуватися для пошуку"
+        }
+      },
       "tags": {
         "description": {
           "en-US": "Tags (separated by space)",
