@@ -1,19 +1,24 @@
 const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus } = require('discord.js');
 const { privateAccess } = require('../../config.json');
+const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 
 const data = new SlashCommandBuilder()
 		.setName('eval')
-		.setDescription('developer only')
+		.setDescription("ъ")
             .addSubcommand(subcommand =>
                 subcommand.setName('status')
-                .setDescription('set status')
+                .setDescription(forFunOnly.eval.description['en-US'])
+                .setDescriptionLocalizations(forFunOnly.eval.description)
                 .addStringOption(option => 
-                    option.setName('nameactivity')
-                    .setDescription('set name for actiity').setRequired(true)
+                    option.setName('name-activity')
+                    .setDescription(forFunOnly.eval.options.activity.description['en-US'])
+                    .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                    .setRequired(true)
                 )
                 .addStringOption(option => 
                     option.setName('presence')
-                    .setDescription('select action')
+                    .setDescription(forFunOnly.eval.options.activity.description['en-US'])
+                    .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
                     .addChoices(
                         {name: 'online', value: PresenceUpdateStatus.Online},
                         {name: 'idle', value: PresenceUpdateStatus.Idle},
@@ -25,7 +30,7 @@ const data = new SlashCommandBuilder()
                     .setDescription('select action')
                     .addChoices(
                         {name: 'wathing', value: 'setwathing'}, 
-                        {name: 'listening', value: 'setlistening'},   мне крайне лень реализовывать это. см 55-56 строки
+                        {name: 'listening', value: 'setlistening'},
                         {name: 'competing', value: 'setcompeting'}
                     )
                 )*/
@@ -33,10 +38,11 @@ const data = new SlashCommandBuilder()
 
             .addSubcommand(subcommand =>
                 subcommand.setName('avatar')
-                .setDescription('set avatar')
+                .setDescription("Change bot avatar")
                 .addAttachmentOption(option =>
                     option.setName('file')
-                    .setDescription('select file')
+                    .setDescription(forFunOnly.eval.options.avatar.description['en-US'])
+                    .setDescriptionLocalizations(forFunOnly.eval.options.avatar.description)
                     .setRequired(true)
                 )
             )

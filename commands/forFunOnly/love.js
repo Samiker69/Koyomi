@@ -7,15 +7,15 @@ module.exports = {
         .setDescription('Подсчитывает процент любви между двумя участниками')
         .addUserOption(opt =>
             opt
-                .setName('user1')
-                .setDescription('Первый участник')
-                .setRequired(true)
+            .setName('user1')
+            .setDescription('Первый участник')
+            .setRequired(true)
         )
         .addUserOption(opt =>
             opt
-                .setName('user2')
-                .setDescription('Второй участник')
-                .setRequired(true)
+            .setName('user2')
+            .setDescription('Второй участник')
+            .setRequired(true)
         ),
 
     async execute(interaction) {
