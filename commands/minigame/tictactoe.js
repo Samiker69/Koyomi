@@ -7,6 +7,8 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
+
+const activeGames = new Set();
 const {minigame} = require('../../locales/descriptions/minigame')
 
 module.exports = {
@@ -26,12 +28,29 @@ module.exports = {
         const playerX = interaction.user;
         const playerO = interaction.options.getUser('opponent');
 
+        if (playerO.bot) {
+            return interaction.reply({
+                content: 'Нельзя играть с ботами!',
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
         if (playerX.id === playerO.id) {
             return interaction.reply({
                 content: 'Нельзя играть с самим собой!',
                 flags: MessageFlags.Ephemeral
             });
         }
+
+        if (activeGames.has(playerX.id) || activeGames.has(playerO.id)) {
+            return interaction.reply({
+                content: 'У одного из игроков уже есть активная игра.',
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        activeGames.add(playerX.id);
+        activeGames.add(playerO.id);
 
         const confirmRow = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
@@ -67,25 +86,27 @@ module.exports = {
                     flags: MessageFlags.Ephemeral
                 });
             }
-
             if (btn.customId === 'decline') {
                 confirmCollector.stop();
+                activeGames.delete(playerX.id);
+                activeGames.delete(playerO.id);
                 return interaction.editReply({
                     content: 'Вызов отклонён.',
                     embeds: [],
                     components: []
                 });
             }
-
             if (btn.customId === 'accept') {
                 confirmCollector.stop();
                 startGame();
             }
         });
 
-        confirmCollector.on('end', async (_, reason) => {
+        confirmCollector.on('end', (_, reason) => {
             if (reason === 'time') {
-                await interaction.editReply({
+                activeGames.delete(playerX.id);
+                activeGames.delete(playerO.id);
+                interaction.editReply({
                     content: 'Время на принятие истекло.',
                     embeds: [],
                     components: []
@@ -138,7 +159,6 @@ module.exports = {
                             .setStyle(ButtonStyle.Danger)
                     ));
                 }
-
                 return rows;
             };
 
@@ -160,18 +180,17 @@ module.exports = {
 
             const checkWin = () => {
                 const lines = [
-                    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-                    [0, 4, 8], [2, 4, 6]
+                    [0,1,2],[3,4,5],[6,7,8],
+                    [0,3,6],[1,4,7],[2,5,8],
+                    [0,4,8],[2,4,6]
                 ];
-                return lines.some(([a, b, c]) =>
+                return lines.some(([a,b,c]) =>
                     board[a] !== '⬜' && board[a] === board[b] && board[a] === board[c]
                 );
             };
 
             collector.on('collect', async btn => {
                 const user = btn.user;
-
                 if (btn.customId === 'surrender') {
                     if (user.id !== players[turn].id) {
                         return btn.reply({
@@ -179,12 +198,9 @@ module.exports = {
                             flags: MessageFlags.Ephemeral
                         });
                     }
-                    embed.setDescription(`🏳️ ${user} сдался!\nПобедил ${players[1 - turn]}!`);
+                    embed.setDescription(`🏳️ ${user} сдался!\nПобедил ${players[1-turn]}!`);
                     collector.stop('surrender');
-                    return btn.update({
-                        embeds: [embed],
-                        components: disableBoard()
-                    });
+                    return btn.update({ embeds:[embed], components:disableBoard() });
                 }
 
                 if (user.id !== players[turn].id) {
@@ -193,7 +209,6 @@ module.exports = {
                         flags: MessageFlags.Ephemeral
                     });
                 }
-
                 const idx = parseInt(btn.customId);
                 if (board[idx] !== '⬜') {
                     return btn.reply({
@@ -201,7 +216,6 @@ module.exports = {
                         flags: MessageFlags.Ephemeral
                     });
                 }
-
                 board[idx] = emojis[turn];
                 if (checkWin()) {
                     embed.setDescription(`Победил ${players[turn]}!`);
@@ -213,21 +227,17 @@ module.exports = {
                     turn = 1 - turn;
                     embed.setDescription(`Ходит: ${players[turn]}`);
                 }
-
-                await btn.update({
-                    embeds: [embed],
-                    components: getBoardComponents()
-                });
+                await btn.update({ embeds:[embed], components:getBoardComponents() });
             });
 
             collector.on('end', async (_, reason) => {
+                activeGames.delete(playerX.id);
+                activeGames.delete(playerO.id);
+
                 if (reason === 'time') {
                     embed.setDescription('Время вышло. Игра окончена.');
                 }
-                await msg.edit({
-                    embeds: [embed],
-                    components: disableBoard()
-                });
+                await msg.edit({ embeds:[embed], components:disableBoard() });
             });
 
             function disableBoard() {
