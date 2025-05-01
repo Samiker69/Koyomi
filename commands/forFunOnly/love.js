@@ -1,20 +1,24 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('love')
-        .setDescription('Подсчитывает процент любви между двумя участниками')
+        .setDescription(forFunOnly.love.description.ru)
+        .setDescriptionLocalizations(forFunOnly.love.description)
         .addUserOption(opt =>
             opt
             .setName('user1')
-            .setDescription('Первый участник')
+            .setDescription(forFunOnly.love.options.user1.description.ru)
+            .setDescriptionLocalizations(forFunOnly.love.options.user1.description)
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
             .setName('user2')
-            .setDescription('Второй участник')
+            .setDescription(forFunOnly.love.options.user2.description.ru)
+            .setDescriptionLocalizations(forFunOnly.love.options.user2.description)
             .setRequired(true)
         ),
 

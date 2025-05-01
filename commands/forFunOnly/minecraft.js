@@ -1,15 +1,18 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fetch = require('node-fetch');
+const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('minecraft')
-    .setDescription('Предоставляет информацию о игроке Minecraft')
+    .setDescription(forFunOnly.minecraft.description.ru)
+    .setDescriptionLocalizations(forFunOnly.minecraft.description)
     .addStringOption(opt =>
       opt
         .setName('player')
-        .setDescription('Имя игрока Minecraft')
+        .setDescription(forFunOnly.minecraft.options.player.description.ru)
+        .setDescriptionLocalizations(forFunOnly.minecraft.options.player.description)
         .setRequired(true)
     ),
 

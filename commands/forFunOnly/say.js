@@ -1,26 +1,31 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const config = require('../../config.json');
+const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('say')
-    .setDescription('Позволяет боту переслать ваше сообщение в канал от своего имени')
+    .setDescription(forFunOnly.say.description.ru)
+    .setDescriptionLocalizations(forFunOnly.say.description)
     .addStringOption(opt =>
       opt
         .setName('text')
-        .setDescription('Текст сообщения для отправки')
+        .setDescription(forFunOnly.say.options.text.description.ru)
+        .setDescriptionLocalizations(forFunOnly.say.options.text.description)
         .setRequired(true)
     )
     .addAttachmentOption(opt =>
       opt
         .setName('image')
-        .setDescription('Прикрепить изображение к сообщению')
+        .setDescription(forFunOnly.say.options.image.description.ru)
+        .setDescriptionLocalizations(forFunOnly.say.options.image.description)
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
         .setName('reply_to')
-        .setDescription('ID или ссылка на сообщение для ответа')
+        .setDescription(forFunOnly.say.options.reply_to.description.ru)
+        .setDescriptionLocalizations(forFunOnly.say.options.reply_to.description)
         .setRequired(false)
     ),
 

@@ -1,15 +1,15 @@
 const forFunOnly = {
   "eval": {
     "description": {
-      "en-US": "Evaluate arbitrary code (developer only)",
-      "ru": "ъ",
-      "uk": "Оцінити довільний код (тільки для розробника)"
+      "en-US": "(developer only)",
+      "ru": "(Только для разработчиков)",
+      "uk": "(тільки для розробника)"
     },
     "options": {
       "activity": {
         "description": {
           "en-US": "Select action",
-          "ru": "select action",
+          "ru": "Выберите действие",
           "uk": "Виберіть дію"
         }
       },

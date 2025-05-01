@@ -7,17 +7,17 @@ const data = new SlashCommandBuilder()
 		.setDescription("ъ")
             .addSubcommand(subcommand =>
                 subcommand.setName('status')
-                .setDescription(forFunOnly.eval.description['en-US'])
+                .setDescription(forFunOnly.eval.description.ru)
                 .setDescriptionLocalizations(forFunOnly.eval.description)
                 .addStringOption(option => 
                     option.setName('name-activity')
-                    .setDescription(forFunOnly.eval.options.activity.description['en-US'])
+                    .setDescription(forFunOnly.eval.options.activity.description.ru)
                     .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
                     .setRequired(true)
                 )
                 .addStringOption(option => 
                     option.setName('presence')
-                    .setDescription(forFunOnly.eval.options.activity.description['en-US'])
+                    .setDescription(forFunOnly.eval.options.activity.description.ru)
                     .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
                     .addChoices(
                         {name: 'online', value: PresenceUpdateStatus.Online},
@@ -41,7 +41,7 @@ const data = new SlashCommandBuilder()
                 .setDescription("Change bot avatar")
                 .addAttachmentOption(option =>
                     option.setName('file')
-                    .setDescription(forFunOnly.eval.options.avatar.description['en-US'])
+                    .setDescription(forFunOnly.eval.options.avatar.description.ru)
                     .setDescriptionLocalizations(forFunOnly.eval.options.avatar.description)
                     .setRequired(true)
                 )
