@@ -106,22 +106,22 @@ module.exports = {
             if (result.posts.length < 1) return await interaction.editReply('Кажется, ничего не удалось найти. Проверьте правильность написания тегов')
 
             for (let post of result) {
-                    const ok = new EmbedBuilder()
-                    .setColor('Random')
-                    .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
-                    .setDescription(`-# \`${post.tags.join(',')}\``)
-                    .setURL(post.postView)
-                    .setTimestamp(post.createdAt)
-                    .setImage(post.fileUrl)
+                const ok = new EmbedBuilder()
+                .setColor('Random')
+                .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
+                .setDescription(`-# \`${post.tags.join(',')}\``)
+                .setURL(post.postView)
+                .setTimestamp(post.createdAt)
+                .setImage(post.fileUrl)
 
-                    const banned = new EmbedBuilder()
-                    .setColor('Grey')
-                    .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
-                    .setDescription(
-                        `Данный пост заблокирован, так как имеет опасный рейтинг для этого канала.`+
-                        `\nИнформация о посте: \`id ${post.id}\``
-                    )
-                    .setTimestamp(post.createdAt)
+                const banned = new EmbedBuilder()
+                .setColor('Grey')
+                .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
+                .setDescription(
+                    `Данный пост заблокирован, так как имеет опасный рейтинг для этого канала.`+
+                    `\nИнформация о посте: \`id ${post.id}\``
+                )
+                .setTimestamp(post.createdAt)
 
                 if ( (post.rating === 'u' || post.rating === 'e' || post.rating === 'q') && !interaction.channel.nsfw ) {
                     pages.push(banned)

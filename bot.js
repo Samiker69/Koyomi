@@ -33,7 +33,8 @@ const client = new Client({
 
 client.cooldowns = new Collection();
 client.commands = new Collection();
-
+client.eventscount = 0
+client.commandscount = 0
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 const commandsForRegister = []; // Для глобальной регистрации
@@ -46,6 +47,7 @@ for (const folder of commandFolders) {
 		const command = require(filePath);
 		// Set a new item in the Collection with the key as the command name and the value as the exported module
 		if ('data' in command && 'execute' in command) {
+			client.commandscount++
 			client.commands.set(command.data.name, command);
 			commandsForRegister.push(command.data.toJSON());
 		} else {
@@ -60,6 +62,7 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
+	client.eventscount++
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
 	} else {

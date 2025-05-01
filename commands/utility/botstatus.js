@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { version } = require('../../package.json')
 
 module.exports = {
   cooldown: 10,
@@ -24,16 +25,22 @@ module.exports = {
       })
       .setColor(0x9B59B6)
       .setTitle('Текущий статус бота')
-      .setDescription(
-        `Время обработки команды: ${sent.createdTimestamp - interaction.createdTimestamp}ms\n` +
-        `Средний пинг: ${interaction.client.ws.ping}ms\n` +
-        `Время в сети: ${days}д ${hours}ч ${minutes}мин ${seconds}сек\n\n` +
-        `Потребление ресурсов\n` +
-        `RAM: Занято всего процессом ${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)} MB\n` +
-        `RAM: Используется сейчас ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB\n` +
-        `arch: ${process.arch}\n` +
-        `OS: ${process.platform}`
-      );
+      .setFields(
+        { name: "Время обработки команды", value: `${sent.createdTimestamp - interaction.createdTimestamp}ms`, inline: true },
+        { name: "Средний пинг", value: `${interaction.client.ws.ping}ms`, inline: true },
+        { name: "Время в сети", value: `${days}д ${hours}ч ${minutes}мин ${seconds}сек`, inline: true },
+        { name: 'О процессе', value: ' ', inline: false },
+        { name: 'RAM', value: `Занято процессом всего ${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)}MB`, inline: true },
+        { name: 'RAM', value: `Используется сейчас ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`, inline: true },
+        { name: '', value: ' ', inline: false },
+        { name: 'arch', value: process.arch, inline: true },
+        { name: 'OS', value: process.platform, inline: true },
+        { name: 'Дополнительно', value: '', inline: false },
+        { name: 'Кол-во загруженных ивентов', value: `${interaction.client.eventscount}`, inline: true },
+        { name: 'Кол-во загруженных команд', value: `${interaction.client.commandscount}`, inline: true },
+        { name: '', value: ' ', inline: false }
+      )
+      .setFooter({ text: `Версия бота ${version}`})
 
     await interaction.editReply({ content: null, embeds: [status] });
   },
