@@ -32,7 +32,7 @@ const moderation = {
   "message": {
     "description": {
       "en-US": "Moderation command for managing messages",
-      "ru": "message mod command",
+      "ru": "Команда для управления сообщениями",
       "uk": "Модераційна команда для роботи з повідомленнями"
     },
     "options": {
@@ -46,14 +46,14 @@ const moderation = {
       "id": {
         "description": {
           "en-US": "Message ID",
-          "ru": "Message id",
+          "ru": "Айди сообщения",
           "uk": "ID повідомлення"
         }
       },
       "emoji": {
         "description": {
           "en-US": "Emoji to react with",
-          "ru": "emoji",
+          "ru": "Эмодзи для реакции",
           "uk": "Емодзі для реакції"
         }
       },

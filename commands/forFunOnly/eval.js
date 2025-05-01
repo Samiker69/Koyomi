@@ -4,11 +4,11 @@ const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 
 const data = new SlashCommandBuilder()
 		.setName('eval')
-		.setDescription("ъ")
+		.setDescription(forFunOnly.eval.description.ru)
             .addSubcommand(subcommand =>
                 subcommand.setName('status')
-                .setDescription(forFunOnly.eval.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.description)
+                .setDescription("ъ")
+                //.setDescriptionLocalizations(forFunOnly.eval.description)
                 .addStringOption(option => 
                     option.setName('name-activity')
                     .setDescription(forFunOnly.eval.options.activity.description.ru)

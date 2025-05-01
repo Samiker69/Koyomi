@@ -1,33 +1,37 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
+const {moderation} = require('../../locales/descriptions/moderation')
 
 const data = new SlashCommandBuilder()
     .setName('message')
-    .setDescription('message mod command')
+    .setDescription(moderation.message.description.ru)
 
     .addSubcommand(subcommand =>
         subcommand.setName('clear')
         .setDescription('Удаляет указанное количество сообщений от пользователей')
         .addIntegerOption(option => 
             option.setName('amount')
-                .setDescription('Количество сообщений для удаления (1-100)')
+                .setDescription(moderation.message.options.amount.description.ru)
+                .setDescriptionLocalizations(moderation.message.options.amount.description)
                 .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     .addSubcommand(subcommand =>
         subcommand.setName('pin')
-        .setDescription('Pin the message')
+        .setDescription('Закрепить сообщение')
         .addIntegerOption(option => 
             option.setName('id')
-            .setDescription('Message id')
+            .setDescription(moderation.message.options.id.description.ru)
+            .setDescriptionLocalizations(moderation.message.options.id.description)
             .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     .addSubcommand(subcommand =>
         subcommand.setName('unpin')
-        .setDescription('unpin the message')
+        .setDescription('Открепить сообщение')
         .addIntegerOption(option =>
             option.setName('id')
-            .setDescription('Message id')
+            .setDescription(moderation.message.options.id.description.ru)
+            .setDescriptionLocalizations(moderation.message.options.id.description)
             .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
@@ -36,11 +40,13 @@ const data = new SlashCommandBuilder()
         .setDescription('Adds a reaction to the message')
         .addIntegerOption(option => 
             option.setName('id')
-            .setDescription('Message id')
+            .setDescription(moderation.message.options.id.description.ru)
+            .setDescriptionLocalizations(moderation.message.options.id.description)
             .setRequired(true))
         .addStringOption(option => 
             option.setName('emoji')
-            .setDescription('emoji')
+            .setDescription(moderation.message.options.emoji.description.ru)
+            .setDescriptionLocalizations(moderation.message.options.emoji.description)
             .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
@@ -49,12 +55,14 @@ const data = new SlashCommandBuilder()
         .setDescription('Удаляет указанное количество сообщений от конкретного пользователя')
         .addUserOption(option =>
           option.setName('target')
-            .setDescription('Пользователь, чьи сообщения нужно удалить')
+            .setDescription(moderation.message.options.target.description.ru)
+            .setDescriptionLocalizations(moderation.message.options.target.description)
             .setRequired(true)
         )
         .addIntegerOption(option =>
           option.setName('amount')
-            .setDescription('Количество сообщений для удаления (от 1 до 100)')
+            .setDescription(moderation.message.options.amount.description.ru)
+            .setDescriptionLocalizations(moderation.message.options.amount.description)
             .setRequired(true)
             .setMinValue(1)
             .setMaxValue(100)

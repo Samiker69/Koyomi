@@ -7,15 +7,18 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
+const {minigame} = require('../../locales/descriptions/minigame')
 
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
         .setName('tictactoe')
-        .setDescription('Игра в Крестики-нолики против другого участника')
+        .setDescription(minigame.tictactoe.description.ru)
+        .setDescriptionLocalizations(minigame.tictactoe.description)
         .addUserOption(opt =>
             opt.setName('opponent')
-                .setDescription('Выберите вашего соперника')
+                .setDescription(minigame.tictactoe.options.opponent.description.ru)
+                .setDescriptionLocalizations(minigame.tictactoe.options.opponent.description)
                 .setRequired(true)
         ),
 
@@ -80,9 +83,9 @@ module.exports = {
             }
         });
 
-        confirmCollector.on('end', (_, reason) => {
+        confirmCollector.on('end', async (_, reason) => {
             if (reason === 'time') {
-                interaction.editReply({
+                await interaction.editReply({
                     content: 'Время на принятие истекло.',
                     embeds: [],
                     components: []
