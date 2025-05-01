@@ -26,6 +26,9 @@ const client = new Client({
 		GatewayIntentBits.GuildPresences,
 		GatewayIntentBits.GuildVoiceStates
 	],
+	allowedMentions: { 
+		parse: ['users', 'roles'] 
+	}
 });
 
 client.cooldowns = new Collection();

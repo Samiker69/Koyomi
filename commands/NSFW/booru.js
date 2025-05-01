@@ -44,6 +44,25 @@ module.exports = {
                 .setDescription('Страница')
                 .setMinValue(0)
             )
+        )
+        .addSubcommand(sc=>
+            sc.setName('danbooru').setDescription('parse danbooru.donmai.us')
+            .addStringOption(o =>
+                o.setName('tags')
+                .setDescription('Теги. Между тегами оставляйте только пробелы!')
+                .setRequired(true)
+            )
+            .addNumberOption(o => 
+                o.setName('limit')
+                .setDescription('Сколько всего будет артов')
+                .setMaxValue(100)
+                .setMinValue(1)
+            )
+            .addNumberOption(o => 
+                o.setName('page')
+                .setDescription('Страница')
+                .setMinValue(0)
+            )
         ),
 
 	async execute(interaction) {
@@ -51,7 +70,6 @@ module.exports = {
         await interaction.deferReply();
 
         let site;
-        console.log(await interaction.options.getSubcommand())
         switch (await interaction.options.getSubcommand()) {
             case "safebooru": {
                 site = booru.forSite('sb')
@@ -62,7 +80,11 @@ module.exports = {
                 site = booru.forSite('gb')
                 break;
             }
-                
+
+            case "danbooru": {
+                site = booru.forSite('db')
+                break;
+            }
         
             default:
                 await interaction.editReply('Что-то пошло не так... Выбран поисковик: safebooru')
@@ -85,7 +107,7 @@ module.exports = {
         };
 
         try {
-            if (site.domain = "gelbooru.com") nsfw = true
+            if (site.domain === "gelbooru.com" || site.domain === "danbooru.donmai.us`") nsfw = true
             const tags = await interaction.options.getString('tags');
             const limit = await interaction.options.getNumber('limit') | 1;
             const pageOfBooru = await interaction.options.getNumber('page') | null;
