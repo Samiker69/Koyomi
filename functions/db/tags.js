@@ -24,7 +24,7 @@ class TagsDB {
     _initDb() {
         const createTableQuery = `
             CREATE TABLE IF NOT EXISTS tags (
-                serverId TEXT PRIMARY KEY,
+                serverId TEXT,
                 name TEXT NOT NULL,
                 content TEXT,
                 disallowedChannelsId TEXT DEFAULT '',

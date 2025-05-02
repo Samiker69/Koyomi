@@ -40,6 +40,10 @@ module.exports = {
                 .setDescriptionLocalizations(nsfw.booru.options.page.description)
                 .setMinValue(0)
             )
+            .addBooleanOption(o =>
+                o.setName('no_ai')
+                .setDescription(nsfw.booru.options.no_ai.description.ru)
+            )
         )
         .addSubcommand(sub =>
             sub.setName('random')
@@ -56,6 +60,10 @@ module.exports = {
                 o.setName('tags')
                 .setDescription(nsfw.booru.options.tags.description.ru)
                 .setDescriptionLocalizations(nsfw.booru.options.tags.description)
+            )
+            .addBooleanOption(o =>
+                o.setName('no_ai')
+                .setDescription(nsfw.booru.options.no_ai.description.ru)
             )
         )
 ,
@@ -90,22 +98,25 @@ module.exports = {
 
         try {
             const siteOfbooru = await interaction.options.getString('site');
-            const tags = await interaction.options.getString('tags');
+            let tags = await interaction.options.getString('tags');
             const limit = await interaction.options.getNumber('limit') | 1;
             const pageOfBooru = await interaction.options.getNumber('page') | null;
+            const no_ai = await interaction.options.getBoolean('no_ai') | false;
 
             const canonicalSite = siteLookup.get(siteOfbooru.toLowerCase());
             if (!canonicalSite) return await interaction.reply({content: `Не удалось найти ${canonicalSite}. Убедитесь, что вы ввели верное название`, flags: MessageFlags.Ephemeral});
             const site = booru.forSite(canonicalSite);
-            let result, rndtag = []
-            if (tags) rndtag = tags
+            let result, lastartlink; 
+            if (no_ai) tags += ' -ai_generated -thick -lactation -fart -futanari -peeing -big_belly -breast_bigger_than_head -pregnant -gigantic_breasts -huge_breasts -thick_thighs -thick_ass -gigantic_ass -huge_ass'
 
             if (interaction.options.getSubcommand() === "search") result = await site.search(tags.split(' '), { limit: limit, page: pageOfBooru });
-            else if (interaction.options.getSubcommand() === "random") result = await site.search(rndtag, { random: true })
+            else if (interaction.options.getSubcommand() === "random") result = await site.search(tags, { random: true })
 
-            if (result.posts.length < 1) return await interaction.editReply('Кажется, ничего не удалось найти. Проверьте правильность написания тегов')
+            if (result.posts.length < 1) return await interaction.editReply(`Кажется, ничего не удалось найти. Проверьте правильность написания тегов ${no_ai ? "также попробуйте не использовать no_ai" : ''}`);
 
             for (let post of result) {
+                if (lastartlink === post.fileUrl) continue;
+                lastartlink = post.fileUrl;
                 const ok = new EmbedBuilder()
                 .setColor('Random')
                 .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)

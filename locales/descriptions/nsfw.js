@@ -47,6 +47,13 @@ const nsfw = {
           "ru": "Страница",
           "uk": "Номер сторінки"
         }
+      },
+      "no_ai": {
+        "description": {
+          "en-US": "Add tags that exclude AI art? (default false)",
+          "ru": "Добавлять теги, исключающие AI арты? (по умолчанию false)",
+          "uk": "Додавати теги, що виключають AI арти? (за замовчуванням false)"
+        }
       }
     }
   },
