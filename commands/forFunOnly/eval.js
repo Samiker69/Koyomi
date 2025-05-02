@@ -13,7 +13,6 @@ const data = new SlashCommandBuilder()
                     option.setName('name-activity')
                     .setDescription(forFunOnly.eval.options.activity.description.ru)
                     .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
-                    .setRequired(true)
                 )
                 .addStringOption(option => 
                     option.setName('presence')
@@ -55,14 +54,12 @@ const data = new SlashCommandBuilder()
 
                     switch (interaction.options.getSubcommand()) {
                         case "status": {
-                            const presence = interaction.options.getString('presence');
-                            const nameactivity = interaction.options.getString('nameactivity');
+                            const presence = interaction.options.getString('presence')  || interaction.client.user.presence.status;
+                            const nameactivity = interaction.options.getString('name-activity')  || interaction.client.user.presence.name;
                             
                             try {
-                                //вот тут можно выбрать только статус(не в сети/в сети/итд) и текст активности, но нельзя выбрать активность(наблюдает, слушает итд)
-                                //поэтому пока что так. потом надо тут сделать либо доп сабкоманду как было раньше, но сделать так, чтобы текст активности не сбрасывался
                                 await interaction.client.user.setPresence({ activities: [{ name: nameactivity }], status: presence });
-                                await await interaction.reply({content: `статус изменён. ${presence}, ${nameactivity}`, flags: MessageFlags.Ephemeral });
+                                await await interaction.reply({content: `Cтатус изменён. ${presence}, ${nameactivity}`, flags: MessageFlags.Ephemeral });
                             } catch (error) {
                                 await await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
                                 console.log(error);
