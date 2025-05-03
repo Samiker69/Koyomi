@@ -10,6 +10,7 @@ const VALID_SETTINGS = [
     'allowLogingMembersAdd',
     'mainVoiceChannelId',
     'voiceCategoryId',
+    'supportChannelId',
     'prefix'
 ];
 const BOOLEAN_SETTINGS = ['allowInviteLogging', 'allowLogingMembersAdd'];
@@ -24,7 +25,7 @@ class SettingsDatabase {
             // Инициализируем соединение с БД
             // verbose: console.log можно раскомментировать для отладки SQL-запросов
             this.db = new Database(dbPath /*, { verbose: console.log } */);
-            console.log(`Подключено к базе данных: ${path.resolve(dbPath)}`);
+            //console.log(`Подключено к базе данных: ${path.resolve(dbPath)}`);
 
             // Инициализируем таблицу при создании объекта
             this._initTable();
@@ -55,6 +56,7 @@ class SettingsDatabase {
                 allowLogingMembersAdd INTEGER DEFAULT 0, -- 0 for false, 1 for true
                 mainVoiceChannelId TEXT DEFAULT '',
                 voiceCategoryId TEXT DEFAULT '',
+                supportChannelId TEXT DEFAULT '',
                 prefix TEXT DEFAULT '..'
             );
         `;

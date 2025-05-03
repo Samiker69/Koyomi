@@ -4,7 +4,7 @@ class ModerationDB {
     constructor(dbPath = 'cases.db') {
         // Открываем или создаем файл БД
         this.db = new Database(dbPath, /*{ verbose: console.log }*/);
-        console.log(`Подключено к SQLite базе данных: ${dbPath}`);
+        //console.log(`Подключено к SQLite базе данных: ${dbPath}`);
         this.initSchema(); // Инициализируем структуру таблицы при создании объекта
     }
 

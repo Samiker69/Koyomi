@@ -114,7 +114,9 @@ async function FindTxtInMessage(message, targetFilename = null) {
     if (message.attachments.size === 0) return null;
     let targetAttachment = null;
     if (targetFilename) {
-        targetAttachment = message.attachments.find(att => att.name?.toLowerCase() === targetFilename.toLowerCase() && att.name?.endsWith('.txt'));
+        targetAttachment = message.attachments.find(att => 
+            att.name?.toLowerCase() === targetFilename.toLowerCase() && att.name?.endsWith('.txt')
+        );
         if (!targetAttachment) {
             if (!message.attachments.some(att => att.name?.endsWith('.txt'))) return null;
             return null;

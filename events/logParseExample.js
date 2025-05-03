@@ -7,7 +7,7 @@ module.exports = {
         try {
             if (message.author.bot) return;
 
-            const logText = await FindTxtInMessage(message);
+            const logText = await FindTxtInMessage(message, "latestlog");
             if (!logText) return;
 
             const logInfo = extractLogInfo(logText);
