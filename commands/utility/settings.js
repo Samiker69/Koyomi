@@ -27,7 +27,7 @@ module.exports = {
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand => 
-            subcommand.setName('allow-membersAdd-logging')
+            subcommand.setName('allow-membersadd-logging')
             .setDescription('Отправлять сообщения о новых/ушедших участниках')
             .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
@@ -104,7 +104,7 @@ module.exports = {
                 }
                 break;
 
-            case 'allow-membersAdd-logging':
+            case 'allow-membersadd-logging':
                 try {
                     const data = Sdb.getSettings(interaction.guild.id)
                     if (data.allowLogingMembersAdd === bool) return await interaction.reply('Этот параметр уже установлен на ' + bool);
