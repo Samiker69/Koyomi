@@ -150,24 +150,33 @@ const tags = new TagsDB(path.resolve(__dirname, '../../database/tags.db'))
           }
   
           case 'list': {
-            const rows = tags.db.prepare(
-              'SELECT name FROM tags WHERE serverId = ? ORDER BY name'
-            ).all(guildId);
-  
+            const rows = tags.db
+              .prepare('SELECT name, content FROM tags WHERE serverId = ? ORDER BY name')
+              .all(guildId);
+          
             if (rows.length === 0) {
-              return await interaction.reply({
+              return interaction.reply({
                 content: 'На этом сервере нет тегов.',
                 flags: MessageFlags.Ephemeral
               });
             }
-  
+          
+            const description = rows
+              .map(r => {
+                const preview = r.content.length > 50
+                  ? r.content.slice(0, 47) + '...'
+                  : r.content;
+                return `\`${r.name}\` — ${preview}`;
+              })
+              .join('\n');
+          
             const embed = new EmbedBuilder()
               .setTitle('Список тегов')
-              .setDescription(rows.map(r => `\`${r.name}\``).join(', '))
+              .setDescription(description)
               .setColor(0x9B59B6);
-  
-            return await interaction.reply({ embeds: [embed] });
-          }
+          
+            return interaction.reply({ embeds: [embed] });
+          }          
   
           default:
             return await interaction.reply({
