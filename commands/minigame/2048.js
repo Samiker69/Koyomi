@@ -12,19 +12,8 @@ const activeGames = new Set();
 const cooldowns = new Map();
 
 const tileEmojis = {
-    0: '⬛',
-    2: '2️⃣',
-    4: '4️⃣',
-    8: '🟦',
-    16: '🟩',
-    32: '🟨',
-    64: '🟧',
-    128: '🟥',
-    256: '🟪',
-    512: '🟫',
-    1024: '🔵',
-    2048: '🟡',
-    4096: '💎',
+    0: '⬛', 2: '2️⃣', 4: '4️⃣', 8: '🟦', 16: '🟩', 32: '🟨',
+    64: '🟧', 128: '🟥', 256: '🟪', 512: '🟫', 1024: '🔵', 2048: '🟡', 4096: '💎',
 };
 
 function createEmptyBoard() {
@@ -117,12 +106,18 @@ module.exports = {
         const now = Date.now();
         const last = cooldowns.get(playerId);
         if (last && now - last < 10000) {
-            return interaction.reply({ content: `Подожди ${(10 - Math.floor((now - last)/1000))} сек.`, flags: MessageFlags.Ephemeral });
+            return interaction.reply({
+                content: `Подожди ${(10 - Math.floor((now - last) / 1000))} сек.`,
+                flags: MessageFlags.Ephemeral
+            });
         }
         cooldowns.set(playerId, now);
 
         if (activeGames.has(playerId)) {
-            return interaction.reply({ content: 'У тебя уже идёт игра!', flags: MessageFlags.Ephemeral });
+            return interaction.reply({
+                content: 'У тебя уже идёт игра!',
+                flags: MessageFlags.Ephemeral
+            });
         }
         activeGames.add(playerId);
 
@@ -130,17 +125,18 @@ module.exports = {
         spawnTile(board);
         spawnTile(board);
 
-        const controls = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('up').setEmoji('⬆️').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('down').setEmoji('⬇️').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('left').setEmoji('⬅️').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('right').setEmoji('➡️').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('restart').setEmoji('🔁').setStyle(ButtonStyle.Success)
-        );
-
-        const surrenderRow = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('end').setLabel('Сдаться').setStyle(ButtonStyle.Danger)
-        );
+        const getComponents = (disabled = false) => [
+            new ActionRowBuilder().addComponents(
+                new ButtonBuilder().setCustomId('up').setEmoji('⬆️').setStyle(ButtonStyle.Secondary).setDisabled(disabled),
+                new ButtonBuilder().setCustomId('down').setEmoji('⬇️').setStyle(ButtonStyle.Secondary).setDisabled(disabled),
+                new ButtonBuilder().setCustomId('left').setEmoji('⬅️').setStyle(ButtonStyle.Secondary).setDisabled(disabled),
+                new ButtonBuilder().setCustomId('right').setEmoji('➡️').setStyle(ButtonStyle.Secondary).setDisabled(disabled),
+                new ButtonBuilder().setCustomId('restart').setEmoji('🔁').setStyle(ButtonStyle.Success).setDisabled(disabled)
+            ),
+            new ActionRowBuilder().addComponents(
+                new ButtonBuilder().setCustomId('end').setLabel('Сдаться').setStyle(ButtonStyle.Danger).setDisabled(disabled)
+            )
+        ];
 
         const embed = new EmbedBuilder()
             .setTitle('🎮 2048')
@@ -148,7 +144,7 @@ module.exports = {
             .setDescription(renderBoard(board))
             .setFooter({ text: 'Стрелки — ход, 🔁 — начать заново, 🏳️ — сдаться.' });
 
-        await interaction.reply({ embeds: [embed], components: [controls, surrenderRow] });
+        await interaction.reply({ embeds: [embed], components: getComponents() });
         const msg = await interaction.fetchReply();
 
         const collector = msg.createMessageComponentCollector({
@@ -160,26 +156,52 @@ module.exports = {
             if (btn.user.id !== playerId) {
                 return btn.reply({ content: 'Это не твоя игра!', flags: MessageFlags.Ephemeral });
             }
-            if (btn.customId === 'end') {
-                collector.stop('surrendered');
-                return btn.update({ embeds: [embed.setDescription(renderBoard(board) + '\n\n🏳️ Ты сдался.')], components: [] });
-            }
-            if (btn.customId === 'restart') {
-                board = createEmptyBoard(); spawnTile(board); spawnTile(board);
+
+            try {
+                if (btn.customId === 'end') {
+                    collector.stop('surrendered');
+                    return await btn.update({
+                        embeds: [embed.setDescription(renderBoard(board) + '\n\n🏳️ Ты сдался.')],
+                        components: getComponents(true)
+                    });
+                }
+
+                if (btn.customId === 'restart') {
+                    board = createEmptyBoard();
+                    spawnTile(board);
+                    spawnTile(board);
+                    embed.setDescription(renderBoard(board));
+                    return await btn.update({ embeds: [embed], components: getComponents() });
+                }
+
+                const moved = moveBoard(board, btn.customId);
+                if (!moved) return await btn.deferUpdate();
+
+                board = moved;
+                spawnTile(board);
+
+                if (isGameOver(board)) {
+                    collector.stop('gameover');
+                    return await btn.update({
+                        embeds: [embed.setDescription(renderBoard(board) + '\n\n💀 Игра окончена.')],
+                        components: getComponents(true)
+                    });
+                }
+
                 embed.setDescription(renderBoard(board));
-                return btn.update({ embeds: [embed], components: [controls, surrenderRow] });
+                await btn.update({ embeds: [embed] });
+            } catch (err) {
+                console.error('Ошибка взаимодействия:', err);
             }
-            const moved = moveBoard(board, btn.customId);
-            if (!moved) return btn.deferUpdate();
-            board = moved; spawnTile(board);
-            if (isGameOver(board)) {
-                collector.stop('gameover');
-                return btn.update({ embeds: [embed.setDescription(renderBoard(board) + '\n\n💀 Игра окончена.')], components: [] });
-            }
-            embed.setDescription(renderBoard(board));
-            await btn.update({ embeds: [embed] });
         });
 
-        collector.on('end', () => activeGames.delete(playerId));
+        collector.on('end', async () => {
+            activeGames.delete(playerId);
+            try {
+                await msg.edit({ components: getComponents(true) });
+            } catch (err) {
+                console.error('Ошибка при отключении кнопок:', err);
+            }
+        });
     }
 };
