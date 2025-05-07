@@ -155,7 +155,7 @@ module.exports = {
             }
 
             default:
-                await await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;
         }
     }

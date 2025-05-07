@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType } = require('discord.js');
 const { privateAccess } = require('../../config.json');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
 /*const { default: axios } = require('axios');
@@ -67,7 +67,7 @@ module.exports = {
     cooldown: 5,
     data,
     async execute(interaction) {
-        if (!privateAccess.includes(interaction.user.id)) return await await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral})
+        if (!privateAccess.includes(interaction.user.id)) return await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral})
 
         switch (interaction.options.getSubcommand()) {
             case "presence": {
@@ -78,9 +78,9 @@ module.exports = {
                 try {
                     await interaction.client.user.setPresence({ activities: [{ name: nameactivity }], status: presence });
                     await interaction.client.user.setActivity(nameactivity, { type: activity })
-                    await await interaction.reply({content: `Cтатус изменён. ${presence}, ${nameactivity}, ${activity}`, flags: MessageFlags.Ephemeral });
+                    await interaction.reply({content: `Cтатус изменён. ${presence}, ${nameactivity}, ${activity}`, flags: MessageFlags.Ephemeral });
                 } catch (error) {
-                    await await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
+                    await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
                     console.error(error)
                 }
                 break;
@@ -122,7 +122,7 @@ module.exports = {
             }
         
             default:
-                await await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;
         }
     }

@@ -4,10 +4,12 @@ const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord
 const ModerationDB = require('./functions/db/case');
 const settings = require('./functions/db/settings');
 const TagsDB = require('./functions/db/tags');
+const { GoogleGenAI } = require('@google/genai');
 require('dotenv').config();
 
 if (!process.env.token) return console.error(`[ERROR]: Переменная token в .env отсутсвтует!`);
 if (!process.env.clientId) return console.error(`[ERROR]: Переменная clientId в .env отсутсвтует!`);
+if (!process.env.gemini_api_key) console.warn('[WARNING]: Переменная gemini_api_key в .env отсутсвтует. Функционал AI будет недоступен.\nНет ключа? Получите его: https://aistudio.google.com/apikey')
 
 if (!fs.existsSync('./database')) {
 	fs.mkdirSync('./database')
@@ -30,6 +32,16 @@ const client = new Client({
 		parse: ['users', 'roles'] 
 	}
 });
+
+if (process.env.gemini_api_key) {
+	try {
+		client.gemini = new GoogleGenAI({ apiKey: process.env.gemini_api_key });
+		console.log('[INFO]: Gemini интегрирован в client.gemini')
+	} catch (error) {
+		console.error('[ERROR]: Произошла ошибка при инициализации gemini:', error)
+	}
+
+}
 
 client.cooldowns = new Collection();
 client.commands = new Collection();

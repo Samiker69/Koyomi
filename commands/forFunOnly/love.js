@@ -45,6 +45,6 @@ module.exports = {
                 { name: 'Индикатор',     value: bar,               inline: false }
             );
 
-        await await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed] });
     }
 };
