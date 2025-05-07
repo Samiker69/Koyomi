@@ -5,7 +5,8 @@ const {
     EmbedBuilder,
 } = require('discord.js');
 
-const { disableCommandForGuild, enableCommandForGuild, getDisabledCommandsForGuild } = require('../../events/restrictions');
+const DisabledCommandsDB = require('../../functions/db/restrictions');
+const db = new DisabledCommandsDB();
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -48,12 +49,13 @@ module.exports = {
         }
 
         const subcommand = interaction.options.getSubcommand();
+        const guildId = interaction.guild.id;
+
         if (subcommand === 'set') {
             const action = interaction.options.getString('action');
             const commandName = interaction.options.getString('command').toLowerCase();
             const reason = interaction.options.getString('reason');
 
-           
             if (commandName === this.data.name) {
                 return interaction.reply({
                     content: 'Нельзя запретить эту команду.',
@@ -61,7 +63,6 @@ module.exports = {
                 });
             }
 
-            
             if (!interaction.client.commands.has(commandName)) {
                 return interaction.reply({
                     content: `Команда \`${commandName}\` не найдена.`,
@@ -69,26 +70,28 @@ module.exports = {
                 });
             }
 
-            const guildId = interaction.guild.id;
             let replyContent = '';
 
             if (action === 'disable') {
-                if (disableCommandForGuild(guildId, commandName)) {
-                    replyContent = `Команда \`${commandName}\` теперь **запрещена** на этом сервере.`;
-                    if (reason) {
-                        replyContent += ` Причина: ${reason}`;
-                    }
+                if (db.isDisabled(guildId, commandName)) {
+                    replyContent = `Команда \`${commandName}\` уже была запрещена на этом сервере.`;
                 } else {
-                    replyContent = `ℹКоманда \`${commandName}\` уже была запрещена на этом сервере.`;
+                    if (db.add(guildId, commandName)) {
+                        replyContent = `Команда \`${commandName}\` теперь **запрещена** на этом сервере.`;
+                        if (reason) {
+                            replyContent += ` Причина: ${reason}`;
+                        }
+                    } else {
+                        replyContent = `Произошла ошибка при попытке запретить команду \`${commandName}\`.`;
+                    }
                 }
             } else if (action === 'enable') {
-                 if (enableCommandForGuild(guildId, commandName)) {
+                 if (db.remove(guildId, commandName)) {
                      replyContent = `Команда \`${commandName}\` теперь **разрешена** на этом сервере.`;
                  } else {
                      replyContent = `Команда \`${commandName}\` не была запрещена на этом сервере.`;
                  }
             }
-
 
             return interaction.reply({
                 content: replyContent,
@@ -96,8 +99,7 @@ module.exports = {
             });
 
         } else if (subcommand === 'list') {
-            const guildId = interaction.guild.id;
-            const disabledList = getDisabledCommandsForGuild(guildId);
+            const disabledList = db.getDisabledCommands(guildId);
 
             const embed = new EmbedBuilder()
                 .setColor(0x0099FF)
@@ -108,7 +110,12 @@ module.exports = {
                 embed.setDescription('На этом сервере нет запрещенных команд.');
             } else {
                 const commandItems = disabledList.map(cmd => `• \`${cmd}\``).join('\n');
-                embed.setDescription(commandItems);
+                const maxEmbedDescriptionLength = 2048;
+                 if (commandItems.length > maxEmbedDescriptionLength) {
+                     embed.setDescription(commandItems.substring(0, maxEmbedDescriptionLength - 3) + '...');
+                 } else {
+                     embed.setDescription(commandItems);
+                 }
             }
 
             return interaction.reply({
