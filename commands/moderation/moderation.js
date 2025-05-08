@@ -184,7 +184,17 @@ const data = new SlashCommandBuilder()
         
                     await interaction.reply({ embeds: [embed] });
                 } catch (error) {
-                    console.error(error);
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });;
                     await interaction.reply({ content: "Не удалось забанить пользователя", flags: MessageFlags.Ephemeral });
                 }
                 break;

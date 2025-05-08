@@ -100,7 +100,7 @@ client.login(process.env.token);
 process.on('SIGINT', () => {
     db.close();
 	Sdb.close();
-	tags.close;
+	tags.close();
     process.exit(0);
 });
 

@@ -74,7 +74,17 @@ module.exports = {
                     Sdb.updateSetting(interaction.guild.id, 'newMemberChannelId', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как канал для отслеживания участников`);
                 } catch (error) {
-                    console.error(error);
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });;
                     await interaction.reply('Не удалось изменить параметр.');
                 }
                 break;
@@ -84,7 +94,17 @@ module.exports = {
                     Sdb.updateSetting(interaction.guild.id, 'inviteLoggerChannel', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как канал для отслеживания приглашений`);
                 } catch (error) {
-                    console.error(error);
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });;
                     await interaction.reply('Не удалось изменить параметр.');
                 }
                 break;
@@ -99,7 +119,17 @@ module.exports = {
                     else {answerLog = 'Теперь бот не будет уведомлять об использованной ссылке-приглашения';}
                     await interaction.reply(answerLog);
                 } catch (error) {
-                    console.error(error);
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });;
                     await interaction.reply('Не удалось изменить параметр.');
                 }
                 break;
@@ -112,7 +142,17 @@ module.exports = {
                     Sdb.updateSetting(interaction.guild.id, 'allowLogingMembersAdd', bool);
                     await interaction.reply(answerMemberLog);
                 } catch (error) {
-                    console.error(error);
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });;
                     await interaction.reply('Не удалось изменить параметр.');
                 }
                 break;
@@ -123,7 +163,17 @@ module.exports = {
                     Sdb.updateSetting(interaction.guild.id, 'voiceCategoryId', category.id);
                     await interaction.reply(`Теперь ${category} выбрана как категория для новых войс-каналов`);
                 } catch (error) {
-                    console.error(error);
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });;
                     await interaction.reply('Не удалось изменить параметр.');
                 }
                 break;
@@ -134,7 +184,17 @@ module.exports = {
                     Sdb.updateSetting(interaction.guild.id, 'mainVoiceChannelId', channel.id);
                     await interaction.reply(`Теперь ${channel} выбран как основной голосовой канал для создания комнат`);
                 } catch (error) {
-                    console.error(error);
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });;
                     await interaction.reply('Не удалось изменить параметр.');
                 }
                 break;

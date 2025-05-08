@@ -3,6 +3,7 @@ const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
 const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
 const {nsfw} = require('../../locales/descriptions/nsfw')
+const { bot_log_channel } = require('../../config.json')
 
 module.exports = {
     cooldown: 5,
@@ -104,7 +105,7 @@ module.exports = {
             const no_ai = await interaction.options.getBoolean('no_ai') | false;
 
             const canonicalSite = siteLookup.get(siteOfbooru.toLowerCase());
-            if (!canonicalSite) return await interaction.reply({content: `Не удалось найти ${canonicalSite}. Убедитесь, что вы ввели верное название`, flags: MessageFlags.Ephemeral});
+            if (!canonicalSite) return await interaction.editReply({content: `Не удалось найти ${canonicalSite}. Убедитесь, что вы ввели верное название`, flags: MessageFlags.Ephemeral});
             const site = booru.forSite(canonicalSite);
             let result, lastartlink; 
             if (no_ai) tags += ' -ai_generated -thick -lactation -fart -futanari -peeing -big_belly -breast_bigger_than_head -pregnant -gigantic_breasts -huge_breasts -thick_thighs -thick_ass -gigantic_ass -huge_ass'
@@ -197,8 +198,18 @@ module.exports = {
             })
             
        } catch (error) {
-            await interaction.editReply('говнокод детектед');
-            console.error(error)
+            const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });
+            await interaction.editReply('Произошла ошибка при работе команды');
        }
    },
 };

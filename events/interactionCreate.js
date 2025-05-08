@@ -1,4 +1,6 @@
-const { Events, MessageFlags, Collection } = require('discord.js');
+const { Events, MessageFlags, Collection, EmbedBuilder } = require('discord.js');
+const { bot_log_channel } = require('../config.json')
+
 const DisabledCommandsDB = require('../functions/db/restrictions');
 const db = new DisabledCommandsDB();
 
@@ -53,7 +55,17 @@ module.exports = {
         try {
             await command.execute(interaction);
         } catch (error) {
+            const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}`},
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
             console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] })
             if (interaction.replied || interaction.deferred) {
                 await interaction.followUp({ content: 'Произошла ошибка при обработке команды!', flags: MessageFlags.Ephemeral });
             } else {

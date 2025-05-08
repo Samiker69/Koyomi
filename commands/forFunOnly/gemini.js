@@ -82,7 +82,17 @@ module.exports = {
                     await interaction.editReply(response.text)                    
                 } catch (error) {
                     await interaction.editReply(`ъ\n\`\`\`txt\n${error}\`\`\``)  
-                    console.log(error)
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });
                 }
                 break;
             }
@@ -93,7 +103,17 @@ module.exports = {
                     db.addUserConfig(user.id)
                     await interaction.reply({ content: `${user} был добавлен в базу данных`, flags: MessageFlags.Ephemeral })
                 } catch (error) {
-                    console.error(error)
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });
                     await interaction.reply({ content: `Не удалось добавить пользователя в базу данных. err: ${error.message}`, flags: MessageFlags.Ephemeral })
                 }
                 break;
@@ -105,7 +125,17 @@ module.exports = {
                     const promise = db.deleteUserConfig(user.id)
                     await interaction.reply({ content: `${user} ${promise ? 'был удалён из базы данных.' : "не был удалён из базы данных. Возможно, его в ней не было"}`, flags: MessageFlags.Ephemeral })
                 } catch (error) {
-                    console.error(error)
+                    const errorEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle(`Произошла ошибка при обработке команды`)
+            .addFields(
+                { name: `Команда`, value: `${interaction.commandName}` },
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+            )
+            .setTimestamp(new Date())
+            console.error(error);
+            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+            await logChannel.send({ embeds: [errorEmbed] });
                     await interaction.reply({ content: `Не удалось удалить пользователя из базы данных. err: ${error.message}`, flags: MessageFlags.Ephemeral })
                 }
                 break;
