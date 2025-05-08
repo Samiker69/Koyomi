@@ -17,10 +17,10 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('set')
-                .setDescription('Включить или отключить команду на этом сервере.')
+                .setDescription('Включить или отключить команду для сервера или пользователя.')
                 .addStringOption(option =>
                     option.setName('action')
-                        .setDescription('Действие: enable (включить) или disable (отключить)')
+                        .setDescription('Действие: disable (отключить) или enable (включить)')
                         .setRequired(true)
                         .addChoices(
                             { name: 'Отключить', value: 'disable' },
@@ -30,6 +30,10 @@ module.exports = {
                     option.setName('command')
                         .setDescription('Название команды, которую нужно ограничить.')
                         .setRequired(true))
+                .addUserOption(option => 
+                    option.setName('user')
+                        .setDescription('Пользователь, для которого применяется ограничение (оставьте пустым для всего сервера).')
+                        .setRequired(false))
                 .addStringOption(option =>
                     option.setName('reason')
                         .setDescription('Причина ограничения (опционально).')
@@ -38,7 +42,11 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
-                .setDescription('Показывает список команд, запрещенных на этом сервере.')),
+                .setDescription('Показывает список команд, запрещенных на сервере или для пользователя.')
+                 .addUserOption(option =>
+                    option.setName('user')
+                        .setDescription('Показать ограничения для этого пользователя (оставьте пустым для всего сервера).')
+                        .setRequired(false))),
 
     async execute(interaction) {
         if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageGuild)) {
@@ -54,6 +62,8 @@ module.exports = {
         if (subcommand === 'set') {
             const action = interaction.options.getString('action');
             const commandName = interaction.options.getString('command').toLowerCase();
+            const user = interaction.options.getUser('user');
+            const userId = user ? user.id : null;
             const reason = interaction.options.getString('reason');
 
             if (commandName === this.data.name) {
@@ -70,26 +80,41 @@ module.exports = {
                 });
             }
 
+             if (userId && userId === interaction.user.id) {
+                 return interaction.reply({
+                     content: 'Вы не можете запретить команду самому себе.',
+                     flags: MessageFlags.Ephemeral
+                 });
+             }
+
             let replyContent = '';
+            const target = user ? `для пользователя ${user.tag}` : 'на этом сервере';
 
             if (action === 'disable') {
-                if (db.isDisabled(guildId, commandName)) {
-                    replyContent = `Команда \`${commandName}\` уже была запрещена на этом сервере.`;
+                 if (userId === null) {
+                    isAlreadyDisabled = db.isGuildDisabled(guildId, commandName);
+                 } else {
+                    isAlreadyDisabled = db.getUserRestrictions(guildId, userId).includes(commandName);
+                 }
+
+
+                if (isAlreadyDisabled) {
+                    replyContent = `Команда \`${commandName}\` уже была запрещена ${target}.`;
                 } else {
-                    if (db.add(guildId, commandName)) {
-                        replyContent = `Команда \`${commandName}\` теперь **запрещена** на этом сервере.`;
+                    if (db.add(guildId, commandName, userId)) {
+                        replyContent = `Команда \`${commandName}\` теперь **запрещена** ${target}.`;
                         if (reason) {
                             replyContent += ` Причина: ${reason}`;
                         }
                     } else {
-                        replyContent = `Произошла ошибка при попытке запретить команду \`${commandName}\`.`;
+                        replyContent = `Произошла ошибка при попытке запретить команду \`${commandName}\` ${target}.`;
                     }
                 }
             } else if (action === 'enable') {
-                 if (db.remove(guildId, commandName)) {
-                     replyContent = `Команда \`${commandName}\` теперь **разрешена** на этом сервере.`;
+                 if (db.remove(guildId, commandName, userId)) {
+                     replyContent = `Команда \`${commandName}\` теперь **разрешена** ${target}.`;
                  } else {
-                     replyContent = `Команда \`${commandName}\` не была запрещена на этом сервере.`;
+                     replyContent = `Команда \`${commandName}\` не была запрещена ${target}.`;
                  }
             }
 
@@ -99,17 +124,38 @@ module.exports = {
             });
 
         } else if (subcommand === 'list') {
-            const disabledList = db.getDisabledCommands(guildId);
+            const user = interaction.options.getUser('user');
+            const userId = user ? user.id : null;
+
+            let restrictionsList = [];
+            let embedTitle = '';
+            let footerText = '';
+
+            if (userId === null) {
+                restrictionsList = db.getGuildRestrictions(guildId);
+                embedTitle = `Запрещенные команды на ${interaction.guild.name}`;
+                footerText = `Всего: ${restrictionsList.length} команд(а)`;
+            } else {
+                restrictionsList = db.getUserRestrictions(guildId, userId);
+                embedTitle = `Запрещенные команды для пользователя ${user.tag} на ${interaction.guild.name}`;
+                footerText = `Всего: ${restrictionsList.length} команд(а)`;
+            }
+
 
             const embed = new EmbedBuilder()
-                .setColor(0x0099FF)
-                .setTitle(`Запрещенные команды на ${interaction.guild.name}`)
-                .setFooter({ text: `Всего: ${disabledList.length} команд(а)` });
+                .setColor(0x9B59B6)
+                .setTitle(embedTitle)
+                .setFooter({ text: footerText });
 
-            if (disabledList.length === 0) {
-                embed.setDescription('На этом сервере нет запрещенных команд.');
+            if (restrictionsList.length === 0) {
+                 if (userId === null) {
+                    embed.setDescription('На этом сервере нет запрещенных команд для всех.');
+                 } else {
+                    embed.setDescription(`Для пользователя ${user.tag} нет персонально запрещенных команд.`);
+                 }
+
             } else {
-                const commandItems = disabledList.map(cmd => `• \`${cmd}\``).join('\n');
+                const commandItems = restrictionsList.map(cmd => `• \`${cmd}\``).join('\n');
                 const maxEmbedDescriptionLength = 2048;
                  if (commandItems.length > maxEmbedDescriptionLength) {
                      embed.setDescription(commandItems.substring(0, maxEmbedDescriptionLength - 3) + '...');

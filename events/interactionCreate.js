@@ -12,15 +12,14 @@ module.exports = {
 
         const command = interaction.client.commands.get(interaction.commandName);
 
-
         if (!command) {
             console.error(`Команда ${interaction.commandName} не найдена.`);
             return;
         }
 
-        if (interaction.guild && db.isDisabled(interaction.guild.id, interaction.commandName)) {
+        if (interaction.guild && db.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
             await interaction.reply({
-                content: `Команда \`${interaction.commandName}\` запрещена на этом сервере.`,
+                content: `Команда \`${interaction.commandName}\` запрещена для вас на этом сервере.`,
                 flags: MessageFlags.Ephemeral
             });
             return;
