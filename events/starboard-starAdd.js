@@ -27,7 +27,7 @@ module.exports = {
         const boardChannel = await reaction.message.guild.channels.fetch(settings.starboardChannelId)
         if (!boardChannel) return;
 
-        if (reaction.count >= 1 ||settings.minReactions) {
+        if (reaction.count >= settings.minReactions) {
             let image = null
             if (reaction.message.attachments.find(i => i !== null)) image = reaction.message.attachments.find(i => i !== null).url;
             const board = new EmbedBuilder()

@@ -29,7 +29,7 @@ module.exports = {
         const starMessage = await starboardChannel.messages.fetch(starMessageId);
         if (!starMessage) return //db.updateSettings(guild.id, { enabled: false})
 
-        if (reaction.count < 1 ||settings.minReactions) {
+        if (reaction.count < settings.minReactions) {
             db.deleteStarboardEntry(guild.id, messageId)
             await starMessage.delete()
         }
