@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, REST, Routes, Partials  } = require('discord.js');
 const ModerationDB = require('./functions/db/case');
 const settings = require('./functions/db/settings');
 const TagsDB = require('./functions/db/tags');
@@ -26,8 +26,10 @@ const client = new Client({
 		GatewayIntentBits.MessageContent,
 		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildPresences,
-		GatewayIntentBits.GuildVoiceStates
+		GatewayIntentBits.GuildVoiceStates,
+		GatewayIntentBits.GuildMessageReactions
 	],
+	partials: [Partials.Message, Partials.Reaction],
 	allowedMentions: { 
 		parse: ['users', 'roles'] 
 	}
