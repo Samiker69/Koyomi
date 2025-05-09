@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
-const { privateAccess } = require('../../config.json');
+const { privateAccess, bot_log_channel } = require('../../config.json');
 
 const GeminiDB = require('../../functions/db/gemini_settings')
 const db = new GeminiDB('./database/geminiDB.db')

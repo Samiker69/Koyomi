@@ -82,8 +82,6 @@ module.exports = {
     },
 
 	async execute(interaction) {
-        await interaction.deferReply();
-
         let pages = [], page = 0, nsfw = false;
         const filter = (i) => {
             // Проверяем customId и пользователя
@@ -104,15 +102,16 @@ module.exports = {
             const pageOfBooru = await interaction.options.getNumber('page') | null;
             const no_ai = await interaction.options.getBoolean('no_ai') | false;
 
+            if (!siteOfbooru) return await interaction.reply({ content: "Неверно введёт сайт. Используйте всплывающий список сайтов, чтобы больше не получать эту ошибку. " })
             const canonicalSite = siteLookup.get(siteOfbooru.toLowerCase());
-            if (!canonicalSite) return await interaction.editReply({content: `Не удалось найти ${canonicalSite}. Убедитесь, что вы ввели верное название`, flags: MessageFlags.Ephemeral});
+            if (!canonicalSite) return await interaction.reply({content: `Не удалось найти ${canonicalSite}. Убедитесь, что вы ввели верное название`, flags: MessageFlags.Ephemeral});
             const site = booru.forSite(canonicalSite);
             let result, lastartlink; 
             if (no_ai) tags += ' -ai_generated -thick -lactation -fart -futanari -peeing -big_belly -breast_bigger_than_head -pregnant -gigantic_breasts -huge_breasts -thick_thighs -thick_ass -gigantic_ass -huge_ass'
 
             if (interaction.options.getSubcommand() === "search") result = await site.search(tags.split(' '), { limit: limit, page: pageOfBooru });
-            else if (interaction.options.getSubcommand() === "random") result = await site.search(tags, { random: true })
-
+            else if (interaction.options.getSubcommand() === "random") result = await site.search(tags, { random: true });
+            await interaction.deferReply();
             if (result.posts.length < 1) return await interaction.editReply(`Кажется, ничего не удалось найти. Проверьте правильность написания тегов ${no_ai ? "также попробуйте не использовать no_ai" : ''}`);
 
             for (let post of result) {

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder } = require('discord.js');
 const ModerationDB = require('../../functions/db/case');
 const db = new ModerationDB('./database/cases.db')
+const { bot_log_channel } = require('../../config.json')
 
 const data = new SlashCommandBuilder()
     .setName('moderation')

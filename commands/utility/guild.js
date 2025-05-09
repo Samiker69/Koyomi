@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { bot_log_channel } = require('../../config.json')
 
 const data = new SlashCommandBuilder()
 		.setName('guild')

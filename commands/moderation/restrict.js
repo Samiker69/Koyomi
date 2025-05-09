@@ -13,7 +13,6 @@ module.exports = {
         .setName('restrict')
         .setDescription('Управляет ограничениями команд на сервере.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .setDMPermission(false)
         .addSubcommand(subcommand =>
             subcommand
                 .setName('set')

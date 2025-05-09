@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType } = require('discord.js');
-const { privateAccess } = require('../../config.json');
+const { privateAccess, bot_log_channel } = require('../../config.json');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
 /*const { default: axios } = require('axios');
 const path = require('path');
