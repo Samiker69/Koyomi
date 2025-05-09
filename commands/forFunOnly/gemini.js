@@ -121,12 +121,14 @@ module.exports = {
                             ]
                         }
                     })
+                    await interaction.channel.sendTyping()
                     const reply = response.text || response.candidates[0].content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=ai+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
                 
                     if (String(reply).length >= 1990) {
-                        const splited = splitStringByLength(String(reply), 1990)
+                        const splited = splitStringByLength(String(reply), 1990);
+                        await interaction.editReply(part);
                         for (part of splited) {
-                            await interaction.editReply(part);
+                            await interaction.followUp(part);
                             await new Promise(resolve => setTimeout(resolve, 300)); 
                         }
                     }
