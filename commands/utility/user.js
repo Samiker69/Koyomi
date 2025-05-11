@@ -103,7 +103,7 @@ const data = new SlashCommandBuilder()
                         if (await interaction.guild.roles.comparePositions(role, await interaction.guild.members.me.roles.highest) >= 0) return await interaction.reply({content: 'Моя позиция роли ниже выбранной роли', flags: MessageFlags.Ephemeral});
                         if (await interaction.guild.roles.comparePositions(await interaction.member.roles.highest, role) < 0) return await interaction.reply({content: 'Ваша позиция роли ниже выбранной', flags: MessageFlags.Ephemeral});
         
-                        await member.roles.add(role);
+                        await member.roles.remove(role);
                         await interaction.reply(`Роль ${role.name} убрана у ${member}(${member.user.username})`);
                         break;
                     }
