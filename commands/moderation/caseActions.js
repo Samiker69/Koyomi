@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageFlags, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const ModerationDB = require('../../functions/db/case');
 const db = new ModerationDB('./database/cases.db');
 const {moderation} = require('../../locales/descriptions/moderation')
@@ -54,7 +54,7 @@ const data = new SlashCommandBuilder()
                 .setDescriptionLocalizations(moderation.case.options.user.description)
                 .setRequired(true)
         )
-    )
+    ).setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
 
 
     module.exports = {

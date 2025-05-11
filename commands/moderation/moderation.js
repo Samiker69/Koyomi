@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageFlags, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const ModerationDB = require('../../functions/db/case');
 const db = new ModerationDB('./database/cases.db')
 const { bot_log_channel } = require('../../config.json')
@@ -105,14 +105,14 @@ const data = new SlashCommandBuilder()
             .setDescription('Прикрепите доказательства (если есть)')
             .setRequired(false)
         )
-    )
+    ).setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
 
 
     module.exports = {
     cooldown: 3,
     data,
     async execute(interaction) {
-        if (!(interaction.memberPermissions.has('BanMembers') || interaction.memberPermissions.has('Administrator'))) {
+        if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
             await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
             return;
         }
@@ -123,6 +123,10 @@ const data = new SlashCommandBuilder()
 
         switch (interaction.options.getSubcommand()) {
             case "ban": {
+                if (!(interaction.memberPermissions.has('BanMembers'))) {
+                  await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                  return;
+                }
                 const targetUser = interaction.options.getUser('пользователь');
                 const reason = interaction.options.getString('причина') || 'Без причины';
                 const evidence = interaction.options.getAttachment('доказательства');
@@ -201,6 +205,10 @@ const data = new SlashCommandBuilder()
                 break;
             }
             case "mute": {
+                if (!(interaction.memberPermissions.has('MuteMembers'))) {
+                  await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                  return;
+                }
                 await interaction.deferReply()
 
                 const targetUser = interaction.options.getUser('пользователь');
@@ -356,6 +364,10 @@ const data = new SlashCommandBuilder()
                 break;
             }
             case "unmute": {
+                if (!(interaction.memberPermissions.has('BanMembers'))) {
+                  await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                  return;
+                }
                 const targetUser = interaction.options.getUser('пользователь');
                 if (targetUser.id === interaction.user.id) {
                   await interaction.reply({ content: "Ты не можешь размутить самого себя", flags: MessageFlags.Ephemeral });
