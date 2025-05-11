@@ -103,7 +103,6 @@ module.exports = {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
                 await interaction.deferReply();
                 try {
-                    console.log(config)
                     const response = await interaction.client.gemini.models.generateContent({
                         model: config.model,
                         contents: promt,
@@ -121,20 +120,21 @@ module.exports = {
                             ]
                         }
                     })
-                    if (interaction.guild) await interaction.channel.sendTyping()
-                   
+                    const start_ = Date.now()
                     const reply = response.text || response.candidates[0].content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=ai+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
                 
-                    if (String(reply).length >= 1990) {
-                        const splited = splitStringByLength(String(reply), 1990);
-                        await interaction.editReply(part);
+                    if (String(reply).length >= 1900) {
+                        const splited = splitTextSmartly(String(reply), 1800);
+                        await interaction.editReply(`Время ожидания ${Math.floor((start_ - interaction.createdTimestamp) / 1000 )} секунд, длина ${String(reply).length}`);
                         for (const part of splited) {
                             await interaction.followUp(part);
                             await new Promise(resolve => setTimeout(resolve, 300)); 
                         }
+                    } else {
+                        await interaction.editReply(reply);
                     }
 
-                    await interaction.editReply(reply);
+                    
                 } catch (error) {
                     await interaction.editReply(`ъ\n\`\`\`txt\n${error}\`\`\``)  
                     const errorEmbed = new EmbedBuilder()
@@ -238,13 +238,57 @@ module.exports = {
     }  
 }
 
-function splitStringByLength(str, maxLength) {
+function splitTextSmartly(text, maxLength) {
+    if (!text) {
+        return [];
+    }
+    if (maxLength <= 0) {
+        const trimmedText = text.trim();
+        return trimmedText ? [trimmedText] : [];
+    }
+
     const parts = [];
-    if (!str) {
-      return parts;
+    let currentPosition = 0;
+
+    while (currentPosition < text.length) {
+        while (currentPosition < text.length && (text[currentPosition] === ' ' || text[currentPosition] === '\n')) {
+            currentPosition++;
+        }
+        if (currentPosition >= text.length) {
+            break;
+        }
+        let endPosition = currentPosition + maxLength;
+
+        // 3. Если предполагаемый конец выходит за пределы текста или оставшаяся часть меньше maxLength
+        if (endPosition >= text.length) {
+            const part = text.substring(currentPosition).trim();
+            if (part.length > 0) {
+                parts.push(part);
+            }
+            break; // Это последний фрагмент
+        } else {
+            let cutAt = -1;
+            for (let i = endPosition - 1; i >= currentPosition; i--) {
+                if (text[i] === ' ' || text[i] === '\n') {
+                    cutAt = i;
+                    break;
+                }
+            }
+
+            let part;
+            if (cutAt > currentPosition) {
+                part = text.substring(currentPosition, cutAt).trim();
+                currentPosition = cutAt + 1; // Начинаем следующий фрагмент после разделителя
+            } else {
+                part = text.substring(currentPosition, endPosition).trim();
+                currentPosition = endPosition;
+            }
+            
+            if (part.length > 0) {
+                parts.push(part);
+            }
+        }
     }
-    for (let i = 0; i < str.length; i += maxLength) {
-      parts.push(str.substring(i, i + maxLength));
-    }
+
     return parts;
-  }
+}
