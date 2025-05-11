@@ -132,7 +132,7 @@ const data = new SlashCommandBuilder()
                 break;
             }
             case "user_punishments": {
-                const targetUser = interaction.options.getUser('пользователь');
+                const targetUser = interaction.options.getUser('user');
                 const modCases = db.getTargetModCases(interaction.guild.id, targetUser.id);
                 
                 if (!modCases || modCases.length === 0) {

@@ -12,7 +12,7 @@ module.exports = {
         .setName('text')
         .setDescription(forFunOnly.say.options.text.description.ru)
         .setDescriptionLocalizations(forFunOnly.say.options.text.description)
-        .setRequired(true)
+        .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
@@ -42,6 +42,7 @@ module.exports = {
     const text = interaction.options.getString('text', true);
     const image = interaction.options.getAttachment('image');
     const replyToRaw = interaction.options.getString('reply_to');
+    if (!text && !image) return await interaction.editReply({ content: "`text` или `image` должны быть заполнены!", flags: MessageFlags.Ephemeral });
     let messageReference;
 
     if (replyToRaw) {

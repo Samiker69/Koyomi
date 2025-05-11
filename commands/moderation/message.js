@@ -18,37 +18,20 @@ const data = new SlashCommandBuilder()
     .addSubcommand(subcommand =>
         subcommand.setName('pin')
         .setDescription('Закрепить сообщение')
-        .addIntegerOption(option => 
+        .addStringOption(option => 
             option.setName('id')
             .setDescription(moderation.message.options.id.description.ru)
             .setDescriptionLocalizations(moderation.message.options.id.description)
             .setRequired(true)))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     .addSubcommand(subcommand =>
         subcommand.setName('unpin')
         .setDescription('Открепить сообщение')
-        .addIntegerOption(option =>
+        .addStringOption(option =>
             option.setName('id')
             .setDescription(moderation.message.options.id.description.ru)
             .setDescriptionLocalizations(moderation.message.options.id.description)
             .setRequired(true)))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
-
-    .addSubcommand(subcommand =>
-        subcommand.setName('react')
-        .setDescription('Adds a reaction to the message')
-        .addIntegerOption(option => 
-            option.setName('id')
-            .setDescription(moderation.message.options.id.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.id.description)
-            .setRequired(true))
-        .addStringOption(option => 
-            option.setName('emoji')
-            .setDescription(moderation.message.options.emoji.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.emoji.description)
-            .setRequired(true)))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     .addSubcommand(subcommand => 
         subcommand.setName('purge')
@@ -112,7 +95,10 @@ const data = new SlashCommandBuilder()
                 case "pin": {
                     if(!interaction.member.permissions.has("ManageMessages", true)) return await interaction.reply({content: 'Недостаточно прав для действия', flags: MessageFlags.Ephemeral});
                     const message = interaction.options.getString('id');
+                    if (isNaN(Number(message))) return await interaction.reply({content: '\`id\` не является числом!', flags: MessageFlags.Ephemeral});
 
+                    //надо это поправить
+                    //if (!await interaction.channel.messages.fetch(message)) return await interaction.reply({content: 'Сообщение не найдено!', flags: MessageFlags.Ephemeral});
                     await interaction.channel.messages.pin(message);
                     await interaction.reply(`Сообщение было закрепленно ||вы потратили ~3 секунды просто так!!1||`);
                     break;
@@ -121,7 +107,10 @@ const data = new SlashCommandBuilder()
                 case "unpin": {
                     if(!await interaction.member.permissions.has("ManageMessages", true)) return await interaction.reply({content: 'Недостаточно прав для действия', flags: MessageFlags.Ephemeral});
                     const message = interaction.options.getString('id');
+                    if (isNaN(Number(message))) return await interaction.reply({content: '\`id\` не является числом!', flags: MessageFlags.Ephemeral});
 
+                    //надо это поправить
+                    //if (!await interaction.channel.messages.fetch(message)) return await interaction.reply({content: 'Сообщение не найдено!', flags: MessageFlags.Ephemeral});
                     await interaction.channel.messages.unpin(message);
                     await interaction.reply(`Сообщение было открепленно ||вы потратили ~3 секунды просто так!!1||`);
                     break;
