@@ -10,7 +10,7 @@ const data = new SlashCommandBuilder()
                 .addRoleOption(option => option.setName('role').setDescription('Select role or text role id').setRequired(true))
                 .addStringOption(option => option.setName('color').setDescription('The color of the role, either a hex string or a base 10 number'))
                 .addBooleanOption(option => option.setName('hoist').setDescription('Whether or not the role should be hoisted'))
-                .addStringOption(option => option.setName('icon').setDescription('The icon for the role'))
+                .addAttachmentOption(option => option.setName('icon').setDescription('The icon for the role'))
                 .addBooleanOption(option => option.setName('mentionable').setDescription('Whether or not the role should be mentionable'))
                 .addStringOption(option => option.setName('name').setDescription('The name of the role'))
                 .addStringOption(option => option.setName('permissions').setDescription('The permissions of the role'))
@@ -64,9 +64,9 @@ const data = new SlashCommandBuilder()
                             const unicodeemoji = interaction.options.getString('unicodeemoji') ?? role.unicodeEmoji;
 
                             if (interaction.guild.premiumTier >= 2) {
-                                const icon = interaction.options.getString('icon') ?? role.icon
+                                const icon = interaction.options.getAttachment('icon') ?? role.icon
 
-                                await role.edit({color: color, hoist: hoist, icon: icon, mentionable: mentionable, name: name, permissions: permissions, position: position, unicodeemoji: unicodeemoji, reason: reason+ ` || by ${interaction.user.username}(${interaction.user.id})`})
+                                await role.edit({color: color, hoist: hoist, icon: icon.url, mentionable: mentionable, name: name, permissions: permissions, position: position, unicodeemoji: unicodeemoji, reason: reason+ ` || by ${interaction.user.username}(${interaction.user.id})`})
                                 await interaction.reply(`${role} была изменена`);
                             } else {
                                 await role.edit({color: color, hoist: hoist, mentionable: mentionable, name: name, permissions: permissions, position: position, unicodeemoji: unicodeemoji, reason: reason+ ` || by ${interaction.user.username}(${interaction.user.id})`})
