@@ -1,13 +1,31 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { FindTxtInMessage, extractLogInfo, extractCrashInfo } = require('../functions/parse');
 
+async function getModLink(modName) {
+    try {
+        const modrinthResponse = await fetch(`https://api.modrinth.com/v2/search?query=${encodeURIComponent(modName)}&facets=[["project_type:mod"]]`);
+        const modrinthData = await modrinthResponse.json();
+        
+        if (modrinthData.hits && modrinthData.hits.length > 0) {
+            const exactMatch = modrinthData.hits.find(hit => hit.title.toLowerCase() === modName.toLowerCase());
+            if (exactMatch) {
+                return `https://modrinth.com/mod/${exactMatch.slug}`;
+            }
+        }
+    } catch (error) {
+        console.error(`Ошибка при поиске ссылки для мода ${modName} на Modrinth:`, error);
+    }
+
+    return null;
+}
+
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         try {
             if (message.author.bot) return;
 
-            const logText = await FindTxtInMessage(message, "latestlog");
+            const logText = await FindTxtInMessage(message, "latestlog.txt");
             if (!logText) return;
 
             const logInfo = extractLogInfo(logText);
@@ -17,17 +35,25 @@ module.exports = {
                 .setTitle('Информация о логе Minecraft')
                 .setColor(0x9B59B6);
 
+            const systemInfoMap = {
+                'Launcher version': 'Версия лаунчера',
+                'Architecture': 'Архитектура',
+                'Device model': 'Модель устройства',
+                'API version': 'Версия API',
+                'Selected Minecraft version': 'Версия Minecraft',
+                'Custom Java arguments': 'Аргументы Java',
+                'RAM allocated': 'Выделено RAM',
+                'Graphics device': 'Графическое устройство',
+                'MOJO_RENDERER': 'MOJO_RENDERER',
+                'JAVA_HOME': 'JAVA_HOME'
+            };
+
             const systemFields = [];
-            if (logInfo['Launcher version'])         systemFields.push(`**Launcher version:** ${logInfo['Launcher version']}`);
-            if (logInfo['Architecture'])            systemFields.push(`**Architecture:** ${logInfo['Architecture']}`);
-            if (logInfo['Device model'])            systemFields.push(`**Device model:** ${logInfo['Device model']}`);
-            if (logInfo['API version'])             systemFields.push(`**API version:** ${logInfo['API version']}`);
-            if (logInfo['Selected Minecraft version']) systemFields.push(`**Minecraft version:** ${logInfo['Selected Minecraft version']}`);
-            if (logInfo['Custom Java arguments'])   systemFields.push(`**Java args:** ${logInfo['Custom Java arguments']}`);
-            if (logInfo['RAM allocated'])           systemFields.push(`**RAM allocated:** ${logInfo['RAM allocated']}`);
-            if (logInfo['Graphics device'])         systemFields.push(`**Graphics device:** ${logInfo['Graphics device']}`);
-            if (logInfo['MOJO_RENDERER'])           systemFields.push(`**MOJO_RENDERER:** ${logInfo['MOJO_RENDERER']}`);
-            if (logInfo['JAVA_HOME'])               systemFields.push(`**JAVA_HOME:** ${logInfo['JAVA_HOME']}`);
+            for (const key in systemInfoMap) {
+                if (logInfo[key]) {
+                    systemFields.push(`**${systemInfoMap[key]}:** ${logInfo[key]}`);
+                }
+            }
             if (systemFields.length > 0) {
                 embed.addFields({ name: 'Информация о системе', value: systemFields.join('\n') });
             }
@@ -45,17 +71,24 @@ module.exports = {
             }
 
             const solutions = [];
+            let solutionCounter = 1;
 
             const installModRegex = /Install ([\w-]+), any version between/gi;
             const matches = [...logText.matchAll(installModRegex)];
-            matches.forEach(match => {
+            for (const match of matches) {
                 const modName = match[1];
-                solutions.push(`Установите данный мод: ${modName}`);
-            });
+                const modLink = await getModLink(modName);
+
+                if (modLink) {
+                    solutions.push(`${solutionCounter++}. Установите данный мод: [${modName}](${modLink})`);
+                } else {
+                    solutions.push(`${solutionCounter++}. Установите данный мод: \`${modName}\` (ссылка не найдена)`);
+                }
+            }
 
             const lwjglErrorString = "The game failed to start because the currently active LWJGL version is not compatible.";
             if (logText.includes(lwjglErrorString)) {
-                solutions.push('Найдено решение\nВставьте аргумент `-Dsodium.checks.issue2561=false`');
+                solutions.push(`${solutionCounter++}. 'Найдено решение\nВставьте аргумент \`-Dsodium.checks.issue2561=false\``);
             }
 
             if (solutions.length > 0) {
@@ -64,8 +97,8 @@ module.exports = {
 
             await message.reply({ embeds: [embed] });
         } catch (error) {
-            await message.reply(`error: \n\`\`\`txt\n${JSON.stringify(error, null, 2)}\`\`\``);
+            console.error('Ошибка при обработке лога:', error);
+            await message.reply('Произошла ошибка при анализе лога. Пожалуйста, попробуйте еще раз или свяжитесь с администратором.');
         }
     }
 };
-// TODO: Переделать позже ещё мне не совсем нравиться как оно сделано 
