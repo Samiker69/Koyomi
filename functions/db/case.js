@@ -16,7 +16,7 @@ class ModerationDB {
                 caseNum INTEGER NOT NULL,
                 targetId TEXT NOT NULL,
                 moderatorId TEXT NOT NULL,
-                action TEXT NOT NULL CHECK(action IN ('ban', 'mute', 'kick', 'unban', 'unmute')),
+                action TEXT NOT NULL CHECK(action IN ('ban', 'mute', 'kick', 'unban', 'unmute', 'warn')),
                 reason TEXT,
                 timestamp INTEGER NOT NULL,
                 PRIMARY KEY (serverId, caseNum) -- Уникальный ключ для каждого сервера
@@ -55,7 +55,7 @@ class ModerationDB {
      * @param {string} caseData.serverId ID сервера (гильдии)
      * @param {string} caseData.targetId ID целевого пользователя
      * @param {string} caseData.moderatorId ID модератора
-     * @param {'ban'|'mute'|'kick'|'unban'|'unmute'} caseData.action Тип действия
+     * @param {'ban'|'mute'|'kick'|'unban'|'unmute'|'warn'} caseData.action Тип действия
      * @param {string} [caseData.reason] Причина (опционально)
      * @param {Date} [caseData.timestamp] Время события (по умолчанию Date.now())
      * @returns {object} Добавленный кейс с присвоенным caseNum
@@ -67,7 +67,7 @@ class ModerationDB {
         if (!serverId || !targetId || !moderatorId || !action) {
             throw new Error('Не все обязательные поля предоставлены для добавления кейса.');
         }
-        if (!['ban', 'mute', 'kick', 'unban', 'unmute'].includes(action)) {
+        if (!['ban', 'mute', 'kick', 'unban', 'unmute', 'warn'].includes(action)) {
             throw new Error(`Недопустимое действие: ${action}`);
         }
 

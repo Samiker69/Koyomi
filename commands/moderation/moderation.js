@@ -35,7 +35,7 @@ const data = new SlashCommandBuilder()
         )
         .addStringOption(option =>
           option.setName('время')
-                .setDescription('Длительность мута в минутах (макс. 40320, то есть 28 дней)')
+                .setDescription('Длительность мута (например, 10m, 1h, 7d, 2w). Макс. 28 дней.')
                 .setRequired(false)
         )
         .addStringOption(option =>
@@ -49,7 +49,7 @@ const data = new SlashCommandBuilder()
                 .setRequired(false)
         )
     )
-    .addSubcommand(sub => 
+    .addSubcommand(sub =>
         sub.setName('kick')
         .setDescription('Кикнуть пользователя с сервера')
         .addUserOption(option =>
@@ -68,7 +68,7 @@ const data = new SlashCommandBuilder()
                 .setRequired(false)
         )
     )
-    .addSubcommand(sub => 
+    .addSubcommand(sub =>
         sub.setName('unmute')
         .setDescription('Снять мут (таймаут) с пользователя')
         .addUserOption(option =>
@@ -105,7 +105,27 @@ const data = new SlashCommandBuilder()
             .setDescription('Прикрепите доказательства (если есть)')
             .setRequired(false)
         )
-    ).setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+    )
+     .addSubcommand(sub =>
+         sub.setName('warn')
+         .setDescription('Выдать предупреждение пользователю')
+         .addUserOption(option =>
+             option.setName('пользователь')
+                 .setDescription('Пользователь для предупреждения')
+                 .setRequired(true)
+         )
+         .addStringOption(option =>
+             option.setName('причина')
+                 .setDescription('Причина предупреждения')
+                 .setRequired(false)
+         )
+         .addAttachmentOption(option =>
+             option.setName('доказательства')
+                 .setDescription('Прикрепите доказательства (если есть)')
+                 .setRequired(false)
+         )
+     )
+    .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
 
 
     module.exports = {
@@ -121,7 +141,9 @@ const data = new SlashCommandBuilder()
             return;
         }
 
-        switch (interaction.options.getSubcommand()) {
+        const subcommand = interaction.options.getSubcommand();
+
+        switch (subcommand) {
             case "ban": {
                 if (!(interaction.memberPermissions.has('BanMembers'))) {
                   await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
@@ -162,9 +184,9 @@ const data = new SlashCommandBuilder()
                         reason: reason,
                         timestamp: new Date()
                     });
-        
+
                     const latestCase = db.getServerModCases(interaction.guild.id)
-        
+
                     const embed = {
                         color: 0xff0000,
                         title: `Case \`#${latestCase[0].caseNum}\``,
@@ -178,7 +200,7 @@ const data = new SlashCommandBuilder()
                         footer: { text: 'Бан выполнен', icon_url: interaction.user.displayAvatarURL({ dynamic: true }) },
                         timestamp: new Date()
                     };
-        
+
                     if (evidence) {
                         embed.fields.push({
                             name: 'Доказательства',
@@ -186,69 +208,43 @@ const data = new SlashCommandBuilder()
                         });
                         embed.image = { url: evidence.url };
                     }
-        
+
                     await interaction.reply({ embeds: [embed] });
                 } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+                    console.error('Ошибка при бане пользователя:', error);
                     await interaction.reply({ content: "Не удалось забанить пользователя", flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
             case "mute": {
-                if (!(interaction.memberPermissions.has('MuteMembers'))) {
+                if (!(interaction.memberPermissions.has('MuteMembers') || interaction.memberPermissions.has(PermissionFlagsBits.ModerateMembers))) {
                   await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
                   return;
                 }
-                await interaction.deferReply()
+                await interaction.deferReply();
 
                 const targetUser = interaction.options.getUser('пользователь');
+                const timeInput = interaction.options.getString('время');
+                const reason = interaction.options.getString('причина') || "Без причины";
+                const evidence = interaction.options.getAttachment('доказательства');
+
                 if (targetUser.id === interaction.user.id) {
                   await interaction.editReply({ content: "Ты не можешь замьютить самого себя" });
                   return;
                 }
-                
-                const timeInput = interaction.options.getString('время');
-                const reason = interaction.options.getString('причина') || "Без причины"
-                const evidence = interaction.options.getAttachment('доказательства');
-                
-                let durationMinutes = 10;
-                if (timeInput) {
-                  const parsed = parseInt(timeInput);
-                  if (!isNaN(parsed) && parsed > 0) {
-                    durationMinutes = parsed;
-                  }
-                }
-                if (durationMinutes > 40320) {
-                  await interaction.editReply({ content: `Вы не можете замьютить участника на \`${durationMinutes}\` минут!` });
-                  return;
-                }
-                const durationMs = durationMinutes * 60000;
 
-                if (targetUser.id === interaction.user.id) {
-                    await interaction.reply({ content: "Ты не можешь замьютить самого себя!", flags: MessageFlags.Ephemeral });
+                 if (targetUser.id === interaction.guild.ownerId) {
+                    await interaction.editReply({ content: "Ты не можешь замьютить владельца сервера" });
                     return;
                 }
-                if (targetUser.id === interaction.guild.ownerId) {
-                    await interaction.reply({ content: "Ты не можешь замьютить владельца сервера", flags: MessageFlags.Ephemeral });
-                    return;
-                }
+
                 const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
                 if (!member) {
-                    await interaction.reply({ content: "Участник не найден", flags: MessageFlags.Ephemeral });
+                    await interaction.editReply({ content: "Участник не найден" });
                     return;
                 }
                 if (!interaction.memberPermissions.has('Administrator') && interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) {
-                    await interaction.reply({ content: "Позиция вашей роли ниже чем роль выбранного участника", flags: MessageFlags.Ephemeral });
+                    await interaction.editReply({ content: "Позиция вашей роли ниже чем роль выбранного участника" });
                     return;
                 }
                 if (!member.moderatable) {
@@ -256,19 +252,94 @@ const data = new SlashCommandBuilder()
                     return;
                 }
 
+                let durationMs = 0;
+                let durationString = "постоянно (макс. 28 дней)";
+                const timeRegex = /^(\d+)([mhdwy])$/i;
+                if (timeInput) {
+                    const match = timeInput.match(timeRegex);
+                    if (match) {
+                        const amount = parseInt(match[1]);
+                        const unit = match[2].toLowerCase();
+                        let multiplier = 0;
+
+                        switch (unit) {
+                            case 'm':
+                                multiplier = 60 * 1000;
+                                durationString = `${amount} минут`;
+                                break;
+                            case 'h':
+                                multiplier = 60 * 60 * 1000;
+                                durationString = `${amount} часов`;
+                                break;
+                            case 'd':
+                                multiplier = 24 * 60 * 60 * 1000;
+                                durationString = `${amount} дней`;
+                                break;
+                            case 'w':
+                                multiplier = 7 * 24 * 60 * 60 * 1000;
+                                durationString = `${amount} недель`;
+                                break;
+                        }
+                        durationMs = amount * multiplier;
+
+                        const maxDurationMs = 28 * 24 * 60 * 60 * 1000;
+
+                        if (durationMs > maxDurationMs) {
+                             const overflowMs = durationMs - maxDurationMs;
+                             let overflowString = '';
+                             let tempMs = overflowMs;
+                              if (tempMs >= 7 * 24 * 60 * 60 * 1000) {
+                                  const weeks = Math.floor(tempMs / (7 * 24 * 60 * 60 * 1000));
+                                  overflowString += `${weeks} нед `;
+                                  tempMs %= (7 * 24 * 60 * 60 * 1000);
+                              }
+                              if (tempMs >= 24 * 60 * 60 * 1000) {
+                                   const days = Math.floor(tempMs / (24 * 60 * 60 * 1000));
+                                   overflowString += `${days} д `;
+                                   tempMs %= (24 * 60 * 60 * 1000);
+                              }
+                              if (tempMs >= 60 * 60 * 1000) {
+                                   const hours = Math.floor(tempMs / (60 * 60 * 1000));
+                                   overflowString += `${hours} ч `;
+                                   tempMs %= (60 * 60 * 1000);
+                              }
+                              if (tempMs >= 60 * 1000) {
+                                  const minutes = Math.floor(tempMs / (60 * 1000));
+                                  overflowString += `${minutes} м`;
+                              }
+                              overflowString = overflowString.trim();
+
+                            await interaction.editReply({ content: `Вы не можете замьютить участника на ${durationString}! Максимальная длительность мута - 28 дней. Превышение: ${overflowString}.` });
+                            return; 
+                        } else if (durationMs <= 0) {
+                             await interaction.editReply({ content: "Длительность мута должна быть положительной." });
+                            return;
+                        }
+                    } else {
+                        await interaction.editReply({ content: "Неверный формат времени. Используйте цифру и единицу (m/h/d/w), например: `10m`, `1h`, `7d`, `2w`." });
+                        return;
+                    }
+                } else {
+                    durationMs = null;
+                    durationString = "постоянно (до 28 дней)";
+                }
+
+
                 try {
                     await member.timeout(durationMs, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
+
                     await db.addModCase({
                       serverId: interaction.guild.id,
                       targetId: targetUser.id,
                       moderatorId: interaction.user.id,
                       action: 'mute',
                       reason: reason,
-                      timestamp: new Date()
+                      timestamp: new Date(),
+                      duration: durationMs 
                     });
-                    
+
                     const latestCase = db.getServerModCases(interaction.guild.id)
-                    
+
                     const embed = new EmbedBuilder()
                       .setColor(0x808080)
                       .setTitle(`Case \`#${latestCase[0].caseNum}\``)
@@ -277,17 +348,17 @@ const data = new SlashCommandBuilder()
                         { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
                         { name: 'Пользователь', value: `<@${targetUser.id}>`, inline: true },
                         { name: 'Причина', value: reason, inline: false },
-                        { name: 'Длительность', value: `${durationMinutes} минут`, inline: true },
+                        { name: 'Длительность', value: durationString, inline: true },
                         { name: 'Время', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
                       )
                       .setFooter({ text: 'Мут выполнен', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
                       .setTimestamp();
-                    
+
                     if (evidence) {
                       embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
                       embed.setImage(evidence.url);
                     }
-                    
+
                     await interaction.editReply({ embeds: [embed] });
                 } catch (error) {
                     console.error('Ошибка при муте пользователя:', error);
@@ -299,17 +370,17 @@ const data = new SlashCommandBuilder()
                 const targetUser = interaction.options.getUser('пользователь');
                 const reason = interaction.options.getString('причина') || 'Без причины';
                 const evidence = interaction.options.getAttachment('доказательства');
-                
+
                 if (targetUser.id === interaction.user.id) {
                     await interaction.reply({ content: "Ты не можешь кикнуть самого себя!", flags: MessageFlags.Ephemeral });
                     return;
                 }
-                
+
                 if (targetUser.id === interaction.guild.ownerId) {
                     await interaction.reply({ content: "Ты не можешь кикнуть владельца сервера!", flags: MessageFlags.Ephemeral });
                     return;
                 }
-                
+
                 const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
                 if (!member) {
                     await interaction.reply({ content: "Участник не найден", flags: MessageFlags.Ephemeral });
@@ -319,12 +390,12 @@ const data = new SlashCommandBuilder()
                     await interaction.reply({ content: "Позиция вашей роли ниже чем роль выбранного участника", flags: MessageFlags.Ephemeral });
                     return;
                 }
-                
+
                 if (!member.kickable) {
                     await interaction.reply({ content: "Я не могу кикнуть этого участника", flags: MessageFlags.Ephemeral });
                     return;
                 }
-                
+
                 try {
                     await member.kick(reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
                     await db.addModCase({
@@ -335,9 +406,9 @@ const data = new SlashCommandBuilder()
                         reason: reason,
                         timestamp: new Date()
                     });
-                    
+
                     const latestCase = db.getServerModCases(interaction.guild.id)
-                    
+
                     const embed = new EmbedBuilder()
                         .setColor(0xffa500)
                         .setTitle(`Case \`#${latestCase[0].caseNum}\``)
@@ -350,12 +421,12 @@ const data = new SlashCommandBuilder()
                         )
                         .setFooter({ text: "Кик выполнен", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
                         .setTimestamp();
-                    
+
                     if (evidence) {
                         embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
                         embed.setImage(evidence.url);
                     }
-                    
+
                     await interaction.reply({ embeds: [embed] });
                 } catch (error) {
                     console.error('Ошибка при кике пользователя:', error);
@@ -364,39 +435,39 @@ const data = new SlashCommandBuilder()
                 break;
             }
             case "unmute": {
-                if (!(interaction.memberPermissions.has('BanMembers'))) {
-                  await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
-                  return;
-                }
+                 if (!(interaction.memberPermissions.has('BanMembers'))) {
+                   await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                   return;
+                 }
                 const targetUser = interaction.options.getUser('пользователь');
                 if (targetUser.id === interaction.user.id) {
                   await interaction.reply({ content: "Ты не можешь размутить самого себя", flags: MessageFlags.Ephemeral });
                   return;
                 }
-                
+
                 const reason = interaction.options.getString('причина') || 'Без причины';
                 const evidence = interaction.options.getAttachment('доказательства');
-                
+
                 const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
                 if (!member) {
                   await interaction.reply({ content: "Участник не найден", flags: MessageFlags.Ephemeral });
                   return;
                 }
-                
+
                 if (!interaction.memberPermissions.has('Administrator') &&
                     interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) {
                         await interaction.reply({ content: "Позиция вашей роли ниже чем роль выбранного участника", flags: MessageFlags.Ephemeral });
                         return;
                     }
-                
+
                 if (!member.moderatable) {
                   await interaction.reply({ content: "Я не могу размутить этого участника", flags: MessageFlags.Ephemeral });
                   return;
                 }
-                
+
                 try {
                   await member.timeout(null, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
-                  
+
                   await db.addModCase({
                     serverId: interaction.guild.id,
                     targetId: targetUser.id,
@@ -405,9 +476,9 @@ const data = new SlashCommandBuilder()
                     reason: reason,
                     timestamp: new Date()
                   });
-                  
+
                   const latestCase = db.getServerModCases(interaction.guild.id)
-                  
+
                   const embed = new EmbedBuilder()
                     .setColor(0x00ff00)
                     .setTitle(`Case \`#${latestCase[0].caseNum}\``)
@@ -420,12 +491,12 @@ const data = new SlashCommandBuilder()
                     )
                     .setFooter({ text: "Размут выполнен", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
                     .setTimestamp();
-                  
+
                   if (evidence) {
                     embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
                     embed.setImage(evidence.url);
                   }
-                  
+
                   await interaction.reply({ embeds: [embed] });
                 } catch (error) {
                   console.error('Ошибка при снятии мута:', error);
@@ -437,7 +508,7 @@ const data = new SlashCommandBuilder()
                 const user = interaction.options.getUser('userid');
                 const reason = interaction.options.getString('reason') || 'Без причины';
                 const evidence = interaction.options.getAttachment('evidence');
-            
+
                 try {
                   await interaction.guild.members.unban(user.id, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
                   await db.addModCase({
@@ -448,9 +519,9 @@ const data = new SlashCommandBuilder()
                     reason: reason,
                     timestamp: new Date()
                   });
-            
+
                   const latestCase = db.getServerModCases(interaction.guild.id)
-            
+
                   const embed = new EmbedBuilder()
                     .setColor(0x00ff00)
                     .setTitle(`Case \`#${latestCase[0].caseNum}\``)
@@ -463,12 +534,12 @@ const data = new SlashCommandBuilder()
                     )
                     .setFooter({ text: "Разбан выполнен", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
                     .setTimestamp();
-            
+
                   if (evidence) {
                     embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
                     embed.setImage(evidence.url);
                   }
-            
+
                   await interaction.reply({ embeds: [embed] });
                 } catch (error) {
                   if (error.code === 10026) {
@@ -480,9 +551,82 @@ const data = new SlashCommandBuilder()
                 }
                 break;
             }
+            case "warn": {
+                 if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
+                   await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                   return;
+                 }
+                 await interaction.deferReply();
 
+                 const targetUser = interaction.options.getUser('пользователь');
+                 const reason = interaction.options.getString('причина') || 'Без причины';
+                 const evidence = interaction.options.getAttachment('доказательства');
+
+                 if (targetUser.id === interaction.user.id) {
+                     await interaction.editReply({ content: "Ты не можешь выдать предупреждение самому себе!" });
+                     return;
+                 }
+                 if (targetUser.id === interaction.guild.ownerId) {
+                     await interaction.editReply({ content: "Ты не можешь выдать предупреждение владельцу сервера" });
+                     return;
+                 }
+
+                 const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
+                 if (!member) {
+                     await interaction.editReply({ content: "Участник не найден" });
+                     return;
+                 }
+
+                 if (!interaction.memberPermissions.has('Administrator') && interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) {
+                    await interaction.editReply({ content: "Позиция вашей роли ниже чем роль выбранного участника" });
+                    return;
+                 }
+
+                 if (!member.moderatable) {
+                     await interaction.editReply({ content: "Я не могу выдать предупреждение этому участнику" });
+                     return;
+                 }
+
+                 try {
+                     await db.addModCase({
+                         serverId: interaction.guild.id,
+                         targetId: targetUser.id,
+                         moderatorId: interaction.user.id,
+                         action: 'warn',
+                         reason: reason,
+                         timestamp: new Date()
+                     });
+
+                     const latestCase = db.getServerModCases(interaction.guild.id)
+
+                     const embed = new EmbedBuilder()
+                         .setColor(0xffa500)
+                         .setTitle(`Case \`#${latestCase[0].caseNum}\``)
+                         .setThumbnail(interaction.guild.iconURL() || '')
+                         .addFields(
+                             { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
+                             { name: 'Пользователь', value: `<@${targetUser.id}>`, inline: true },
+                             { name: 'Причина', value: reason, inline: false },
+                             { name: 'Время', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+                         )
+                         .setFooter({ text: "Предупреждение выдано", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+                         .setTimestamp();
+
+                     if (evidence) {
+                         embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
+                         embed.setImage(evidence.url);
+                     }
+
+                     await interaction.editReply({ embeds: [embed] });
+
+                 } catch (error) {
+                     console.error('Ошибка при выдаче предупреждения:', error);
+                     await interaction.editReply({ content: "Не удалось выдать предупреждение участнику" });
+                 }
+                 break;
+             }
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', D})
+                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;
         }
     }
