@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType, EmbedBuilder, ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { privateAccess, bot_log_channel } = require('../../config.json');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
 /*const { default: axios } = require('axios');
@@ -62,6 +62,10 @@ const data = new SlashCommandBuilder()
                 .setRequired(true)
             )
         )
+        .addSubcommand(subcommand =>
+            subcommand.setName('botinfo')
+            .setDescription("Показывает подробную информацию о боте")
+        )
 
 module.exports = {
     cooldown: 5,
@@ -82,16 +86,16 @@ module.exports = {
                 } catch (error) {
                     await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
                     const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });
+                    .setColor('Red')
+                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .addFields(
+                        { name: `Команда`, value: `${interaction.commandName}` },
+                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                    )
+                    .setTimestamp(new Date())
+                    console.error(error);
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+                    await logChannel.send({ embeds: [errorEmbed] });
                 }
                 break;
             }
@@ -110,16 +114,16 @@ module.exports = {
                 } catch (error) {
                     await interaction.editReply({content: `Не удалось изменить аватар`, flags: MessageFlags.Ephemeral});
                     const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });
+                    .setColor('Red')
+                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .addFields(
+                        { name: `Команда`, value: `${interaction.commandName}` },
+                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                    )
+                    .setTimestamp(new Date())
+                    console.error(error);
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+                    await logChannel.send({ embeds: [errorEmbed] });
                 }
                 break;
             }
@@ -137,18 +141,45 @@ module.exports = {
                 } catch (error) {
                     await interaction.editReply({content: `Не удалось изменить баннер`, flags: MessageFlags.Ephemeral});
                     const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });
+                    .setColor('Red')
+                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .addFields(
+                        { name: `Команда`, value: `${interaction.commandName}` },
+                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                    )
+                    .setTimestamp(new Date())
+                    console.error(error);
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+                    await logChannel.send({ embeds: [errorEmbed] });
                 }
                 break;
+            }
+            case "botinfo": {
+                await interaction.deferReply({flags: MessageFlags.Ephemeral})
+                const row = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                      .setCustomId(`eval_botinfo_guilds`)
+                      .setLabel('Сервера')
+                      .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
+                      .setLabel('ъ')
+                      .setURL("https://samiker.xyz")
+                      .setStyle(ButtonStyle.Link)
+                  );
+
+                const embed = new EmbedBuilder()
+                .setTitle("Информация о текущем клиенте бота")
+                .setColor('Random')
+                .setDescription(
+                    "`Сервера` - на каких серверах находится этот бот\n"+
+                    "Здесь могла быть ваша реклама https://samiker.xyz"
+                )
+
+                return await interaction.editReply({
+                    embeds: [embed],
+                    flags: MessageFlags.Ephemeral,
+                    components: [row]
+                })
             }
         
             default:

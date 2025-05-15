@@ -80,7 +80,7 @@ module.exports = {
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
             )
             .setTimestamp(new Date())
             console.error(error);
@@ -100,7 +100,7 @@ module.exports = {
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
             )
             .setTimestamp(new Date())
             console.error(error);
@@ -125,7 +125,7 @@ module.exports = {
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
             )
             .setTimestamp(new Date())
             console.error(error);
@@ -148,7 +148,7 @@ module.exports = {
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
             )
             .setTimestamp(new Date())
             console.error(error);
@@ -169,7 +169,7 @@ module.exports = {
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
             )
             .setTimestamp(new Date())
             console.error(error);
@@ -190,7 +190,7 @@ module.exports = {
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack ? error.stack.substring(0, 500) : ''}\`\`\`` }
+                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
             )
             .setTimestamp(new Date())
             console.error(error);

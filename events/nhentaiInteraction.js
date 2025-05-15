@@ -5,8 +5,8 @@ module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (interaction.isButton()) {
+            if (!["prev_", "next_"].includes(interaction.customId)) return;
             const [action, ownerId, galleryId, pageStr] = interaction.customId.split('_');
-            if (!galleryId) return;
             const page = parseInt(pageStr, 10);
 
             if (interaction.user.id !== ownerId) {

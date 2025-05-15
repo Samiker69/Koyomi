@@ -55,6 +55,7 @@ module.exports = {
         try {
             await command.execute(interaction);
         } catch (error) {
+            console.error(error);
             const errorEmbed = new EmbedBuilder()
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
@@ -63,7 +64,7 @@ module.exports = {
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack || ''}\`\`\`` }
             )
             .setTimestamp(new Date())
-            console.error(error);
+            
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
             await logChannel.send({ embeds: [errorEmbed] })
             if (interaction.replied || interaction.deferred) {
