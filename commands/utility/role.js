@@ -53,6 +53,7 @@ const data = new SlashCommandBuilder()
                             
                         case "edit": {
                             if(!await interaction.member.permissions.has('ManageRoles', true)) return await interaction.reply({content: 'У вас недостаточно прав для данного действия', flags: MessageFlags.Ephemeral});
+
                             const role = interaction.options.getRole('role');
                             const color = interaction.options.getString('color') ?? role.color;
                             const hoist = interaction.options.getBoolean('hoist') ?? role.hoist;
@@ -62,6 +63,11 @@ const data = new SlashCommandBuilder()
                             const position = interaction.options.getInteger('position') ?? role.position;
                             const reason = interaction.options.getString('reason') ?? 'не указано';
                             const unicodeemoji = interaction.options.getString('unicodeemoji') ?? role.unicodeEmoji;
+
+                            const member = interaction.guild.members.cache.get(interaction.user.id);
+                            const roleCompare = await role.comparePositionTo(member.roles.highest);
+                            if (roleCompare >= 1) return await interaction.reply({content: 'Ваша позиция роли ниже выбранной', flags: MessageFlags.Ephemeral});
+
 
                             if (interaction.guild.premiumTier >= 2) {
                                 const icon = interaction.options.getAttachment('icon') ?? role.icon
