@@ -45,6 +45,7 @@ if (process.env.gemini_api_key) {
 
 }
 
+client.queues = new Map()
 client.cooldowns = new Collection();
 client.commands = new Collection();
 client.eventscount = 0
