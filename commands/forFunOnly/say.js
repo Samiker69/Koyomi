@@ -39,7 +39,7 @@ module.exports = {
 
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-    const text = interaction.options.getString('text', true);
+    const text = interaction.options.getString('text', false);
     const image = interaction.options.getAttachment('image');
     const replyToRaw = interaction.options.getString('reply_to');
     if (!text && !image) return await interaction.editReply({ content: "`text` или `image` должны быть заполнены!", flags: MessageFlags.Ephemeral });
