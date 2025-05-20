@@ -5,8 +5,8 @@ module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (interaction.isButton()) {
-            if (!["prev", "next"].includes(interaction.customId.split('_')[0])) return;
-            const [action, ownerId, galleryId, pageStr] = interaction.customId.split('_');
+            const [command_name, action, ownerId, galleryId, pageStr] = interaction.customId.split('_');
+            if (command_name !== "nhentai") return;
             const page = parseInt(pageStr, 10);
 
             if (interaction.user.id !== ownerId) {
@@ -27,12 +27,12 @@ module.exports = {
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
-                    .setCustomId(`prev_${ownerId}_${galleryId}_${newPage}`)
+                    .setCustomId(`nhentai_prev_${ownerId}_${galleryId}_${newPage}`)
                     .setLabel('⬅️')
                     .setStyle(ButtonStyle.Primary)
                     .setDisabled(newPage === 1),
                 new ButtonBuilder()
-                    .setCustomId(`next_${ownerId}_${galleryId}_${newPage}`)
+                    .setCustomId(`nhentai_next_${ownerId}_${galleryId}_${newPage}`)
                     .setLabel('➡️')
                     .setStyle(ButtonStyle.Primary)
                     .setDisabled(newPage === result.totalPages)

@@ -143,6 +143,7 @@ module.exports = {
             if (serverQueue.songs.length > 1) {
                  queueEmbed.addFields({ name: 'Позиция в очереди', value: (serverQueue.songs.length -1).toString() });
             }
+            
             return interaction.editReply({ embeds: [queueEmbed] });
         }
     },

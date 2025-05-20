@@ -26,12 +26,12 @@ const {
       const ownerId = interaction.user.id;
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-          .setCustomId(`prev_${ownerId}_${id}_${page}`)
+          .setCustomId(`nhentai_prev_${ownerId}_${id}_${page}`)
           .setLabel('⬅️')
           .setStyle(ButtonStyle.Primary)
           .setDisabled(true),
         new ButtonBuilder()
-          .setCustomId(`next_${ownerId}_${id}_${page}`)
+          .setCustomId(`nhentai_next_${ownerId}_${id}_${page}`)
           .setLabel('➡️')
           .setStyle(ButtonStyle.Primary)
           .setDisabled(page === result.totalPages)

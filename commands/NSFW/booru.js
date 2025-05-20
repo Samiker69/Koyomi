@@ -85,7 +85,7 @@ module.exports = {
         let pages = [], page = 0, nsfw = false;
         const filter = (i) => {
             // Проверяем customId и пользователя
-             if (i.customId === 'previous_page' || i.customId === 'next_page') {
+             if (i.customId === 'booru_previous_page' || i.customId === 'booru_next_page') {
                  if (i.user.id !== interaction.user.id) {
                     i.reply({ content: `Только ${interaction.user.username} может взаимодействовать`, flags: MessageFlags.Ephemeral });
                     return false; // Игнорируем нажатие от другого пользователя
@@ -115,28 +115,28 @@ module.exports = {
             if (result.posts.length < 1) return await interaction.editReply(`Кажется, ничего не удалось найти. Проверьте правильность написания тегов ${no_ai ? "также попробуйте не использовать no_ai" : ''}`);
 
             for (let post of result) {
-                if (lastartlink === post.fileUrl) continue;
-                lastartlink = post.fileUrl;
-                const ok = new EmbedBuilder()
-                .setColor('Random')
-                .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
-                .setDescription(`-# \`${post.tags.join(',')}\``)
-                .setURL(post.postView)
-                .setTimestamp(post.createdAt)
-                .setImage(post.fileUrl)
-
-                const banned = new EmbedBuilder()
-                .setColor('Grey')
-                .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
-                .setDescription(
-                    `Данный пост заблокирован, так как имеет опасный рейтинг для этого канала.`+
-                    `\nИнформация о посте: \`id ${post.id}\``
-                )
-                .setTimestamp(post.createdAt)
-
                 if ( (post.rating === 'u' || post.rating === 'e' || post.rating === 'q') && !interaction.channel.nsfw ) {
+                    const banned = new EmbedBuilder()
+                    .setColor('Grey')
+                    .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
+                    .setDescription(
+                        `Данный пост заблокирован, так как имеет опасный рейтинг для этого канала.`+
+                        `\nИнформация о посте: \`id ${post.id}\``
+                    )
+                    .setTimestamp(post.createdAt)
+                    
                     pages.push(banned)
                 } else {
+                    if (lastartlink === post.fileUrl) continue;
+                    lastartlink = post.fileUrl;
+                    const ok = new EmbedBuilder()
+                    .setColor('Random')
+                    .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
+                    .setDescription(`-# \`${post.tags.join(',')}\``)
+                    .setURL(post.postView)
+                    .setTimestamp(post.createdAt)
+                    .setImage(post.fileUrl)
+
                     pages.push(ok)
                 }
 
@@ -151,11 +151,11 @@ module.exports = {
             });
 
             collector.on('collect', async (button) => {
-                if (button.customId === 'previous_page') {
+                if (button.customId === 'booru_previous_page') {
                     if (page > 0) {
                         page--;
                     }
-                } else if (button.customId === 'next_page') {
+                } else if (button.customId === 'booru_next_page') {
                     if (page < pages.length - 1) {
                         page++;
                     }
@@ -189,7 +189,6 @@ module.exports = {
                 pages = []
     
                 try {
-                     // Редактируем исходное сообщение, убирая активные кнопки
                     await message.edit({ embeds: [disabledEmbed], components: [disabledRow] });
                 } catch (error) {
                     console.error("Не удалось отредактировать сообщение после завершения коллектора:", error);

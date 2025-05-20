@@ -1,16 +1,16 @@
-const { ButtonBuilder,ButtonStyle,ActionRowBuilder, time} = require('discord.js')
+const { ButtonBuilder,ButtonStyle,ActionRowBuilder} = require('discord.js')
 
 async function changePage(pageIndex, pages) {
     const currentEmbed = pages[pageIndex].setFooter({ text: `page ${pageIndex + 1} of ${pages.length}` });
 
     const previousButton = new ButtonBuilder()
-        .setCustomId('previous_page')
+        .setCustomId('booru_previous_page')
         .setLabel('⬅️')
         .setStyle(ButtonStyle.Primary)
         .setDisabled(pageIndex === 0); // Отключаем кнопку "Назад" на первой странице
 
     const nextButton = new ButtonBuilder()
-        .setCustomId('next_page')
+        .setCustomId('booru_next_page')
         .setLabel('➡️')
         .setStyle(ButtonStyle.Primary)
         .setDisabled(pageIndex === pages.length - 1); // Отключаем кнопку "Вперед" на последней странице
