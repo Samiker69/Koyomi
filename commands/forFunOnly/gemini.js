@@ -70,13 +70,13 @@ module.exports = {
             opt.setName('top_p')
             .setDescription('Вероятность использования токена. 0.0 - ожидаемый токен, 1 - использует все токены')
             .setMaxValue(1)
-            .setMinValue(0.0)
+            .setMinValue(-1)
         )
         .addIntegerOption(opt =>
             opt.setName('top_k')
             .setDescription('"Словарный запас" при генерации токена. 1-5 - маленький, 50+ - разнообразный')
             .setMaxValue(100)
-            .setMinValue(1)
+            .setMinValue(-1)
         )
         .addIntegerOption(opt =>
             opt.setName('history_limit')
@@ -239,7 +239,11 @@ module.exports = {
                 .setAuthor({ iconURL: interaction.user.displayAvatarURL({extension: "png"}), name: interaction.user.displayName })
                 .setColor("Random")
                 .setTitle('Ваши настройки gemini')
-                .setDescription(`Системные инструкции (system_instructions): ${config.system_instructions || "Пусто"}\n\nНастройки безопасности:\n\`\`\`json\n${JSON.stringify(SS, null, 2)}\`\`\`\n`)
+                .setDescription(
+                    `Системные инструкции (system_instructions): ${config.system_instructions || "Пусто"}\n\n`+
+                    `Настройки безопасности:\n\`\`\`json\n${JSON.stringify(SS, null, 2)}\`\`\`\n\n`+
+                    'Совет: чтобы сбросить настройки `top_k` и `top_p`, укажите им отрицательное значение: `/ai edit top_k:-1`'
+                )
                 .setFields(
                     { name: "Модель (model)", value: config.model, inline: true },
                     { name: "Максимум токенов на ответ (max_output_tokens)", value: `${config.max_output_tokens}`, inline: true },
@@ -253,13 +257,20 @@ module.exports = {
             }
             case "edit": {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
+
+                let top_k = interaction.options.getNumber('top_k') || config.top_k,
+                top_p = interaction.options.getNumber('top_p') || config.top_p;
+
+                if (top_k < 0) top_k = null;
+                if (top_p < 0) top_p = null;
+
                 let changes = {
                     model: interaction.options.getString('model') || config.model,
                     system_instructions: interaction.options.getString('system_instructions') || config.system_instructions,
                     max_output_tokens: interaction.options.getInteger('max_output_tokens') || config.max_output_tokens,
                     temperature: interaction.options.getNumber('temperature') || config.temperature,
-                    top_p: interaction.options.getNumber('top_p') || config.top_p,
-                    top_k: interaction.options.getInteger('top_k') || config.top_k,
+                    top_p: top_p,
+                    top_k: top_k,
                     history_limit: interaction.options.getString('history_limit') || config.history_limit
                 }
 
