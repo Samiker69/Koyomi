@@ -1,12 +1,14 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
 const { generateCaptcha } = require('../../functions/createCaptcha');
+const { privateAccess } = require('../../config.json');
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('captcha')
         .setDescription("Создаёт капчу")
+        .setContexts(0,1,2)
         .addBooleanOption(opt => 
             opt.setName('invisible')
             .setDescription('Сделать сообщение невидимым?')
@@ -46,6 +48,9 @@ module.exports = {
         const noiseDots = interaction.options.getInteger("noise_dots") || 100;
         const noiseLines = interaction.options.getInteger("noise_lines") || 10;
         const invisible = interaction.options.getBoolean('invisible') || false;
+
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+
         const captcha = await generateCaptcha({
             length: captchaLength || 6,
             outputType: "buffer",
@@ -56,10 +61,10 @@ module.exports = {
         })
 
         if (invisible) {
-            await interaction.reply({ content: `Капча готова! Исходный текст: ${captcha.text}`, flags: MessageFlags.Ephemeral, files: [captcha.data] });
+            await interaction.editReply({ content: `Капча готова! Исходный текст: ${captcha.text}`, flags: MessageFlags.Ephemeral, files: [captcha.data] });
         } else {
-            await interaction.reply({ content: `Капча готова! Исходный текст: ${captcha.text}`, flags: MessageFlags.Ephemeral });
-            await interaction.channel.send({ content: "Всем решать капчу!!!!", files: [captcha.data] });
+            await interaction.editReply({ content: `Капча готова! Исходный текст: ${captcha.text}`, flags: MessageFlags.Ephemeral });
+            await interaction.followUp({ content: "Всем решать капчу!!!!", files: [captcha.data] });
         }
         
     }

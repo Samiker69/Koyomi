@@ -10,6 +10,7 @@ module.exports = {
     data: new SlashCommandBuilder()
     .setName('ai')
     .setDescription('Действия с ai')
+    .setContexts(0,1,2)
     .addSubcommand(sub => 
         sub.setName('ask')
         .setDescription('Спросить gemini о чём-либо')
@@ -19,7 +20,7 @@ module.exports = {
             .setMaxLength(2000)
             .setRequired(true)
         )
-    ).setContexts(0,1,2)
+    )
     .addSubcommand(sub =>
         sub.setName('add-user')
         .setDescription('Добавляет пользователя в бд, позволяя ему пользоваться командой /ai')
@@ -84,9 +85,37 @@ module.exports = {
             .setMinValue(0)
         )
     )
+    .addSubcommand(sub =>
+        sub.setName('edit_safety')
+        .setDescription('Изменение настроек безопасности модели')
+        .addStringOption(opt => 
+            opt.setName('s_category')
+            .setDescription("Название опции")
+            .setChoices(
+                { name: 'Травля', value: 'HARASSMENT' },
+                { name: 'HateSpeech', value: 'HATE_SPEECH' },
+                { name: 'Откровенный_контент', value: 'SEXUALLY_EXPLICIT' },
+                { name: 'Опасный_контент', value: 'DANGEROUS_CONTENT' }
+            )
+            .setRequired(true)
+        )
+        .addStringOption(opt => 
+            opt.setName('s_value')
+            .setDescription("Режимы безопастности")
+            .setChoices(
+                { name: 'Игнорировать', value: 'BLOCK_NONE' },
+                { name: 'Мягкий', value: 'BLOCK_HIGH_AND_ABOVE' },
+                { name: 'Средний', value: 'BLOCK_MEDIUM_AND_ABOVE' },
+                { name: 'Строгий', value: 'BLOCK_LOW_AND_ABOVE' },
+                { name: 'По_умолчанию', value: 'HARM_BLOCK_THRESHOLD_UNSPECIFIED' }
+            )
+            .setRequired(true)
+        )
+    )
 ,
     async execute(interaction) {
-        if (!privateAccess.includes(interaction.user.id)) return await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral});
+        const userId = interaction.user.id;
+        if (!privateAccess.includes(userId)) return await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral});
         if (!interaction.client.gemini) {
             return await interaction.reply({
                 content: 'Функционал ИИ недоступен, так как client.gemini пуст.',
@@ -95,8 +124,8 @@ module.exports = {
         }
 
         const promt = interaction.options.getString('promt');
-        const config = db.getUserConfig(interaction.user.id)
-        const SS = db.getSafetySettings(interaction.user.id)
+        const config = db.getUserConfig(userId);
+        const SS = db.getSafetySettings(userId);
 
         switch (interaction.options.getSubcommand()) {
             case "ask": {
@@ -121,33 +150,41 @@ module.exports = {
                         }
                     })
                     const start_ = Date.now()
-                    const reply = response.text || response.candidates[0].content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=ai+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
+                    const reply = response.text || response.candidates[0].content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
+                    const stringReply = String(reply);
                 
-                    if (String(reply).length >= 1900) {
-                        const splited = splitTextSmartly(String(reply), 1800);
+                    if (stringReply.length >= 1990 && stringReply.length < 9900) {
                         await interaction.editReply(`Время ожидания ${Math.floor((start_ - interaction.createdTimestamp) / 1000 )} секунд, длина ${String(reply).length}`);
+                        const splited = splitTextSmartly(String(reply), 1980);
                         for (const part of splited) {
                             await interaction.followUp(part);
                             await new Promise(resolve => setTimeout(resolve, 300)); 
                         }
+                    } else if (stringReply.length >= 9900) {
+                        const textBuffer = Buffer.from(reply, 'utf-8');
+                        await interaction.followUp({
+                            content: 'AI ответила слишком длинным текстом, поэтому её ответ находится в файле.',
+                            files: [{
+                                attachment: textBuffer,
+                                name: 'ai_reply.md'
+                            }]
+                        });
                     } else {
                         await interaction.editReply(reply);
                     }
-
-                    
                 } catch (error) {
                     await interaction.editReply(`ъ\n\`\`\`txt\n${error}\`\`\``)  
                     const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel);
-            await logChannel.send({ embeds: [errorEmbed] });
+                    .setColor('Red')
+                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .addFields(
+                        { name: `Команда`, value: `${interaction.commandName}` },
+                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                    )
+                    .setTimestamp(new Date())
+                    console.error(error);
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel);
+                    await logChannel.send({ embeds: [errorEmbed] });
                 }
                 break;
             }
@@ -159,16 +196,16 @@ module.exports = {
                     await interaction.reply({ content: `${user} был добавлен в базу данных`, flags: MessageFlags.Ephemeral })
                 } catch (error) {
                     const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });
+                    .setColor('Red')
+                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .addFields(
+                        { name: `Команда`, value: `${interaction.commandName}` },
+                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                    )
+                    .setTimestamp(new Date())
+                    console.error(error);
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+                    await logChannel.send({ embeds: [errorEmbed] });
                     await interaction.reply({ content: `Не удалось добавить пользователя в базу данных. err: ${error.message}`, flags: MessageFlags.Ephemeral })
                 }
                 break;
@@ -181,16 +218,16 @@ module.exports = {
                     await interaction.reply({ content: `${user} ${promise ? 'был удалён из базы данных.' : "не был удалён из базы данных. Возможно, его в ней не было"}`, flags: MessageFlags.Ephemeral })
                 } catch (error) {
                     const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });
+                    .setColor('Red')
+                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .addFields(
+                        { name: `Команда`, value: `${interaction.commandName}` },
+                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                    )
+                    .setTimestamp(new Date())
+                    console.error(error);
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
+                    await logChannel.send({ embeds: [errorEmbed] });
                     await interaction.reply({ content: `Не удалось удалить пользователя из базы данных. err: ${error.message}`, flags: MessageFlags.Ephemeral })
                 }
                 break;
@@ -202,14 +239,14 @@ module.exports = {
                 .setAuthor({ iconURL: interaction.user.displayAvatarURL({extension: "png"}), name: interaction.user.displayName })
                 .setColor("Random")
                 .setTitle('Ваши настройки gemini')
-                .setDescription(`Системные инструкции(system_instructions): ${config.system_instructions || "Пусто"}\n\nНастройки безопасности:\n\`\`\`json\n${JSON.stringify(SS, null, 2)}\`\`\`\n`)
+                .setDescription(`Системные инструкции (system_instructions): ${config.system_instructions || "Пусто"}\n\nНастройки безопасности:\n\`\`\`json\n${JSON.stringify(SS, null, 2)}\`\`\`\n`)
                 .setFields(
-                    { name: "Модель(model)", value: config.model, inline: true },
-                    { name: "Максимум токенов на ответ(max_output_tokens)", value: `${config.max_output_tokens}`, inline: true },
-                    { name: "Температура ответов(temperature)", value: `${config.temperature}`, inline: true },
+                    { name: "Модель (model)", value: config.model, inline: true },
+                    { name: "Максимум токенов на ответ (max_output_tokens)", value: `${config.max_output_tokens}`, inline: true },
+                    { name: "Температура ответов (temperature)", value: `${config.temperature}`, inline: true },
                     { name: "top_k", value: `${config.top_k}`, inline: true },
                     { name: "top_p", value: `${config.top_p}`, inline: true },
-                    { name: "Лимит сохранения истории(history_limit)", value: `${config.history_limit}`, inline: true }
+                    { name: "Лимит сохранения истории (history_limit)", value: `${config.history_limit}`, inline: true }
                 )
                 await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
                 break;
@@ -225,12 +262,46 @@ module.exports = {
                     top_k: interaction.options.getInteger('top_k') || config.top_k,
                     history_limit: interaction.options.getString('history_limit') || config.history_limit
                 }
-                const result = db.updateUserConfig(interaction.user.id, changes);
+
+                const result = db.updateUserConfig(userId, changes);
                 const reply = result.changes > 0 ? "Настройки были обновленны." : "Настройки не изменились"
                 await interaction.reply({ content: reply, flags: MessageFlags.Ephemeral })
                 break;
             }
-        
+            case "edit_safety": {
+                let result = 0,
+                s_value = interaction.options.getString('s_value'),
+                s_category = interaction.options.getString('s_category'),
+                nothingСhanged = 'Ничего не изменилось. Вероятно, эта опция уже была установлена на это значение',
+                change = `Значение категории \`${s_category}\` было изменено на \`${s_value}\``;
+
+                switch (s_category) {
+                    case "HARASSMENT":
+                        result = db.updateSafetySettings(userId, { HARM_CATEGORY_HARASSMENT: s_value });
+                        await interaction.reply({content: result.changes > 0 ? change : nothingСhanged, flags: MessageFlags.Ephemeral});
+                        break;
+
+                    case "HATE_SPEECH":
+                        result = db.updateSafetySettings(userId, { HARM_CATEGORY_HATE_SPEECH: s_value });
+                        await interaction.reply({content: result.changes > 0 ? change : nothingСhanged, flags: MessageFlags.Ephemeral});
+                        break;
+                    
+                    case "SEXUALLY_EXPLICIT":
+                        result = db.updateSafetySettings(userId, { HARM_CATEGORY_SEXUALLY_EXPLICIT: s_value });
+                        await interaction.reply({content: result.changes > 0 ? change : nothingСhanged, flags: MessageFlags.Ephemeral});
+                        break;
+
+                    case "DANGEROUS_CONTENT":
+                        result = db.updateSafetySettings(userId, { HARM_CATEGORY_DANGEROUS_CONTENT: s_value });
+                        await interaction.reply({content: result.changes > 0 ? change : nothingСhanged, flags: MessageFlags.Ephemeral});
+                        break;   
+                    
+                    default:
+                        await interaction.reply({content: 'Незвестная категория!', flags: MessageFlags.Ephemeral});
+                        break;
+                }
+                break;
+            }
             default:
                 await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;

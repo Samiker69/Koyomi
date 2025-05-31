@@ -177,7 +177,10 @@ class GeminiDB {
             throw new Error("userId is required to get safety settings.");
         }
         const stmt = this.db.prepare('SELECT * FROM gemini_safety_settings WHERE user_id = ?');
-        return stmt.get(userId);
+        const safetySettings = stmt.get(userId);
+        
+        const { user_id, ...restOfSettings } = safetySettings;
+        return restOfSettings;
     }
 
     /**
