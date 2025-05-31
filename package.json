@@ -1,6 +1,6 @@
 {
   "name": "mojoadministrator",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "ъ",
   "main": "bot.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "keywords": [],
   "author": "VinTeRuS, Samiker",
-  "license": "",
+  "license": "ARR",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Samiker69/MojoAdministrator/issues"

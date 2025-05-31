@@ -258,7 +258,7 @@ module.exports = {
             case "edit": {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
 
-                let top_k = interaction.options.getNumber('top_k') || config.top_k,
+                let top_k = interaction.options.getInteger('top_k') || config.top_k,
                 top_p = interaction.options.getNumber('top_p') || config.top_p;
 
                 if (top_k < 0) top_k = null;
