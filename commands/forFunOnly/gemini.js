@@ -1,8 +1,9 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 const { privateAccess, bot_log_channel } = require('../../config.json');
 
-const GeminiDB = require('../../functions/db/gemini_settings')
+const GeminiDB = require('../../functions/db/gemini_settings');
+const geminiCrashHadler = require('../../functions/gemini_crash_handler');
 const db = new GeminiDB('./database/geminiDB.db')
 
 module.exports = {
@@ -15,10 +16,13 @@ module.exports = {
         sub.setName('ask')
         .setDescription('Спросить gemini о чём-либо')
         .addStringOption(opt => 
-            opt.setName('promt')
+            opt.setName('text')
             .setDescription('Запрос к gemini')
-            .setMaxLength(2000)
             .setRequired(true)
+        )
+        .addBooleanOption(opt =>
+            opt.setName("invisible")
+            .setDescription("Делает ответ ai невидимым")
         )
     )
     .addSubcommand(sub =>
@@ -123,15 +127,17 @@ module.exports = {
             });
         }
 
-        const promt = interaction.options.getString('promt');
         const config = db.getUserConfig(userId);
         const SS = db.getSafetySettings(userId);
 
         switch (interaction.options.getSubcommand()) {
             case "ask": {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
-                await interaction.deferReply();
+                const invisible = interaction.options.getBoolean('invisible');
+                await interaction.deferReply(invisible ? { flags: MessageFlags.Ephemeral } : null);
+
                 try {
+                    const promt = interaction.options.getString('text');
                     const response = await interaction.client.gemini.models.generateContent({
                         model: config.model,
                         contents: promt,
@@ -149,15 +155,16 @@ module.exports = {
                             ]
                         }
                     })
-                    const start_ = Date.now()
+                    const _end = Date.now()
                     const reply = response.text || response.candidates[0].content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
                     const stringReply = String(reply);
+                    const timeText = `Время ожидания ${Math.floor((_end - interaction.createdTimestamp) / 1000 )} секунд, длина ${String(reply).length}`
                 
                     if (stringReply.length >= 1990 && stringReply.length < 9900) {
-                        await interaction.editReply(`Время ожидания ${Math.floor((start_ - interaction.createdTimestamp) / 1000 )} секунд, длина ${String(reply).length}`);
-                        const splited = splitTextSmartly(String(reply), 1980);
+                        await interaction.editReply(invisible ? { content: timeText, flags: MessageFlags.Ephemeral } : timeText);
+                        const splited = splitTextSmartly(stringReply, 1980);
                         for (const part of splited) {
-                            await interaction.followUp(part);
+                            await interaction.followUp(invisible ? { content: part, flags: MessageFlags.Ephemeral } : part);
                             await new Promise(resolve => setTimeout(resolve, 300)); 
                         }
                     } else if (stringReply.length >= 9900) {
@@ -167,13 +174,18 @@ module.exports = {
                             files: [{
                                 attachment: textBuffer,
                                 name: 'ai_reply.md'
-                            }]
+                            }],
+                            flags: invisible ? MessageFlags.Ephemeral : null,
                         });
                     } else {
-                        await interaction.editReply(reply);
+                        await interaction.editReply(invisible ? { content: reply, flags: MessageFlags.Ephemeral } : reply);
                     }
                 } catch (error) {
-                    await interaction.editReply(`ъ\n\`\`\`txt\n${error}\`\`\``)  
+                    const gemini_error = geminiCrashHadler(error);
+                    if (gemini_error) {
+                        return await interaction.editReply(invisible ? { content: gemini_error, flags: MessageFlags.Ephemeral } : gemini_error);
+                    }
+                    await interaction.editReply(`\n\`\`\`txt\n${error}\`\`\``)  
                     const errorEmbed = new EmbedBuilder()
                     .setColor('Red')
                     .setTitle(`Произошла ошибка при обработке команды`)
@@ -242,7 +254,8 @@ module.exports = {
                 .setDescription(
                     `Системные инструкции (system_instructions): ${config.system_instructions || "Пусто"}\n\n`+
                     `Настройки безопасности:\n\`\`\`json\n${JSON.stringify(SS, null, 2)}\`\`\`\n\n`+
-                    'Совет: чтобы сбросить настройки `top_k` и `top_p`, укажите им отрицательное значение: `/ai edit top_k:-1`'
+                    'Совет: чтобы сбросить настройки `top_k` и `top_p`, укажите им отрицательное значение: `/ai edit top_k:-1`.\n'+
+                    'Чтобы сбросить настройки `system_instructions`, используйте команду `/ai edit system_instructions:{NULL}`'
                 )
                 .setFields(
                     { name: "Модель (model)", value: config.model, inline: true },
@@ -259,14 +272,16 @@ module.exports = {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
 
                 let top_k = interaction.options.getInteger('top_k') || config.top_k,
-                top_p = interaction.options.getNumber('top_p') || config.top_p;
+                top_p = interaction.options.getNumber('top_p') || config.top_p,
+                s_i = interaction.options.getString('system_instructions') || config.system_instructions;
 
                 if (top_k < 0) top_k = null;
                 if (top_p < 0) top_p = null;
+                if (s_i?.startsWith("{NULL}")) s_i = null;
 
                 let changes = {
                     model: interaction.options.getString('model') || config.model,
-                    system_instructions: interaction.options.getString('system_instructions') || config.system_instructions,
+                    system_instructions: s_i,
                     max_output_tokens: interaction.options.getInteger('max_output_tokens') || config.max_output_tokens,
                     temperature: interaction.options.getNumber('temperature') || config.temperature,
                     top_p: top_p,

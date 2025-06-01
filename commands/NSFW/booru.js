@@ -2,7 +2,7 @@ const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed
 const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
 const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
-const {nsfw} = require('../../locales/descriptions/nsfw')
+const { nsfw } = require('../../locales/descriptions/nsfw')
 const { bot_log_channel } = require('../../config.json')
 
 module.exports = {
@@ -11,6 +11,7 @@ module.exports = {
 		.setName('booru')
 		.setDescription(nsfw.booru.description.ru)
         .setDescriptionLocalizations(nsfw.booru.description)
+        .setContexts(0,1,2)
         .addSubcommand(sub =>
             sub.setName('search')
             .setDescription(nsfw.booru.search.description.ru)

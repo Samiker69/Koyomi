@@ -22,8 +22,6 @@ class SettingsDatabase {
      */
     constructor(dbPath = 'settings.db') {
         try {
-            // Инициализируем соединение с БД
-            // verbose: console.log можно раскомментировать для отладки SQL-запросов
             this.db = new Database(dbPath /*, { verbose: console.log } */);
             //console.log(`Подключено к базе данных: ${path.resolve(dbPath)}`);
 
@@ -61,9 +59,7 @@ class SettingsDatabase {
             );
         `;
         this.db.exec(createTableQuery);
-        console.log("Таблица 'guild_settings' инициализирована.");
     }
-
     /**
      * Подготавливает SQL-запросы для многократного использования.
      * @private
@@ -83,7 +79,6 @@ class SettingsDatabase {
             // Подготовленные запросы для обновления каждой отдельной настройки
             update: {}
         };
-
         VALID_SETTINGS.forEach(setting => {
             this.statements.update[setting] = this.db.prepare(
                 // Динамически создаем запрос для каждой настройки
@@ -91,7 +86,6 @@ class SettingsDatabase {
                 `UPDATE guild_settings SET ${setting} = ? WHERE guildId = ?`
             );
         });
-         console.log("SQL-запросы подготовлены.");
     }
 
     /**
