@@ -16,9 +16,6 @@ if (!fs.existsSync('./database')) {
 	console.log('[INFO]: Папка database создана')
 }
 
-const Sdb = new settings('./database/settings.db')
-const db = new ModerationDB('./database/cases.db')
-const tags = new TagsDB('./database/tags.db')
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -84,6 +81,7 @@ for (const file of eventFiles) {
 		client.on(event.name, (...args) => event.execute(...args));
 	}
 }
+
 client.once('ready', async () => {
 	const rest = new REST().setToken(process.env.token);
 
@@ -100,16 +98,3 @@ client.once('ready', async () => {
 });
 
 client.login(process.env.token);
-process.on('SIGINT', () => {
-    db.close();
-	Sdb.close();
-	tags.close();
-    process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-    db.close();
-	Sdb.close();
-	tags.close();
-    process.exit(0);
-});

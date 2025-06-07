@@ -115,7 +115,7 @@ async function FindTxtInMessage(message, targetFilename = null) {
     let targetAttachment = null;
     if (targetFilename) {
         targetAttachment = message.attachments.find(att => 
-            att.name?.toLowerCase() === targetFilename.toLowerCase() && att.name?.endsWith('.txt')
+            att.name?.toLowerCase().includes(targetFilename.toLowerCase()) && att.name?.endsWith('.txt')
         );
         if (!targetAttachment) {
             if (!message.attachments.some(att => att.name?.endsWith('.txt'))) return null;
@@ -137,51 +137,16 @@ async function FindTxtInMessage(message, targetFilename = null) {
     }
 }
 
-// ищет возможные решения ошибок типа "установить мод"
 function extractPotentialSolutions(logContent) {
     const potentialSolutions = [];
-
-    const solutionMarker = "A potential solution has been determined, this may resolve your problem:";
-    const detailsMarker = "More details:";
-
-    const solutionIndex = logContent.indexOf(solutionMarker);
-    if (solutionIndex === -1) return null;
-
-    const afterSolution = logContent.substring(solutionIndex + solutionMarker.length).trim();
-    const lines = afterSolution.split('\n');
-
-    let collectingSolutions = false;
-    let collectingDetails = false;
-    let solutionText = '';
-    let detailsText = '';
-
-    for (const line of lines) {
-        const trimmed = line.trim();
-
-        if (!collectingSolutions && trimmed.startsWith('-')) {
-            collectingSolutions = true;
+    if (logContent.includes('compiled by a more recent version of the Java Runtime')) {
+        const isJavaVersionError = analyzeJavaVersionError(logContent);
+        if (isJavaVersionError.includes("Используйте")) {
+            potentialSolutions.push(isJavaVersionError);
         }
-
-        if (collectingSolutions) {
-            if (trimmed.startsWith('More details:')) {
-                collectingSolutions = false;
-                collectingDetails = true;
-                continue;
-            }
-            solutionText += trimmed + '\n';
-        } else if (collectingDetails) {
-            if (trimmed === '' || trimmed.startsWith('at ') || trimmed.startsWith('A detailed walkthrough')) {
-                break;
-            }
-            detailsText += trimmed + '\n';
-        }
+    } else {
+        return null;
     }
-
-    potentialSolutions.push({
-        solution: solutionText.trim(),
-        details: detailsText.trim()
-    });
-
     return potentialSolutions.length > 0 ? potentialSolutions : null;
 }
 
@@ -190,4 +155,60 @@ module.exports = {
     extractCrashInfo,
     FindTxtInMessage,
     extractPotentialSolutions
+}
+
+
+// Маппинг версий class file на версии Java
+const classVersionToJava = {
+    45: 1.1,
+    46: 1.2,
+    47: 1.3,
+    48: 1.4,
+    49: 5,
+    50: 6,
+    51: 7,
+    52: 8,
+    53: 9,
+    54: 10,
+    55: 11,
+    56: 12,
+    57: 13,
+    58: 14,
+    59: 15,
+    60: 16,
+    61: 17,
+    62: 18,
+    63: 19,
+    64: 20,
+    65: 21,
+    66: 22,
+    67: 23
+};
+
+function analyzeJavaVersionError(errorText) {
+    const isVersionError = errorText.includes('UnsupportedClassVersionError') || 
+                          errorText.includes('has been compiled by a more recent version of the Java Runtime');
+    
+    if (!isVersionError) {
+        return null;
+    }
+    const versionMatch = errorText.match(/class file version (\d+(?:\.\d+)?)/);
+    
+    if (!versionMatch) {
+        return "Не удалось определить требуемую версию Java из ошибки";
+    }
+    
+    const classVersion = parseFloat(versionMatch[1]);
+    const requiredJavaVersion = classVersionToJava[classVersion];
+    
+    if (!requiredJavaVersion) {
+        return `Неизвестная версия class file: ${classVersion}`;
+    }
+    
+    // Форматируем версию Java для вывода
+    const javaVersionString = requiredJavaVersion < 5 ? 
+        `${requiredJavaVersion}` : 
+        `${requiredJavaVersion}`;
+    
+    return `Используйте Java ${javaVersionString}`;
 }

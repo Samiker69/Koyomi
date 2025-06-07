@@ -42,8 +42,6 @@ class SettingsDatabase {
      * @private
      */
     _initTable() {
-        // TEXT для ID каналов/категорий (снежинки Discord - строки)
-        // INTEGER для boolean (0 = false, 1 = true)
         const createTableQuery = `
             CREATE TABLE IF NOT EXISTS guild_settings (
                 guildId TEXT PRIMARY KEY,

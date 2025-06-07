@@ -134,7 +134,7 @@ module.exports = {
             case "ask": {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
                 const invisible = interaction.options.getBoolean('invisible');
-                await interaction.deferReply(invisible ? { flags: MessageFlags.Ephemeral } : null);
+                await interaction.deferReply(invisible ? { flags: MessageFlags.Ephemeral } : {});
 
                 try {
                     const promt = interaction.options.getString('text');
@@ -175,7 +175,7 @@ module.exports = {
                                 attachment: textBuffer,
                                 name: 'ai_reply.md'
                             }],
-                            flags: invisible ? MessageFlags.Ephemeral : null,
+                            flags: invisible ? MessageFlags.Ephemeral : {},
                         });
                     } else {
                         await interaction.editReply(invisible ? { content: reply, flags: MessageFlags.Ephemeral } : reply);

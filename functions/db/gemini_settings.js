@@ -1,4 +1,3 @@
-// gemini-db.js
 const Database = require('better-sqlite3');
 
 class GeminiDB {
@@ -33,8 +32,19 @@ class GeminiDB {
                 FOREIGN KEY (user_id) REFERENCES gemini_user_settings(user_id) ON DELETE CASCADE
             );
         `;
+        const createGeminiTokensTable = `
+            CREATE TABLE IF NOT EXISTS tokens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT NOT NULL,
+                token TEXT NOT NULL,
+                public_use INTEGER DEFAULT 0, -- 0 = false, 1 = true
+                uses INTEGER DEFAULT 0
+            );
+        `
+
         this.db.exec(createUserSettingsTable);
         this.db.exec(createSafetySettingsTable);
+        this.db.exec(createGeminiTokensTable);
     }
 
     /**
@@ -227,7 +237,66 @@ class GeminiDB {
         const info = stmt.run(...values);
         return { changes: info.changes };
     }
-    
+
+    addToken(userId, token, publicUse = 0) {
+        const stmt = db.prepare(`INSERT INTO tokens (user_id, token, public_use) VALUES (?, ?, ?)`);
+        stmt.run(userId, token, publicUse ? 1 : 0);
+    }
+
+    deleteToken(token) {
+        const stmt = db.prepare(`DELETE FROM tokens WHERE token = ?`);
+        stmt.run(token);
+    }
+
+    deleteAllByUser(userId) {
+        const stmt = db.prepare(`DELETE FROM tokens WHERE user_id = ?`);
+        stmt.run(userId);
+    }
+
+    updateTokenSettings(token, updates) {
+        const fields = [];
+        const values = [];
+
+        if (typeof updates.public_use === 'boolean') {
+            fields.push(`public_use = ?`);
+            values.push(updates.public_use ? 1 : 0);
+        }
+
+        if (typeof updates.uses === 'number') {
+            fields.push(`uses = ?`);
+            values.push(updates.uses);
+        }
+
+        if (fields.length === 0) return;
+
+        const stmt = db.prepare(`UPDATE tokens SET ${fields.join(', ')} WHERE token = ?`);
+        values.push(token);
+        stmt.run(...values);
+    }
+
+    getUserStats(userId) {
+        const stmt = db.prepare(`
+            SELECT COUNT(*) AS tokenCount, SUM(uses) AS totalUses
+            FROM tokens
+            WHERE user_id = ?
+        `);
+        const row = stmt.get(userId);
+        return {
+            tokens: row.tokenCount,
+            uses: row.totalUses || 0
+        };
+    }
+
+    getUserTokens(userId) {
+        const tx = db.transaction((userId) => {
+            const select = db.prepare(`SELECT * FROM tokens WHERE user_id = ?`);
+            const row = select.get(userId);
+            return row;
+        });
+
+        return tx(userId);
+    }
+
     /**
      * Закрывает соединение с БД.
      */

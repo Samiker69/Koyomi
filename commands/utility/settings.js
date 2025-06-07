@@ -212,7 +212,8 @@ module.exports = {
             }
             case "support-channel": {
                 Sdb.updateSetting(interaction.guild.id, "supportChannelId", channel.id)
-                await interaction.reply(`Канал поддержки изменён на ${channel}`)
+                await interaction.reply(`Канал поддержки изменён на ${channel}`);
+                break;
             }
 
             default:
