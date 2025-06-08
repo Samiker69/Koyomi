@@ -2,7 +2,7 @@ const { Events, EmbedBuilder } = require('discord.js');
 const { FindTxtInMessage, extractLogInfo, extractCrashInfo, extractPotentialSolutions } = require('../../functions/parse');
 const settings = require('../../functions/db/settings')
 
-const Sdb = new settings('./database/settings.db')
+const Sdb = new settings()
 
 async function getModLink(modName) {
     try {

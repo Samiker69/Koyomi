@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const ModerationDB = require('../../functions/db/case');
-const db = new ModerationDB('./database/cases.db')
-const { bot_log_channel } = require('../../config.json')
+const db = new ModerationDB()
 
 const data = new SlashCommandBuilder()
     .setName('moderation')
@@ -630,4 +629,8 @@ const data = new SlashCommandBuilder()
                 break;
         }
     }
+}
+
+async function sendPunishmentToUserChannel(userId) {
+    
 }

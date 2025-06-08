@@ -1,8 +1,8 @@
 const Database = require('better-sqlite3');
 
 class DisabledCommandsDB {
-    constructor(dbPath = './database/disabled_commands.db') { // Изменил имя файла БД для наглядности
-        this.db = new Database(dbPath); // , { verbose: console.log } // для отладки SQL запросов
+    constructor(dbPath = './database/moderation.db') {
+        this.db = new Database(dbPath);
         this._initTable();
     }
 

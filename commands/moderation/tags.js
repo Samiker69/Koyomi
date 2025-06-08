@@ -3,11 +3,10 @@ const {
     PermissionFlagsBits,
     EmbedBuilder,
     MessageFlags
-  } = require('discord.js');
-  const path = require('path');
+} = require('discord.js');
 const TagsDB = require('../../functions/db/tags');
 
-const tags = new TagsDB(path.resolve(__dirname, '../../database/tags.db'))
+const tags = new TagsDB()
   
   module.exports = {
     data: new SlashCommandBuilder()

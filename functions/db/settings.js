@@ -20,15 +20,11 @@ class SettingsDatabase {
      * Создает экземпляр базы данных настроек.
      * @param {string} [dbPath='settings.db'] Путь к файлу базы данных SQLite.
      */
-    constructor(dbPath = 'settings.db') {
+    constructor(dbPath = './database/settings.db') {
         try {
-            this.db = new Database(dbPath /*, { verbose: console.log } */);
-            //console.log(`Подключено к базе данных: ${path.resolve(dbPath)}`);
+            this.db = new Database(dbPath);
 
-            // Инициализируем таблицу при создании объекта
             this._initTable();
-
-            // Подготавливаем часто используемые SQL-запросы для производительности
             this._prepareStatements();
 
         } catch (err) {

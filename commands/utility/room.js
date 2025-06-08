@@ -1,7 +1,7 @@
 // commands/room.js
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const Settings = require('../../functions/db/settings');
-const Sdb = new Settings('./database/settings.db');
+const Sdb = new Settings();
 
 module.exports = {
   cooldown: 5,

@@ -1,7 +1,7 @@
 const { Events } = require('discord.js');
 const settings = require('../../functions/db/settings')
 
-const Sdb = new settings('./database/settings.db')
+const Sdb = new settings()
 
 module.exports = {
     name: Events.GuildDelete,

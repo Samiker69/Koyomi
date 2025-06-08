@@ -5,10 +5,10 @@ const path = require('path');
 const SettingsDatabase = require('../../functions/db/settings');
 const dbPath = path.resolve(__dirname, '../../database/tags.db');
 
-const settings = new SettingsDatabase(path.resolve(__dirname, '../../database/settings.db'))
+const settings = new SettingsDatabase()
 
 // Инициализация БД (тот же файл, что и в slash-команде)
-const db = new Database(dbPath);
+const db = new Database();
 db.pragma('journal_mode = WAL');
 
 

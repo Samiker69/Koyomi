@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const starboardDB = require('../../functions/db/starboard');
 
-const db = new starboardDB('./database/starboard.db');
+const db = new starboardDB();
 
 module.exports = {
 	cooldown: 5,

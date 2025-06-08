@@ -100,8 +100,6 @@ for (const siteKey in sites) {
     }
 }
 
-// Убираем дубликаты из siteChoices, если они появились (маловероятно при такой логике, но безопасно)
-// Сортируем для удобства пользователя
 const uniqueSiteChoices = [...new Map(siteChoices.map(item => [item.value + item.name, item])).values()]
     .sort((a, b) => a.name.localeCompare(b.name));
 

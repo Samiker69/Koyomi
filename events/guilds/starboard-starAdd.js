@@ -1,6 +1,6 @@
 const { Events, EmbedBuilder, ChannelType } = require('discord.js');
 const starDB = require('../../functions/db/starboard');
-const db = new starDB('./database/starboard.db');
+const db = new starDB();
 
 const STAR_EMOJI_NAME = '⭐';
 const EMBED_COLOR = 'Gold';

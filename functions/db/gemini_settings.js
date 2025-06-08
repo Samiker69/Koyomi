@@ -1,8 +1,8 @@
 const Database = require('better-sqlite3');
 
 class GeminiDB {
-    constructor(dbPath = 'gemini.db') {
-        this.db = new Database(dbPath); // Можно добавить { verbose: console.log } для отладки SQL
+    constructor(dbPath = './database/settings.db') {
+        this.db = new Database(dbPath);
         this._initializeTables();
         // Включаем поддержку внешних ключей, если она не включена по умолчанию
         this.db.pragma('foreign_keys = ON');

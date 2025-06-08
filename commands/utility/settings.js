@@ -2,7 +2,7 @@ const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('disc
 const settings = require('../../functions/db/settings')
 const { bot_log_channel } = require('../../config.json')
 
-const Sdb = new settings('./database/settings.db')
+const Sdb = new settings()
 
 module.exports = {
 	cooldown: 5,

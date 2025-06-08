@@ -1,7 +1,7 @@
 const { Events, ChannelType, PermissionFlagsBits } = require('discord.js');
 const Settings = require('../../functions/db/settings');
 
-const Sdb = new Settings('./database/settings.db');
+const Sdb = new Settings();
 
 module.exports = {
   name: Events.VoiceStateUpdate,

@@ -2,8 +2,8 @@
 const Database = require('better-sqlite3');
 
 class StarboardDB {
-    constructor(dbPath = './starboard.sqlite') {
-        this.db = new Database(dbPath); // Можно добавить { verbose: console.log } для отладки SQL запросов
+    constructor(dbPath = './database/settings.db') {
+        this.db = new Database(dbPath);
         this._initTables();
     }
 

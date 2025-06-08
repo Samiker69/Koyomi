@@ -4,7 +4,7 @@ const { privateAccess, bot_log_channel } = require('../../config.json');
 
 const GeminiDB = require('../../functions/db/gemini_settings');
 const geminiCrashHadler = require('../../functions/gemini_crash_handler');
-const db = new GeminiDB('./database/geminiDB.db')
+const db = new GeminiDB()
 
 module.exports = {
     cooldown: 5,
