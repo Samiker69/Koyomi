@@ -11,9 +11,17 @@ const VALID_SETTINGS = [
     'mainVoiceChannelId',
     'voiceCategoryId',
     'supportChannelId',
-    'prefix'
+    'prefix',
+    'webhookLogId',           // НОВАЯ НАСТРОЙКА
+    'webhookLogToken',        // НОВАЯ НАСТРОЙКА
+    'webhookLogChannelId',    // НОВАЯ НАСТРОЙКА (ID канала, где находится вебхук)
+    'enableWebhookLogging'    // НОВАЯ НАСТРОЙКА (флаг включения/выключения)
 ];
-const BOOLEAN_SETTINGS = ['allowInviteLogging', 'allowLogingMembersAdd'];
+const BOOLEAN_SETTINGS = [
+    'allowInviteLogging',
+    'allowLogingMembersAdd',
+    'enableWebhookLogging'
+];
 
 class SettingsDatabase {
     /**
@@ -38,26 +46,56 @@ class SettingsDatabase {
     }
 
     /**
-     * Инициализирует таблицу настроек, если она не существует.
+     * Инициализирует таблицу настроек, если она не существует, или добавляет новые столбцы, если их нет.
      * @private
      */
     _initTable() {
-        const createTableQuery = `
+        // Создаем таблицу с базовыми полями, если ее нет
+        this.db.exec(`
             CREATE TABLE IF NOT EXISTS guild_settings (
                 guildId TEXT PRIMARY KEY,
                 logchannel TEXT DEFAULT '',
                 newMemberChannelId TEXT DEFAULT '',
                 inviteLoggerChannel TEXT DEFAULT '',
-                allowInviteLogging INTEGER DEFAULT 0,  -- 0 for false, 1 for true
-                allowLogingMembersAdd INTEGER DEFAULT 0, -- 0 for false, 1 for true
+                allowInviteLogging INTEGER DEFAULT 0,
+                allowLogingMembersAdd INTEGER DEFAULT 0,
                 mainVoiceChannelId TEXT DEFAULT '',
                 voiceCategoryId TEXT DEFAULT '',
                 supportChannelId TEXT DEFAULT '',
                 prefix TEXT DEFAULT '..'
             );
-        `;
-        this.db.exec(createTableQuery);
+        `);
+
+        // Добавляем новые столбцы, если они еще не существуют.
+        // Это позволяет обновить существующие базы данных без их удаления.
+        const alterTableQueries = [
+            "ALTER TABLE guild_settings ADD COLUMN webhookLogId TEXT DEFAULT '';",
+            "ALTER TABLE guild_settings ADD COLUMN webhookLogToken TEXT DEFAULT '';",
+            "ALTER TABLE guild_settings ADD COLUMN webhookLogChannelId TEXT DEFAULT '';",
+            "ALTER TABLE guild_settings ADD COLUMN enableWebhookLogging INTEGER DEFAULT 0;"
+        ];
+
+        // Проверяем наличие каждого столбца перед добавлением
+        const existingColumns = this.db.prepare("PRAGMA table_info(guild_settings);").all().map(col => col.name);
+
+        alterTableQueries.forEach(query => {
+            const columnName = query.match(/ADD COLUMN (\w+)/)?.[1];
+            if (columnName && !existingColumns.includes(columnName)) {
+                try {
+                    this.db.exec(query);
+                    console.log(`[DB] Добавлен столбец '${columnName}' в guild_settings.`);
+                } catch (e) {
+                    // Игнорируем ошибку, если столбец уже существует (например, при конкурентном доступе)
+                    if (!e.message.includes('duplicate column name')) {
+                        console.error(`[DB] Ошибка при добавлении столбца '${columnName}':`, e.message);
+                    }
+                }
+            }
+        });
+
+        console.log('[DB] Таблица guild_settings успешно проверена/обновлена.');
     }
+
     /**
      * Подготавливает SQL-запросы для многократного использования.
      * @private
@@ -69,7 +107,10 @@ class SettingsDatabase {
 
             // Запрос на добавление сервера с настройками по умолчанию
             // INSERT OR IGNORE не вызовет ошибку, если сервер уже существует
-            addServer: this.db.prepare('INSERT OR IGNORE INTO guild_settings (guildId) VALUES (?)'),
+            addServer: this.db.prepare(`
+                INSERT OR IGNORE INTO guild_settings (guildId, allowInviteLogging, allowLogingMembersAdd, enableWebhookLogging)
+                VALUES (?, ?, ?, ?)
+            `),
 
             // Запрос на удаление настроек сервера
             removeServer: this.db.prepare('DELETE FROM guild_settings WHERE guildId = ?'),
@@ -79,8 +120,6 @@ class SettingsDatabase {
         };
         VALID_SETTINGS.forEach(setting => {
             this.statements.update[setting] = this.db.prepare(
-                // Динамически создаем запрос для каждой настройки
-                // Использование плейсхолдеров (?) безопасно от SQL-инъекций
                 `UPDATE guild_settings SET ${setting} = ? WHERE guildId = ?`
             );
         });
@@ -106,35 +145,39 @@ class SettingsDatabase {
             }
         });
 
-        // Удаляем guildId из возвращаемого объекта настроек для чистоты
-        // delete settings.guildId; // Раскомментируйте, если не хотите видеть guildId в объекте настроек
-
         return settings;
     }
 
     /**
      * Получает настройки для указанного сервера.
+     * Если настроек для сервера нет, добавляет его с дефолтными и возвращает их.
      * @param {string} guildId ID сервера Discord.
-     * @returns {object | undefined} Объект с настройками сервера или undefined, если сервер не найден в БД.
+     * @returns {object} Объект с настройками сервера.
      */
     getSettings(guildId) {
-         if (!guildId || typeof guildId !== 'string') {
+        if (!guildId || typeof guildId !== 'string') {
             console.error("getSettings: Предоставлен неверный guildId:", guildId);
-            return undefined;
+            return {}; // Возвращаем пустой объект, если guildId некорректен
         }
         try {
-            const row = this.statements.getSettings.get(guildId);
+            let row = this.statements.getSettings.get(guildId);
+            if (!row) {
+                // Если настроек нет, добавляем сервер с дефолтными и получаем их
+                this.addServer(guildId);
+                row = this.statements.getSettings.get(guildId); // Повторно получаем после добавления
+            }
             return this._formatSettings(row);
         } catch (err) {
             console.error(`Ошибка получения настроек для сервера ${guildId}:`, err);
-            return undefined; // В случае ошибки возвращаем undefined
+            return {}; // В случае ошибки возвращаем пустой объект
         }
     }
+
 
     /**
      * Добавляет сервер в базу данных с настройками по умолчанию.
      * Если сервер уже существует, операция будет проигнорирована.
-     * Вызывается, когда бот присоединяется к новому серверу.
+     * Вызывается, когда бот присоединяется к новому серверу, или когда запрашиваются настройки для нового сервера.
      * @param {string} guildId ID сервера Discord.
      * @returns {Database.RunResult} Результат выполнения запроса better-sqlite3.
      * @throws {Error} Если guildId не предоставлен или не является строкой.
@@ -144,12 +187,13 @@ class SettingsDatabase {
             throw new Error("addServer: guildId должен быть непустой строкой.");
         }
         try {
-            // Выполняем INSERT OR IGNORE. Значения по умолчанию будут установлены схемой таблицы.
-            const result = this.statements.addServer.run(guildId);
+            // Устанавливаем дефолтные значения для новых полей при добавлении сервера.
+            // Значения 0 соответствуют false для BOOLEAN_SETTINGS.
+            const result = this.statements.addServer.run(guildId, 0, 0, 0); // allowInviteLogging, allowLogingMembersAdd, enableWebhookLogging
             if (result.changes > 0) {
                 console.log(`Сервер ${guildId} добавлен в БД с настройками по умолчанию.`);
             } else {
-                console.log(`Сервер ${guildId} уже существует в БД.`);
+                // console.log(`Сервер ${guildId} уже существует в БД.`); // Убрал для уменьшения шума в логах
             }
             return result;
         } catch (err) {
@@ -162,8 +206,8 @@ class SettingsDatabase {
      * Удаляет все настройки для указанного сервера из базы данных.
      * Вызывается, когда бот покидает сервер.
      * @param {string} guildId ID сервера Discord.
-     * @returns {Database.RunResult} Результат выполнения запроса better-sqlite3.
-     * @throws {Error} Если guildId не предоставлен или не является строкой.
+     * @returns {boolean} True, если настройки удалены, false если сервер не найден.
+     * @throws {Error} Если guildId не предоставлен или не является строкой, или произошла ошибка БД.
      */
     removeServer(guildId) {
          if (!guildId || typeof guildId !== 'string') {
@@ -173,11 +217,11 @@ class SettingsDatabase {
             const result = this.statements.removeServer.run(guildId);
              if (result.changes > 0) {
                 console.log(`Настройки для сервера ${guildId} удалены из БД.`);
+                return true;
             } else {
                 console.log(`Сервер ${guildId} не найден в БД для удаления.`);
-                return false
+                return false;
             }
-            return result;
         } catch (err) {
              console.error(`Ошибка удаления сервера ${guildId}:`, err);
              throw err;
@@ -223,10 +267,7 @@ class SettingsDatabase {
             const result = statement.run(dbValue, guildId);
 
             if (result.changes === 0) {
-                 console.warn(`Настройка '${settingName}' для сервера ${guildId} не была обновлена (возможно, сервер не найден или значение не изменилось).`);
-                 // Можно добавить проверку, существует ли сервер вообще перед обновлением
-                 // const exists = this.db.prepare('SELECT 1 FROM guild_settings WHERE guildId = ?').get(guildId);
-                 // if (!exists) throw new Error(`Сервер ${guildId} не найден в базе данных.`);
+                 // console.warn(`Настройка '${settingName}' для сервера ${guildId} не была обновлена (возможно, сервер не найден или значение не изменилось).`); // Убрал для уменьшения шума
             } else {
                  console.log(`Настройка '${settingName}' для сервера ${guildId} обновлена на '${value}'.`);
             }
