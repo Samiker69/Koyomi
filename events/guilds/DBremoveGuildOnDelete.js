@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-const settings = require('../functions/db/settings')
+const settings = require('../../functions/db/settings')
 
 const Sdb = new settings('./database/settings.db')
 

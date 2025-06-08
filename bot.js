@@ -68,19 +68,24 @@ for (const folder of commandFolders) {
 	}
 }
 
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+const eventsFolserPath = path.join(__dirname, 'events');
+const eventFolders = fs.readdirSync(eventsFolserPath);
 
-for (const file of eventFiles) {
-	const filePath = path.join(eventsPath, file);
-	const event = require(filePath);
-	client.eventscount++
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
-	} else {
-		client.on(event.name, (...args) => event.execute(...args));
+for (const folder of eventFolders) {
+	const eventsPath = path.join(eventsFolserPath, folder);
+	const eventsFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+	for (const file of eventsFiles) {
+		const filePath = path.join(eventsPath, file);
+		const event = require(filePath);
+		client.eventscount++
+		if (event.once) {
+			client.once(event.name, (...args) => event.execute(...args));
+		} else {
+			client.on(event.name, (...args) => event.execute(...args));
+		}
 	}
 }
+
 
 client.once('ready', async () => {
 	const rest = new REST().setToken(process.env.token);

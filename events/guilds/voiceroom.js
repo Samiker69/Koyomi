@@ -1,5 +1,5 @@
 const { Events, ChannelType, PermissionFlagsBits } = require('discord.js');
-const Settings = require('../functions/db/settings');
+const Settings = require('../../functions/db/settings');
 
 const Sdb = new Settings('./database/settings.db');
 

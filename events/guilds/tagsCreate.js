@@ -2,10 +2,10 @@
 const { Events } = require('discord.js');
 const Database = require('better-sqlite3');
 const path = require('path');
-const SettingsDatabase = require('../functions/db/settings');
-const dbPath = path.resolve(__dirname, '../database/tags.db');
+const SettingsDatabase = require('../../functions/db/settings');
+const dbPath = path.resolve(__dirname, '../../database/tags.db');
 
-const settings = new SettingsDatabase(path.resolve(__dirname, '../database/settings.db'))
+const settings = new SettingsDatabase(path.resolve(__dirname, '../../database/settings.db'))
 
 // Инициализация БД (тот же файл, что и в slash-команде)
 const db = new Database(dbPath);
@@ -36,8 +36,6 @@ module.exports = {
         // Если тег найден — выводим его содержимое
         return await message.channel.send(row.content);
       }
-      // Если тега нет — ничего не отвечаем (или можно выводить ошибку)
-      // return message.channel.send(`❗ Тег \`${tagName}\` не найден.`);
     } catch (err) {
       console.error('[ERROR] messageCreate tag lookup:', err);
     }
