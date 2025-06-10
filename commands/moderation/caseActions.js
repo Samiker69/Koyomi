@@ -134,44 +134,54 @@ const data = new SlashCommandBuilder()
             case "user_punishments": {
                 const targetUser = interaction.options.getUser('user');
                 const modCases = db.getTargetModCases(interaction.guild.id, targetUser.id);
-                
+
+                const embed = new EmbedBuilder()
+                    .setColor(0x9B59B6)
+                    .setTitle(`История наказаний для ${targetUser.username}`)
+                    .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
+                    .setTimestamp();
+
                 if (!modCases || modCases.length === 0) {
-                    await interaction.reply({ content: `У ${targetUser} нет наказаний`, flsgs: MessageFlags.Ephemeral });
+                    embed.setDescription(`У **${targetUser.username}** нет зарегистрированных наказаний на этом сервере.`);
+                    embed.setFooter({ text: `Пользователь не имеет наказаний` });
+                    await interaction.reply({ embeds: [embed] });
                     return;
                 }
-                
+
                 const counts = {};
                 for (const modCase of modCases) {
                     const action = modCase.action.toLowerCase();
                     counts[action] = (counts[action] || 0) + 1;
                 }
+
                 const statsLines = Object.entries(counts)
-                    .map(([action, count]) => `${action.charAt(0).toUpperCase() + action.slice(1)}: ${count}`)
+                    .map(([action, count]) => `• **${action.charAt(0).toUpperCase() + action.slice(1)}**: ${count} раз(а)`)
                     .join('\n');
-                
+
                 const sortedCases = modCases.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 const maxDisplay = 10;
                 const displayCases = sortedCases.slice(0, maxDisplay);
+
                 const punishmentsText = displayCases
                     .map((modCase, index) => {
-                        return `**#${index + 1}** — **${modCase.action.toUpperCase()}**: ${modCase.reason} (<t:${Math.floor(new Date(modCase.timestamp).getTime()/1000)}:F>)`;
+                        return `**#${modCase.caseNum}** — **${modCase.action.toUpperCase()}**: ${modCase.reason} (<t:${Math.floor(new Date(modCase.timestamp).getTime()/1000)}:R>)`;
                     })
                     .join('\n');
-                const additionalText = sortedCases.length > maxDisplay 
-                    ? `\n\nПоказаны последние ${maxDisplay} наказаний из ${sortedCases}.`
+
+                const additionalText = sortedCases.length > maxDisplay
+                    ? `\n\nПоказаны последние ${maxDisplay} наказаний из ${sortedCases.length}.`
                     : '';
-                
-                const embed = new EmbedBuilder()
-                    .setColor(0x3498db)
-                    .setTitle(`История наказаний для ${targetUser}`)
-                    .setDescription(`**Общая статистика:**\n${statsLines}\n\n**Последние наказания:**\n${punishmentsText}${additionalText}`)
-                    .setFooter({ text: `Всего наказаний ${modCases.length}` })
-                    .setTimestamp(new Date())
-                
+
+                embed.setDescription(
+                    `**Общая статистика наказаний:**\n${statsLines}\n\n` +
+                    `**Последние ${displayCases.length} наказаний:**\n${punishmentsText}${additionalText}`
+                );
+                embed.setFooter({ text: `Всего зарегистрированных наказаний: ${modCases.length}` });
+
                 await interaction.reply({ embeds: [embed] });
                 break;
             }
-        
+
             default:
                 await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;

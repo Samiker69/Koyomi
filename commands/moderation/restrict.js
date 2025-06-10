@@ -32,12 +32,7 @@ module.exports = {
                 .addUserOption(option => 
                     option.setName('user')
                         .setDescription('Пользователь, для которого применяется ограничение (оставьте пустым для всего сервера).')
-                        .setRequired(false))
-                .addStringOption(option =>
-                    option.setName('reason')
-                        .setDescription('Причина ограничения (опционально).')
-                        .setRequired(false)
-                        .setMaxLength(256)))
+                        .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
@@ -63,7 +58,6 @@ module.exports = {
             const commandName = interaction.options.getString('command').toLowerCase();
             const user = interaction.options.getUser('user');
             const userId = user ? user.id : null;
-            const reason = interaction.options.getString('reason');
 
             if (commandName === this.data.name) {
                 return interaction.reply({
@@ -90,21 +84,19 @@ module.exports = {
             const target = user ? `для пользователя ${user.tag}` : 'на этом сервере';
 
             if (action === 'disable') {
+                 let isAlreadyDisabled;
                  if (userId === null) {
                     isAlreadyDisabled = db.isGuildDisabled(guildId, commandName);
                  } else {
-                    isAlreadyDisabled = db.getUserRestrictions(guildId, userId).includes(commandName);
+                    const userRestrictions = db.getUserRestrictions(guildId, userId);
+                    isAlreadyDisabled = userRestrictions.includes(commandName);
                  }
-
 
                 if (isAlreadyDisabled) {
                     replyContent = `Команда \`${commandName}\` уже была запрещена ${target}.`;
                 } else {
                     if (db.add(guildId, commandName, userId)) {
                         replyContent = `Команда \`${commandName}\` теперь **запрещена** ${target}.`;
-                        if (reason) {
-                            replyContent += ` Причина: ${reason}`;
-                        }
                     } else {
                         replyContent = `Произошла ошибка при попытке запретить команду \`${commandName}\` ${target}.`;
                     }
