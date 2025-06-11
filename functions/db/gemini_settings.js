@@ -238,22 +238,24 @@ class GeminiDB {
         return { changes: info.changes };
     }
 
+    //tokens
+
     addToken(userId, token, publicUse = 0) {
-        const stmt = db.prepare(`INSERT INTO tokens (user_id, token, public_use) VALUES (?, ?, ?)`);
+        const stmt = this.db.prepare(`INSERT INTO tokens (user_id, token, public_use) VALUES (?, ?, ?)`);
         stmt.run(userId, token, publicUse ? 1 : 0);
     }
 
-    deleteToken(token) {
-        const stmt = db.prepare(`DELETE FROM tokens WHERE token = ?`);
-        stmt.run(token);
+    deleteToken(userId, token) {
+        const stmt = this.db.prepare(`DELETE FROM tokens WHERE token = ? AND user_id = ?`);
+        return stmt.run(token, userId);
     }
 
     deleteAllByUser(userId) {
-        const stmt = db.prepare(`DELETE FROM tokens WHERE user_id = ?`);
-        stmt.run(userId);
+        const stmt = this.db.prepare(`DELETE FROM tokens WHERE user_id = ?`);
+        return stmt.run(userId);
     }
 
-    updateTokenSettings(token, updates) {
+    updateTokenSettings(userId, token, updates) {
         const fields = [];
         const values = [];
 
@@ -269,13 +271,14 @@ class GeminiDB {
 
         if (fields.length === 0) return;
 
-        const stmt = db.prepare(`UPDATE tokens SET ${fields.join(', ')} WHERE token = ?`);
-        values.push(token);
-        stmt.run(...values);
+        const stmt = this.db.prepare(`UPDATE tokens SET ${fields.join(', ')} WHERE token = ? AND user_id = ?`);
+        values.push(token, userId);
+        const res = stmt.run(...values);
+        return { changes: res.changes };
     }
 
     getUserStats(userId) {
-        const stmt = db.prepare(`
+        const stmt = this.db.prepare(`
             SELECT COUNT(*) AS tokenCount, SUM(uses) AS totalUses
             FROM tokens
             WHERE user_id = ?
@@ -288,8 +291,8 @@ class GeminiDB {
     }
 
     getUserTokens(userId) {
-        const tx = db.transaction((userId) => {
-            const select = db.prepare(`SELECT * FROM tokens WHERE user_id = ?`);
+        const tx = this.db.transaction((userId) => {
+            const select = this.db.prepare(`SELECT * FROM tokens WHERE user_id = ?`);
             const row = select.get(userId);
             return row;
         });
