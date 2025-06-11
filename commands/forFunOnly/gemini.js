@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 const { privateAccess, bot_log_channel } = require('../../config.json');
-const axios = require('axios');
 
 const GeminiDB = require('../../functions/db/gemini_settings');
 const geminiCrashHadler = require('../../functions/gemini_crash_handler');
@@ -115,45 +114,6 @@ module.exports = {
                 { name: 'По_умолчанию', value: 'HARM_BLOCK_THRESHOLD_UNSPECIFIED' }
             )
             .setRequired(true)
-        )
-    )
-    .addSubcommand(sub =>
-        sub.setName('add-apikey')
-        .setDescription('Добавить апи ключ. Позволяет получить доступ к функционалу AI')
-        .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
-            .setRequired(true)
-        )
-        .addBooleanOption(opt =>
-            opt.setName('for-public-use')
-            .setDescription('Позволить нам использовать ваш ключ?')
-        )
-    )
-    .addSubcommand(sub =>
-        sub.setName('delete-apikey')
-        .setDescription('Удалить апи-ключ из бота')
-        .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
-            .setRequired(true)
-        )
-        .addBooleanOption(opt =>
-            opt.setName('delete-all')
-            .setDescription('Удалить все ваши ключи?')
-        )
-    )
-    .addSubcommand(sub =>
-        sub.setName('edit-apikey')
-        .setDescription('Изменить настройки для текущего ключа')
-        .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
-            .setRequired(true)
-        )
-        .addBooleanOption(opt =>
-            opt.setName('for-public-use')
-            .setDescription('Позволить нам использовать ваш ключ?')
         )
     )
 ,
@@ -287,8 +247,6 @@ module.exports = {
 
             case "settings": {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
-                const stats = db.getUserStats(userId);
-
                 const embed = new EmbedBuilder()
                 .setAuthor({ iconURL: interaction.user.displayAvatarURL({extension: "png"}), name: interaction.user.displayName })
                 .setColor("Random")
@@ -305,9 +263,7 @@ module.exports = {
                     { name: "Температура ответов (temperature)", value: `${config.temperature}`, inline: true },
                     { name: "top_k", value: `${config.top_k}`, inline: true },
                     { name: "top_p", value: `${config.top_p}`, inline: true },
-                    { name: "Лимит сохранения истории (history_limit)", value: `${config.history_limit}`, inline: true },
-                    { name: "Всего токенов", value: `${stats.tokens}`, inline: true },
-                    { name: "Сколько раз ваш токен был использован нами", value: `${stats.uses}`, inline: true },
+                    { name: "Лимит сохранения истории (history_limit)", value: `${config.history_limit}`, inline: true }
                 )
                 await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
                 break;
@@ -372,41 +328,6 @@ module.exports = {
                 }
                 break;
             }
-
-            case 'add-apikey': {
-                const apikey = interaction.options.getString('apikey');
-                const public = interaction.options.getBoolean('for-public-use') || false;
-                await interaction.deferReply({flags: MessageFlags.Ephemeral});
-
-                if (!await checkApiKey(apikey)) return await interaction.editReply({ content: "Неверный `apikey`!", flags: MessageFlags.Ephemeral });
-                db.addToken(userId, apikey, public);
-                await interaction.editReply({ content: `Ваш ключ успешно добавлен! Можете пользоваться функционалом AI.`, flags: MessageFlags.Ephemeral });
-                break;
-            }
-            case 'delete-apikey': {
-                const apikey = interaction.options.getString('apikey');
-                const all = interaction.options.getBoolean('delete-all') || false;
-                await interaction.deferReply({flags: MessageFlags.Ephemeral});
-
-                if (all) {
-                    const result = db.deleteAllByUser(userId);
-                    await interaction.editReply({ content: `\`${result.changes}\` ключей было удалено.`, flags: MessageFlags.Ephemeral });
-                } else {
-                    const result = db.deleteToken(userId, apikey);
-                    await interaction.editReply({ content: result.changes > 0 ? `\`${apikey}\` был удалён.` : 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
-                }
-                break;
-            }
-            case 'edit-apikey': {
-                const apikey = interaction.options.getString('apikey');
-                const public = interaction.options.getBoolean('for-public-use') || false;
-                await interaction.deferReply({flags: MessageFlags.Ephemeral});
-
-                const result = db.updateTokenSettings(userId, apikey, { public_use: public });
-                await interaction.editReply({ content: result.changes > 0 ? `Настройки были обновлены.` : 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
-                break;
-            }
-
             default:
                 await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;
@@ -467,22 +388,4 @@ function splitTextSmartly(text, maxLength) {
     }
 
     return parts;
-}
-
-async function checkApiKey(apikey) {
-    try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apikey}`;
-        const response = await axios.get(url);
-
-        if (response.status === 200) {
-            return true
-        }
-    } catch (error) {
-        if (error.response) {
-            return false;
-        } else {
-            console.error('❌ Произошла непредвиденная ошибка:', error.message);
-            return false;
-        }
-    }
 }
