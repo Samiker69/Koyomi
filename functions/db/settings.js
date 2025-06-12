@@ -23,7 +23,6 @@ class SettingsDatabase {
     constructor(dbPath = './database/settings.db') {
         try {
             this.db = new Database(dbPath);
-
             this._initTable();
             this._prepareStatements();
 
@@ -53,6 +52,16 @@ class SettingsDatabase {
             );
         `;
         this.db.exec(createTableQuery);
+
+        this.db.exec(`
+            CREATE TABLE IF NOT EXISTS role_menus (
+                messageId TEXT PRIMARY KEY,
+                guildId TEXT NOT NULL,
+                channelId TEXT NOT NULL,
+                type TEXT NOT NULL, -- 'select'
+                roles TEXT NOT NULL -- JSON-строка [{id: 'roleId', label: 'Role Name', description: 'Desc'}, ...]
+            );
+        `);
     }
     /**
      * Подготавливает SQL-запросы для многократного использования.
@@ -80,6 +89,11 @@ class SettingsDatabase {
                 `UPDATE guild_settings SET ${setting} = ? WHERE guildId = ?`
             );
         });
+
+        this.statements.addRoleMenu = this.db.prepare("INSERT OR REPLACE INTO role_menus (messageId, guildId, channelId, type, roles) VALUES (?, ?, ?, ?, ?)");
+        this.statements.getRoleMenu = this.db.prepare("SELECT * FROM role_menus WHERE messageId = ?");
+        this.statements.deleteRoleMenu = this.db.prepare("DELETE FROM role_menus WHERE messageId = ?");
+        this.statements.getAllRoleMenus = this.db.prepare("SELECT * FROM role_menus WHERE guildId = ?"); // Для возможного получения всех меню на сервере
     }
 
     /**
@@ -233,6 +247,34 @@ class SettingsDatabase {
             throw err;
         }
     }
+
+    addRoleMenu(messageId, guildId, channelId, type, roles) {
+        // roles должен быть массивом объектов, который мы преобразуем в JSON строку
+        const rolesJson = JSON.stringify(roles);
+        this.statements.addRoleMenu.run(messageId, guildId, channelId, type, rolesJson);
+    }
+
+    getRoleMenu(messageId) {
+        const row = this.statements.getRoleMenu.get(messageId);
+        if (row) {
+            // Парсим JSON обратно в массив объектов
+            row.roles = JSON.parse(row.roles);
+        }
+        return row;
+    }
+
+    deleteRoleMenu(messageId) {
+        this.statements.deleteRoleMenu.run(messageId);
+    }
+
+    getAllRoleMenus(guildId) {
+        const rows = this.statements.getAllRoleMenus.all(guildId);
+        return rows.map(row => {
+            if (row) row.roles = JSON.parse(row.roles);
+            return row;
+        });
+    }
+
 
     /**
      * Закрывает соединение с базой данных.
