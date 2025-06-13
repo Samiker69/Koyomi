@@ -19,7 +19,7 @@ async function safeReply(interaction, content) {
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        if (!interaction.isButton() && !interaction.isStringSelectMenu()) {
+        if (!interaction.isButton() || !interaction.isStringSelectMenu()) {
             return;
         }
 
