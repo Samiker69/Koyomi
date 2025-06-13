@@ -1,4 +1,5 @@
 const Database = require('better-sqlite3');
+const crypto = require('crypto');
 
 class GeminiDB {
     constructor(dbPath = './database/settings.db') {
@@ -45,6 +46,33 @@ class GeminiDB {
         this.db.exec(createUserSettingsTable);
         this.db.exec(createSafetySettingsTable);
         this.db.exec(createGeminiTokensTable);
+    }
+    /**
+     * @private
+     * @param {*} text то, что надо зашифровать
+     * @returns зашифрованную строку 
+     */
+    encrypt(text) {
+        const iv = crypto.randomBytes(16);
+        const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(process.env.ENCRYPTION_KEY, 'hex'), iv);
+        let encrypted = cipher.update(text);
+        encrypted = Buffer.concat([encrypted, cipher.final()]);
+        return iv.toString('hex') + ':' + encrypted.toString('hex');
+    }
+    
+    /**
+     * @private
+     * @param {*} text зашифрованная строка, которую надо расшифровать
+     * @returns расшифрованную строку 
+     */
+    decrypt(text) {
+        const textParts = text.split(':');
+        const iv = Buffer.from(textParts.shift(), 'hex');
+        const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+        const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(process.env.ENCRYPTION_KEY, 'hex'), iv);
+        let decrypted = decipher.update(encryptedText);
+        decrypted = Buffer.concat([decrypted, decipher.final()]);
+        return decrypted.toString();
     }
 
     /**
@@ -188,6 +216,8 @@ class GeminiDB {
         }
         const stmt = this.db.prepare('SELECT * FROM gemini_safety_settings WHERE user_id = ?');
         const safetySettings = stmt.get(userId);
+
+        if (!safetySettings?.user_id) return null;
         
         const { user_id, ...restOfSettings } = safetySettings;
         return restOfSettings;
@@ -238,22 +268,33 @@ class GeminiDB {
         return { changes: info.changes };
     }
 
+    //apikeys
+
     addToken(userId, token, publicUse = 0) {
-        const stmt = db.prepare(`INSERT INTO tokens (user_id, token, public_use) VALUES (?, ?, ?)`);
-        stmt.run(userId, token, publicUse ? 1 : 0);
+        const all = this.getAllUserTokens(userId);
+        if (all[0]?.includes(token)) return { changes: 0, message: 'Этот ключ уже добавлен в бд!' };
+        const encrypted = this.encrypt(token);
+
+        const stmt = this.db.prepare(`INSERT INTO tokens (user_id, token, public_use) VALUES (?, ?, ?)`);
+        return stmt.run(userId, encrypted, publicUse ? 1 : 0);
     }
 
-    deleteToken(token) {
-        const stmt = db.prepare(`DELETE FROM tokens WHERE token = ?`);
-        stmt.run(token);
+    deleteToken(userId, token) {
+        const all = this.getAllUserTokens(userId);
+        if (!all[0].includes(token)) return { changes: 0, message: "Этот ключ отсутствует в бд!" };
+
+        const encrypted = all[1].find(keyCrypt => this.decrypt(keyCrypt) === token);
+
+        const stmt = this.db.prepare(`DELETE FROM tokens WHERE token = ? AND user_id = ?`);
+        return stmt.run(encrypted, userId);
     }
 
     deleteAllByUser(userId) {
-        const stmt = db.prepare(`DELETE FROM tokens WHERE user_id = ?`);
-        stmt.run(userId);
+        const stmt = this.db.prepare(`DELETE FROM tokens WHERE user_id = ?`);
+        return stmt.run(userId);
     }
 
-    updateTokenSettings(token, updates) {
+    updateTokenSettings(userId, token, updates) {
         const fields = [];
         const values = [];
 
@@ -269,13 +310,16 @@ class GeminiDB {
 
         if (fields.length === 0) return;
 
-        const stmt = db.prepare(`UPDATE tokens SET ${fields.join(', ')} WHERE token = ?`);
-        values.push(token);
-        stmt.run(...values);
+        const encrypted = this.encrypt(token);
+
+        const stmt = this.db.prepare(`UPDATE tokens SET ${fields.join(', ')} WHERE token = ? AND user_id = ?`);
+        values.push(encrypted, userId);
+        const res = stmt.run(...values);
+        return { changes: res.changes };
     }
 
     getUserStats(userId) {
-        const stmt = db.prepare(`
+        const stmt = this.db.prepare(`
             SELECT COUNT(*) AS tokenCount, SUM(uses) AS totalUses
             FROM tokens
             WHERE user_id = ?
@@ -287,14 +331,61 @@ class GeminiDB {
         };
     }
 
-    getUserTokens(userId) {
-        const tx = db.transaction((userId) => {
-            const select = db.prepare(`SELECT * FROM tokens WHERE user_id = ?`);
-            const row = select.get(userId);
-            return row;
-        });
+    /**
+     * 
+     * @param {*} userId айди пользователя
+     * @returns случайный дешифрованный токен от X пользователя иначе null
+     */
+    getUserToken(userId) {
+        try {
+            const stmt = this.db.prepare(`
+                SELECT token 
+                FROM tokens 
+                WHERE user_id = ? 
+                ORDER BY RANDOM() 
+                LIMIT 1
+            `);
+            const row = stmt.get(userId);
+    
+            if (row && row.token) {
+                return this.decrypt(row.token);
+            }
+            return null;
+        } catch (error) {
+            console.error(`Ошибка при получении ключа для пользователя ${userId}:`, error);
+            return null;
+        }
+    }
 
-        return tx(userId);
+    /**
+     * 
+     * @param {*} userId айди пользователя
+     * @returns возвращает массив: `[ [decrypted_keys], [encrypted_keys] ]`
+     */
+    getAllUserTokens(userId) {
+        try {
+            const keys = [];
+            const stmt = this.db.prepare(`
+                SELECT token 
+                FROM tokens 
+                WHERE user_id = ? 
+            `);
+            const rows = stmt.all(userId);
+
+            if (rows && rows.length > 0) {
+                const decrypted = [], encrypted = [];
+                rows.forEach(row => {
+                    decrypted.push(this.decrypt(row.token));
+                    encrypted.push(row.token);
+                });
+                keys.push(decrypted, encrypted);
+                return keys;
+            }
+            return [];
+        } catch (error) {
+            console.error(`Ошибка при получении ключа для пользователя ${userId}:`, error);
+            return [];
+        }
     }
 
     /**

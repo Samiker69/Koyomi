@@ -1,14 +1,11 @@
 // events/messageCreate.js
 const { Events } = require('discord.js');
 const Database = require('better-sqlite3');
-const path = require('path');
 const SettingsDatabase = require('../../functions/db/settings');
-const dbPath = path.resolve(__dirname, '../../database/tags.db');
 
 const settings = new SettingsDatabase()
 
-// Инициализация БД (тот же файл, что и в slash-команде)
-const db = new Database();
+const db = new Database('./database/settings.db');
 db.pragma('journal_mode = WAL');
 
 

@@ -1,7 +1,11 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 const { privateAccess, bot_log_channel } = require('../../config.json');
+const axios = require('axios');
+const ApikeyManager = require('../../lib/ApikeyManager/ApikeyManager')
 
+
+const { GoogleGenAI } = require('@google/genai');
 const GeminiDB = require('../../functions/db/gemini_settings');
 const geminiCrashHadler = require('../../functions/gemini_crash_handler');
 const db = new GeminiDB()
@@ -116,16 +120,47 @@ module.exports = {
             .setRequired(true)
         )
     )
+    .addSubcommand(sub =>
+        sub.setName('add-apikey')
+        .setDescription('Добавить апи ключ. Позволяет получить доступ к функционалу AI')
+        .addStringOption(opt =>
+            opt.setName('apikey')
+            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+            .setRequired(true)
+        )
+        .addBooleanOption(opt =>
+            opt.setName('for-public-use')
+            .setDescription('Позволить нам использовать ваш ключ?')
+        )
+    )
+    .addSubcommand(sub =>
+        sub.setName('delete-apikey')
+        .setDescription('Удалить апи-ключ из бота')
+        .addStringOption(opt =>
+            opt.setName('apikey')
+            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+        )
+        .addBooleanOption(opt =>
+            opt.setName('delete-all')
+            .setDescription('Удалить все ваши ключи?')
+        )
+    )
+    .addSubcommand(sub =>
+        sub.setName('edit-apikey')
+        .setDescription('Изменить настройки для текущего ключа')
+        .addStringOption(opt =>
+            opt.setName('apikey')
+            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+            .setRequired(true)
+        )
+        .addBooleanOption(opt =>
+            opt.setName('for-public-use')
+            .setDescription('Позволить нам использовать ваш ключ?')
+        )
+    )
 ,
     async execute(interaction) {
         const userId = interaction.user.id;
-        if (!privateAccess.includes(userId)) return await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral});
-        if (!interaction.client.gemini) {
-            return await interaction.reply({
-                content: 'Функционал ИИ недоступен, так как client.gemini пуст.',
-                flags: MessageFlags.Ephemeral
-            });
-        }
 
         const config = db.getUserConfig(userId);
         const SS = db.getSafetySettings(userId);
@@ -138,7 +173,8 @@ module.exports = {
 
                 try {
                     const promt = interaction.options.getString('text');
-                    const response = await interaction.client.gemini.models.generateContent({
+
+                    const ai_request_options = {
                         model: config.model,
                         contents: promt,
                         config: {
@@ -154,7 +190,28 @@ module.exports = {
                                 { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": SS.HARM_CATEGORY_DANGEROUS_CONTENT }
                             ]
                         }
-                    })
+                    }
+
+                    let response; 
+                    if (!privateAccess.includes(userId)) {
+                        const keys = [];
+                        const allKeys =  db.getAllUserTokens(userId);
+                        if (!allKeys[0]) return await interaction.editReply("У вас нет ни одного апи ключа для использования этой команды.")
+                        allKeys[0].forEach(key => {
+                            keys.push({key, timeoutDuration: 60_000});
+                        })
+                        const keyManager = new ApikeyManager(keys);
+                        response = await keyManager.call(callGemini);
+                    } else {
+                        if (!interaction.client.keyManager) {
+                            return await interaction.editReply({
+                                content: 'Функционал ИИ недоступен, так как client.keyManager пуст.',
+                                flags: MessageFlags.Ephemeral
+                            });
+                        }
+                        response = await interaction.client.keyManager.call(callGemini);
+                    }
+
                     const _end = Date.now()
                     const reply = response.text || response.candidates[0].content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
                     const stringReply = String(reply);
@@ -179,6 +236,27 @@ module.exports = {
                         });
                     } else {
                         await interaction.editReply(invisible ? { content: reply, flags: MessageFlags.Ephemeral } : reply);
+                    }
+
+                    async function callGemini(key) {
+                        const ai = new GoogleGenAI({ apiKey: key });
+                    
+                        try {
+                            if (!checkApiKey(key)) {
+                                db.deleteToken(userId, key);
+                                const stats = db.getUserStats(userId);
+                                if (stats.tokens < 1) db.deleteUserConfig(userId);
+                                return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                            }
+                            const response = await ai.models.generateContent(ai_request_options);
+                            return response;
+                        } catch (error) {
+                            if (error.status === 429) {
+                                const err = new Error("Rate limit exceeded");
+                                err.rateLimited = true;
+                                throw err;
+                            }
+                        }
                     }
                 } catch (error) {
                     const gemini_error = geminiCrashHadler(error);
@@ -247,6 +325,8 @@ module.exports = {
 
             case "settings": {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
+                const stats = db.getUserStats(userId);
+
                 const embed = new EmbedBuilder()
                 .setAuthor({ iconURL: interaction.user.displayAvatarURL({extension: "png"}), name: interaction.user.displayName })
                 .setColor("Random")
@@ -263,7 +343,9 @@ module.exports = {
                     { name: "Температура ответов (temperature)", value: `${config.temperature}`, inline: true },
                     { name: "top_k", value: `${config.top_k}`, inline: true },
                     { name: "top_p", value: `${config.top_p}`, inline: true },
-                    { name: "Лимит сохранения истории (history_limit)", value: `${config.history_limit}`, inline: true }
+                    { name: "Лимит сохранения истории (history_limit)", value: `${config.history_limit}`, inline: true },
+                    { name: "Всего токенов", value: `${stats.tokens}`, inline: true },
+                    { name: "Сколько раз ваш токен был использован нами", value: `${stats.uses}`, inline: true },
                 )
                 await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
                 break;
@@ -328,6 +410,47 @@ module.exports = {
                 }
                 break;
             }
+
+            case 'add-apikey': {
+                const apikey = interaction.options.getString('apikey');
+                const public = interaction.options.getBoolean('for-public-use') || false;
+                await interaction.deferReply({flags: MessageFlags.Ephemeral});
+
+                if (!await checkApiKey(apikey)) return await interaction.editReply({ content: "Неверный `apikey`! Скопируйте ключ из https://aistudio.google.com/apikey и вставьте его сюда", flags: MessageFlags.Ephemeral });
+                const result = db.addToken(userId, apikey, public);
+                db.addUserConfig(userId);
+                await interaction.editReply({ content: result.changes > 0 ? `Ваш ключ успешно добавлен! Можете пользоваться функционалом AI.`: result.message || 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                break;
+            }
+            case 'delete-apikey': {
+                const apikey = interaction.options.getString('apikey');
+                const all = interaction.options.getBoolean('delete-all') || false;
+                await interaction.deferReply({flags: MessageFlags.Ephemeral});
+
+                if (!apikey && !all) return await interaction.editReply({ content: "`apikey` не может быть пустым, если вы не удаляете все токены!", flags: MessageFlags.Ephemeral });
+
+                if (all) {
+                    const result = db.deleteAllByUser(userId);
+                    db.deleteUserConfig(userId);
+                    await interaction.editReply({ content: `\`${result.changes}\` ключей было удалено.`, flags: MessageFlags.Ephemeral });
+                } else {
+                    const result = db.deleteToken(userId, apikey);
+                    const stats = db.getUserStats(userId);
+                    if (stats.tokens < 1) db.deleteUserConfig(userId);
+                    await interaction.editReply({ content: result.changes > 0 ? `\`${apikey}\` был удалён.` : result.message || 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                }
+                break;
+            }
+            case 'edit-apikey': {
+                const apikey = interaction.options.getString('apikey');
+                const public = interaction.options.getBoolean('for-public-use') || false;
+                await interaction.deferReply({flags: MessageFlags.Ephemeral});
+
+                const result = db.updateTokenSettings(userId, apikey, { public_use: public });
+                await interaction.editReply({ content: result.changes > 0 ? `Настройки были обновлены.` : 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                break;
+            }
+
             default:
                 await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;
@@ -388,4 +511,22 @@ function splitTextSmartly(text, maxLength) {
     }
 
     return parts;
+}
+
+async function checkApiKey(apikey) {
+    try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apikey}`;
+        const response = await axios.get(url);
+
+        if (response.status === 200) {
+            return true
+        }
+    } catch (error) {
+        if (error.response) {
+            return false;
+        } else {
+            console.error('❌ Произошла непредвиденная ошибка:', error.message);
+            return false;
+        }
+    }
 }

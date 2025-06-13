@@ -1,12 +1,19 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, REST, Routes, Partials  } = require('discord.js');
-const { GoogleGenAI } = require('@google/genai');
+
+const ApikeyManager = require('./lib/ApikeyManager/ApikeyManager')
+const loadApiKeys = require('./functions/loadKeysFromEnv');
 require('dotenv').config();
 
 if (!process.env.token) return console.error(`[ERROR]: Переменная token в .env отсутсвтует!`);
 if (!process.env.clientId) return console.error(`[ERROR]: Переменная clientId в .env отсутсвтует!`);
-if (!process.env.gemini_api_key) console.warn('[WARNING]: Переменная gemini_api_key в .env отсутсвтует. Функционал AI будет недоступен.\nНет ключа? Получите его: https://aistudio.google.com/apikey')
+const keys = [];
+const allKeys = loadApiKeys();
+if (allKeys?.error) console.warn("[WARN]: "+allKeys.error);
+allKeys.forEach(key => {
+	keys.push({key, timeoutDuration: 60_000});
+})
 
 if (!fs.existsSync('./database')) {
 	fs.mkdirSync('./database')
@@ -29,14 +36,13 @@ const client = new Client({
 	}
 });
 
-if (process.env.gemini_api_key) {
+if (keys.length > 0) {
 	try {
-		client.gemini = new GoogleGenAI({ apiKey: process.env.gemini_api_key });
-		console.log('[INFO]: Gemini интегрирован в client.gemini')
+		client.keyManager = new ApikeyManager(keys);
+		console.log(`[INFO]: Loaded ${keys.length} Gemini API dev key(s). ApiManager avalible at client.keyManager`)
 	} catch (error) {
-		console.error('[ERROR]: Произошла ошибка при инициализации gemini:', error)
+		console.error('[ERROR]: Произошла ошибка при загрузке ключей', error)
 	}
-
 }
 
 client.queues = new Map()
