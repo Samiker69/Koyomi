@@ -19,7 +19,12 @@ async function safeReply(interaction, content) {
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        if (!interaction.isButton() || !interaction.isStringSelectMenu()) {
+        if (!interaction.isButton() && !interaction.isStringSelectMenu()) {
+            return;
+        }
+
+        const customId = interaction.customId;
+        if (!customId.startsWith('role_button_') && customId !== 'no_roles_button' && customId !== 'role_select_menu') {
             return;
         }
 
@@ -34,7 +39,6 @@ module.exports = {
 
         const guildId = interaction.guild?.id;
         const member = interaction.member;
-        const customId = interaction.customId;
 
         if (interaction.isButton()) {
             switch (true) {
@@ -54,8 +58,14 @@ module.exports = {
 
                         const role = interaction.guild.roles.cache.get(roleId);
 
-                        if (!role || !role.editable || role.managed) {
-                            return await safeReply(interaction, 'Ошибка: Не могу управлять этой ролью. Возможно, она была удалена, или моя роль ниже этой в иерархии, или она является управляемой ролью.');
+                        if (!role) {
+                            return await safeReply(interaction, 'Ошибка: Роль не найдена на сервере.');
+                        }
+                        if (role.position >= interaction.guild.members.me.roles.highest.position) {
+                            return await safeReply(interaction, 'Ошибка: Я не могу управлять этой ролью, так как она находится на той же или более высокой позиции, чем моя высшая роль.');
+                        }
+                        if (role.managed) {
+                            return await safeReply(interaction, 'Ошибка: Я не могу управлять этой ролью, так как она является управляемой (например, роль бота).');
                         }
 
                         if (member.roles.cache.has(roleId)) {
@@ -80,12 +90,10 @@ module.exports = {
                     break;
                 }
                 default:
-                    await safeReply(interaction, 'Неизвестная кнопка.');
-                    break;
+                    return; 
             }
         } 
         else if (interaction.isStringSelectMenu()) {
-            const customId = interaction.customId; 
             const selectedValues = interaction.values;
 
             switch (customId) {
@@ -110,7 +118,7 @@ module.exports = {
                         const messages = [];
 
                         for (const selectedRoleId of selectedValues) {
-                            if (!userCurrentRolesInMenu.includes(selectedRoleId)) {
+                            if (availableRoleIds.includes(selectedRoleId) && !userCurrentRolesInMenu.includes(selectedRoleId)) {
                                 rolesToAdd.push(selectedRoleId);
                             }
                         }
@@ -123,7 +131,7 @@ module.exports = {
 
                         for (const roleId of rolesToAdd) {
                             const role = interaction.guild.roles.cache.get(roleId);
-                            if (role && role.editable && !role.managed) {
+                            if (role && role.position < interaction.guild.members.me.roles.highest.position && !role.managed) {
                                 await member.roles.add(role, 'RoleMenu: User added role via Select Menu');
                                 messages.push(`Выдана: **${role.name}**`);
                             } else {
@@ -134,7 +142,7 @@ module.exports = {
 
                         for (const roleId of rolesToRemove) {
                             const role = interaction.guild.roles.cache.get(roleId);
-                            if (role && role.editable && !role.managed) {
+                            if (role && role.position < interaction.guild.members.me.roles.highest.position && !role.managed) {
                                 await member.roles.remove(role, 'RoleMenu: User removed role via Select Menu');
                                 messages.push(`Убрана: **${role.name}**`);
                             } else {
@@ -163,8 +171,7 @@ module.exports = {
                     break;
                 }
                 default:
-                    await safeReply(interaction, 'Неизвестное меню выбора.');
-                    break;
+                    return; 
             }
         }
     },
