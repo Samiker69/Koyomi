@@ -11,9 +11,9 @@ if (!process.env.clientId) return console.error(`[ERROR]: Переменная c
 const keys = [];
 const allKeys = loadApiKeys();
 if (allKeys?.error) console.warn("[WARN]: "+allKeys.error);
-allKeys.forEach(key => {
+else allKeys.forEach(key => {
 	keys.push({key, timeoutDuration: 60_000});
-})
+});
 
 if (!fs.existsSync('./database')) {
 	fs.mkdirSync('./database')

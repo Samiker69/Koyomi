@@ -14,7 +14,7 @@ class ModerationDB {
                 caseNum INTEGER NOT NULL,
                 targetId TEXT NOT NULL,
                 moderatorId TEXT NOT NULL,
-                action TEXT NOT NULL CHECK(action IN ('ban', 'mute', 'kick', 'unban', 'unmute', 'warn')),
+                action TEXT NOT NULL CHECK(action IN ('ban', 'mute', 'kick', 'unban', 'unmute', 'warn', 'unwarn')),
                 reason TEXT,
                 timestamp INTEGER NOT NULL,
                 PRIMARY KEY (serverId, caseNum) -- Уникальный ключ для каждого сервера
@@ -42,6 +42,16 @@ class ModerationDB {
                 deleteCase: this.db.prepare('DELETE FROM mod_cases WHERE serverId = ? AND caseNum = ?'),
                 getTargetCases: this.db.prepare('SELECT * FROM mod_cases WHERE serverId = ? AND targetId = ? ORDER BY caseNum DESC'),
                 getServerCases: this.db.prepare('SELECT * FROM mod_cases WHERE serverId = ? ORDER BY caseNum DESC'),
+                getUserWarnings: this.db.prepare(`
+                    SELECT
+                        COALESCE(SUM(CASE WHEN action = 'warn' THEN 1 ELSE 0 END), 0) AS warns,
+                        COALESCE(SUM(CASE WHEN action = 'unwarn' THEN 1 ELSE 0 END), 0) AS unwarns,
+                        COALESCE(SUM(CASE WHEN action = 'warn' THEN 1 ELSE 0 END), 0)
+                          - COALESCE(SUM(CASE WHEN action = 'unwarn' THEN 1 ELSE 0 END), 0)
+                          AS true_warns
+                    FROM mod_cases
+                    WHERE targetId = ? AND serverId = ?
+                `),
             };
         }
         return this._statements;
@@ -65,7 +75,7 @@ class ModerationDB {
         if (!serverId || !targetId || !moderatorId || !action) {
             throw new Error('Не все обязательные поля предоставлены для добавления кейса.');
         }
-        if (!['ban', 'mute', 'kick', 'unban', 'unmute', 'warn'].includes(action)) {
+        if (!['ban', 'mute', 'kick', 'unban', 'unmute', 'warn', 'unwarn'].includes(action)) {
             throw new Error(`Недопустимое действие: ${action}`);
         }
 
@@ -141,6 +151,18 @@ class ModerationDB {
         // Преобразуем timestamp
         cases.forEach(c => c.timestamp = new Date(c.timestamp));
         return cases;
+    }
+
+    /**
+     * 
+     * @param {string} serverId ID сервера
+     * @param {string} targetId ID пользователя
+     * @returns {{warns: Number, unwarns: Number, true_warns: Number}} Объект всех кейсов с варнами и общая сумма действующих варнов
+     */
+    getUserWarnings(serverId, targetId) {
+        const stmts = this.prepareStatements();
+        const warns = stmts.getUserWarnings.get(targetId, serverId);
+        return warns
     }
 
     /**

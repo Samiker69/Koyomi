@@ -124,6 +124,30 @@ const data = new SlashCommandBuilder()
                  .setRequired(false)
          )
      )
+     .addSubcommand(sub =>
+        sub.setName('unwarn')
+        .setDescription('Снять предупреждение пользователя')
+        .addUserOption(option =>
+            option.setName('пользователь')
+                .setDescription('Пользователь для снятия последнего предупреждения')
+                .setRequired(false)
+        )
+        .addNumberOption(option =>
+            option.setName('кейс')
+                .setDescription('Номер кейса с предупреждением, которое надо снять')
+                .setRequired(false)
+        )
+        .addStringOption(option =>
+            option.setName('причина')
+                .setDescription('Причина снятия предупреждения')
+                .setRequired(false)
+        )
+        .addAttachmentOption(option =>
+            option.setName('доказательства')
+                .setDescription('Прикрепите доказательства (если есть)')
+                .setRequired(false)
+        )
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
 
 
@@ -624,6 +648,98 @@ const data = new SlashCommandBuilder()
                  }
                  break;
              }
+             case "unwarn": {
+                if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
+                  await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                  return;
+                }
+                await interaction.deferReply();
+
+                let targetUser = interaction.options.getUser('пользователь'),
+                caseNum, warnCase;
+                const reason = interaction.options.getString('причина') || 'Без причины';
+                const evidence = interaction.options.getAttachment('доказательства');
+                if (!targetUser) {
+                    caseNum = interaction.options.getNumber('кейс');
+                    warnCase = db.getModCase(interaction.guild.id, caseNum);
+                    targetUser = warnCase.targetId;
+                } else {
+                    const cases = db.getTargetModCases(interaction.guild.id, targetUser.id);
+                    warnCase = db.getModCase(interaction.guild.id, cases.filter(i => i.action === "warn")[0].caseNum);
+                    targetUser = targetUser.id
+                }
+            
+                if (!warnCase) return await interaction.editReply({ content: "Не удалось найти кейс. Проверьте, что вы указали действительный номер кейса." });
+                if (warnCase.action !== "warn") return await interaction.editReply({ content: `Этот кейс не относится к предупреждениям! Это \`${warnCase.action}\`` });
+                
+                const warns = db.getUserWarnings(interaction.guild.id, targetUser);
+                console.log(warns)
+                if (warns.true_warns <= 0) return await interaction.editReply({ content: "У этого пользователя нет действующих наказаний!" });
+
+
+                if (targetUser === interaction.user.id) {
+                    await interaction.editReply({ content: "Ты не можешь снять предупреждение самому себе!" });
+                    return;
+                }
+                if (targetUser === interaction.guild.ownerId) {
+                    await interaction.editReply({ content: "Ты не можешь снять предупреждение с владельца сервера" });
+                    return;
+                }
+
+                const member = await interaction.guild.members.fetch(targetUser).catch(() => null);
+                if (!member) {
+                    await interaction.editReply({ content: "Участник не найден" });
+                    return;
+                }
+
+                if (!interaction.memberPermissions.has('Administrator') && interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) {
+                   await interaction.editReply({ content: "Позиция вашей роли ниже чем роль выбранного участника" });
+                   return;
+                }
+
+                if (!member.moderatable) {
+                    await interaction.editReply({ content: "Я не могу снять предупреждение с этого участника" });
+                    return;
+                }
+
+                try {
+                    await db.addModCase({
+                        serverId: interaction.guild.id,
+                        targetId: targetUser,
+                        moderatorId: interaction.user.id,
+                        action: 'unwarn',
+                        reason: reason,
+                        timestamp: new Date()
+                    });
+
+                    const latestCase = db.getServerModCases(interaction.guild.id)
+
+                    const embed = new EmbedBuilder()
+                        .setColor(0x00ff00)
+                        .setTitle(`Case \`#${latestCase[0].caseNum}\``)
+                        .setThumbnail(interaction.guild.iconURL() || '')
+                        .addFields(
+                            { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
+                            { name: 'Пользователь', value: `<@${targetUser}>`, inline: true },
+                            { name: 'Причина', value: reason, inline: false },
+                            { name: 'Время', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+                        )
+                        .setFooter({ text: "Предупреждение снято", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+                        .setTimestamp();
+
+                    if (evidence) {
+                        embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
+                        embed.setImage(evidence.url);
+                    }
+
+                    await interaction.editReply({ embeds: [embed] });
+
+                } catch (error) {
+                    console.error('Ошибка при снятии предупреждения:', error);
+                    await interaction.editReply({ content: "Не удалось снять предупреждение" });
+                }
+                break;
+            }
             default:
                 await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
                 break;
