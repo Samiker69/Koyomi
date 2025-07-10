@@ -24,6 +24,10 @@ module.exports = {
             .setDescription('Запрос к gemini')
             .setRequired(true)
         )
+        .addAttachmentOption(opt => 
+            opt.setName('image') 
+                .setDescription('Изображение для отправки.')
+        )
         .addBooleanOption(opt =>
             opt.setName("invisible")
             .setDescription("Делает ответ ai невидимым")
@@ -173,10 +177,42 @@ module.exports = {
 
                 try {
                     const promt = interaction.options.getString('text');
+                    const attachment = interaction.options.getAttachment('image');
+                    let image = null;
+
+                    if (!attachment || !attachment.contentType || !attachment.contentType.startsWith('image/')) {
+                        const text = 'Это не изображение! Вложение будет проигнорировано.\nВыполняем запрос к ai...';
+                        await interaction.editReply(invisible === true ? {
+                            content: text,
+                            flags: MessageFlags.Ephemeral 
+                        } : text);
+                    } else if (attachment.size >= 20971500) {
+                        const text = "Размер изображения больше или примерно равен 20мб. Вложение будет проигнорировано.\nВыполняем запрос к ai...";
+                        await interaction.editReply(invisible === true ? {
+                            content: text,
+                            flags: MessageFlags.Ephemeral 
+                        } : text);
+                    } else {
+                        const img = await fetch(attachment.url);
+                        image = Buffer.from(await img.arrayBuffer()).toString('base64');
+                        console.log(image, attachment.contentType)
+                    }
+
+                    const contents = [
+                        image !== null ?
+                        {
+                          inlineData: {
+                            mimeType: attachment.contentType,
+                            data: image,
+                          },
+                        } : undefined,
+                        { text: promt },
+                      ];
+
 
                     const ai_request_options = {
                         model: config.model,
-                        contents: promt,
+                        contents: contents,
                         config: {
                             systemInstruction: config.system_instructions,
                             maxOutputTokens: config.max_output_tokens,
@@ -211,9 +247,13 @@ module.exports = {
                         }
                         response = await interaction.client.keyManager.call(callGemini);
                     }
-
+                    console.log(response);
+                    if (!response) return await interaction.editReply(invisible === true ? {
+                        content: "AI совсем ничего не ответила. Возможно, с стороны сервиса какая-то ошибка...",
+                        flags: MessageFlags.Ephemeral
+                    } : "AI совсем ничего не ответила. Возможно, с стороны сервиса какая-то ошибка...");
                     const _end = Date.now()
-                    const reply = response.text || response.candidates[0].content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
+                    const reply = response?.text || response?.candidates?.[0]?.content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
                     const stringReply = String(reply);
                     const timeText = `Время ожидания ${Math.floor((_end - interaction.createdTimestamp) / 1000 )} секунд, длина ${String(reply).length}`
                 
@@ -232,10 +272,10 @@ module.exports = {
                                 attachment: textBuffer,
                                 name: 'ai_reply.md'
                             }],
-                            flags: invisible ? MessageFlags.Ephemeral : {},
+                            flags: invisible ? MessageFlags.Ephemeral : undefined,
                         });
                     } else {
-                        await interaction.editReply(invisible ? { content: reply, flags: MessageFlags.Ephemeral } : reply);
+                        await interaction.editReply(invisible ? { content: stringReply, flags: MessageFlags.Ephemeral } : reply);
                     }
 
                     async function callGemini(key) {
@@ -255,6 +295,8 @@ module.exports = {
                                 const err = new Error("Rate limit exceeded");
                                 err.rateLimited = true;
                                 throw err;
+                            } else {
+                                console.error(error);
                             }
                         }
                     }
