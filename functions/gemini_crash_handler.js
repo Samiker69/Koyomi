@@ -97,6 +97,10 @@ function geminiCrashHadler(error) {
     if (status === 403 || status === 'PERMISSION_DENIED' || errorMessageText.includes('403') || (errorMessageText.includes('permission_denied') && !errorMessageText.includes('api key'))) { // "api key" related permission issue is often a 400
         return "Ошибка авторизации (403 Forbidden / PERMISSION_DENIED). У вашего API ключа нет разрешений на это действие, или доступ к ресурсу запрещен.";
     }
+
+    if (status === 404 || status === 'NOT_FOUND' || errorMessageText.includes('404') || errorMessageText.includes('Model is not found')) {
+        return "Используемая модель не найдена. Проверьте правильность написания кодового названия модели."
+    }
     
     // 5. Handle 500: Internal Server Error
     if (status === 500 || status === 'INTERNAL' || errorMessageText.includes('500') || errorMessageText.includes('internal error')) {

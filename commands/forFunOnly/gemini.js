@@ -69,7 +69,7 @@ module.exports = {
         .addIntegerOption(opt =>
             opt.setName('max_output_tokens')
             .setDescription('Максимум токенов, которыми AI ответит. Если максимум меньше, чем ответила AI, то ответ обрежется!')
-            .setMaxValue(8196)
+            .setMaxValue(65536)
             .setMinValue(1)
         )
         .addNumberOption(opt =>
@@ -162,6 +162,14 @@ module.exports = {
             .setDescription('Позволить нам использовать ваш ключ?')
         )
     )
+    .addSubcommand(sub =>
+        sub.setName("model-info")
+        .setDescription("Получает информацию о модели")
+        .addStringOption(opt => 
+            opt.setName("model")
+            .setDescription("Модель gemini. Оставьте пустым, чтобы применить модель из настроек")
+        )
+    )
 ,
     async execute(interaction) {
         const userId = interaction.user.id;
@@ -176,46 +184,56 @@ module.exports = {
                 await interaction.deferReply(invisible ? { flags: MessageFlags.Ephemeral } : {});
 
                 try {
+                    const keys = [];
+                    const allKeys =  db.getAllUserTokens(userId);
+                    if (!allKeys[0] && !privateAccess.includes(userId)) {
+                        return await interaction.editReply("У вас нет ни одного апи ключа для использования этой команды.")
+                    } else if (allKeys[0] && !privateAccess.includes(userId)){
+                        allKeys[0].forEach(key => {
+                            keys.push({key, timeoutDuration: 60_000});
+                        })                        
+                    }
+
+
                     const promt = interaction.options.getString('text');
                     const attachment = interaction.options.getAttachment('image');
                     let image = null;
 
-                    if (!attachment || !attachment.contentType || !attachment.contentType.startsWith('image/')) {
-                        const text = 'Это не изображение! Вложение будет проигнорировано.\nВыполняем запрос к ai...';
-                        await interaction.editReply(invisible === true ? {
-                            content: text,
-                            flags: MessageFlags.Ephemeral 
-                        } : text);
-                    } else if (attachment.size >= 20971500) {
-                        const text = "Размер изображения больше или примерно равен 20мб. Вложение будет проигнорировано.\nВыполняем запрос к ai...";
-                        await interaction.editReply(invisible === true ? {
-                            content: text,
-                            flags: MessageFlags.Ephemeral 
-                        } : text);
-                    } else {
+                    if (attachment) {
+                        if (!attachment.contentType.startsWith('image/')) {
+                            const text = 'Это не изображение! Вложение будет проигнорировано.\nВыполняем запрос к ai...';
+                            await interaction.editReply(invisible === true ? {
+                                content: text,
+                                flags: MessageFlags.Ephemeral 
+                            } : text);
+                        } else if (attachment.size >= 20971500) {
+                            const text = "Размер изображения больше или примерно равен 20мб. Вложение будет проигнорировано.\nВыполняем запрос к ai...";
+                            await interaction.editReply(invisible === true ? {
+                                content: text,
+                                flags: MessageFlags.Ephemeral 
+                            } : text);
+                        }
+
                         const img = await fetch(attachment.url);
                         image = Buffer.from(await img.arrayBuffer()).toString('base64');
-                        console.log(image, attachment.contentType)
                     }
 
-                    const contents = [
-                        image !== null ?
+                    const contents = image !== null ? [
                         {
                           inlineData: {
                             mimeType: attachment.contentType,
                             data: image,
                           },
-                        } : undefined,
+                        },
                         { text: promt },
-                      ];
-
+                    ] : promt;
 
                     const ai_request_options = {
                         model: config.model,
                         contents: contents,
                         config: {
                             systemInstruction: config.system_instructions,
-                            maxOutputTokens: config.max_output_tokens,
+                            maxOutputTokens: privateAccess ? await interaction.client.keyManager.call(getMaxOutputTokens) : await getMaxOutputTokens(keys[0]),
                             temperature: config.temperature,
                             topK: config.top_k,
                             topP: config.top_p,
@@ -228,14 +246,8 @@ module.exports = {
                         }
                     }
 
-                    let response; 
+                    let response;
                     if (!privateAccess.includes(userId)) {
-                        const keys = [];
-                        const allKeys =  db.getAllUserTokens(userId);
-                        if (!allKeys[0]) return await interaction.editReply("У вас нет ни одного апи ключа для использования этой команды.")
-                        allKeys[0].forEach(key => {
-                            keys.push({key, timeoutDuration: 60_000});
-                        })
                         const keyManager = new ApikeyManager(keys);
                         response = await keyManager.call(callGemini);
                     } else {
@@ -247,11 +259,12 @@ module.exports = {
                         }
                         response = await interaction.client.keyManager.call(callGemini);
                     }
-                    console.log(response);
+
                     if (!response) return await interaction.editReply(invisible === true ? {
                         content: "AI совсем ничего не ответила. Возможно, с стороны сервиса какая-то ошибка...",
                         flags: MessageFlags.Ephemeral
                     } : "AI совсем ничего не ответила. Возможно, с стороны сервиса какая-то ошибка...");
+
                     const _end = Date.now()
                     const reply = response?.text || response?.candidates?.[0]?.content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
                     const stringReply = String(reply);
@@ -298,6 +311,22 @@ module.exports = {
                             } else {
                                 console.error(error);
                             }
+                        }
+                    }
+                    async function getMaxOutputTokens(key) {
+                        const ai = new GoogleGenAI({ apiKey: key });
+                        if (!checkApiKey(key)) {
+                            db.deleteToken(userId, key);
+                            const stats = db.getUserStats(userId);
+                            if (stats.tokens < 1) db.deleteUserConfig(userId);
+                            return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                        }
+                        try {
+                            const info = await ai.models.get({model: config.model});
+                            if (info.outputTokenLimit < config.maxOutputTokens) return info.outputTokenLimit;
+                            else return config.maxOutputTokens;
+                        } catch (error) {
+                            return 1024;
                         }
                     }
                 } catch (error) {
@@ -492,6 +521,50 @@ module.exports = {
                 await interaction.editReply({ content: result.changes > 0 ? `Настройки были обновлены.` : 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
                 break;
             }
+            case "model-info": {
+                const model = interaction.options.getString('model') || config.model;
+
+                let info;
+                if (!privateAccess.includes(userId)) {
+                    const keys = [];
+                    const allKeys =  db.getAllUserTokens(userId);
+                    if (!allKeys[0]) return await interaction.editReply("У вас нет ни одного апи ключа для использования этой команды.")
+                    allKeys[0].forEach(key => {
+                        keys.push({key, timeoutDuration: 60_000});
+                    })
+                    const keyManager = new ApikeyManager(keys);
+                    info = await keyManager.call(getModelInfo);
+                } else {
+                    if (!interaction.client.keyManager) {
+                        return await interaction.editReply({
+                            content: 'Функционал ИИ недоступен, так как client.keyManager пуст.',
+                            flags: MessageFlags.Ephemeral
+                        });
+                    }
+                    info = await interaction.client.keyManager.call(getModelInfo);
+                }
+
+                if (info.err) return await interaction.reply({ content: info.text, flags: MessageFlags.Ephemeral });
+
+                const embed = createGeminiModelEmbed(info);
+                await interaction.reply({embeds: [embed]});
+
+                async function getModelInfo(key) {
+                    const ai = new GoogleGenAI({ apiKey: key });
+                    if (!checkApiKey(key)) {
+                        db.deleteToken(userId, key);
+                        const stats = db.getUserStats(userId);
+                        if (stats.tokens < 1) db.deleteUserConfig(userId);
+                        return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                    }
+                    try {
+                        return await ai.models.get({model: model});
+                    } catch (error) {
+                        return {err: true, text: geminiCrashHadler(error)}
+                    }
+                }
+                break;
+            }
 
             default:
                 await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
@@ -571,4 +644,52 @@ async function checkApiKey(apikey) {
             return false;
         }
     }
+}
+
+/**
+ * Карта кратких описаний для поддерживаемых действий Gemini API.
+ * Можно расширять по мере необходимости.
+ */
+const actionDescriptions = {
+    generateContent: "Генерация текста, изображений и другого контента",
+    countTokens: "Подсчет токенов во вводе",
+    createCachedContent: "Кэширование данных для повторного использования",
+    batchGenerateContent: "Массовая асинхронная генерация контента",
+    streamGenerateContent: "Потоковая генерация ответов",
+    functionCalling: "Вызов внешних функций/инструментов",
+    codeExecution: "Выполнение кода (Python)",
+    structuredOutputs: "Генерация структурированных данных (JSON)",
+    multimodalUnderstanding: "Понимание мультимодальных данных (изображения, аудио, видео)",
+    liveApi: "Интерактивное голосовое/видео взаимодействие",
+    fineTuning: "Тонкая настройка модели",
+    embeddings: "Генерация встраиваний (векторов)",
+};
+
+/**
+ * Создает Discord Embed из информации о модели Gemini.
+ *
+ * @param {GeminiModelInfo} info Объект с информацией о модели Gemini.
+ * @returns {EmbedBuilder} Объект EmbedBuilder для Discord.js.
+ */
+function createGeminiModelEmbed(info) {
+    const supportedActionsText = info.supportedActions
+        .map(action => {
+            const description = actionDescriptions[action] || `Неизвестное действие: ${action}`;
+            return `• **${action}**: ${description}`;
+        })
+        .join('\n');
+
+    const embed = new EmbedBuilder()
+        .setColor("DarkButNotBlack") // Или любой другой цвет, например, 0x0099FF
+        .setTitle(info.displayName || "Неизвестная модель Gemini")
+        .setDescription(`**Описание:** ${info.description || "Описание отсутствует."}`)
+        .addFields(
+            { name: "Идентификатор модели", value: `\`${info.name}\``, inline: true },
+            { name: "Версия", value: `\`${info.version}\``, inline: true },
+            { name: "Лимит входных токенов", value: `${info.inputTokenLimit.toLocaleString()} токенов`, inline: true },
+            { name: "Лимит выходных токенов", value: `${info.outputTokenLimit.toLocaleString()} токенов`, inline: true },
+            { name: "Поддерживаемые действия", value: supportedActionsText || "Действия не указаны." }
+        );
+
+    return embed;
 }
