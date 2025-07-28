@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder, ChannelType } = require('discord.js');
 const settings = require('../../functions/db/settings')
 const { bot_log_channel } = require('../../config.json')
 
@@ -58,6 +58,16 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand.setName('to-default')
             .setDescription('Безвозвратно сбрасывает настройки сервера')
+        ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+
+        .addSubcommand(subcommand =>
+            subcommand.setName('set-reports-channel')
+                .setDescription('Установить канал, куда будут приходить жалобы модераторам.')
+                .addChannelOption(option =>
+                    option.setName('channel')
+                        .setDescription('Канал для получения жалоб.')
+                        .setRequired(true)
+                )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
 	async execute(interaction) {
@@ -68,6 +78,7 @@ module.exports = {
         const channel = interaction.options.getChannel('channel');
         const category = interaction.options.getChannel('category');
         const bool = interaction.options.getBoolean('bool');
+        const guildId = interaction.guild.id;
 
         switch (interaction.options.getSubcommand()) {
             case "welcomechannel":
@@ -213,6 +224,28 @@ module.exports = {
             case "support-channel": {
                 Sdb.updateSetting(interaction.guild.id, "supportChannelId", channel.id)
                 await interaction.reply(`Канал поддержки изменён на ${channel}`);
+                break;
+            }
+
+            case 'set-reports-channel': { 
+                try {
+                    Sdb.updateSetting(guildId, 'reportsModerationChannelId', channel.id);
+                    await interaction.reply({ content: `Канал для получения жалоб модераторам установлен на ${channel}.`, flags: MessageFlags.Ephemeral });
+                } catch (error) {
+                    const errorStackShort = String(error.stack).substring(0, 1000) + '...';
+                    const errorEmbed = new EmbedBuilder()
+                        .setColor('Red')
+                        .setTitle(`Произошла ошибка при обработке команды`)
+                        .addFields(
+                            { name: `Команда`, value: `${interaction.commandName} set-reports-channel` },
+                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${errorStackShort}\`\`\`` }
+                        )
+                        .setTimestamp(new Date());
+                    console.error(error);
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel);
+                    await logChannel.send({ embeds: [errorEmbed] });
+                    await interaction.reply({ content: 'Не удалось изменить параметр.', flags: MessageFlags.Ephemeral });
+                }
                 break;
             }
 

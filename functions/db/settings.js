@@ -11,7 +11,8 @@ const VALID_SETTINGS = [
     'mainVoiceChannelId',
     'voiceCategoryId',
     'supportChannelId',
-    'prefix'
+    'prefix',
+    'reportsModerationChannelId'
 ];
 const BOOLEAN_SETTINGS = ['allowInviteLogging', 'allowLogingMembersAdd'];
 
@@ -24,6 +25,7 @@ class SettingsDatabase {
         try {
             this.db = new Database(dbPath);
             this._initTable();
+            this._addMissingColumns(); // Вызываем новый метод для добавления отсутствующих колонок
             this._prepareStatements();
 
         } catch (err) {
@@ -49,6 +51,7 @@ class SettingsDatabase {
                 voiceCategoryId TEXT DEFAULT '',
                 supportChannelId TEXT DEFAULT '',
                 prefix TEXT DEFAULT '..'
+                -- reportsModerationChannelId будет добавлен методом _addMissingColumns
             );
         `;
         this.db.exec(createTableQuery);
@@ -63,6 +66,23 @@ class SettingsDatabase {
             );
         `);
     }
+
+    /**
+     * Добавляет новые колонки в существующую таблицу guild_settings, если они отсутствуют.
+     * Это позволяет обновлять схему базы данных без потери данных.
+     * @private
+     */
+    _addMissingColumns() {
+        const existingColumns = this.db.prepare("PRAGMA table_info(guild_settings);").all().map(col => col.name);
+
+        // Проверяем и добавляем reportsModerationChannelId
+        if (!existingColumns.includes('reportsModerationChannelId')) {
+            this.db.exec("ALTER TABLE guild_settings ADD COLUMN reportsModerationChannelId TEXT DEFAULT '';");
+            console.log("Добавлена колонка 'reportsModerationChannelId' в guild_settings.");
+        }
+        // Здесь можно добавлять проверки и для других новых колонок в будущем
+    }
+
     /**
      * Подготавливает SQL-запросы для многократного использования.
      * @private
