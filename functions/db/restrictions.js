@@ -1,7 +1,7 @@
 const Database = require('better-sqlite3');
 
 class DisabledCommandsDB {
-    constructor(dbPath = './database/moderation.db') {
+    constructor(dbPath = './database/main.db') {
         this.db = new Database(dbPath);
         this._initTable();
     }

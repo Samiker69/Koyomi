@@ -2,7 +2,7 @@ const Database = require('better-sqlite3');
 const crypto = require('crypto');
 
 class GeminiDB {
-    constructor(dbPath = './database/settings.db') {
+    constructor(dbPath = './database/main.db') {
         this.db = new Database(dbPath);
         this._initializeTables();
         // Включаем поддержку внешних ключей, если она не включена по умолчанию

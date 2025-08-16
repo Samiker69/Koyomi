@@ -2,7 +2,7 @@ const Database = require('better-sqlite3');
 const path = require('path');
 
 class UserPunishmentDB {
-    constructor(dbPath = './database/moderation.db') {
+    constructor(dbPath = './database/main.db') {
         this.db = new Database(dbPath);
         this.init();
     }

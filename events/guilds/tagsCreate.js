@@ -5,7 +5,7 @@ const SettingsDatabase = require('../../functions/db/settings');
 
 const settings = new SettingsDatabase()
 
-const db = new Database('./database/settings.db');
+const db = new Database('./database/main.db');
 db.pragma('journal_mode = WAL');
 
 

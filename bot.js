@@ -89,20 +89,49 @@ for (const folder of eventFolders) {
 	}
 }
 
+const BotIPCServer = require('./bot-ipc-server');
 
+// После успешного логина бота
 client.once('ready', async () => {
-	const rest = new REST().setToken(process.env.token);
+    const rest = new REST().setToken(process.env.token);
 
-	try {
-		console.log(`[INFO] Регистрация ${commandsForRegister.length} глобальных слэш-команд...`);
-		await rest.put(
-			Routes.applicationCommands(process.env.clientId),
-			{ body: commandsForRegister }
-		);
-		console.log('[INFO] Глобальные слэш-команды успешно зарегистрированы.');
-	} catch (error) {
-		console.error('[ERROR] Ошибка при регистрации команд:', error);
-	}
+    try {
+        console.log(`[INFO] Регистрация ${commandsForRegister.length} глобальных слэш-команд...`);
+        await rest.put(
+            Routes.applicationCommands(process.env.clientId),
+            { body: commandsForRegister }
+        );
+        console.log('[INFO] Глобальные слэш-команды успешно зарегистрированы.');
+    } catch (error) {
+        console.error('[ERROR] Ошибка при регистрации команд:', error);
+    }
+
+    // Запуск IPC сервера для связи с админ-панелью
+    try {
+        const ipcServer = new BotIPCServer(client);
+        ipcServer.start();
+        
+        // Сохраняем ссылку для корректного завершения
+        client.ipcServer = ipcServer;
+        
+        // Обработка сигналов для корректного завершения
+        process.on('SIGINT', () => {
+            console.log('\n[INFO] Получен сигнал SIGINT, завершение работы...');
+            ipcServer.stop();
+            client.destroy();
+            process.exit(0);
+        });
+
+        process.on('SIGTERM', () => {
+            console.log('\n[INFO] Получен сигнал SIGTERM, завершение работы...');
+            ipcServer.stop();
+            client.destroy();
+            process.exit(0);
+        });
+        
+    } catch (error) {
+        console.error('[ERROR] Ошибка запуска IPC сервера:', error);
+    }
 });
 
 client.login(process.env.token);

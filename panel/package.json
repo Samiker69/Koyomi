@@ -1,0 +1,29 @@
+{
+    "name": "discord-bot-admin-panel",
+    "version": "0.1.0",
+    "description": "Admin panel for Discord bot management",
+    "main": "admin-panel.js",
+    "scripts": {
+      "start": "node admin-panel.js",
+      "dev": "nodemon admin-panel.js"
+    },
+    "dependencies": {
+      "express": "^4.18.2",
+      "express-session": "^1.17.3",
+      "passport": "^0.6.0",
+      "passport-discord": "^0.1.4",
+      "better-sqlite3": "^8.7.0",
+      "dotenv": "^16.3.1"
+    },
+    "devDependencies": {
+      "nodemon": "^3.0.1"
+    },
+    "keywords": [
+      "discord",
+      "bot",
+      "admin",
+      "panel"
+    ],
+    "author": "Samiker",
+    "license": "MIT"
+}

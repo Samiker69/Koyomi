@@ -5,7 +5,7 @@ class TagsDB {
     /**
      * @param {string} dbName Имя файла базы данных (например, 'tags.db')
      */
-    constructor(dbName = './database/settings.db') {
+    constructor(dbName = './database/main.db') {
         // Инициализация соединения с БД
         try {
             this.db = new Database(dbName, { /* verbose: console.log */ });
