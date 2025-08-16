@@ -79,6 +79,7 @@
 
     <div class="section">
         <h2>Действия</h2>
+        <button onclick="window.open('<%= `${serverId}/members` %>', '_self')" class="btn">Список участников</button>
         <button onclick="refreshStats()" class="btn">Обновить статистику</button>
         <button onclick="exportData()" class="btn">Экспорт данных</button>
         <button onclick="clearData()" class="btn danger">Очистить данные сервера</button>

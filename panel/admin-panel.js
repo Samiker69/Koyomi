@@ -17,64 +17,6 @@ if (!fs.existsSync('../database')) {
 
 const db = new Database('../database/main.db');
 
-// Создание таблиц если их нет
-db.exec(`
-    CREATE TABLE IF NOT EXISTS mod_cases (
-        serverId TEXT NOT NULL,
-        caseNum INTEGER NOT NULL,
-        targetId TEXT NOT NULL,
-        moderatorId TEXT NOT NULL,
-        action TEXT NOT NULL CHECK(action IN ('ban', 'mute', 'kick', 'unban', 'unmute', 'warn', 'unwarn')),
-        reason TEXT,
-        timestamp INTEGER NOT NULL,
-        PRIMARY KEY (serverId, caseNum)
-    );
-
-    CREATE TABLE IF NOT EXISTS gemini_user_settings (
-        user_id TEXT NOT NULL PRIMARY KEY,
-        model TEXT DEFAULT "gemini-2.0-flash",
-        system_instructions TEXT DEFAULT "",
-        max_output_tokens INTEGER DEFAULT 1000,
-        temperature REAL DEFAULT 1.0,
-        top_p REAL DEFAULT NULL,
-        top_k INTEGER DEFAULT NULL,
-        history_limit INTEGER DEFAULT 100
-    );
-
-    CREATE TABLE IF NOT EXISTS gemini_safety_settings (
-        user_id TEXT NOT NULL PRIMARY KEY,
-        HARM_CATEGORY_HARASSMENT TEXT DEFAULT "BLOCK_MEDIUM_AND_ABOVE",
-        HARM_CATEGORY_HATE_SPEECH TEXT DEFAULT "BLOCK_MEDIUM_AND_ABOVE",
-        HARM_CATEGORY_SEXUALLY_EXPLICIT TEXT DEFAULT "BLOCK_MEDIUM_AND_ABOVE",
-        HARM_CATEGORY_DANGEROUS_CONTENT TEXT DEFAULT "BLOCK_MEDIUM_AND_ABOVE",
-        FOREIGN KEY (user_id) REFERENCES gemini_user_settings(user_id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS tokens (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT NOT NULL,
-        token TEXT NOT NULL,
-        public_use INTEGER DEFAULT 0,
-        uses INTEGER DEFAULT 0
-    );
-
-    CREATE TABLE IF NOT EXISTS user_punishment (
-        user_id TEXT NOT NULL,
-        channel_id TEXT NOT NULL,
-        guild_id TEXT NOT NULL,
-        negative_points INTEGER DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (user_id, guild_id)
-    );
-
-    CREATE TABLE IF NOT EXISTS admin_users (
-        user_id TEXT NOT NULL PRIMARY KEY,
-        username TEXT,
-        added_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-`);
-
 // Список админов (можешь добавить свой ID)
 const ADMIN_IDS = ['691246997646213131'];
 
@@ -143,6 +85,7 @@ const requireGeminiAccess = (req, res, next) => {
 
 // Подключение к Discord боту через IPC
 const BotIPCClient = require('./ipc-client');
+const GeminiDB = require('../functions/db/gemini_settings');
 const botIPC = new BotIPCClient();
 
 // Пытаемся подключиться к боту
@@ -251,8 +194,8 @@ app.get('/api/server/:serverId/stats', requireAuth, async (req, res) => {
     try {
         const totalCases = db.prepare('SELECT COUNT(*) as count FROM mod_cases WHERE serverId = ?').get(serverId).count;
         const totalPunishments = db.prepare('SELECT COUNT(*) as count FROM user_punishment WHERE guild_id = ?').get(serverId).count;
-        const bansCount = db.prepare('SELECT COUNT(*) as count FROM mod_cases WHERE serverId = ? AND action = "ban"').get(serverId).count;
-        const warnsCount = db.prepare('SELECT COUNT(*) as count FROM mod_cases WHERE serverId = ? AND action = "warn"').get(serverId).count;
+        const bansCount = db.prepare('SELECT COUNT(*) as count FROM mod_cases WHERE serverId = ? AND action = \'ban\'').get(serverId).count;
+        const warnsCount = db.prepare('SELECT COUNT(*) as count FROM mod_cases WHERE serverId = ? AND action = \'warn\'').get(serverId).count;
 
         let serverName = `Server ${serverId}`;
         
@@ -357,6 +300,18 @@ app.get('/gemini-settings', requireGeminiAccess, (req, res) => {
     }
 });
 
+app.get('/api/gemini/models', requireGeminiAccess, async (req, res) => {
+    const userId = req.user.id;
+    const tokens = new GeminiDB('../database/main.db').getAllUserTokens(userId);
+    
+    try {
+        res.send(Object.fromEntries(await botIPC.getGeminiModels(tokens[0][0])));
+    } catch (error) {
+        console.log(error)
+        res.status(500).send("Ошибка получения моделей");
+    }
+})
+
 // API для сохранения настроек Gemini
 app.post('/api/gemini/user-settings', requireGeminiAccess, (req, res) => {
     const userId = req.user.id;
@@ -372,9 +327,17 @@ app.post('/api/gemini/user-settings', requireGeminiAccess, (req, res) => {
 
     try {
         const upsertSettings = db.prepare(`
-            INSERT OR REPLACE INTO gemini_user_settings 
+            INSERT INTO gemini_user_settings 
             (user_id, model, system_instructions, max_output_tokens, temperature, top_p, top_k, history_limit)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                model = EXCLUDED.model,
+                system_instructions = EXCLUDED.system_instructions,
+                max_output_tokens = EXCLUDED.max_output_tokens,
+                temperature = EXCLUDED.temperature,
+                top_p = EXCLUDED.top_p,
+                top_k = EXCLUDED.top_k,
+                history_limit = EXCLUDED.history_limit;
         `);
 
         upsertSettings.run(

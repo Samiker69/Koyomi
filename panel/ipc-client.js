@@ -2,6 +2,8 @@ const net = require('net');
 const { EventEmitter } = require('events');
 const path = require('path');
 const os = require('os');
+const { GoogleGenAI } = require('@google/genai');
+const getTextModelOutputLimitsMap = require('../functions/geminiutils');
 
 class BotIPCClient extends EventEmitter {
     constructor() {
@@ -182,6 +184,18 @@ class BotIPCClient extends EventEmitter {
             actionType: 'sendMessage',
             params: { channelId, content, embed }
         });
+    }
+
+    async getGeminiModels(apikey) {
+        const ai = new GoogleGenAI({apiKey: apikey})
+        const modelsPager = await ai.models.list();
+        const allFetchedModels = [];
+    
+        // Итерируем по всем страницам, чтобы собрать все модели в один массив
+        for await (const model of modelsPager) {
+          allFetchedModels.push(model);
+        }
+        return getTextModelOutputLimitsMap(allFetchedModels);
     }
 
     disconnect() {
