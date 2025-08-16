@@ -45,9 +45,13 @@ if (keys.length > 0) {
 	}
 }
 
+client.lastMessages = new Map();
+client.lastChannels = new Map();
+
 client.queues = new Map()
 client.cooldowns = new Collection();
 client.commands = new Collection();
+
 client.eventscount = 0
 client.commandscount = 0
 const foldersPath = path.join(__dirname, 'commands');
@@ -89,6 +93,79 @@ for (const folder of eventFolders) {
 	}
 }
 
+const servicesFolderPath = path.join(__dirname, 'services');
+const serviceFolders = fs.readdirSync(servicesFolderPath);
+
+// Массив для хранения активных сервисов (для graceful shutdown)
+client.services = [];
+client.servicesCount = 0;
+
+for (const folder of serviceFolders) {
+	const servicesPath = path.join(servicesFolderPath, folder);
+	const serviceFiles = fs.readdirSync(servicesPath).filter(file => file.endsWith('.js'));
+	
+	for (const file of serviceFiles) {
+		const filePath = path.join(servicesPath, file);
+		const service = require(filePath);
+		
+		client.servicesCount++;
+		
+		// Валидация структуры сервиса
+		if (!service.name || typeof service.execute !== 'function') {
+			console.warn(`⚠️ Service ${file} missing required properties (name, execute)`);
+			continue;
+		}
+		
+		console.log(`🔧 Loading service: ${service.name}`);
+		
+		try {
+			// Запуск сервиса
+			const serviceInstance = {
+				name: service.name,
+				interval: null,
+				isRunning: false,
+				stop: function() {
+					if (this.interval) {
+						clearInterval(this.interval);
+						this.interval = null;
+						this.isRunning = false;
+						console.log(`🛑 Service ${this.name} stopped`);
+					}
+				}
+			};
+			
+			// Если есть интервал, запускаем циклически
+			if (service.interval && service.interval > 0) {
+				serviceInstance.interval = setInterval(() => {
+					try {
+						service.execute(client);
+					} catch (error) {
+						console.error(`❌ Error in service ${service.name}:`, error);
+					}
+				}, service.interval);
+				serviceInstance.isRunning = true;
+			}
+			
+			// Если есть флаг immediate, выполняем сразу
+			if (service.immediate) {
+				try {
+					service.execute(client);
+				} catch (error) {
+					console.error(`❌ Error in immediate service ${service.name}:`, error);
+				}
+			}
+			
+			client.services.push(serviceInstance);
+			console.log(`✅ Service ${service.name} loaded successfully`);
+			
+		} catch (error) {
+			console.error(`❌ Failed to load service ${service.name}:`, error);
+		}
+	}
+}
+
+console.log(`🔧 Loaded ${client.servicesCount} services`);
+
 const BotIPCServer = require('./bot-ipc-server');
 
 // После успешного логина бота
@@ -119,6 +196,7 @@ client.once('ready', async () => {
             console.log('\n[INFO] Получен сигнал SIGINT, завершение работы...');
             ipcServer.stop();
             client.destroy();
+			client.services.forEach(service => service.stop());
             process.exit(0);
         });
 
@@ -126,6 +204,7 @@ client.once('ready', async () => {
             console.log('\n[INFO] Получен сигнал SIGTERM, завершение работы...');
             ipcServer.stop();
             client.destroy();
+			client.services.forEach(service => service.stop());
             process.exit(0);
         });
         

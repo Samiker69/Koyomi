@@ -17,6 +17,65 @@ if (!fs.existsSync('../database')) {
 
 const db = new Database('../database/main.db');
 
+
+// Создание таблиц если их нет
+db.exec(`
+    CREATE TABLE IF NOT EXISTS mod_cases (
+        serverId TEXT NOT NULL,
+        caseNum INTEGER NOT NULL,
+        targetId TEXT NOT NULL,
+        moderatorId TEXT NOT NULL,
+        action TEXT NOT NULL CHECK(action IN ('ban', 'mute', 'kick', 'unban', 'unmute', 'warn', 'unwarn')),
+        reason TEXT,
+        timestamp INTEGER NOT NULL,
+        PRIMARY KEY (serverId, caseNum)
+    );
+
+    CREATE TABLE IF NOT EXISTS gemini_user_settings (
+        user_id TEXT NOT NULL PRIMARY KEY,
+        model TEXT DEFAULT "gemini-2.0-flash",
+        system_instructions TEXT DEFAULT "",
+        max_output_tokens INTEGER DEFAULT 1000,
+        temperature REAL DEFAULT 1.0,
+        top_p REAL DEFAULT NULL,
+        top_k INTEGER DEFAULT NULL,
+        history_limit INTEGER DEFAULT 100
+    );
+
+    CREATE TABLE IF NOT EXISTS gemini_safety_settings (
+        user_id TEXT NOT NULL PRIMARY KEY,
+        HARM_CATEGORY_HARASSMENT TEXT DEFAULT "BLOCK_MEDIUM_AND_ABOVE",
+        HARM_CATEGORY_HATE_SPEECH TEXT DEFAULT "BLOCK_MEDIUM_AND_ABOVE",
+        HARM_CATEGORY_SEXUALLY_EXPLICIT TEXT DEFAULT "BLOCK_MEDIUM_AND_ABOVE",
+        HARM_CATEGORY_DANGEROUS_CONTENT TEXT DEFAULT "BLOCK_MEDIUM_AND_ABOVE",
+        FOREIGN KEY (user_id) REFERENCES gemini_user_settings(user_id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS tokens (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        token TEXT NOT NULL,
+        public_use INTEGER DEFAULT 0,
+        uses INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS user_punishment (
+        user_id TEXT NOT NULL,
+        channel_id TEXT NOT NULL,
+        guild_id TEXT NOT NULL,
+        negative_points INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, guild_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS admin_users (
+        user_id TEXT NOT NULL PRIMARY KEY,
+        username TEXT,
+        added_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+`);
+
 // Список админов (можешь добавить свой ID)
 const ADMIN_IDS = ['691246997646213131'];
 
@@ -500,6 +559,117 @@ app.get('/server/:serverId/members', requireAuth, (req, res) => {
     res.render('server-members', {
         serverId: serverId
     })
+});
+
+app.get('/api/server/:serverId/channels', requireAuth, async (req, res) => {
+    const serverId = req.params.serverId;
+    const useCache = req.query.cache === 'true';
+
+    try {
+        if (botIPC.connected) {
+            let channels;
+            
+            if (useCache) {
+                // Получаем из кэша
+                channels = await botIPC.getCache('channels', null, serverId);
+                if (!channels || channels.length === 0) {
+                    channels = await botIPC.getServerChannels(serverId);
+                    console.log(`📦➡️🔄 Cache miss, fallback to Discord API`);
+                }
+                console.log(`📦 Serving channels from cache for server ${serverId}`);
+            } else {
+                // Получаем через Discord API
+                channels = await botIPC.getServerChannels(serverId);
+                console.log(`🔄 Fetching channels from Discord API for server ${serverId}`);
+            }
+            
+            res.json({ 
+                data: channels || [],
+                source: useCache ? 'cache' : 'api',
+            });
+        } else {
+            res.status(503).json({ error: 'Bot not available' });
+        }
+    } catch (error) {
+        console.error('Error getting server channels:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/api/server/:serverId/channel/:channelId/messages', requireAuth, async (req, res) => {
+    const serverId = req.params.serverId;
+    const channelId = req.params.channelId;
+    const useCache = req.query.cache === 'true';
+
+    try {
+        if (botIPC.connected) {
+            let messages;
+            
+            if (useCache) {
+                messages = await botIPC.getCache('messages', channelId);
+                if (!messages || messages.length === 0) {
+                    messages = await botIPC.getChannelMessages(serverId, channelId);
+                    console.log(`📦➡️🔄 Cache miss, fallback to Discord API`);
+                }
+                console.log(`📦 Serving messages from cache for server ${serverId}`);
+            } else {
+                // Получаем через Discord API
+                messages = await botIPC.getChannelMessages(serverId, channelId);
+                console.log(`🔄 Fetching messages from Discord API for channel ${channelId}`);
+            }
+            
+            res.json({
+                data: messages || [],
+                source: useCache ? 'cache' : 'api',
+            });
+        } else {
+            res.status(503).json({ error: 'Bot not available' });
+        }
+    } catch (error) {
+        console.error('Error getting messages:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Дополнительный эндпоинт для получения только кэша
+app.get('/api/cache/channels/:serverId', requireAuth, async (req, res) => {
+    const serverId = req.params.serverId;
+
+    try {
+        if (botIPC.connected) {
+            const channels = await botIPC.getCache('channels', null, serverId);
+            res.json({
+                cached: true,
+                data: channels || [],
+                timestamp: Date.now()
+            });
+        } else {
+            res.status(503).json({ error: 'Bot not available' });
+        }
+    } catch (error) {
+        console.error('Error getting cached channels:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/api/cache/messages/:channelId', requireAuth, async (req, res) => {
+    const channelId = req.params.channelId;
+
+    try {
+        if (botIPC.connected) {
+            const messages = await botIPC.getCache('messages', channelId);
+            res.json({
+                cached: true,
+                data: messages || [],
+                timestamp: Date.now()
+            });
+        } else {
+            res.status(503).json({ error: 'Bot not available' });
+        }
+    } catch (error) {
+        console.error('Error getting cached messages:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 // API для общей статистики бота

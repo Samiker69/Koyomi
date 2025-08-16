@@ -87,6 +87,16 @@ class BotIPCServer {
             
             case 'executeAction':
                 return await this.executeAction(data.guildId, data.actionType, data.params);
+
+            case 'getChannels':
+                return await this.getGuildChannels(data.guildId);
+
+            case 'getMessages': 
+                return await this.getChannelMessages(data.guildId, data.channelId)
+
+            case 'getCache': {
+                return await this.getCache(data.type, data.channelId, data.guildId)
+            }
             
             default:
                 return { error: 'Unknown action' };
@@ -299,6 +309,80 @@ class BotIPCServer {
 
         const message = await channel.send(messageOptions);
         return { success: true, messageId: message.id };
+    }
+
+    async getGuildChannels(guildId) {
+        const guild = this.client.guilds.cache.get(guildId)
+        if (!guild) {
+            return { success: false, error: 'Guild not found' };
+        }
+        const channelsCollection = await guild.channels.fetch();
+        const channelsArray = Array.from(channelsCollection.values()).map(channel => ({
+            id: channel.id,
+            name: channel.name,
+            type: channel.type,
+            lastMessage: channel.lastMessage
+        }));
+        this.client.lastChannels.set(guild.id, channelsArray);
+        
+        return { success: true, channels: channelsArray };
+    }
+
+    async getChannelMessages(guildId, channelId) {
+        const guild = this.client.guilds.cache.get(guildId)
+        if (!guild) {
+            return { success: false, error: 'Guild not found' };
+        }
+        const channel = await guild.channels.fetch(channelId);
+        const messages = await channel.messages.fetch();
+        const messagesArray = Array.from(messages.values()).map(msg => ({
+            id: msg.id,
+            content: msg.content,
+            embeds: msg.embeds,
+            attachments: msg.attachments.size > 0 ? Array.from(msg.attachments.values()).map(attachment => ({
+                id: attachment.id,
+                filename: attachment.name,
+                size: attachment.size,
+                url: attachment.url,
+                contentType: attachment.contentType,
+                height: attachment.height || null,
+                width: attachment.width || null
+            })) : [],
+            timestamp: msg.createdTimestamp,
+            author: { 
+                displayName: msg.author.displayName, 
+                avatarURL: msg.author.avatarURL(), 
+                id: msg.author.id 
+            }
+        }));
+        this.client.lastMessages.set(channel.id, messagesArray);
+
+        return { success: true, messages: messagesArray.reverse() };
+    }
+
+    async getCache(type = 'all', channelId = null, guildId = null) {
+        switch (type) {
+            case 'channels':
+                if (guildId) {
+                    return { success: true, channels: this.client.lastChannels.get(guildId) || [] };
+                } else {
+                    return { success: true, channels: Array.from(this.client.lastChannels.values()).flat() };
+                }
+            
+            case 'messages':
+                if (channelId) {
+                    return { success: true, messages: this.client.lastMessages.get(channelId) || [] };
+                } else {
+                    return { success: true, messages: Array.from(this.client.lastMessages.values()).flat().reverse() };
+                }
+        
+            default:
+                return { 
+                    success: true, 
+                    channels: Array.from(this.client.lastChannels.values()).flat(),
+                    messages: Array.from(this.client.lastMessages.values()).flat().reverse()
+                };
+        }
     }
 
     stop() {

@@ -198,6 +198,27 @@ class BotIPCClient extends EventEmitter {
         return getTextModelOutputLimitsMap(allFetchedModels);
     }
 
+    async getServerChannels(guildId) {
+        return await this.request('getChannels', {
+            guildId
+        });
+    }
+
+    async getChannelMessages(guildId, channelId) {
+        return await this.request('getMessages', {
+            guildId,
+            channelId
+        })
+    }
+
+    async getCache(type = 'all', channelId = null, guildId = null) {
+        return await this.request('getCache', {
+            type,
+            channelId,
+            guildId
+        })
+    }
+
     disconnect() {
         if (this.socket) {
             this.socket.destroy();
