@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Настройки Gemini - Discord Bot Admin Panel</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background: #2c2f33;
+            color: #fff;
+        }
+        .header {
+            background: #36393f;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-btn { 
+            background: #7289da; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            text-decoration: none;
+        }
+        .section {
+            background: #36393f;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #40444b;
+            color: #fff;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: 2px solid #7289da;
+        }
+        .btn {
+            background: #7289da;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover { background: #677bc4; }
+        .btn.success { background: #43b581; }
+        .btn.success:hover { background: #3ca374; }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .settings-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Настройки Gemini</h1>
+        <a href="/dashboard" class="back-btn">← Назад к панели</a>
+    </div>
+
+    <div class="settings-grid">
+        <div class="section">
+            <h2>Основные настройки</h2>
+            <form id="user-settings-form">
+                <div class="form-group">
+                    <label for="model">Модель:</label>
+                    <select id="model" name="model">
+                        <option value="gemini-2.0-flash" <%= userSettings?.model === 'gemini-2.0-flash' ? 'selected' : '' %>>gemini-2.0-flash</option>
+                        <option value="gemini-1.5-pro" <%= userSettings?.model === 'gemini-1.5-pro' ? 'selected' : '' %>>gemini-1.5-pro</option>
+                        <option value="gemini-1.5-flash" <%= userSettings?.model === 'gemini-1.5-flash' ? 'selected' : '' %>>gemini-1.5-flash</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="max_output_tokens">Максимум токенов вывода:</label>
+                    <input type="number" id="max_output_tokens" name="max_output_tokens" 
+                           value="<%= userSettings?.max_output_tokens || 1000 %>" min="1" max="8192">
+                </div>
+                
+                <div class="form-group">
+                    <label for="temperature">Temperature (0.0-2.0):</label>
+                    <input type="number" id="temperature" name="temperature" 
+                           value="<%= userSettings?.temperature || 1.0 %>" min="0" max="2" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="top_p">Top P (опционально):</label>
+                    <input type="number" id="top_p" name="top_p" 
+                           value="<%= userSettings?.top_p || '' %>" min="0" max="1" step="0.1" placeholder="Оставьте пустым для автоматического">
+                </div>
+                
+                <div class="form-group">
+                    <label for="top_k">Top K (опционально):</label>
+                    <input type="number" id="top_k" name="top_k" 
+                           value="<%= userSettings?.top_k || '' %>" min="1" placeholder="Оставьте пустым для автоматического">
+                </div>
+                
+                <div class="form-group">
+                    <label for="history_limit">Лимит истории:</label>
+                    <input type="number" id="history_limit" name="history_limit" 
+                           value="<%= userSettings?.history_limit || 100 %>" min="1" max="1000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="system_instructions">Системные инструкции:</label>
+                    <textarea id="system_instructions" name="system_instructions" rows="4" 
+                              placeholder="Введите системные инструкции для ИИ..."><%= userSettings?.system_instructions || '' %></textarea>
+                </div>
+                
+                <button type="submit" class="btn success">Сохранить основные настройки</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Настройки безопасности</h2>
+            <form id="safety-settings-form">
+                <div class="form-group">
+                    <label for="harassment">Домогательства:</label>
+                    <select id="harassment" name="HARM_CATEGORY_HARASSMENT">
+                        <option value="BLOCK_NONE" <%= safetySettings?.HARM_CATEGORY_HARASSMENT === 'BLOCK_NONE' ? 'selected' : '' %>>Не блокировать</option>
+                        <option value="BLOCK_ONLY_HIGH" <%= safetySettings?.HARM_CATEGORY_HARASSMENT === 'BLOCK_ONLY_HIGH' ? 'selected' : '' %>>Блокировать высокий уровень</option>
+                        <option value="BLOCK_MEDIUM_AND_ABOVE" <%= safetySettings?.HARM_CATEGORY_HARASSMENT === 'BLOCK_MEDIUM_AND_ABOVE' || !safetySettings ? 'selected' : '' %>>Блокировать средний и выше</option>
+                        <option value="BLOCK_LOW_AND_ABOVE" <%= safetySettings?.HARM_CATEGORY_HARASSMENT === 'BLOCK_LOW_AND_ABOVE' ? 'selected' : '' %>>Блокировать низкий и выше</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hate_speech">Язык вражды:</label>
+                    <select id="hate_speech" name="HARM_CATEGORY_HATE_SPEECH">
+                        <option value="BLOCK_NONE" <%= safetySettings?.HARM_CATEGORY_HATE_SPEECH === 'BLOCK_NONE' ? 'selected' : '' %>>Не блокировать</option>
+                        <option value="BLOCK_ONLY_HIGH" <%= safetySettings?.HARM_CATEGORY_HATE_SPEECH === 'BLOCK_ONLY_HIGH' ? 'selected' : '' %>>Блокировать высокий уровень</option>
+                        <option value="BLOCK_MEDIUM_AND_ABOVE" <%= safetySettings?.HARM_CATEGORY_HATE_SPEECH === 'BLOCK_MEDIUM_AND_ABOVE' || !safetySettings ? 'selected' : '' %>>Блокировать средний и выше</option>
+                        <option value="BLOCK_LOW_AND_ABOVE" <%= safetySettings?.HARM_CATEGORY_HATE_SPEECH === 'BLOCK_LOW_AND_ABOVE' ? 'selected' : '' %>>Блокировать низкий и выше</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sexually_explicit">Сексуальный контент:</label>
+                    <select id="sexually_explicit" name="HARM_CATEGORY_SEXUALLY_EXPLICIT">
+                        <option value="BLOCK_NONE" <%= safetySettings?.HARM_CATEGORY_SEXUALLY_EXPLICIT === 'BLOCK_NONE' ? 'selected' : '' %>>Не блокировать</option>
+                        <option value="BLOCK_ONLY_HIGH" <%= safetySettings?.HARM_CATEGORY_SEXUALLY_EXPLICIT === 'BLOCK_ONLY_HIGH' ? 'selected' : '' %>>Блокировать высокий уровень</option>
+                        <option value="BLOCK_MEDIUM_AND_ABOVE" <%= safetySettings?.HARM_CATEGORY_SEXUALLY_EXPLICIT === 'BLOCK_MEDIUM_AND_ABOVE' || !safetySettings ? 'selected' : '' %>>Блокировать средний и выше</option>
+                        <option value="BLOCK_LOW_AND_ABOVE" <%= safetySettings?.HARM_CATEGORY_SEXUALLY_EXPLICIT === 'BLOCK_LOW_AND_ABOVE' ? 'selected' : '' %>>Блокировать низкий и выше</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dangerous_content">Опасный контент:</label>
+                    <select id="dangerous_content" name="HARM_CATEGORY_DANGEROUS_CONTENT">
+                        <option value="BLOCK_NONE" <%= safetySettings?.HARM_CATEGORY_DANGEROUS_CONTENT === 'BLOCK_NONE' ? 'selected' : '' %>>Не блокировать</option>
+                        <option value="BLOCK_ONLY_HIGH" <%= safetySettings?.HARM_CATEGORY_DANGEROUS_CONTENT === 'BLOCK_ONLY_HIGH' ? 'selected' : '' %>>Блокировать высокий уровень</option>
+                        <option value="BLOCK_MEDIUM_AND_ABOVE" <%= safetySettings?.HARM_CATEGORY_DANGEROUS_CONTENT === 'BLOCK_MEDIUM_AND_ABOVE' || !safetySettings ? 'selected' : '' %>>Блокировать средний и выше</option>
+                        <option value="BLOCK_LOW_AND_ABOVE" <%= safetySettings?.HARM_CATEGORY_DANGEROUS_CONTENT === 'BLOCK_LOW_AND_ABOVE' ? 'selected' : '' %>>Блокировать низкий и выше</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn success">Сохранить настройки безопасности</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('user-settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Преобразуем пустые строки в null для опциональных полей
+            if (data.top_p === '') data.top_p = null;
+            if (data.top_k === '') data.top_k = null;
+            
+            try {
+                const response = await fetch('/api/gemini/user-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert('Основные настройки сохранены!');
+                } else {
+                    alert('Ошибка сохранения настроек');
+                }
+            } catch (error) {
+                alert('Ошибка сохранения настроек');
+            }
+        });
+        
+        document.getElementById('safety-settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/api/gemini/safety-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert('Настройки безопасности сохранены!');
+                } else {
+                    alert('Ошибка сохранения настроек');
+                }
+            } catch (error) {
+                alert('Ошибка сохранения настроек');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Управление сервером - Discord Bot Admin Panel</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background: #2c2f33;
+            color: #fff;
+        }
+        .header {
+            background: #36393f;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-btn { 
+            background: #7289da; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            text-decoration: none;
+        }
+        .section {
+            background: #36393f;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #40444b;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number { font-size: 24px; font-weight: bold; color: #7289da; }
+        .btn {
+            background: #7289da;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .btn:hover { background: #677bc4; }
+        .btn.danger { background: #f04747; }
+        .btn.danger:hover { background: #d73838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #40444b; }
+        th { background: #40444b; }
+        .loading { text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Управление сервером: <span id="server-name">Загрузка...</span></h1>
+        <a href="/dashboard" class="back-btn">← Назад к панели</a>
+    </div>
+
+    <div class="section">
+        <h2>Статистика сервера</h2>
+        <div id="server-stats" class="stats-grid">
+            <div class="loading">Загрузка статистики...</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Действия</h2>
+        <button onclick="refreshStats()" class="btn">Обновить статистику</button>
+        <button onclick="exportData()" class="btn">Экспорт данных</button>
+        <button onclick="clearData()" class="btn danger">Очистить данные сервера</button>
+    </div>
+
+    <div class="section">
+        <h2>Последние кейсы модерации</h2>
+        <div id="recent-cases">
+            <div class="loading">Загрузка кейсов...</div>
+        </div>
+    </div>
+
+    <script>
+        const serverId = '<%= serverId %>';
+
+        async function loadServerStats() {
+            try {
+                const response = await fetch(`/api/server/${serverId}/stats`); // Используем serverId из JS-переменной
+                const stats = await response.json();
+                
+                document.getElementById('server-name').textContent = stats.serverName || serverId;
+                document.getElementById('server-stats').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.totalCases}</div>
+                        <div>Всего кейсов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.totalPunishments}</div>
+                        <div>Активные наказания</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.bansCount}</div>
+                        <div>Банов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.warnsCount}</div>
+                        <div>Предупреждений</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading server stats:', error);
+                document.getElementById('server-stats').innerHTML = '<div>Ошибка загрузки статистики</div>';
+            }
+        }
+
+        async function loadRecentCases() {
+            try {
+                const response = await fetch(`/api/server/${serverId}/cases?limit=10`); // Используем serverId из JS-переменной
+                const cases = await response.json();
+                
+                if (cases.length === 0) {
+                    document.getElementById('recent-cases').innerHTML = '<p>Кейсов не найдено</p>';
+                    return;
+                }
+                
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Кейс #</th>
+                                <th>Действие</th>
+                                <th>Цель</th>
+                                <th>Модератор</th>
+                                <th>Причина</th>
+                                <th>Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                cases.forEach(case_ => {
+                    const date = new Date(case_.timestamp).toLocaleString();
+                    tableHtml += `
+                        <tr>
+                            <td>${case_.caseNum}</td>
+                            <td>${case_.action}</td>
+                            <td>${case_.targetId}</td>
+                            <td>${case_.moderatorId}</td>
+                            <td>${case_.reason || 'Не указана'}</td>
+                            <td>${date}</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHtml += '</tbody></table>';
+                document.getElementById('recent-cases').innerHTML = tableHtml;
+            } catch (error) {
+                console.error('Error loading cases:', error);
+                document.getElementById('recent-cases').innerHTML = '<div>Ошибка загрузки кейсов</div>';
+            }
+        }
+
+        function refreshStats() {
+            loadServerStats();
+            loadRecentCases();
+        }
+
+        async function exportData() {
+            try {
+                const response = await fetch(`/api/server/${serverId}/export`); // Используем serverId из JS-переменной
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `server_${serverId}_data.json`;
+                a.click();
+            } catch (error) {
+                alert('Ошибка экспорта данных');
+            }
+        }
+
+        async function clearData() {
+            if (!confirm('Вы уверены? Это действие удалит ВСЕ данные сервера!')) return;
+            
+            try {
+                const response = await fetch(`/api/server/${serverId}/clear`, { method: 'DELETE' }); // Используем serverId из JS-переменной
+                if (response.ok) {
+                    alert('Данные сервера очищены');
+                    refreshStats();
+                } else {
+                    alert('Ошибка очистки данных');
+                }
+            } catch (error) {
+                alert('Ошибка очистки данных');
+            }
+        }
+
+        // Загружаем данные при загрузке страницы
+        loadServerStats();
+        loadRecentCases();
+    </script>
+</body>
+</html>

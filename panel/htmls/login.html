@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discord Bot Admin Panel - Login</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px;
+            background: #2c2f33;
+            color: #fff;
+        }
+        .login-container {
+            background: #36393f;
+            padding: 30px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .discord-btn {
+            background: #7289da;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        .discord-btn:hover { background: #677bc4; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Discord Bot Admin Panel</h1>
+        <p>Войдите через Discord для доступа к панели администратора</p>
+        <a href="/auth/discord" class="discord-btn">Войти через Discord</a>
+    </div>
+</body>
+</html>
