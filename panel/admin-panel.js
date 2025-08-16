@@ -76,7 +76,7 @@ db.exec(`
 `);
 
 // Список админов (можешь добавить свой ID)
-const ADMIN_IDS = ['691246997646213131']; // Замени на свой Discord ID
+const ADMIN_IDS = ['691246997646213131'];
 
 // Добавляем админов в БД если их там нет
 const insertAdmin = db.prepare('INSERT OR IGNORE INTO admin_users (user_id, username) VALUES (?, ?)');
@@ -1195,6 +1195,327 @@ app.post('/api/server/:serverId/message', requireAuth, async (req, res) => {
         console.error('Error sending message:', error);
         res.status(500).json({ error: error.message });
     }
+});
+// Страница управления участниками
+app.get('/server/:serverId/members', requireAuth, (req, res) => {
+    const serverId = req.params.serverId;
+    
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Участники сервера - Discord Bot Admin Panel</title>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 20px;
+                    background: #2c2f33;
+                    color: #fff;
+                }
+                .header {
+                    background: #36393f;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .back-btn { 
+                    background: #7289da; 
+                    color: white; 
+                    padding: 10px 20px; 
+                    border: none; 
+                    border-radius: 5px; 
+                    text-decoration: none;
+                }
+                .section {
+                    background: #36393f;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                }
+                .member-card {
+                    background: #40444b;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-bottom: 10px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .member-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }
+                .member-avatar {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                }
+                .member-actions {
+                    display: flex;
+                    gap: 10px;
+                }
+                .btn {
+                    padding: 8px 15px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                }
+                .btn-danger { background: #f04747; color: white; }
+                .btn-warning { background: #faa61a; color: white; }
+                .btn-info { background: #7289da; color: white; }
+                .search-box {
+                    width: 100%;
+                    padding: 10px;
+                    margin-bottom: 20px;
+                    background: #40444b;
+                    border: none;
+                    border-radius: 5px;
+                    color: #fff;
+                    font-size: 14px;
+                }
+                .loading { text-align: center; padding: 20px; }
+                .role-tag {
+                    background: #7289da;
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    font-size: 10px;
+                    margin-right: 4px;
+                }
+                .pagination {
+                    display: flex;
+                    justify-content: center;
+                    gap: 10px;
+                    margin-top: 20px;
+                }
+                .pagination button {
+                    background: #7289da;
+                    color: white;
+                    border: none;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+                .pagination button:disabled {
+                    background: #40444b;
+                    cursor: not-allowed;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Участники сервера</h1>
+                <a href="/server/${serverId}" class="back-btn">← Назад к серверу</a>
+            </div>
+
+            <div class="section">
+                <input type="text" id="search" class="search-box" placeholder="Поиск по имени пользователя...">
+                
+                <div id="members-container">
+                    <div class="loading">Загрузка участников...</div>
+                </div>
+                
+                <div class="pagination">
+                    <button id="prev-btn" onclick="loadPreviousPage()" disabled>← Предыдущая</button>
+                    <span id="page-info">Страница 1</span>
+                    <button id="next-btn" onclick="loadNextPage()">Следующая →</button>
+                </div>
+            </div>
+
+            <!-- Модальное окно для действий -->
+            <div id="action-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+                <div style="background: #36393f; padding: 30px; border-radius: 10px; max-width: 500px; margin: 10% auto; position: relative;">
+                    <h3 id="modal-title">Действие</h3>
+                    <div id="modal-content"></div>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button onclick="closeModal()" style="background: #40444b; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-right: 10px;">Отмена</button>
+                        <button id="confirm-action" onclick="confirmAction()" style="background: #f04747; color: white; padding: 10px 20px; border: none; border-radius: 5px;">Подтвердить</button>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                const serverId = '${serverId}';
+                let currentPage = 1;
+                let totalMembers = 0;
+                let allMembers = [];
+                let filteredMembers = [];
+                let currentAction = null;
+                let currentUserId = null;
+                const membersPerPage = 20;
+
+                async function loadMembers() {
+                    try {
+                        const response = await fetch(\`/api/server/\${serverId}/members?limit=1000\`);
+                        allMembers = await response.json();
+                        filteredMembers = allMembers;
+                        totalMembers = allMembers.length;
+                        
+                        displayMembers();
+                        updatePagination();
+                    } catch (error) {
+                        console.error('Error loading members:', error);
+                        document.getElementById('members-container').innerHTML = '<div>Ошибка загрузки участников</div>';
+                    }
+                }
+
+                function displayMembers() {
+                    const startIndex = (currentPage - 1) * membersPerPage;
+                    const endIndex = startIndex + membersPerPage;
+                    const membersToShow = filteredMembers.slice(startIndex, endIndex);
+                    
+                    if (membersToShow.length === 0) {
+                        document.getElementById('members-container').innerHTML = '<div>Участники не найдены</div>';
+                        return;
+                    }
+                    
+                    const membersHtml = membersToShow.map(member => \`
+                        <div class="member-card">
+                            <div class="member-info">
+                                <img src="\${member.avatarURL}" alt="Avatar" class="member-avatar">
+                                <div>
+                                    <h4>\${member.displayName}</h4>
+                                    <p style="margin: 5px 0; opacity: 0.7;">@\${member.username} • ID: \${member.id}</p>
+                                    <div>
+                                        \${member.roles.slice(0, 3).map(role => 
+                                            role.name !== '@everyone' ? \`<span class="role-tag" style="background: \${role.color}">\${role.name}</span>\` : ''
+                                        ).join('')}
+                                        \${member.roles.length > 3 ? \`<span class="role-tag">+\${member.roles.length - 3}</span>\` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-actions">
+                                <button class="btn btn-info" onclick="viewMember('\${member.id}')">Просмотр</button>
+                                <button class="btn btn-warning" onclick="showActionModal('kick', '\${member.id}', '\${member.displayName}')">Кик</button>
+                                <button class="btn btn-danger" onclick="showActionModal('ban', '\${member.id}', '\${member.displayName}')">Бан</button>
+                            </div>
+                        </div>
+                    \`).join('');
+                    
+                    document.getElementById('members-container').innerHTML = membersHtml;
+                }
+
+                function updatePagination() {
+                    const totalPages = Math.ceil(filteredMembers.length / membersPerPage);
+                    
+                    document.getElementById('prev-btn').disabled = currentPage <= 1;
+                    document.getElementById('next-btn').disabled = currentPage >= totalPages;
+                    document.getElementById('page-info').textContent = \`Страница \${currentPage} из \${totalPages} (\${filteredMembers.length} участников)\`;
+                }
+
+                function loadNextPage() {
+                    currentPage++;
+                    displayMembers();
+                    updatePagination();
+                }
+
+                function loadPreviousPage() {
+                    currentPage--;
+                    displayMembers();
+                    updatePagination();
+                }
+
+                function showActionModal(action, userId, displayName) {
+                    currentAction = action;
+                    currentUserId = userId;
+                    
+                    const modal = document.getElementById('action-modal');
+                    const title = document.getElementById('modal-title');
+                    const content = document.getElementById('modal-content');
+                    
+                    title.textContent = action === 'kick' ? 'Исключить пользователя' : 'Забанить пользователя';
+                    
+                    content.innerHTML = \`
+                        <p>Вы уверены, что хотите <strong>\${action === 'kick' ? 'исключить' : 'забанить'}</strong> пользователя <strong>\${displayName}</strong>?</p>
+                        <div style="margin: 15px 0;">
+                            <label style="display: block; margin-bottom: 5px;">Причина:</label>
+                            <input type="text" id="reason-input" style="width: 100%; padding: 8px; background: #40444b; border: none; border-radius: 4px; color: #fff;" placeholder="Укажите причину...">
+                        </div>
+                        \${action === 'ban' ? \`
+                            <div style="margin: 15px 0;">
+                                <label style="display: block; margin-bottom: 5px;">Удалить сообщения за (дней):</label>
+                                <select id="delete-messages" style="width: 100%; padding: 8px; background: #40444b; border: none; border-radius: 4px; color: #fff;">
+                                    <option value="0">Не удалять</option>
+                                    <option value="1">1 день</option>
+                                    <option value="7" selected>7 дней</option>
+                                </select>
+                            </div>
+                        \` : ''}
+                    \`;
+                    
+                    modal.style.display = 'block';
+                }
+
+                function closeModal() {
+                    document.getElementById('action-modal').style.display = 'none';
+                    currentAction = null;
+                    currentUserId = null;
+                }
+
+                async function confirmAction() {
+                    const reason = document.getElementById('reason-input').value || 'Не указана';
+                    const deleteMessages = document.getElementById('delete-messages')?.value || 0;
+                    
+                    try {
+                        const response = await fetch(\`/api/server/\${serverId}/action\`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: currentAction,
+                                userId: currentUserId,
+                                reason: reason,
+                                extra: { deleteMessageDays: parseInt(deleteMessages) }
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            alert(\`Действие выполнено успешно! Кейс #\${result.caseNum}\`);
+                            closeModal();
+                            loadMembers(); // Обновляем список
+                        } else {
+                            alert(\`Ошибка: \${result.error}\`);
+                        }
+                    } catch (error) {
+                        alert('Ошибка выполнения действия');
+                        console.error(error);
+                    }
+                }
+
+                function viewMember(userId) {
+                    window.open(\`https://discord.com/users/\${userId}\`, '_blank');
+                }
+
+                // Поиск
+                document.getElementById('search').addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    
+                    if (query === '') {
+                        filteredMembers = allMembers;
+                    } else {
+                        filteredMembers = allMembers.filter(member => 
+                            member.username.toLowerCase().includes(query) ||
+                            member.displayName.toLowerCase().includes(query)
+                        );
+                    }
+                    
+                    currentPage = 1;
+                    displayMembers();
+                    updatePagination();
+                });
+
+                // Загружаем участников при загрузке страницы
+                loadMembers();
+            </script>
+        </body>
+        </html>
+    `);
 });
 
 // API для общей статистики бота
