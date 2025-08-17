@@ -144,8 +144,8 @@ const requireGeminiAccess = (req, res, next) => {
 
 // Подключение к Discord боту через IPC
 const BotIPCClient = require('./ipc-client');
+const botIPC = new BotIPCClient('localhost', 8765);
 const GeminiDB = require('../functions/db/gemini_settings');
-const botIPC = new BotIPCClient();
 
 // Пытаемся подключиться к боту
 botIPC.connect().catch(error => {

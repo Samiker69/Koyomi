@@ -1,71 +1,60 @@
-const net = require('net');
+const WebSocket = require('ws');
 const fs = require('fs');
-const path = require('path');
-const os = require('os');
 
 class BotIPCServer {
-    constructor(client) {
+    constructor(client, port = 8765) {
         this.client = client;
         this.server = null;
-        this.socketPath = this.getSocketPath();
-    }
-
-    getSocketPath() {
-        if (process.platform === 'win32') {
-            // На Windows используем именованные каналы (named pipes)
-            return '\\\\.\\pipe\\discord-bot-ipc';
-        } else {
-            // На Linux/Mac используем Unix-сокеты
-            return path.join(os.tmpdir(), 'discord-bot.sock');
-        }
+        this.port = port;
+        this.connections = new Set();
     }
 
     start() {
-        // Удаляем старый сокет-файл, если он существует (только для Unix-систем)
-        if (process.platform !== 'win32' && fs.existsSync(this.socketPath)) {
-            try {
-                fs.unlinkSync(this.socketPath);
-            } catch (error) {
-                console.error('[IPC] Error removing old socket file:', error);
-            }
-        }
-        
-        this.server = net.createServer((socket) => {
-            console.log('[IPC] Admin panel connected');
+        this.server = new WebSocket.Server({ 
+            port: this.port,
+            perMessageDeflate: false // Отключаем сжатие для лучшей производительности с большими данными
+        });
+
+        this.server.on('connection', (ws) => {
+            console.log('[WebSocket] Admin panel connected');
+            this.connections.add(ws);
             
-            socket.on('data', async (data) => {
+            ws.on('message', async (data) => {
                 let request;
                 try {
                     request = JSON.parse(data.toString());
                     const response = await this.handleRequest(request);
                     // Важно: добавляем requestId в ответ для правильной обработки
                     response.requestId = request.requestId;
-                    socket.write(JSON.stringify(response) + '\n');
+                    ws.send(JSON.stringify(response));
                 } catch (error) {
-                    console.error('[IPC] Error handling request:', error);
+                    console.error('[WebSocket] Error handling request:', error);
                     const errorResponse = { 
                         error: 'Internal server error',
                         requestId: request?.requestId // Возвращаем requestId даже при ошибке
                     };
-                    socket.write(JSON.stringify(errorResponse) + '\n');
+                    if (ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify(errorResponse));
+                    }
                 }
             });
             
-            socket.on('error', (error) => {
-                console.error('[IPC] Socket error:', error);
+            ws.on('error', (error) => {
+                console.error('[WebSocket] Socket error:', error);
             });
 
-            socket.on('close', () => {
-                console.log('[IPC] Admin panel disconnected');
+            ws.on('close', () => {
+                console.log('[WebSocket] Admin panel disconnected');
+                this.connections.delete(ws);
             });
         });
 
-        this.server.listen(this.socketPath, () => {
-            console.log(`[IPC] Bot IPC server listening on ${this.socketPath}`);
+        this.server.on('listening', () => {
+            console.log(`[WebSocket] Bot WebSocket server listening on port ${this.port}`);
         });
 
         this.server.on('error', (error) => {
-            console.error('[IPC] Server error:', error);
+            console.error('[WebSocket] Server error:', error);
         });
     }
 
@@ -167,10 +156,8 @@ class BotIPCServer {
             if (!guild) {
                 return { error: 'Guild not found' };
             }
-
-            await guild.members.fetch({ limit });
             
-            const members = guild.members.cache
+            const members = (await guild.members.fetch({ limit }))
                 .first(limit)
                 .map(member => ({
                     id: member.id,
@@ -187,8 +174,9 @@ class BotIPCServer {
                     permissions: member.permissions.toArray()
                 }));
 
-            return { success: true, members };
+            return { success: true, members: members };
         } catch (error) {
+            console.error(error)
             return { error: error.message };
         }
     }
@@ -394,18 +382,22 @@ class BotIPCServer {
 
     stop() {
         if (this.server) {
-            this.server.close();
-            // Удаляем socket-файл только на Unix-системах, т.к. на Windows его нет
-            if (process.platform !== 'win32') {
-                try {
-                    fs.unlinkSync(this.socketPath);
-                } catch (error) {
-                    // Игнорируем ошибки, т.к. файл мог быть уже удален
+            // Закрываем все активные соединения
+            this.connections.forEach(ws => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
                 }
-            }
+            });
+            this.connections.clear();
+            
+            // Закрываем сервер
+            this.server.close(() => {
+                console.log('[WebSocket] Server closed');
+            });
         }
     }
 }
+
 function processMessageContent(msg) {
     let processedContent = msg.content;
     

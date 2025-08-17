@@ -182,9 +182,11 @@ client.once('ready', async () => {
         console.error('[ERROR] Ошибка при регистрации команд:', error);
     }
 
-    // Запуск IPC сервера для связи с админ-панелью
+    // Запуск WebSocket сервера для связи с админ-панелью
     try {
-        const ipcServer = new BotIPCServer(client);
+        // Можно изменить порт через переменную окружения или оставить по умолчанию 8765
+        const wsPort = process.env.WS_PORT || 8765;
+        const ipcServer = new BotIPCServer(client, wsPort);
         ipcServer.start();
         
         // Сохраняем ссылку для корректного завершения
@@ -195,7 +197,7 @@ client.once('ready', async () => {
             console.log('\n[INFO] Получен сигнал SIGINT, завершение работы...');
             ipcServer.stop();
             client.destroy();
-			client.services.forEach(service => service.stop());
+            client.services.forEach(service => service.stop());
             process.exit(0);
         });
 
@@ -203,12 +205,12 @@ client.once('ready', async () => {
             console.log('\n[INFO] Получен сигнал SIGTERM, завершение работы...');
             ipcServer.stop();
             client.destroy();
-			client.services.forEach(service => service.stop());
+            client.services.forEach(service => service.stop());
             process.exit(0);
         });
         
     } catch (error) {
-        console.error('[ERROR] Ошибка запуска IPC сервера:', error);
+        console.error('[ERROR] Ошибка запуска WebSocket сервера:', error);
     }
 });
 

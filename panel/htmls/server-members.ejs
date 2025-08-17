@@ -148,8 +148,9 @@
 
         async function loadMembers() {
             try {
-                const response = await fetch(`/api/server/${serverId}/members?limit=1000`);
+                const response = await fetch(`/api/server/${serverId}/members?limit=100`);
                 allMembers = await response.json();
+                console.log(allMembers)
                 filteredMembers = allMembers;
                 totalMembers = allMembers.length;
                 
