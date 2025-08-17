@@ -207,8 +207,8 @@
             justify-content: space-between;
         }
 
-/* --- Стили для эмбедов --- */
-.embed {
+        /* --- Стили для эмбедов --- */
+        .embed {
             max-width: 520px;
             margin-top: 8px;
             border-left: 4px solid #7289da;
@@ -351,6 +351,28 @@
             margin-top: 8px;
         }
         .attachment-image img {
+            max-width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* --- Стили для эмодзи --- */
+        .emoji {
+            width: 22px;
+            height: 22px;
+            vertical-align: middle;
+            margin: 0 1px;
+        }
+
+        /* --- Стили для стикеров --- */
+        .stickers {
+            margin-top: 8px;
+        }
+        .sticker {
+            max-width: 160px;
+            margin-bottom: 8px;
+        }
+        .sticker img {
             max-width: 100%;
             border-radius: 4px;
             cursor: pointer;
@@ -763,6 +785,13 @@
                                 }
                             }).join('') + '</div>';
                         }
+
+                        let stickersHTML = ''
+                        if (msg.stickers && msg.stickers.length > 0) {
+                            stickersHTML = '<div class="stickers">' + msg.stickers.map(sticker => {
+                                return `<div class="sticker"><img src="${sticker.url}" alt="${sticker.name}" title="${sticker.name}"></div>`;
+                            }).join('') + '</div>';
+                        }
                         
                         msgEl.innerHTML = `
                             <img src="${msg.author.avatarURL}" alt="avatar" class="message-avatar">
@@ -774,11 +803,14 @@
                                 <div class="message-content">${msg.content}</div>
                                 ${embedsHTML}
                                 ${attachmentsHTML}
+                                ${stickersHTML}
                             </div>
                         `;
                         messagesContainer.appendChild(msgEl);
-                        console.log(attachmentsHTML)
                     });
+                    setTimeout(() => {
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }, 50);
 
                     // Вспомогательная функция для форматирования размера файла
                     function formatFileSize(bytes) {

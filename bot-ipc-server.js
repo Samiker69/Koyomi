@@ -337,7 +337,7 @@ class BotIPCServer {
         const messages = await channel.messages.fetch();
         const messagesArray = Array.from(messages.values()).map(msg => ({
             id: msg.id,
-            content: msg.content,
+            content: processMessageContent(msg), // cleanContent + обработка эмодзи
             embeds: msg.embeds,
             attachments: msg.attachments.size > 0 ? Array.from(msg.attachments.values()).map(attachment => ({
                 id: attachment.id,
@@ -347,6 +347,13 @@ class BotIPCServer {
                 contentType: attachment.contentType,
                 height: attachment.height || null,
                 width: attachment.width || null
+            })) : [],
+            stickers: msg.stickers.size > 0 ? Array.from(msg.stickers.values()).map(sticker => ({
+                id: sticker.id,
+                name: sticker.name,
+                description: sticker.description,
+                url: sticker.url,
+                format: sticker.format
             })) : [],
             timestamp: msg.createdTimestamp,
             author: { 
@@ -398,6 +405,36 @@ class BotIPCServer {
             }
         }
     }
+}
+function processMessageContent(msg) {
+    let processedContent = msg.content;
+    
+    // 1. Сначала заменяем пользовательские эмодзи на HTML
+    processedContent = processedContent.replace(/<(a?):(\w+):(\d+)>/g, (match, animated, name, id) => {
+        const extension = animated ? 'gif' : 'png';
+        const url = `https://cdn.discordapp.com/emojis/${id}.${extension}`;
+        return `<img src="${url}" alt=":${name}:" class="emoji" title=":${name}:">`;
+    });
+    
+    // 2. Заменяем упоминания пользователей
+    processedContent = processedContent.replace(/<@!?(\d+)>/g, (match, userId) => {
+        const user = msg.mentions.users.get(userId);
+        return user ? `@${user.displayName}` : match;
+    });
+    
+    // 3. Заменяем упоминания ролей
+    processedContent = processedContent.replace(/<@&(\d+)>/g, (match, roleId) => {
+        const role = msg.mentions.roles.get(roleId);
+        return role ? `@${role.name}` : match;
+    });
+    
+    // 4. Заменяем упоминания каналов
+    processedContent = processedContent.replace(/<#(\d+)>/g, (match, channelId) => {
+        const channel = msg.mentions.channels.get(channelId);
+        return channel ? `#${channel.name}` : match;
+    });
+    
+    return processedContent;
 }
 
 module.exports = BotIPCServer;

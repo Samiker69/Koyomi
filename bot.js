@@ -47,7 +47,6 @@ if (keys.length > 0) {
 
 client.lastMessages = new Map();
 client.lastChannels = new Map();
-
 client.queues = new Map()
 client.cooldowns = new Collection();
 client.commands = new Collection();
