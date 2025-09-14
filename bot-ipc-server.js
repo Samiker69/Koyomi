@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const fs = require('fs');
+const { ChannelType } = require('discord.js');
 
 class BotIPCServer {
     constructor(client, port = 8765) {
@@ -70,6 +71,15 @@ class BotIPCServer {
             
             case 'getGuildMembers':
                 return await this.getGuildMembers(data.guildId);
+
+            case 'getGuildRoles':
+                return await this.getGuildRoles(data.guildId);
+
+            case 'getMember':
+                return await this.getMember(data.guildId, data.userId);
+
+            case 'channelAction':
+                return await this.channelAction(data.guildId, data.channelId, data.data);
             
             case 'getBotStats':
                 return await this.getBotStats();
@@ -117,11 +127,40 @@ class BotIPCServer {
                 return { error: 'Guild not found' };
             }
 
-            const channels = guild.channels.cache.map(channel => ({
+            const channelsCollection = guild.channels.cache;
+            const allChannelsArray = Array.from(channelsCollection.values());
+            
+            const uncategorizedChannels = allChannelsArray
+                .filter(c => c.type !== ChannelType.GuildCategory && !c.parentId);
+            
+            const categories = allChannelsArray
+                .filter(c => c.type === ChannelType.GuildCategory);
+            
+            const categorizedTextAndVoiceChannels = allChannelsArray
+                .filter(c => c.type !== ChannelType.GuildCategory && c.parentId);
+            
+            const sortedUncategorized = uncategorizedChannels.sort((a, b) => a.position - b.position);
+            const sortedCategories = categories.sort((a, b) => a.position - b.position);
+            
+            let finalSortedChannels = [];
+            
+            finalSortedChannels.push(...sortedUncategorized);
+            
+            for (const category of sortedCategories) {
+                finalSortedChannels.push(category);
+            
+                const children = categorizedTextAndVoiceChannels
+                    .filter(c => c.parentId === category.id)
+                    .sort((a, b) => a.position - b.position);
+                finalSortedChannels.push(...children);
+            }
+            
+            const channels = finalSortedChannels.map(channel => ({
                 id: channel.id,
                 name: channel.name,
                 type: channel.type,
-                position: channel.position
+                position: channel.position,
+                parentId: channel.parentId || null // Добавляем parentId
             }));
 
             const roles = guild.roles.cache.map(role => ({
@@ -130,6 +169,15 @@ class BotIPCServer {
                 color: role.hexColor,
                 permissions: role.permissions.toArray(),
                 position: role.position
+            }));
+
+            let webhooks = [];
+            const fetchedWebhooks = await guild.fetchWebhooks();
+            webhooks = fetchedWebhooks.map(webhook => ({
+                id: webhook.id,
+                name: webhook.name,
+                url: webhook.url,
+                avatarURL: webhook.avatarURL({ extension: 'png', size: 128 })
             }));
 
             return {
@@ -142,6 +190,7 @@ class BotIPCServer {
                     ownerId: guild.ownerId,
                     channels,
                     roles,
+                    webhooks,
                     features: guild.features
                 }
             };
@@ -181,6 +230,89 @@ class BotIPCServer {
         }
     }
 
+    async getGuildRoles(guildId) {
+        try {
+            const guild = this.client.guilds.cache.get(guildId);
+            if (!guild) {
+                return { error: 'Guild not found' };
+            }
+
+            const roles = guild.roles.cache.map(role => ({
+                id: role.id,
+                name: role.name,
+                color: role.hexColor
+            }))
+            return { success: true, roles: roles };
+        } catch (error) {
+            console.error(error)
+            return { error: error.message };
+        }
+    }
+
+    async getMember(guildId, userId) {
+        try {
+            const guild = this.client.guilds.cache.get(guildId);
+            if (!guild) {
+                return { success: false, error: 'Guild not found' };
+            }
+            const member = guild.members.cache.get(userId);
+            if (!member) {
+                return { success: false, error: 'Member not found' };
+            }
+            return { 
+                success: true,
+                member: {
+                    "id": member.user.id,
+                    "displayName": member.displayName,
+                    "avatarURL": member.avatarURL({ extension: 'png', size: 64 }),
+                    roles: member.roles.cache.map(role => ({
+                        id: role.id,
+                        name: role.name,
+                        color: role.hexColor
+                    })),
+                    "joinedAt": member.joinedAt
+                }
+            }
+        } catch (error) {
+            console.error(error)
+            return { error: error.message };
+        }
+    }
+
+    async channelAction(guildId, channelId, { action, name, avatar }) {
+        const guild = this.client.guilds.cache.get(guildId);
+        if (!guild) {
+            return { success: false, error: 'Guild not found' };
+        }
+        const channel = guild.channels.cache.get(channelId) || await guild.channels.fetch(channelId);
+        if (!channel) {
+            return { success: false, error: 'Channel not found' };
+        }
+        try {
+            switch (action) {
+                case 'createWebhook':
+                    const wh = await channel.createWebhook({
+                        name,
+                        avatar,
+                    });
+                    return { success: true, data: { url: wh.url, name: wh.name, avatar: wh.avatarURL() } };
+    
+                case 'rename':
+                    const editedChannel = await channel.edit({ name });
+                    return { success: true, message: "Channel deleted", data: { name: editedChannel.name } };
+    
+                case 'delete':
+                    await channel.delete();
+                    return { success: true, message: "Channel deleted" };
+            
+                default:
+                    return { success: false, error: 'Unknown channel action' };
+            }
+        } catch (error) {
+            return { error: error.message };
+        }
+    }
+
     async getBotStats() {
         try {
             const stats = {
@@ -213,9 +345,15 @@ class BotIPCServer {
                 
                 case 'ban':
                     return await this.banMember(guild, params);
+            
+                case 'mute':
+                    return await this.muteMember(guild, params);
                 
                 case 'unban':
                     return await this.unbanMember(guild, params);
+
+                case 'roleAction':
+                    return await this.roleAction(guild, params);
                 
                 case 'createRole':
                     return await this.createRole(guild, params);
@@ -260,6 +398,34 @@ class BotIPCServer {
             return { success: true, message: `User ${userId} unbanned` };
         } catch (error) {
             return { error: `Failed to unban: ${error.message}` };
+        }
+    }
+
+    async muteMember(guild, { userId, reason, duration }) {
+        try {
+            const member = guild.members.cache.get(userId);
+            if (!member) {
+                return { error: 'Member not found' };
+            }
+
+            await member.timeout(duration, reason);
+            return { success: true, message: `User ${member?.username} timeouted to ${duration}` };
+        } catch (error) {
+            return { error: `Failed to timeout: ${error.message}` };
+        }
+    }
+
+    async roleAction(guild, { userId, roleId, type }) {
+        try {
+            const member = guild.members.cache.get(userId);
+            if (!member) {
+                return { error: 'Member not found' };
+            }
+
+            type === 'add' ? await member.roles.add(roleId) : await member.roles.remove(roleId);
+            return { success: true, message: `${type === 'add' ? 'Added' : 'Removed'} role ${roleId} to ${member?.username}` };
+        } catch (error) {
+            return { error: `Failed to ${type} role: ${error.message}` };
         }
     }
 
@@ -346,13 +512,13 @@ class BotIPCServer {
             timestamp: msg.createdTimestamp,
             author: { 
                 displayName: msg.author.displayName, 
-                avatarURL: msg.author.avatarURL(), 
+                avatarURL: msg.author.avatarURL(),
                 id: msg.author.id 
             }
         }));
         this.client.lastMessages.set(channel.id, messagesArray);
 
-        return { success: true, messages: messagesArray.reverse() };
+        return { success: true, messages: messagesArray };
     }
 
     async getCache(type = 'all', channelId = null, guildId = null) {
@@ -368,14 +534,14 @@ class BotIPCServer {
                 if (channelId) {
                     return { success: true, messages: this.client.lastMessages.get(channelId) || [] };
                 } else {
-                    return { success: true, messages: Array.from(this.client.lastMessages.values()).flat().reverse() };
+                    return { success: true, messages: Array.from(this.client.lastMessages.values()).flat() };
                 }
         
             default:
                 return { 
                     success: true, 
                     channels: Array.from(this.client.lastChannels.values()).flat(),
-                    messages: Array.from(this.client.lastMessages.values()).flat().reverse()
+                    messages: Array.from(this.client.lastMessages.values()).flat()
                 };
         }
     }

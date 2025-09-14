@@ -9,8 +9,7 @@ function getTextModelOutputLimitsMap(allModels) {
     const textOutputModelsMap = new Map();
   
     allModels.forEach(model => {
-      // Проверяем, содержит ли supportedActions одну из действий, указывающих на текстовый вывод
-      if (model.supportedActions.includes('generateContent')) {
+      if (model.supportedActions.includes('generateContent') && !model.name.includes('preview')) {
         textOutputModelsMap.set(model.name, { name: model.name, displayName: model.displayName, outputTokenLimit: model.outputTokenLimit });
       }
     });

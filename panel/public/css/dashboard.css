@@ -1,0 +1,72 @@
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 20px;
+    background: #2c2f33;
+    color: #fff;
+}
+.header {
+    background: #36393f;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.user-info { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; }
+.logout-btn { 
+    background: #f04747; 
+    color: white; 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    text-decoration: none;
+}
+.section {
+    background: #36393f;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.btn {
+    background: #7289da;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px;
+    cursor: pointer;
+}
+.btn:hover { background: #677bc4; }
+.servers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+.server-card {
+    background: #40444b;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.server-card:hover { background: #484c52; }
+.server-info { display: flex; align-items: center; gap: 15px; }
+.server-avatar { width: 50px; height: 50px; border-radius: 50%; }
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+.stat-card {
+    background: #40444b;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+.stat-number { font-size: 24px; font-weight: bold; color: #7289da; }
+.loading { text-align: center; padding: 20px; }

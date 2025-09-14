@@ -1,0 +1,231 @@
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 20px;
+    background: #2c2f33;
+    color: #fff;
+}
+.header {
+    background: #36393f;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.back-btn { 
+    background: #7289da; 
+    color: white; 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    text-decoration: none;
+}
+.section {
+    background: #36393f;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.stat-card {
+    background: #40444b;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+.stat-number { font-size: 24px; font-weight: bold; color: #7289da; }
+.btn {
+    background: #7289da;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    cursor: pointer;
+}
+.btn:hover { background: #677bc4; }
+.btn.danger { background: #f04747; }
+.btn.danger:hover { background: #d73838; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { padding: 10px; text-align: left; border-bottom: 1px solid #40444b; }
+th { background: #40444b; }
+.loading { text-align: center; padding: 20px; }
+
+/* --- Стили для скроллбаров --- */
+.scroll-area::-webkit-scrollbar {
+    width: 7px;
+}
+.scroll-area::-webkit-scrollbar-track {
+    background: rgba(44, 47, 51, 0.4);
+}
+.scroll-area::-webkit-scrollbar-thumb {
+    background: rgba(114, 137, 218, 0.6);
+    border-radius: 5px;
+}
+.scroll-area::-webkit-scrollbar-thumb:hover {
+    background: rgba(103, 123, 196, 0.8);
+}
+
+/* Стили для вебхуков */
+.webhooks-list {
+    background: #2c2f33;
+    padding: 15px;
+    border-radius: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.webhook-item {
+    background: #36393f;
+    border-radius: 5px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: background-color 0.2s;
+}
+
+.webhook-item:hover {
+    background: #40444b;
+}
+
+.webhook-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.webhook-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.webhook-info {
+    flex-grow: 1;
+}
+
+.webhook-name {
+    font-weight: bold;
+    color: #fff;
+}
+
+.webhook-id {
+    font-size: 0.8em;
+    color: #b9bbbe;
+}
+
+/* Стили для основной информации о сервере */
+.server-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    background: #36393f;
+    border-radius: 8px;
+}
+
+.server-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+.server-info-details {
+    flex-grow: 1;
+}
+
+.server-meta {
+    display: flex;
+    gap: 15px;
+    color: #b9bbbe;
+    font-size: 0.9em;
+    margin: 8px 0;
+}
+
+.server-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.feature-badge {
+    background: #657bc9;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+/* Стили для ошибок */
+.error-message {
+    background: #f04747;
+    color: white;
+    padding: 12px;
+    border-radius: 5px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Дополнительные стили для ролей */
+.role-popup, .channel-popup {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #18191c;
+    padding: 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 1000;
+    font-size: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.server-channel-item {
+    position: relative;
+    margin-bottom: 5px;
+    color: #b9bbbe;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.server-channel-item:hover {
+    background-color: #40444b;
+    color: #fff;
+}
+.server-channel-item.active {
+    background-color: #7289da;
+    color: white;
+}
+
+.user-role:hover .role-popup {
+    display: block;
+}
+
+.server-channel-item:hover .channel-popup {
+    display: block;
+}
+
+.server-channel-item[data-parent-id]:not([data-parent-id=""]) {
+    padding-left: 5%;
+}
+
+.server-channel-item.channel-type-4 { /* ChannelType.GuildCategory = 4 */
+    margin-top: 10px;
+    padding-left: 1%; 
+}
+
+.channel-name {
+    margin-right: auto;
+}

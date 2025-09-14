@@ -77,11 +77,11 @@ db.exec(`
 `);
 
 // Список админов (можешь добавить свой ID)
-const ADMIN_IDS = ['691246997646213131'];
+const CACHE_ADMINS = [{ id: "691246997646213131", username: "samiker"}];
 
 // Добавляем админов в БД если их там нет
 const insertAdmin = db.prepare('INSERT OR IGNORE INTO admin_users (user_id, username) VALUES (?, ?)');
-ADMIN_IDS.forEach(id => insertAdmin.run(id, null));
+CACHE_ADMINS.forEach(({id, username}) => insertAdmin.run(id, username));
 
 // Middleware
 app.use(express.json());
@@ -119,30 +119,32 @@ const requireAuth = (req, res, next) => {
     if (!req.user) {
         return res.redirect('/login');
     }
-    
-    const isAdmin = db.prepare('SELECT * FROM admin_users WHERE user_id = ?').get(req.user.id);
-    if (!isAdmin) {
-        return res.status(403).json({ status: 403, message: "forbidden" });
+    if (CACHE_ADMINS.some(admin => admin.id === req.user.id)) {
+        next();
+    } else {
+        const isAdmin = db.prepare('SELECT * FROM admin_users WHERE user_id = ?').get(req.user.id);
+        if (!isAdmin) {
+            return res.status(403).json({ status: 403, message: "You are not an admin" });
+        }
+        next();
     }
-    
-    next();
 };
 
 // Middleware для проверки Gemini доступа
 const requireGeminiAccess = (req, res, next) => {
     if (!req.user) {
-        return res.status(401).json({ status: 401, message: "unauthorized" });
+        return res.status(401).json({ status: 401, message: "Unauthorized" });
     }
     
     const hasGeminiSettings = db.prepare('SELECT * FROM gemini_user_settings WHERE user_id = ?').get(req.user.id);
     if (!hasGeminiSettings) {
-        return res.status(403).json({ status: 403, message: "forbidden" });
+        return res.status(403).json({ status: 403, message: "You are not in the database. Use /ai add-apikey to access." });
     }
     
     next();
 };
 
-// Подключение к Discord боту через IPC
+// Подключение к Discord боту через WS
 const BotIPCClient = require('./ipc-client');
 const botIPC = new BotIPCClient('localhost', 8765);
 const GeminiDB = require('../functions/db/gemini_settings');
@@ -158,7 +160,7 @@ botIPC.on('disconnected', () => {
 });
 
 botIPC.on('connected', () => {
-    console.log('[INFO]: Connected to Discord bot via IPC');
+    console.log('[INFO]: Connected to Discord bot via WS');
 });
 
 // Routes
@@ -269,6 +271,7 @@ app.get('/api/server/:serverId/stats', requireAuth, async (req, res) => {
         }
 
         res.json({
+            success: true,
             serverName,
             totalCases,
             totalPunishments,
@@ -484,6 +487,9 @@ app.get('/api/server/:serverId/info', requireAuth, async (req, res) => {
 });
 
 // API для выполнения действий модерации
+/**
+ * @deprecated
+ */
 app.post('/api/server/:serverId/action', requireAuth, async (req, res) => {
     const serverId = req.params.serverId;
     const { action, userId, reason, extra } = req.body;
@@ -534,6 +540,112 @@ app.post('/api/server/:serverId/action', requireAuth, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+app.post('/api/server/:serverId/members/:userId', requireAuth, async (req, res) => {
+    const serverId = req.params.serverId;
+    const userId = req.params.userId;
+    const { action, reason, duration, roleId, type } = req.body;
+    
+    if (!botIPC.connected) {
+        return res.status(503).json({ error: 'Bot not available' });
+    }
+
+    try {
+        let result;
+        
+        switch (action) {
+            case 'kick':
+                result = await botIPC.kickMember(serverId, userId, reason);
+                break;
+
+            case 'ban':
+                result = await botIPC.banMember(serverId, userId, reason);
+                break;
+
+            case 'mute':
+                result = await botIPC.muteMember(serverId, userId, reason, duration);
+                break;
+            
+            case 'unban':
+                result = await botIPC.unbanMember(serverId, userId, reason);
+                break;
+
+            case 'role': 
+                result = await botIPC.roleAction(serverId, userId, roleId, type);
+                break;
+
+            default:
+                return res.status(400).json({ error: 'Unknown action' });
+        }
+
+        if (action === 'role') {
+            res.json({ success: true, ...result });
+        } else {
+            const caseNum = (db.prepare('SELECT MAX(caseNum) as maxCase FROM mod_cases WHERE serverId = ?').get(serverId)?.maxCase || 0) + 1;
+        
+            db.prepare(`
+                INSERT INTO mod_cases (serverId, caseNum, targetId, moderatorId, action, reason, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `).run(
+                serverId,
+                caseNum,
+                userId,
+                req.user.id,
+                action,
+                reason,
+                Date.now()
+            );
+            
+            res.json({ success: true, caseNum, ...result });
+        }
+    } catch (error) {
+        console.error('Error executing action:', error);
+        res.status(500).json({ error: error.message });
+    }
+})
+
+app.get('/api/server/:serverId/roles', requireAuth, async (req, res) => {
+    const serverId = req.params.serverId;
+
+    try {
+        const roles = await botIPC.getGuildRoles(serverId)
+        res.json(roles);
+    } catch (error) {
+        console.error('Error getting server roles:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/server/:serverId/members/:userId', requireAuth, async (req, res) => {
+    const serverId = req.params.serverId;
+    const userId = req.params.userId;
+
+    try {
+        const member = await botIPC.getMember(serverId, userId)
+        res.json(member);
+    } catch (error) {
+        console.error('Error getting member info:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/api/server/:serverId/channels/:channelId', requireAuth, async (req, res) => {
+    const serverId = req.params.serverId;
+    const channelId = req.params.channelId;
+    const {
+        action,
+        name,
+        avatar
+    } = req.body;
+
+    try {
+        const data = await botIPC.channelAction(serverId, channelId, { action, name, avatar });
+        res.json(data)
+    } catch (error) {
+        console.error('Error executing action:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
 
 // API для отправки сообщений от имени бота
 app.post('/api/server/:serverId/message', requireAuth, async (req, res) => {
@@ -617,6 +729,7 @@ app.get('/api/server/:serverId/channel/:channelId/messages', requireAuth, async 
                 messages = await botIPC.getChannelMessages(serverId, channelId);
                 console.log(`🔄 Fetching messages from Discord API for channel ${channelId}`);
             }
+            messages.messages = messages.messages.sort((a, b) => a.timestamp - b.timestamp);
             
             res.json({
                 data: messages || [],

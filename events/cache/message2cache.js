@@ -8,7 +8,7 @@ module.exports = {
 
         const MessagesCache = msg.client.lastMessages.get(channel.id) || [];
         if (!MessagesCache.some(cached => cached.id === msg.id)) {
-            MessagesCache.push({
+            MessagesCache.unshift({
                 id: msg.id,
                 content: processMessageContent(msg),
                 embeds: msg.embeds,

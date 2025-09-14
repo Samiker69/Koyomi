@@ -129,12 +129,22 @@ class BotIPCClient extends EventEmitter {
 
     async getGuildInfo(guildId) {
         const response = await this.request('getGuildInfo', { guildId });
-        return response.guild;
+        return response;
     }
 
     async getGuildMembers(guildId, limit = 100) {
         const response = await this.request('getGuildMembers', { guildId, limit });
         return response.members;
+    }
+
+    async getGuildRoles(guildId) {
+        const response = await this.request('getGuildRoles', { guildId });
+        return { roles: response.roles, success: response.success };
+    }
+
+    async getMember(guildId, userId) {
+        const response = await this.request('getMember', { guildId, userId });
+        return { member: response.member, success: response.success };
     }
 
     async getBotStats() {
@@ -150,11 +160,19 @@ class BotIPCClient extends EventEmitter {
         });
     }
 
-    async banMember(guildId, userId, reason, deleteMessageDays = 0) {
+    async muteMember(guildId, userId, reason, duration) {
+        return await this.request('executeAction', {
+            guildId,
+            actionType: 'mute',
+            params: { userId, reason, duration }
+        });
+    }
+
+    async banMember(guildId, userId, reason) {
         return await this.request('executeAction', {
             guildId,
             actionType: 'ban',
-            params: { userId, reason, deleteMessageDays }
+            params: { userId, reason }
         });
     }
 
@@ -163,6 +181,22 @@ class BotIPCClient extends EventEmitter {
             guildId,
             actionType: 'unban',
             params: { userId, reason }
+        });
+    }
+
+    async channelAction(guildId, channelId, { action, name, avatar }) {
+        return await this.request('channelAction', {
+            guildId,
+            channelId,
+            data: { action, name, avatar }
+        })
+    }
+
+    async roleAction(guildId, userId, roleId, type) {
+        return await this.request('executeAction', {
+            guildId,
+            actionType: "roleAction",
+            params: { roleId, userId, type }
         });
     }
 
