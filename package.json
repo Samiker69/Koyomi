@@ -1,10 +1,11 @@
 {
   "name": "koyomi",
-  "version": "0.7.0",
-  "description": "ъ",
+  "version": "0.7.5",
+  "description": "A multifunctional Discord bot with moderation, music, and utility features.",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "dev": "nodemon bot.js"
   },
   "repository": {
     "type": "git",
@@ -42,5 +43,8 @@
     "passport-discord": "^0.1.4",
     "play-dl": "^1.9.7",
     "rimraf": "^6.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
