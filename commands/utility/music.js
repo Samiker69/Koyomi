@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const {
     joinVoiceChannel,
     createAudioPlayer,
@@ -31,19 +31,19 @@ module.exports = {
         const client = interaction.client;
 
         if (!urlQuery && !attachment) {
-            return interaction.reply({ content: 'Вы должны указать прямую ссылку или загрузить файл!', ephemeral: true });
+            return interaction.reply({ content: 'Вы должны указать прямую ссылку или загрузить файл!', flags: MessageFlags.Ephemeral });
         }
         if (urlQuery && attachment) {
-            return interaction.reply({ content: 'Пожалуйста, укажите либо ссылку, либо загрузите файл, но не оба сразу.', ephemeral: true });
+            return interaction.reply({ content: 'Пожалуйста, укажите либо ссылку, либо загрузите файл, но не оба сразу.', flags: MessageFlags.Ephemeral });
         }
 
         if (!voiceChannel) {
-            return interaction.reply({ content: 'Вы должны находиться в голосовом канале, чтобы использовать эту команду!', ephemeral: true });
+            return interaction.reply({ content: 'Вы должны находиться в голосовом канале, чтобы использовать эту команду!', flags: MessageFlags.Ephemeral });
         }
 
         const permissions = voiceChannel.permissionsFor(interaction.client.user);
         if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
-            return interaction.reply({ content: 'Мне нужны права для подключения и разговора в вашем голосовом канале!', ephemeral: true });
+            return interaction.reply({ content: 'Мне нужны права для подключения и разговора в вашем голосовом канале!', flags: MessageFlags.Ephemeral });
         }
 
         await interaction.deferReply();

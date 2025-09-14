@@ -6,10 +6,10 @@ const data = new SlashCommandBuilder()
 		.setDescription('guild admin command')
         .addSubcommand(subcommand =>
             subcommand.setName('invites')
-            .setDescription('on/off invites')
+            .setDescription('Disable or enable invites for the guild')
             .addBooleanOption(option =>
                 option.setName('value')
-                .setDescription('true - off | false - on')
+                .setDescription('true - disable, false - enable')
                 .setRequired(true)
             )
         )
@@ -17,10 +17,10 @@ const data = new SlashCommandBuilder()
 
         .addSubcommand(subcommand =>
             subcommand.setName('banner')
-            .setDescription('set server banner')
+            .setDescription('Change the server banner')
             .addAttachmentOption(option =>
                 option.setName('image')
-                .setDescription('set image for server banner')
+                .setDescription('Image for server banner (server must be level 2)')
                 .setRequired(true)
             )
         )
@@ -28,10 +28,10 @@ const data = new SlashCommandBuilder()
 
         .addSubcommand(subcommand =>
             subcommand.setName('icon')
-            .setDescription('set server icon')
+            .setDescription('Change the server icon')
             .addAttachmentOption(option =>
                 option.setName('image')
-                .setDescription('set image for server icon')
+                .setDescription('Image for server icon')
                 .setRequired(true)
             )
         )
@@ -39,10 +39,10 @@ const data = new SlashCommandBuilder()
 
         .addSubcommand(subcommand =>
             subcommand.setName('contentfilterlevel')
-            .setDescription('set Content Filter Level')
+            .setDescription('Change the server Content Filter Level')
             .addStringOption(option =>
                 option.setName('value')
-                .setDescription('choice Content Filter Level')
+                .setDescription('Content Filter Level')
                 .addChoices(
                     { name: 'Disabled', value: '0' },
                     { name: 'No role user', value: '1' },
@@ -55,10 +55,10 @@ const data = new SlashCommandBuilder()
 
         .addSubcommand(subcommand =>
             subcommand.setName('name')
-            .setDescription('set server name')
+            .setDescription('Change the server name')
             .addStringOption(option =>
                 option.setName('text')
-                .setDescription('set server name')
+                .setDescription('Name for the server')
                 .setRequired(true)
             )
         )
@@ -66,10 +66,10 @@ const data = new SlashCommandBuilder()
 
         .addSubcommand(subcommand =>
             subcommand.setName('rulechannel')
-            .setDescription('set rule channel')
+            .setDescription('Change the server rule channel')
             .addChannelOption(option =>
                 option.setName('input')
-                .setDescription('Choice channel for rule')
+                .setDescription('Channel for rules')
                 .setRequired(true)
             )
         )
@@ -77,10 +77,10 @@ const data = new SlashCommandBuilder()
 
         .addSubcommand(subcommand =>
             subcommand.setName('safetyalerts')
-            .setDescription('set safety alerts channel')
+            .setDescription('Change the server safety alerts channel')
             .addChannelOption(option =>
                 option.setName('input')
-                .setDescription('set channel')
+                .setDescription('Channel for safety alerts')
                 .setRequired(true)
             )
         )
@@ -88,10 +88,10 @@ const data = new SlashCommandBuilder()
 
         .addSubcommand(subcommand =>
             subcommand.setName('systemchannel')
-            .setDescription('set system channel')
+            .setDescription('Change the server system channel')
             .addChannelOption(option =>
                 option.setName('input')
-                .setDescription('set channel')
+                .setDescription('Channel for system messages')
                 .setRequired(true)
             )
         )
@@ -99,10 +99,10 @@ const data = new SlashCommandBuilder()
 
         .addSubcommand(subcommand =>
             subcommand.setName('verificationlevel')
-            .setDescription('Edits the verification level of the guild.')
+            .setDescription('Change the server verification level')
             .addNumberOption(option =>
                 option.setName('input')
-                .setDescription('set level. 0 - none, 4 - very high')
+                .setDescription('Level from 0 to 4')
                 .setMaxValue(4)
                 .setMinValue(0)
                 .setRequired(true)
@@ -122,9 +122,9 @@ const data = new SlashCommandBuilder()
 
                         try {
                             await interaction.guild.disableInvites(invite);
-                            if (invite === true) {
+                            if (invite) {
                                 await interaction.reply(`Приглашения на этот сервер приостановлены`);
-                            } else if (invite === false) {
+                            } else if (invite) {
                                 await interaction.reply(`Приглашения на этот сервер возобновлены`);
                             }
                         } catch (error) {

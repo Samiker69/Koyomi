@@ -9,7 +9,7 @@ module.exports = {
   async execute(interaction) {
     await interaction.reply({ content: 'Подождите...' });
 
-    const sent = await interaction.fetchReply(); // <-- правильно получать сообщение
+    const sent = await interaction.fetchReply();
     let uptimeall = process.uptime();
     let days = Math.floor(uptimeall / 86400);
     uptimeall %= 86400;
@@ -21,7 +21,7 @@ module.exports = {
     const status = new EmbedBuilder()
       .setAuthor({
         name: `${interaction.client.user.tag}`,
-        iconURL: interaction.client.user.displayAvatarURL({ extension: 'png' }) // <-- фикс для Linux
+        iconURL: interaction.client.user.displayAvatarURL({ extension: 'png' })
       })
       .setColor(0x9B59B6)
       .setTitle('Текущий статус бота')
