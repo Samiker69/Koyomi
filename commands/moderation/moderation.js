@@ -184,22 +184,13 @@ const data = new SlashCommandBuilder()
                     await interaction.reply({ content: "Ты не можешь забанить владельца сервера", flags: MessageFlags.Ephemeral });
                     return;
                 }
-                const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
-                if (!member) {
-                    await interaction.reply({ content: "Участник не найден", flags: MessageFlags.Ephemeral });
-                    return;
-                }
                 if (!interaction.memberPermissions.has('Administrator') && interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) {
                     await interaction.reply({ content: "Позиция вашей роли ниже чем роль выбранного участника", flags: MessageFlags.Ephemeral });
                     return;
                 }
-                if (!member.bannable) {
-                    await interaction.reply({ content: "Я не могу забанить этого участника", flags: MessageFlags.Ephemeral });
-                    return;
-                }
                 try {
                     await member.ban({ reason: reason + ` | by ${interaction.user.username}(${interaction.user.id})` });
-                    await db.addModCase({
+                    db.addModCase({
                         serverId: interaction.guild.id,
                         targetId: targetUser.id,
                         moderatorId: interaction.user.id,
