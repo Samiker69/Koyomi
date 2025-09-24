@@ -1,26 +1,26 @@
 const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType, EmbedBuilder, ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { privateAccess, bot_log_channel } = require('../../config.json');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
+
 /*const { default: axios } = require('axios');
 const path = require('path');
 const fs = require('fs').promises*/
 
 const data = new SlashCommandBuilder()
     .setName('eval')
-    .setDescription(forFunOnly.eval.description.ru)
+    .setDescription()
         .addSubcommand(subcommand =>
             subcommand.setName('presence')
             .setDescription("Устанавливает статус бота")
-            //.setDescriptionLocalizations(forFunOnly.eval.description)
+            //.setDescriptionLocalizations()
             .addStringOption(option => 
                 option.setName('name-activity')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                .setDescription()
+                .setDescriptionLocalizations()
             )
             .addStringOption(option => 
                 option.setName('status')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .addChoices(
                     {name: 'online', value: PresenceUpdateStatus.Online},
                     {name: 'idle', value: PresenceUpdateStatus.Idle},
@@ -30,8 +30,8 @@ const data = new SlashCommandBuilder()
             )
             .addIntegerOption(option =>
                 option.setName('activity')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .addChoices(
                     {name: 'Wathing', value: ActivityType.Watching }, 
                     {name: 'Listening', value: ActivityType.Listening },
@@ -47,8 +47,8 @@ const data = new SlashCommandBuilder()
             .setDescription("Сменить аватар бота")
             .addAttachmentOption(option =>
                 option.setName('file')
-                .setDescription(forFunOnly.eval.options.avatar.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.avatar.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setRequired(true)
             )
         )
@@ -57,8 +57,8 @@ const data = new SlashCommandBuilder()
             .setDescription("Сменить баннер бота")
             .addAttachmentOption(option =>
                 option.setName('file')
-                .setDescription(forFunOnly.eval.options.avatar.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.avatar.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setRequired(true)
             )
         )

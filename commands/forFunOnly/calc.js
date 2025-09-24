@@ -1,11 +1,12 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
 const { calc } = require('../../functions/calc');
+const localeMamager = require('../../locales/localesManager');
+const lm = new localeMamager();
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName('calc')
+        .setName("calc")
         .setDescription("Калькулятор бесплатна!!!")
         .addStringOption(opt => 
             opt.setName("expression")

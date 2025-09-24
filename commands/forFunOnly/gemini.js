@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+
 const { privateAccess, bot_log_channel } = require('../../config.json');
 const axios = require('axios');
 const ApikeyManager = require('../../lib/ApikeyManager/ApikeyManager')

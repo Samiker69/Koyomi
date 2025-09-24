@@ -1,31 +1,31 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const config = require('../../config.json');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('say')
-    .setDescription(forFunOnly.say.description.ru)
-    .setDescriptionLocalizations(forFunOnly.say.description)
+    .setDescription()
+    .setDescriptionLocalizations()
     .addStringOption(opt =>
       opt
         .setName('text')
-        .setDescription(forFunOnly.say.options.text.description.ru)
-        .setDescriptionLocalizations(forFunOnly.say.options.text.description)
+        .setDescription()
+        .setDescriptionLocalizations()
         .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
         .setName('image')
-        .setDescription(forFunOnly.say.options.image.description.ru)
-        .setDescriptionLocalizations(forFunOnly.say.options.image.description)
+        .setDescription()
+        .setDescriptionLocalizations()
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
         .setName('reply_to')
-        .setDescription(forFunOnly.say.options.reply_to.description.ru)
-        .setDescriptionLocalizations(forFunOnly.say.options.reply_to.description)
+        .setDescription()
+        .setDescriptionLocalizations()
         .setRequired(false)
     ),
 

@@ -1,0 +1,1641 @@
+{
+    "commands": {
+        "2048": {
+            "name": "2048",
+            "description": "Розпочати одиночну гру 2048",
+            "response": {},
+            "options": {}
+        },
+        "action": {
+            "name": "action",
+            "description": "Різні дії з користувачами в аніме-стилі.",
+            "response": {},
+            "options": {
+                "kiss": {
+                    "options": {
+                        "user": {
+                            "description": "Кого поцілувати?",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Поцілувати користувача.",
+                    "name": "kiss"
+                },
+                "pat": {
+                    "options": {
+                        "user": {
+                            "description": "Кого погладити?",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Погладити користувача.",
+                    "name": "pat"
+                },
+                "slap": {
+                    "options": {
+                        "user": {
+                            "description": "Кого вдарити?",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Вдарити користувача ляпасом.",
+                    "name": "slap"
+                },
+                "hug": {
+                    "options": {
+                        "user": {
+                            "description": "Кого обійняти?",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Обійняти користувача.",
+                    "name": "hug"
+                }
+            }
+        },
+        "calc": {
+            "name": "calc",
+            "description": "Калькулятор бесплатна!!!",
+            "response": {},
+            "options": {
+                "expression": {
+                    "description": "Выражение. Например: 2+9*23/2^2",
+                    "name": "expression"
+                }
+            }
+        },
+        "captcha": {
+            "name": "captcha",
+            "description": "Створює капчу",
+            "response": {},
+            "options": {
+                "overlay_interference": {
+                    "description": "Перешкоди поверх тексту",
+                    "name": "overlay_interference"
+                },
+                "grid_interference": {
+                    "description": "Сітка перешкод",
+                    "name": "grid_interference"
+                },
+                "scratch_count": {
+                    "description": "Кількість подряпин",
+                    "name": "scratch_count"
+                },
+                "scratches": {
+                    "description": "Подряпини",
+                    "name": "scratches"
+                },
+                "wave_frequency": {
+                    "description": "Частота хвиль (0.01-0.2)",
+                    "name": "wave_frequency"
+                },
+                "wave_amplitude": {
+                    "description": "Амплітуда хвиль",
+                    "name": "wave_amplitude"
+                },
+                "wave_distortion": {
+                    "description": "Хвильові спотворення",
+                    "name": "wave_distortion"
+                },
+                "noise_opacity": {
+                    "description": "Прозорість шуму (0.1-1.0)",
+                    "name": "noise_opacity"
+                },
+                "curved_lines": {
+                    "description": "Вигнуті лінії шуму",
+                    "name": "curved_lines"
+                },
+                "noise_circles": {
+                    "description": "Кількість кіл шуму",
+                    "name": "noise_circles"
+                },
+                "noise_dots": {
+                    "description": "Кількість точок шуму",
+                    "name": "noise_dots"
+                },
+                "noise_lines": {
+                    "description": "Кількість ліній шуму",
+                    "name": "noise_lines"
+                },
+                "gradient_type": {
+                    "description": "Тип градієнта",
+                    "name": "gradient_type"
+                },
+                "gradient_bg": {
+                    "description": "Градієнтний фон",
+                    "name": "gradient_bg"
+                },
+                "random_colors": {
+                    "description": "Випадкові кольори для кожного символу",
+                    "name": "random_colors"
+                },
+                "text_outline": {
+                    "description": "Обведення тексту",
+                    "name": "text_outline"
+                },
+                "max_skew": {
+                    "description": "Максимальне спотворення тексту (0.1-1.0)",
+                    "name": "max_skew"
+                },
+                "max_rotation": {
+                    "description": "Максимальний поворот тексту (0.1-2.0)",
+                    "name": "max_rotation"
+                },
+                "max_font_size": {
+                    "description": "Максимальний розмір шрифту",
+                    "name": "max_font_size"
+                },
+                "min_font_size": {
+                    "description": "Мінімальний розмір шрифту",
+                    "name": "min_font_size"
+                },
+                "height": {
+                    "description": "Висота зображення капчі",
+                    "name": "height"
+                },
+                "width": {
+                    "description": "Ширина зображення капчі",
+                    "name": "width"
+                },
+                "length": {
+                    "description": "Кількість символів",
+                    "name": "length"
+                },
+                "invisible": {
+                    "description": "Зробити повідомлення невидимим?",
+                    "name": "invisible"
+                }
+            }
+        },
+        "eval": {
+            "name": "eval",
+            "response": {},
+            "options": {
+                "botinfo": {
+                    "description": "Показує детальну інформацію про бота",
+                    "name": "botinfo"
+                },
+                "banner": {
+                    "options": {
+                        "file": {
+                            "name": "file"
+                        }
+                    },
+                    "description": "Змінити банер бота",
+                    "name": "banner"
+                },
+                "avatar": {
+                    "options": {
+                        "file": {
+                            "name": "file"
+                        }
+                    },
+                    "description": "Змінити аватар бота",
+                    "name": "avatar"
+                },
+                "presence": {
+                    "options": {
+                        "activity": {
+                            "name": "activity"
+                        },
+                        "status": {
+                            "name": "status"
+                        },
+                        "name-activity": {
+                            "name": "name-activity"
+                        }
+                    },
+                    "description": "Встановлює статус бота",
+                    "name": "presence"
+                }
+            }
+        },
+        "ai": {
+            "name": "ai",
+            "description": "Дії з ШІ",
+            "response": {},
+            "options": {
+                "model-info": {
+                    "options": {
+                        "model": {
+                            "description": "Модель Gemini. Залиште порожнім, щоб застосувати модель з налаштувань",
+                            "name": "model"
+                        }
+                    },
+                    "description": "Отримує інформацію про модель",
+                    "name": "model-info"
+                },
+                "edit-apikey": {
+                    "options": {
+                        "for-public-use": {
+                            "description": "Дозволити нам використовувати ваш ключ?",
+                            "name": "for-public-use"
+                        },
+                        "apikey": {
+                            "description": "API ключ. Знайти можна на https://aistudio.google.com/apikey",
+                            "name": "apikey"
+                        }
+                    },
+                    "description": "Змінити налаштування для поточного ключа",
+                    "name": "edit-apikey"
+                },
+                "delete-apikey": {
+                    "options": {
+                        "delete-all": {
+                            "description": "Видалити всі ваші ключі?",
+                            "name": "delete-all"
+                        },
+                        "apikey": {
+                            "description": "API ключ. Знайти можна на https://aistudio.google.com/apikey",
+                            "name": "apikey"
+                        }
+                    },
+                    "description": "Видалити API-ключ з бота",
+                    "name": "delete-apikey"
+                },
+                "add-apikey": {
+                    "options": {
+                        "for-public-use": {
+                            "description": "Дозволити нам використовувати ваш ключ?",
+                            "name": "for-public-use"
+                        },
+                        "apikey": {
+                            "description": "API ключ. Знайти можна на https://aistudio.google.com/apikey",
+                            "name": "apikey"
+                        }
+                    },
+                    "description": "Додати API ключ. Дозволяє отримати доступ до функціоналу ШІ",
+                    "name": "add-apikey"
+                },
+                "edit_safety": {
+                    "options": {
+                        "s_value": {
+                            "description": "Режими безпеки",
+                            "name": "s_value"
+                        },
+                        "s_category": {
+                            "description": "Назва опції",
+                            "name": "s_category"
+                        }
+                    },
+                    "description": "Зміна налаштувань безпеки моделі",
+                    "name": "edit_safety"
+                },
+                "edit": {
+                    "options": {
+                        "history_limit": {
+                            "description": "Ліміт збереження історії. 0 - без збереження",
+                            "name": "history_limit"
+                        },
+                        "top_k": {
+                            "description": "\"Словниковий запас\" при генерації токена. 1-5 - малий, 50+ - різноманітний",
+                            "name": "top_k"
+                        },
+                        "top_p": {
+                            "description": "Ймовірність використання токена. 0.0 - очікуваний токен, 1 - використовує всі токени",
+                            "name": "top_p"
+                        },
+                        "temperature": {
+                            "description": "Регулює випадковість (креативність відповіді). 0.1 - передбачувані, 1-2 - дуже хаотичні",
+                            "name": "temperature"
+                        },
+                        "max_output_tokens": {
+                            "description": "Максимум токенів, якими ШІ відповість. Якщо максимум менший, ніж відповіла ШІ, то відповідь буде обрізана!",
+                            "name": "max_output_tokens"
+                        },
+                        "system_instructions": {
+                            "description": "Системні інструкції.",
+                            "name": "system_instructions"
+                        },
+                        "model": {
+                            "description": "Модель для генерації",
+                            "name": "model"
+                        }
+                    },
+                    "description": "Змінити налаштування ШІ",
+                    "name": "edit"
+                },
+                "settings": {
+                    "description": "Показує ваші поточні налаштування ШІ",
+                    "name": "settings"
+                },
+                "remove-user": {
+                    "options": {
+                        "user": {
+                            "description": "Користувач",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Видаляє користувача з БД.",
+                    "name": "remove-user"
+                },
+                "add-user": {
+                    "options": {
+                        "user": {
+                            "description": "Користувач",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Додає користувача до БД, дозволяючи йому користуватися командою /ai",
+                    "name": "add-user"
+                },
+                "ask": {
+                    "options": {
+                        "invisible": {
+                            "description": "Робить відповідь ШІ невидимою",
+                            "name": "invisible"
+                        },
+                        "image": {
+                            "description": "Зображення для надсилання.",
+                            "name": "image"
+                        },
+                        "text": {
+                            "description": "Запит до Gemini",
+                            "name": "text"
+                        }
+                    },
+                    "description": "Запитати Gemini про щось",
+                    "name": "ask"
+                }
+            }
+        },
+        "love": {
+            "name": "love",
+            "response": {},
+            "options": {
+                "user2": {
+                    "name": "user2"
+                },
+                "user1": {
+                    "name": "user1"
+                }
+            }
+        },
+        "minecraft": {
+            "name": "minecraft",
+            "response": {},
+            "options": {
+                "player": {
+                    "name": "player"
+                }
+            }
+        },
+        "say": {
+            "name": "say",
+            "response": {},
+            "options": {
+                "reply_to": {
+                    "name": "reply_to"
+                },
+                "image": {
+                    "name": "image"
+                },
+                "text": {
+                    "name": "text"
+                }
+            }
+        },
+        "say-tts": {
+            "name": "say-tts",
+            "description": "Бот озвучить ваш текст у голосовому чаті або надішле в чат.",
+            "response": {},
+            "options": {
+                "speed": {
+                    "description": "Швидкість мовлення (від 0.1 до 2)",
+                    "name": "speed"
+                },
+                "lang": {
+                    "description": "Мова генерації. Вона повинна збігатися з мовою тексту!",
+                    "name": "lang"
+                },
+                "text": {
+                    "description": "Текст для озвучування",
+                    "name": "text"
+                },
+                "voice-channel": {
+                    "description": "Якщо true, бот підключиться до вашого голосового каналу, а якщо false, надішле аудіо в чат.",
+                    "name": "voice-channel"
+                }
+            }
+        },
+        "guessthenumber": {
+            "name": "guessthenumber",
+            "description": "Вгадай число на швидкість",
+            "response": {},
+            "options": {}
+        },
+        "tictactoe": {
+            "name": "tictactoe",
+            "response": {},
+            "options": {
+                "opponent": {
+                    "name": "opponent"
+                }
+            }
+        },
+        "automod-native": {
+            "name": "automod-native",
+            "description": "Керування вбудованими правилами автомодерації Discord",
+            "response": {},
+            "options": {
+                "clear-all": {
+                    "description": "Видаляє УСІ правила нативного Автомоду на сервері (потребує підтвердження)",
+                    "name": "clear-all"
+                },
+                "exempt": {
+                    "options": {
+                        "remove-channel": {
+                            "options": {
+                                "channel": {
+                                    "description": "Канал, який потрібно видалити з винятків",
+                                    "name": "channel"
+                                },
+                                "rule_id": {
+                                    "description": "Оберіть правило для зміни",
+                                    "name": "rule_id"
+                                }
+                            },
+                            "description": "Видалити канал зі списку винятків правила",
+                            "name": "remove-channel"
+                        },
+                        "add-channel": {
+                            "options": {
+                                "channel": {
+                                    "description": "Канал, який потрібно додати до винятків",
+                                    "name": "channel"
+                                },
+                                "rule_id": {
+                                    "description": "Оберіть правило для зміни",
+                                    "name": "rule_id"
+                                }
+                            },
+                            "description": "Додати канал до списку винятків правила",
+                            "name": "add-channel"
+                        },
+                        "remove-role": {
+                            "options": {
+                                "role": {
+                                    "description": "Роль, яку потрібно видалити з винятків",
+                                    "name": "role"
+                                },
+                                "rule_id": {
+                                    "description": "Оберіть правило для зміни",
+                                    "name": "rule_id"
+                                }
+                            },
+                            "description": "Видалити роль зі списку винятків правила",
+                            "name": "remove-role"
+                        },
+                        "add-role": {
+                            "options": {
+                                "role": {
+                                    "description": "Роль, яку потрібно додати до винятків",
+                                    "name": "role"
+                                },
+                                "rule_id": {
+                                    "description": "Оберіть правило для зміни",
+                                    "name": "rule_id"
+                                }
+                            },
+                            "description": "Додати роль до списку винятків правила",
+                            "name": "add-role"
+                        }
+                    },
+                    "description": "Керування винятками для правил Автомоду",
+                    "name": "exempt"
+                },
+                "toggle": {
+                    "options": {
+                        "rule_id": {
+                            "description": "Оберіть правило для перемикання статусу",
+                            "name": "rule_id"
+                        }
+                    },
+                    "description": "Вмикає або вимикає правило нативного Автомоду за його ID (оберіть зі списку)",
+                    "name": "toggle"
+                },
+                "view": {
+                    "options": {
+                        "rule_id": {
+                            "description": "Оберіть правило для перегляду",
+                            "name": "rule_id"
+                        }
+                    },
+                    "description": "Показує деталі одного правила нативного Автомоду за його ID (оберіть зі списку)",
+                    "name": "view"
+                },
+                "list": {
+                    "description": "Показує всі правила нативного Автомоду на сервері",
+                    "name": "list"
+                },
+                "remove": {
+                    "options": {
+                        "rule_id": {
+                            "description": "Оберіть правило для видалення за ID або назвою",
+                            "name": "rule_id"
+                        }
+                    },
+                    "description": "Видаляє правило нативного Автомоду за його ID (оберіть зі списку)",
+                    "name": "remove"
+                },
+                "edit": {
+                    "options": {
+                        "enabled": {
+                            "description": "Увімкнути або вимкнути правило",
+                            "name": "enabled"
+                        },
+                        "exempt_channels": {
+                            "description": "Нові канали, в яких правило не застосовується (згадки або ID через коми)",
+                            "name": "exempt_channels"
+                        },
+                        "exempt_roles": {
+                            "description": "Нові ролі, для яких правило не застосовується (згадки або ID через кому)",
+                            "name": "exempt_roles"
+                        },
+                        "block_message": {
+                            "description": "Нове повідомлення при блокуванні (потрібно, якщо нова дія \"Блокувати повідомлення\")",
+                            "name": "block_message"
+                        },
+                        "timeout_duration": {
+                            "description": "Нова тривалість тайм-ауту в секундах (потрібно, якщо нова дія \"Тайм-аут\")",
+                            "name": "timeout_duration"
+                        },
+                        "action": {
+                            "description": "Нова дія при спрацьовуванні правила",
+                            "name": "action"
+                        },
+                        "keywords": {
+                            "description": "Нові слова або фрази (через кому). Можна використовувати *.",
+                            "name": "keywords"
+                        },
+                        "name": {
+                            "description": "Нова назва правила",
+                            "name": "name"
+                        },
+                        "rule_id": {
+                            "description": "Оберіть правило для редагування за ID або назвою",
+                            "name": "rule_id"
+                        }
+                    },
+                    "description": "Редагує наявне правило нативного Автомоду за його ID (оберіть зі списку)",
+                    "name": "edit"
+                },
+                "add-keyword": {
+                    "options": {
+                        "exempt_channels": {
+                            "description": "Канали, в яких правило не застосовується (згадки або ID через кому)",
+                            "name": "exempt_channels"
+                        },
+                        "exempt_roles": {
+                            "description": "Ролі, для яких правило не застосовується (згадки або ID через кому)",
+                            "name": "exempt_roles"
+                        },
+                        "block_message": {
+                            "description": "Повідомлення при блокуванні (для дії \"Блокувати повідомлення\")",
+                            "name": "block_message"
+                        },
+                        "timeout_duration": {
+                            "description": "Тривалість тайм-ауту в секундах (потрібно для дії \"Тайм-аут\")",
+                            "name": "timeout_duration"
+                        },
+                        "action": {
+                            "description": "Дія при спрацьовуванні правила",
+                            "name": "action"
+                        },
+                        "keywords": {
+                            "description": "Слова або фрази для блокування (через кому). Можна використовувати *.",
+                            "name": "keywords"
+                        },
+                        "name": {
+                            "description": "Назва правила",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Додає нове правило фільтрації слів для нативного Автомоду",
+                    "name": "add-keyword"
+                }
+            }
+        },
+        "case": {
+            "name": "case",
+            "response": {},
+            "options": {
+                "user_punishments": {
+                    "options": {
+                        "user": {
+                            "name": "user"
+                        }
+                    },
+                    "description": "Перевірити історію покарань користувача",
+                    "name": "user_punishments"
+                },
+                "view": {
+                    "options": {
+                        "num": {
+                            "name": "num"
+                        }
+                    },
+                    "description": "Показує вказаний кейс",
+                    "name": "view"
+                },
+                "reason": {
+                    "options": {
+                        "reason": {
+                            "name": "reason"
+                        },
+                        "num": {
+                            "name": "num"
+                        }
+                    },
+                    "description": "Змінити причину кейсу",
+                    "name": "reason"
+                },
+                "remove": {
+                    "options": {
+                        "num": {
+                            "name": "num"
+                        }
+                    },
+                    "name": "remove"
+                }
+            }
+        },
+        "channel": {
+            "name": "channel",
+            "description": "Команди для модерації каналів",
+            "response": {},
+            "options": {
+                "slowmode": {
+                    "options": {
+                        "канал": {
+                            "description": "Канал для повільного режиму",
+                            "name": "канал"
+                        },
+                        "секунды": {
+                            "description": "Тривалість повільного режиму в секундах (0 = вимкнути, макс. 21600)",
+                            "name": "секунды"
+                        }
+                    },
+                    "description": "Встановити повільний режим на каналі",
+                    "name": "slowmode"
+                },
+                "unlock": {
+                    "options": {
+                        "канал": {
+                            "description": "Канал для розблокування",
+                            "name": "канал"
+                        }
+                    },
+                    "description": "Розблокувати канал",
+                    "name": "unlock"
+                },
+                "lock": {
+                    "options": {
+                        "канал": {
+                            "description": "Канал для блокування",
+                            "name": "канал"
+                        }
+                    },
+                    "description": "Заблокувати канал",
+                    "name": "lock"
+                }
+            }
+        },
+        "message": {
+            "name": "message",
+            "response": {},
+            "options": {
+                "purge": {
+                    "options": {
+                        "amount": {
+                            "name": "amount"
+                        },
+                        "target": {
+                            "name": "target"
+                        }
+                    },
+                    "description": "Видаляє вказану кількість повідомлень від конкретного користувача",
+                    "name": "purge"
+                },
+                "unpin": {
+                    "options": {
+                        "id": {
+                            "name": "id"
+                        }
+                    },
+                    "description": "Відкріпити повідомлення",
+                    "name": "unpin"
+                },
+                "pin": {
+                    "options": {
+                        "id": {
+                            "name": "id"
+                        }
+                    },
+                    "description": "Закріпити повідомлення",
+                    "name": "pin"
+                },
+                "clear": {
+                    "options": {
+                        "amount": {
+                            "name": "amount"
+                        }
+                    },
+                    "description": "Видаляє вказану кількість повідомлень від користувачів",
+                    "name": "clear"
+                }
+            }
+        },
+        "moderation": {
+            "name": "moderation",
+            "description": "Усі команди модерації",
+            "response": {},
+            "options": {
+                "unwarn": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Додайте докази (якщо є)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Причина зняття попередження",
+                            "name": "причина"
+                        },
+                        "кейс": {
+                            "description": "Номер кейсу з попередженням, яке потрібно зняти",
+                            "name": "кейс"
+                        },
+                        "пользователь": {
+                            "description": "Користувач для зняття останнього попередження",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Зняти попередження користувача",
+                    "name": "unwarn"
+                },
+                "warn": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Додайте докази (якщо є)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Причина попередження",
+                            "name": "причина"
+                        },
+                        "пользователь": {
+                            "description": "Користувач для попередження",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Видати попередження користувачу",
+                    "name": "warn"
+                },
+                "unban": {
+                    "options": {
+                        "evidence": {
+                            "description": "Додайте докази (якщо є)",
+                            "name": "evidence"
+                        },
+                        "reason": {
+                            "description": "Причина розбану",
+                            "name": "reason"
+                        },
+                        "userid": {
+                            "description": "ID користувача для розбану",
+                            "name": "userid"
+                        }
+                    },
+                    "description": "Розбанити користувача за ID",
+                    "name": "unban"
+                },
+                "unmute": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Додайте докази (якщо є)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Причина зняття муту",
+                            "name": "причина"
+                        },
+                        "пользователь": {
+                            "description": "Користувач, з якого знімають мут",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Зняти мут (тайм-аут) з користувача",
+                    "name": "unmute"
+                },
+                "kick": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Додайте докази (якщо є)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Причина вигнання",
+                            "name": "причина"
+                        },
+                        "пользователь": {
+                            "description": "Користувач для вигнання",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Вигнати користувача з сервера",
+                    "name": "kick"
+                },
+                "mute": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Додайте докази (якщо є)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Причина муту",
+                            "name": "причина"
+                        },
+                        "время": {
+                            "description": "Тривалість муту (наприклад, 10m, 1h, 7d, 2w). Макс. 28 днів.",
+                            "name": "время"
+                        },
+                        "пользователь": {
+                            "description": "Користувач для муту",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Зам'ютити користувача",
+                    "name": "mute"
+                },
+                "ban": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Додайте докази (якщо є)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Причина бану",
+                            "name": "причина"
+                        },
+                        "пользователь": {
+                            "description": "Користувач для бану",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Забанити користувача на сервері",
+                    "name": "ban"
+                }
+            }
+        },
+        "modstats": {
+            "name": "modstats",
+            "description": "Статистика покарань модераторів.",
+            "response": {},
+            "options": {
+                "moderator": {
+                    "description": "Оберіть модератора для статистики.",
+                    "name": "moderator"
+                }
+            }
+        },
+        "report": {
+            "name": "report",
+            "description": "Розмістити інтерактивну панель для подачі скарг.",
+            "response": {},
+            "options": {
+                "faq_link": {
+                    "description": "Посилання на FAQ або правила сервера (необов'язково).",
+                    "name": "faq_link"
+                }
+            }
+        },
+        "restrict": {
+            "name": "restrict",
+            "description": "Керує обмеженнями команд на сервері.",
+            "response": {},
+            "options": {
+                "list": {
+                    "options": {
+                        "user": {
+                            "description": "Показати обмеження для цього користувача (залиште пустим для всього сервера).",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Показує список команд, заборонених на сервері або для користувача.",
+                    "name": "list"
+                },
+                "set": {
+                    "options": {
+                        "user": {
+                            "description": "Користувач, для якого застосовується обмеження (залиште пустим для всього сервера).",
+                            "name": "user"
+                        },
+                        "command": {
+                            "description": "Назва команди, яку потрібно обмежити.",
+                            "name": "command"
+                        },
+                        "action": {
+                            "description": "Дія: disable (вимкнути) або enable (увімкнути)",
+                            "name": "action"
+                        }
+                    },
+                    "description": "Увімкнути або вимкнути команду для сервера або користувача.",
+                    "name": "set"
+                }
+            }
+        },
+        "tag": {
+            "name": "tag",
+            "description": "Керування тегами (міні-довідник)",
+            "response": {},
+            "options": {
+                "list": {
+                    "description": "Показати всі теги сервера",
+                    "name": "list"
+                },
+                "get": {
+                    "options": {
+                        "name": {
+                            "description": "Ім'я тегу",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Показати вміст тегу",
+                    "name": "get"
+                },
+                "edit": {
+                    "options": {
+                        "content": {
+                            "description": "Новий вміст тегу",
+                            "name": "content"
+                        },
+                        "name": {
+                            "description": "Ім'я тегу для редагування",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Змінити вміст тегу",
+                    "name": "edit"
+                },
+                "remove": {
+                    "options": {
+                        "name": {
+                            "description": "Ім'я тегу для видалення",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Видалити існуючий тег",
+                    "name": "remove"
+                },
+                "add": {
+                    "options": {
+                        "content": {
+                            "description": "Вміст тегу",
+                            "name": "content"
+                        },
+                        "name": {
+                            "description": "Унікальне ім'я тегу",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Створити новий тег",
+                    "name": "add"
+                }
+            }
+        },
+        "booru": {
+            "name": "booru",
+            "response": {},
+            "options": {
+                "random": {
+                    "options": {
+                        "no_ai": {
+                            "name": "no_ai"
+                        },
+                        "tags": {
+                            "name": "tags"
+                        },
+                        "site": {
+                            "name": "site"
+                        }
+                    },
+                    "name": "random"
+                },
+                "search": {
+                    "options": {
+                        "no_ai": {
+                            "name": "no_ai"
+                        },
+                        "page": {
+                            "name": "page"
+                        },
+                        "limit": {
+                            "name": "limit"
+                        },
+                        "tags": {
+                            "name": "tags"
+                        },
+                        "site": {
+                            "name": "site"
+                        }
+                    },
+                    "name": "search"
+                }
+            }
+        },
+        "hentai": {
+            "name": "hentai",
+            "description": "Випадкова галерея з nhentai",
+            "response": {},
+            "options": {}
+        },
+        "reddit": {
+            "name": "reddit",
+            "description": "Отримати випадкові NSFW зображення з Reddit за категоріями.",
+            "response": {},
+            "options": {
+                "category": {
+                    "description": "Категорія контенту для пошуку.",
+                    "name": "category"
+                }
+            }
+        },
+        "botstatus": {
+            "name": "botstatus",
+            "description": "Показує статус бота",
+            "response": {},
+            "options": {}
+        },
+        "guild": {
+            "name": "guild",
+            "description": "Команда адміністрування сервера",
+            "response": {},
+            "options": {
+                "verificationlevel": {
+                    "options": {
+                        "input": {
+                            "description": "Рівень від 0 до 4",
+                            "name": "input"
+                        }
+                    },
+                    "description": "Змінити рівень верифікації сервера",
+                    "name": "verificationlevel"
+                },
+                "systemchannel": {
+                    "options": {
+                        "input": {
+                            "description": "Канал для системних повідомлень",
+                            "name": "input"
+                        }
+                    },
+                    "description": "Змінити системний канал сервера",
+                    "name": "systemchannel"
+                },
+                "safetyalerts": {
+                    "options": {
+                        "input": {
+                            "description": "Канал для сповіщень безпеки",
+                            "name": "input"
+                        }
+                    },
+                    "description": "Змінити канал сповіщень безпеки сервера",
+                    "name": "safetyalerts"
+                },
+                "rulechannel": {
+                    "options": {
+                        "input": {
+                            "description": "Канал для правил",
+                            "name": "input"
+                        }
+                    },
+                    "description": "Змінити канал правил сервера",
+                    "name": "rulechannel"
+                },
+                "name": {
+                    "options": {
+                        "text": {
+                            "description": "Назва для сервера",
+                            "name": "text"
+                        }
+                    },
+                    "description": "Змінити назву сервера",
+                    "name": "name"
+                },
+                "contentfilterlevel": {
+                    "options": {
+                        "value": {
+                            "description": "Рівень фільтрації вмісту",
+                            "name": "value"
+                        }
+                    },
+                    "description": "Змінити рівень фільтрації вмісту сервера",
+                    "name": "contentfilterlevel"
+                },
+                "icon": {
+                    "options": {
+                        "image": {
+                            "description": "Зображення для іконки сервера",
+                            "name": "image"
+                        }
+                    },
+                    "description": "Змінити іконку сервера",
+                    "name": "icon"
+                },
+                "banner": {
+                    "options": {
+                        "image": {
+                            "description": "Зображення для банера сервера (сервер має бути рівня 2)",
+                            "name": "image"
+                        }
+                    },
+                    "description": "Змінити банер сервера",
+                    "name": "banner"
+                },
+                "invites": {
+                    "options": {
+                        "value": {
+                            "description": "true - вимкнути, false - увімкнути",
+                            "name": "value"
+                        }
+                    },
+                    "description": "Вимкнути або увімкнути запрошення для сервера",
+                    "name": "invites"
+                }
+            }
+        },
+        "help": {
+            "name": "help",
+            "description": "Показати список команд з пагінацією та вибором категорії.",
+            "response": {},
+            "options": {}
+        },
+        "info": {
+            "name": "info",
+            "description": "Команди для отримання інформації",
+            "response": {},
+            "options": {
+                "serverinfo": {
+                    "description": "Інформація про сервер",
+                    "name": "serverinfo"
+                },
+                "userinfo": {
+                    "options": {
+                        "target": {
+                            "description": "Користувач (необов'язково)",
+                            "name": "target"
+                        }
+                    },
+                    "description": "Інформація про користувача",
+                    "name": "userinfo"
+                }
+            }
+        },
+        "play": {
+            "name": "play",
+            "description": "Відтворює аудіо за прямим посиланням або із завантаженого файлу.",
+            "response": {},
+            "options": {
+                "attachment": {
+                    "description": "Завантажте аудіофайл (mp3, ogg, wav, flac, m4a, opus).",
+                    "name": "attachment"
+                },
+                "url": {
+                    "description": "Пряме посилання на аудіофайл (mp3, ogg, wav, flac, m4a, opus).",
+                    "name": "url"
+                }
+            }
+        },
+        "role": {
+            "name": "role",
+            "description": "Команда редактора ролей",
+            "response": {},
+            "options": {
+                "info": {
+                    "options": {
+                        "role": {
+                            "description": "Виберіть роль або введіть ID ролі",
+                            "name": "role"
+                        }
+                    },
+                    "description": "Надіслати вбудоване повідомлення про роль",
+                    "name": "info"
+                },
+                "create": {
+                    "options": {
+                        "unicodeemoji": {
+                            "description": "Юнікод-емодзі для ролі",
+                            "name": "unicodeemoji"
+                        },
+                        "reason": {
+                            "description": "Причина для редагування цієї ролі",
+                            "name": "reason"
+                        },
+                        "position": {
+                            "description": "Позиція ролі",
+                            "name": "position"
+                        },
+                        "permissions": {
+                            "description": "Дозволи ролі",
+                            "name": "permissions"
+                        },
+                        "name": {
+                            "description": "Назва ролі",
+                            "name": "name"
+                        },
+                        "mentionable": {
+                            "description": "Чи можна згадувати цю роль",
+                            "name": "mentionable"
+                        },
+                        "hoist": {
+                            "description": "Чи має роль відображатися окремо",
+                            "name": "hoist"
+                        },
+                        "color": {
+                            "description": "Колір ролі, шістнадцятковий рядок або число в десятковій системі",
+                            "name": "color"
+                        }
+                    },
+                    "description": "Створити роль",
+                    "name": "create"
+                },
+                "edit": {
+                    "options": {
+                        "unicodeemoji": {
+                            "description": "Юнікод-емодзі для ролі",
+                            "name": "unicodeemoji"
+                        },
+                        "reason": {
+                            "description": "Причина для редагування цієї ролі",
+                            "name": "reason"
+                        },
+                        "position": {
+                            "description": "Позиція ролі",
+                            "name": "position"
+                        },
+                        "permissions": {
+                            "description": "Дозволи ролі",
+                            "name": "permissions"
+                        },
+                        "name": {
+                            "description": "Назва ролі",
+                            "name": "name"
+                        },
+                        "mentionable": {
+                            "description": "Чи можна згадувати цю роль",
+                            "name": "mentionable"
+                        },
+                        "icon": {
+                            "description": "Іконка для ролі",
+                            "name": "icon"
+                        },
+                        "hoist": {
+                            "description": "Чи має роль відображатися окремо",
+                            "name": "hoist"
+                        },
+                        "color": {
+                            "description": "Колір ролі, шістнадцятковий рядок або число в десятковій системі",
+                            "name": "color"
+                        },
+                        "role": {
+                            "description": "Виберіть роль або введіть ID ролі",
+                            "name": "role"
+                        }
+                    },
+                    "description": "Створити або редагувати роль",
+                    "name": "edit"
+                },
+                "delete": {
+                    "options": {
+                        "reason": {
+                            "description": "Причина видалення ролі",
+                            "name": "reason"
+                        },
+                        "role": {
+                            "description": "Виберіть роль або введіть ID ролі",
+                            "name": "role"
+                        }
+                    },
+                    "description": "Видалити роль",
+                    "name": "delete"
+                }
+            }
+        },
+        "rolemenu": {
+            "name": "rolemenu",
+            "description": "Створити або оновити повідомлення з меню вибору ролей (кнопки або Select Menu).",
+            "response": {},
+            "options": {
+                "delete": {
+                    "options": {
+                        "message_id": {
+                            "description": "ID повідомлення з меню вибору ролей, яке потрібно видалити.",
+                            "name": "message_id"
+                        }
+                    },
+                    "description": "Видалити повідомлення з меню вибору ролей та його дані.",
+                    "name": "delete"
+                },
+                "remove-role": {
+                    "options": {
+                        "role": {
+                            "description": "Роль, яку потрібно видалити.",
+                            "name": "role"
+                        },
+                        "message_id": {
+                            "description": "ID повідомлення з меню вибору ролей.",
+                            "name": "message_id"
+                        }
+                    },
+                    "description": "Видалити роль з існуючого меню (кнопки або Select Menu).",
+                    "name": "remove-role"
+                },
+                "add-role": {
+                    "options": {
+                        "emoji": {
+                            "description": "Емодзі для відображення поруч з роллю в меню/на кнопці. Формат: <:name:id> або стандартний.",
+                            "name": "emoji"
+                        },
+                        "description": {
+                            "description": "Опис ролі в Select Menu (не використовується для кнопок).",
+                            "name": "description"
+                        },
+                        "label": {
+                            "description": "Відображуване ім'я ролі в меню/на кнопці (за замовчуванням: назва ролі).",
+                            "name": "label"
+                        },
+                        "role": {
+                            "description": "Роль, яку потрібно додати.",
+                            "name": "role"
+                        },
+                        "message_id": {
+                            "description": "ID повідомлення з меню вибору ролей.",
+                            "name": "message_id"
+                        }
+                    },
+                    "description": "Додати роль до існуючого меню (кнопки або Select Menu).",
+                    "name": "add-role"
+                },
+                "create-buttons": {
+                    "options": {
+                        "description": {
+                            "description": "Опис для ембеда повідомлення з кнопками.",
+                            "name": "description"
+                        },
+                        "title": {
+                            "description": "Заголовок для ембеда повідомлення з кнопками.",
+                            "name": "title"
+                        },
+                        "channel": {
+                            "description": "Канал, куди буде надіслано повідомлення з кнопками.",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Створити нове повідомлення з кнопками для видачі ролей.",
+                    "name": "create-buttons"
+                },
+                "create-select": {
+                    "options": {
+                        "placeholder": {
+                            "description": "Текст-заповнювач для Select Menu (за замовчуванням: \"Оберіть ваші ролі...\").",
+                            "name": "placeholder"
+                        },
+                        "description": {
+                            "description": "Опис для ембеда повідомлення з меню ролей.",
+                            "name": "description"
+                        },
+                        "title": {
+                            "description": "Заголовок для ембеда повідомлення з меню ролей.",
+                            "name": "title"
+                        },
+                        "channel": {
+                            "description": "Канал, куди буде надіслано повідомлення з меню ролей.",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Створити нове повідомлення з Select Menu вибору ролей.",
+                    "name": "create-select"
+                }
+            }
+        },
+        "room": {
+            "name": "room",
+            "description": "Керування вашою динамічною голосовою кімнатою",
+            "response": {},
+            "options": {
+                "public": {
+                    "description": "Зробити кімнату публічною",
+                    "name": "public"
+                },
+                "private": {
+                    "description": "Зробити кімнату приватною (лише для ролі)",
+                    "name": "private"
+                },
+                "unlock": {
+                    "description": "Відкрити кімнату для всіх",
+                    "name": "unlock"
+                },
+                "lock": {
+                    "description": "Закрити кімнату для всіх",
+                    "name": "lock"
+                },
+                "limit": {
+                    "options": {
+                        "number": {
+                            "description": "Максимальна кількість учасників (0 — без ліміту)",
+                            "name": "number"
+                        }
+                    },
+                    "description": "Встановити ліміт учасників",
+                    "name": "limit"
+                },
+                "rename": {
+                    "options": {
+                        "name": {
+                            "description": "Нова назва",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Перейменувати кімнату",
+                    "name": "rename"
+                }
+            }
+        },
+        "settings": {
+            "name": "settings",
+            "description": "Змінити налаштування бота",
+            "response": {},
+            "options": {
+                "set-reports-channel": {
+                    "options": {
+                        "channel": {
+                            "description": "Канал для отримання скарг.",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Встановити канал, куди надходитимуть скарги модераторам.",
+                    "name": "set-reports-channel"
+                },
+                "to-default": {
+                    "description": "Безповоротно скидає налаштування сервера",
+                    "name": "to-default"
+                },
+                "support-channel": {
+                    "options": {
+                        "channel": {
+                            "description": "Канал/форум підтримки",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Встановлює канал підтримки",
+                    "name": "support-channel"
+                },
+                "set-main-voice": {
+                    "options": {
+                        "channel": {
+                            "description": "Основний голосовий канал",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Встановити основний голосовий канал для створення кімнат",
+                    "name": "set-main-voice"
+                },
+                "set-voice-category": {
+                    "options": {
+                        "category": {
+                            "description": "Категорія",
+                            "name": "category"
+                        }
+                    },
+                    "description": "Встановити категорію для нових голосових каналів",
+                    "name": "set-voice-category"
+                },
+                "allow-membersadd-logging": {
+                    "options": {
+                        "bool": {
+                            "description": "увімкнути/вимкнути",
+                            "name": "bool"
+                        }
+                    },
+                    "description": "Надсилати повідомлення про нових/вибулих учасників",
+                    "name": "allow-membersadd-logging"
+                },
+                "allowlogging": {
+                    "options": {
+                        "bool": {
+                            "description": "увімкнути/вимкнути",
+                            "name": "bool"
+                        }
+                    },
+                    "description": "Надсилати повідомлення про використане посилання?",
+                    "name": "allowlogging"
+                },
+                "invite-logger-channel": {
+                    "options": {
+                        "channel": {
+                            "description": "Канал",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Канал для логування посилань-запрошень",
+                    "name": "invite-logger-channel"
+                },
+                "welcomechannel": {
+                    "options": {
+                        "channel": {
+                            "description": "Канал",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Канал для сповіщення про нових учасників",
+                    "name": "welcomechannel"
+                }
+            }
+        },
+        "starboard": {
+            "name": "starboard",
+            "description": "Змінити налаштування бота",
+            "response": {},
+            "options": {
+                "settings": {
+                    "options": {
+                        "min-reactions": {
+                            "description": "Мінімальна кількість зірок для дошки зірок",
+                            "name": "min-reactions"
+                        },
+                        "enabled": {
+                            "description": "Використовувати дошку зірок?",
+                            "name": "enabled"
+                        },
+                        "starboard-channel": {
+                            "description": "Канал для дошки зірок",
+                            "name": "starboard-channel"
+                        }
+                    },
+                    "description": "Налаштування для дошки зірок",
+                    "name": "settings"
+                }
+            }
+        },
+        "user": {
+            "name": "user",
+            "description": "Інформація про ціль",
+            "response": {},
+            "options": {
+                "removerole": {
+                    "options": {
+                        "role": {
+                            "description": "вибрати роль",
+                            "name": "role"
+                        },
+                        "target": {
+                            "description": "вибрати користувача",
+                            "name": "target"
+                        }
+                    },
+                    "description": "Видалити роль (або кілька ролей) у учасника.",
+                    "name": "removerole"
+                },
+                "addrole": {
+                    "options": {
+                        "role": {
+                            "description": "вибрати роль",
+                            "name": "role"
+                        },
+                        "target": {
+                            "description": "вибрати користувача",
+                            "name": "target"
+                        }
+                    },
+                    "description": "Додати роль (або кілька ролей) учаснику.",
+                    "name": "addrole"
+                },
+                "voice": {
+                    "options": {
+                        "kick": {
+                            "description": "Вигнати учасника з голосового каналу",
+                            "name": "kick"
+                        },
+                        "mute": {
+                            "description": "Вимкнути/увімкнути мікрофон учаснику в голосовому каналі.",
+                            "name": "mute"
+                        },
+                        "deaf": {
+                            "description": "Вимкнути/увімкнути звук учаснику в голосовому каналі.",
+                            "name": "deaf"
+                        },
+                        "channel": {
+                            "description": "Перемістити учасника в інший канал",
+                            "name": "channel"
+                        },
+                        "target": {
+                            "description": "вибрати користувача",
+                            "name": "target"
+                        }
+                    },
+                    "description": "редагувати користувача в голосовому каналі",
+                    "name": "voice"
+                }
+            }
+        }
+    }
+}

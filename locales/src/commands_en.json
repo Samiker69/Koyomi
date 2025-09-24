@@ -1,0 +1,1641 @@
+{
+    "commands": {
+        "2048": {
+            "name": "2048",
+            "description": "Start a single-player 2048 game",
+            "response": {},
+            "options": {}
+        },
+        "action": {
+            "name": "action",
+            "description": "Various anime-style actions with users.",
+            "response": {},
+            "options": {
+                "kiss": {
+                    "options": {
+                        "user": {
+                            "description": "Who to kiss?",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Kiss a user.",
+                    "name": "kiss"
+                },
+                "pat": {
+                    "options": {
+                        "user": {
+                            "description": "Who to pat?",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Pat a user.",
+                    "name": "pat"
+                },
+                "slap": {
+                    "options": {
+                        "user": {
+                            "description": "Who to slap?",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Slap a user.",
+                    "name": "slap"
+                },
+                "hug": {
+                    "options": {
+                        "user": {
+                            "description": "Who to hug?",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Hug a user.",
+                    "name": "hug"
+                }
+            }
+        },
+        "calc": {
+            "name": "calc",
+            "description": "Calculator free!!!",
+            "response": {},
+            "options": {
+                "expression": {
+                    "description": "Expression. For example: 2+9*23/2^2",
+                    "name": "expression"
+                }
+            }
+        },
+        "captcha": {
+            "name": "captcha",
+            "description": "Generates a captcha",
+            "response": {},
+            "options": {
+                "overlay_interference": {
+                    "description": "Interference over text",
+                    "name": "overlay_interference"
+                },
+                "grid_interference": {
+                    "description": "Grid interference",
+                    "name": "grid_interference"
+                },
+                "scratch_count": {
+                    "description": "Number of scratches",
+                    "name": "scratch_count"
+                },
+                "scratches": {
+                    "description": "Scratches",
+                    "name": "scratches"
+                },
+                "wave_frequency": {
+                    "description": "Wave frequency (0.01-0.2)",
+                    "name": "wave_frequency"
+                },
+                "wave_amplitude": {
+                    "description": "Wave amplitude",
+                    "name": "wave_amplitude"
+                },
+                "wave_distortion": {
+                    "description": "Wave distortion",
+                    "name": "wave_distortion"
+                },
+                "noise_opacity": {
+                    "description": "Noise opacity (0.1-1.0)",
+                    "name": "noise_opacity"
+                },
+                "curved_lines": {
+                    "description": "Curved noise lines",
+                    "name": "curved_lines"
+                },
+                "noise_circles": {
+                    "description": "Number of noise circles",
+                    "name": "noise_circles"
+                },
+                "noise_dots": {
+                    "description": "Number of noise dots",
+                    "name": "noise_dots"
+                },
+                "noise_lines": {
+                    "description": "Number of noise lines",
+                    "name": "noise_lines"
+                },
+                "gradient_type": {
+                    "description": "Gradient type",
+                    "name": "gradient_type"
+                },
+                "gradient_bg": {
+                    "description": "Gradient background",
+                    "name": "gradient_bg"
+                },
+                "random_colors": {
+                    "description": "Random colors for each character",
+                    "name": "random_colors"
+                },
+                "text_outline": {
+                    "description": "Text outline",
+                    "name": "text_outline"
+                },
+                "max_skew": {
+                    "description": "Maximum text skew (0.1-1.0)",
+                    "name": "max_skew"
+                },
+                "max_rotation": {
+                    "description": "Maximum text rotation (0.1-2.0)",
+                    "name": "max_rotation"
+                },
+                "max_font_size": {
+                    "description": "Maximum font size",
+                    "name": "max_font_size"
+                },
+                "min_font_size": {
+                    "description": "Minimum font size",
+                    "name": "min_font_size"
+                },
+                "height": {
+                    "description": "Captcha image height",
+                    "name": "height"
+                },
+                "width": {
+                    "description": "Captcha image width",
+                    "name": "width"
+                },
+                "length": {
+                    "description": "Number of characters",
+                    "name": "length"
+                },
+                "invisible": {
+                    "description": "Make the message invisible?",
+                    "name": "invisible"
+                }
+            }
+        },
+        "eval": {
+            "name": "eval",
+            "response": {},
+            "options": {
+                "botinfo": {
+                    "description": "Shows detailed bot information",
+                    "name": "botinfo"
+                },
+                "banner": {
+                    "options": {
+                        "file": {
+                            "name": "file"
+                        }
+                    },
+                    "description": "Change bot banner",
+                    "name": "banner"
+                },
+                "avatar": {
+                    "options": {
+                        "file": {
+                            "name": "file"
+                        }
+                    },
+                    "description": "Change bot avatar",
+                    "name": "avatar"
+                },
+                "presence": {
+                    "options": {
+                        "activity": {
+                            "name": "activity"
+                        },
+                        "status": {
+                            "name": "status"
+                        },
+                        "name-activity": {
+                            "name": "name-activity"
+                        }
+                    },
+                    "description": "Sets the bot's status",
+                    "name": "presence"
+                }
+            }
+        },
+        "ai": {
+            "name": "ai",
+            "description": "AI actions",
+            "response": {},
+            "options": {
+                "model-info": {
+                    "options": {
+                        "model": {
+                            "description": "Gemini model. Leave empty to use the model from settings",
+                            "name": "model"
+                        }
+                    },
+                    "description": "Gets model information",
+                    "name": "model-info"
+                },
+                "edit-apikey": {
+                    "options": {
+                        "for-public-use": {
+                            "description": "Allow us to use your key?",
+                            "name": "for-public-use"
+                        },
+                        "apikey": {
+                            "description": "API key. Find it at https://aistudio.google.com/apikey",
+                            "name": "apikey"
+                        }
+                    },
+                    "description": "Change settings for the current key",
+                    "name": "edit-apikey"
+                },
+                "delete-apikey": {
+                    "options": {
+                        "delete-all": {
+                            "description": "Delete all your keys?",
+                            "name": "delete-all"
+                        },
+                        "apikey": {
+                            "description": "API key. Find it at https://aistudio.google.com/apikey",
+                            "name": "apikey"
+                        }
+                    },
+                    "description": "Delete an API key from the bot",
+                    "name": "delete-apikey"
+                },
+                "add-apikey": {
+                    "options": {
+                        "for-public-use": {
+                            "description": "Allow us to use your key?",
+                            "name": "for-public-use"
+                        },
+                        "apikey": {
+                            "description": "API key. Find it at https://aistudio.google.com/apikey",
+                            "name": "apikey"
+                        }
+                    },
+                    "description": "Add an API key. Allows access to AI functionality",
+                    "name": "add-apikey"
+                },
+                "edit_safety": {
+                    "options": {
+                        "s_value": {
+                            "description": "Safety modes",
+                            "name": "s_value"
+                        },
+                        "s_category": {
+                            "description": "Option name",
+                            "name": "s_category"
+                        }
+                    },
+                    "description": "Change model safety settings",
+                    "name": "edit_safety"
+                },
+                "edit": {
+                    "options": {
+                        "history_limit": {
+                            "description": "History save limit. 0 - no saving",
+                            "name": "history_limit"
+                        },
+                        "top_k": {
+                            "description": "Vocabulary size for token generation. 1-5 - small, 50+ - diverse",
+                            "name": "top_k"
+                        },
+                        "top_p": {
+                            "description": "Probability of using a token. 0.0 - expected token, 1 - uses all tokens",
+                            "name": "top_p"
+                        },
+                        "temperature": {
+                            "description": "Adjusts randomness (creativity of response). 0.1 - predictable, 1-2 - very chaotic",
+                            "name": "temperature"
+                        },
+                        "max_output_tokens": {
+                            "description": "Maximum tokens AI will respond with. If the maximum is less than AI's response, the response will be truncated!",
+                            "name": "max_output_tokens"
+                        },
+                        "system_instructions": {
+                            "description": "System instructions.",
+                            "name": "system_instructions"
+                        },
+                        "model": {
+                            "description": "Model for generation",
+                            "name": "model"
+                        }
+                    },
+                    "description": "Change AI settings",
+                    "name": "edit"
+                },
+                "settings": {
+                    "description": "Shows your current AI settings",
+                    "name": "settings"
+                },
+                "remove-user": {
+                    "options": {
+                        "user": {
+                            "description": "User",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Removes a user from the database.",
+                    "name": "remove-user"
+                },
+                "add-user": {
+                    "options": {
+                        "user": {
+                            "description": "User",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Adds a user to the database, allowing them to use the /ai command",
+                    "name": "add-user"
+                },
+                "ask": {
+                    "options": {
+                        "invisible": {
+                            "description": "Makes the AI's response invisible",
+                            "name": "invisible"
+                        },
+                        "image": {
+                            "description": "Image to send.",
+                            "name": "image"
+                        },
+                        "text": {
+                            "description": "Query to Gemini",
+                            "name": "text"
+                        }
+                    },
+                    "description": "Ask Gemini about something",
+                    "name": "ask"
+                }
+            }
+        },
+        "love": {
+            "name": "love",
+            "response": {},
+            "options": {
+                "user2": {
+                    "name": "user2"
+                },
+                "user1": {
+                    "name": "user1"
+                }
+            }
+        },
+        "minecraft": {
+            "name": "minecraft",
+            "response": {},
+            "options": {
+                "player": {
+                    "name": "player"
+                }
+            }
+        },
+        "say": {
+            "name": "say",
+            "response": {},
+            "options": {
+                "reply_to": {
+                    "name": "reply_to"
+                },
+                "image": {
+                    "name": "image"
+                },
+                "text": {
+                    "name": "text"
+                }
+            }
+        },
+        "say-tts": {
+            "name": "say-tts",
+            "description": "The bot will vocalize your text in a voice channel or send it to the chat.",
+            "response": {},
+            "options": {
+                "speed": {
+                    "description": "Speech speed (from 0.1 to 2)",
+                    "name": "speed"
+                },
+                "lang": {
+                    "description": "Generation language. It must match the text language!",
+                    "name": "lang"
+                },
+                "text": {
+                    "description": "Text to vocalize",
+                    "name": "text"
+                },
+                "voice-channel": {
+                    "description": "If true, the bot will connect to your voice channel; if false, it will send the audio to the chat.",
+                    "name": "voice-channel"
+                }
+            }
+        },
+        "guessthenumber": {
+            "name": "guessthenumber",
+            "description": "Guess the number against the clock",
+            "response": {},
+            "options": {}
+        },
+        "tictactoe": {
+            "name": "tictactoe",
+            "response": {},
+            "options": {
+                "opponent": {
+                    "name": "opponent"
+                }
+            }
+        },
+        "automod-native": {
+            "name": "automod-native",
+            "description": "Manage Discord's native automod rules",
+            "response": {},
+            "options": {
+                "clear-all": {
+                    "description": "Deletes ALL native Automod rules on the server (requires confirmation)",
+                    "name": "clear-all"
+                },
+                "exempt": {
+                    "options": {
+                        "remove-channel": {
+                            "options": {
+                                "channel": {
+                                    "description": "The channel to remove from exemptions",
+                                    "name": "channel"
+                                },
+                                "rule_id": {
+                                    "description": "Select the rule to modify",
+                                    "name": "rule_id"
+                                }
+                            },
+                            "description": "Remove a channel from the rule's exemption list",
+                            "name": "remove-channel"
+                        },
+                        "add-channel": {
+                            "options": {
+                                "channel": {
+                                    "description": "The channel to add to exemptions",
+                                    "name": "channel"
+                                },
+                                "rule_id": {
+                                    "description": "Select the rule to modify",
+                                    "name": "rule_id"
+                                }
+                            },
+                            "description": "Add a channel to the rule's exemption list",
+                            "name": "add-channel"
+                        },
+                        "remove-role": {
+                            "options": {
+                                "role": {
+                                    "description": "The role to remove from exemptions",
+                                    "name": "role"
+                                },
+                                "rule_id": {
+                                    "description": "Select the rule to modify",
+                                    "name": "rule_id"
+                                }
+                            },
+                            "description": "Remove a role from the rule's exemption list",
+                            "name": "remove-role"
+                        },
+                        "add-role": {
+                            "options": {
+                                "role": {
+                                    "description": "The role to add to exemptions",
+                                    "name": "role"
+                                },
+                                "rule_id": {
+                                    "description": "Select the rule to modify",
+                                    "name": "rule_id"
+                                }
+                            },
+                            "description": "Add a role to the rule's exemption list",
+                            "name": "add-role"
+                        }
+                    },
+                    "description": "Manage Automod rule exemptions",
+                    "name": "exempt"
+                },
+                "toggle": {
+                    "options": {
+                        "rule_id": {
+                            "description": "Select the rule to toggle its status",
+                            "name": "rule_id"
+                        }
+                    },
+                    "description": "Enables or disables a native Automod rule by its ID (select from list)",
+                    "name": "toggle"
+                },
+                "view": {
+                    "options": {
+                        "rule_id": {
+                            "description": "Select the rule to view",
+                            "name": "rule_id"
+                        }
+                    },
+                    "description": "Shows details of a native Automod rule by its ID (select from list)",
+                    "name": "view"
+                },
+                "list": {
+                    "description": "Shows all native Automod rules on the server",
+                    "name": "list"
+                },
+                "remove": {
+                    "options": {
+                        "rule_id": {
+                            "description": "Select the rule to remove by ID or name",
+                            "name": "rule_id"
+                        }
+                    },
+                    "description": "Removes a native Automod rule by its ID (select from list)",
+                    "name": "remove"
+                },
+                "edit": {
+                    "options": {
+                        "enabled": {
+                            "description": "Enable or disable the rule",
+                            "name": "enabled"
+                        },
+                        "exempt_channels": {
+                            "description": "New channels where the rule does not apply (mentions or comma-separated IDs)",
+                            "name": "exempt_channels"
+                        },
+                        "exempt_roles": {
+                            "description": "New roles for which the rule does not apply (mentions or comma-separated IDs)",
+                            "name": "exempt_roles"
+                        },
+                        "block_message": {
+                            "description": "New message to send when blocking (required if new action is 'Block Message')",
+                            "name": "block_message"
+                        },
+                        "timeout_duration": {
+                            "description": "New timeout duration in seconds (required if new action is 'Timeout')",
+                            "name": "timeout_duration"
+                        },
+                        "action": {
+                            "description": "New action when the rule is triggered",
+                            "name": "action"
+                        },
+                        "keywords": {
+                            "description": "New words or phrases (comma-separated). Wildcards (*) can be used.",
+                            "name": "keywords"
+                        },
+                        "name": {
+                            "description": "New rule name",
+                            "name": "name"
+                        },
+                        "rule_id": {
+                            "description": "Select the rule to edit by ID or name",
+                            "name": "rule_id"
+                        }
+                    },
+                    "description": "Edits an existing native Automod rule by its ID (select from list)",
+                    "name": "edit"
+                },
+                "add-keyword": {
+                    "options": {
+                        "exempt_channels": {
+                            "description": "Channels where the rule does not apply (mentions or comma-separated IDs)",
+                            "name": "exempt_channels"
+                        },
+                        "exempt_roles": {
+                            "description": "Roles for which the rule does not apply (mentions or comma-separated IDs)",
+                            "name": "exempt_roles"
+                        },
+                        "block_message": {
+                            "description": "Message to send when blocking (for 'Block Message' action)",
+                            "name": "block_message"
+                        },
+                        "timeout_duration": {
+                            "description": "Timeout duration in seconds (required for 'Timeout' action)",
+                            "name": "timeout_duration"
+                        },
+                        "action": {
+                            "description": "Action when the rule is triggered",
+                            "name": "action"
+                        },
+                        "keywords": {
+                            "description": "Words or phrases to block (comma-separated). Wildcards (*) can be used.",
+                            "name": "keywords"
+                        },
+                        "name": {
+                            "description": "Rule name",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Adds a new keyword filtering rule for native Automod",
+                    "name": "add-keyword"
+                }
+            }
+        },
+        "case": {
+            "name": "case",
+            "response": {},
+            "options": {
+                "user_punishments": {
+                    "options": {
+                        "user": {
+                            "name": "user"
+                        }
+                    },
+                    "description": "Check a user's punishment history",
+                    "name": "user_punishments"
+                },
+                "view": {
+                    "options": {
+                        "num": {
+                            "name": "num"
+                        }
+                    },
+                    "description": "Shows the specified case",
+                    "name": "view"
+                },
+                "reason": {
+                    "options": {
+                        "reason": {
+                            "name": "reason"
+                        },
+                        "num": {
+                            "name": "num"
+                        }
+                    },
+                    "description": "Change the reason for a case",
+                    "name": "reason"
+                },
+                "remove": {
+                    "options": {
+                        "num": {
+                            "name": "num"
+                        }
+                    },
+                    "name": "remove"
+                }
+            }
+        },
+        "channel": {
+            "name": "channel",
+            "description": "Commands for channel moderation",
+            "response": {},
+            "options": {
+                "slowmode": {
+                    "options": {
+                        "канал": {
+                            "description": "The channel for slowmode",
+                            "name": "канал"
+                        },
+                        "секунды": {
+                            "description": "Slowmode duration in seconds (0 = disable, max 21600)",
+                            "name": "секунды"
+                        }
+                    },
+                    "description": "Set slowmode on a channel",
+                    "name": "slowmode"
+                },
+                "unlock": {
+                    "options": {
+                        "канал": {
+                            "description": "The channel to unlock",
+                            "name": "канал"
+                        }
+                    },
+                    "description": "Unlock a channel",
+                    "name": "unlock"
+                },
+                "lock": {
+                    "options": {
+                        "канал": {
+                            "description": "The channel to lock",
+                            "name": "канал"
+                        }
+                    },
+                    "description": "Lock a channel",
+                    "name": "lock"
+                }
+            }
+        },
+        "message": {
+            "name": "message",
+            "response": {},
+            "options": {
+                "purge": {
+                    "options": {
+                        "amount": {
+                            "name": "amount"
+                        },
+                        "target": {
+                            "name": "target"
+                        }
+                    },
+                    "description": "Deletes a specified number of messages from a specific user",
+                    "name": "purge"
+                },
+                "unpin": {
+                    "options": {
+                        "id": {
+                            "name": "id"
+                        }
+                    },
+                    "description": "Unpin a message",
+                    "name": "unpin"
+                },
+                "pin": {
+                    "options": {
+                        "id": {
+                            "name": "id"
+                        }
+                    },
+                    "description": "Pin a message",
+                    "name": "pin"
+                },
+                "clear": {
+                    "options": {
+                        "amount": {
+                            "name": "amount"
+                        }
+                    },
+                    "description": "Deletes a specified number of messages from users",
+                    "name": "clear"
+                }
+            }
+        },
+        "moderation": {
+            "name": "moderation",
+            "description": "All moderation-type commands",
+            "response": {},
+            "options": {
+                "unwarn": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Attach evidence (if any)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Reason for removing the warning",
+                            "name": "причина"
+                        },
+                        "кейс": {
+                            "description": "Case number of the warning to remove",
+                            "name": "кейс"
+                        },
+                        "пользователь": {
+                            "description": "The user to remove the last warning from",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Remove a user's warning",
+                    "name": "unwarn"
+                },
+                "warn": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Attach evidence (if any)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Reason for the warning",
+                            "name": "причина"
+                        },
+                        "пользователь": {
+                            "description": "The user to warn",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Issue a warning to a user",
+                    "name": "warn"
+                },
+                "unban": {
+                    "options": {
+                        "evidence": {
+                            "description": "Attach evidence (if any)",
+                            "name": "evidence"
+                        },
+                        "reason": {
+                            "description": "Reason for unbanning",
+                            "name": "reason"
+                        },
+                        "userid": {
+                            "description": "The user ID to unban",
+                            "name": "userid"
+                        }
+                    },
+                    "description": "Unban a user by ID",
+                    "name": "unban"
+                },
+                "unmute": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Attach evidence (if any)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Reason for unmuting",
+                            "name": "причина"
+                        },
+                        "пользователь": {
+                            "description": "The user to unmute",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Remove mute (timeout) from a user",
+                    "name": "unmute"
+                },
+                "kick": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Attach evidence (if any)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Reason for kicking",
+                            "name": "причина"
+                        },
+                        "пользователь": {
+                            "description": "The user to kick",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Kick a user from the server",
+                    "name": "kick"
+                },
+                "mute": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Attach evidence (if any)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Reason for muting",
+                            "name": "причина"
+                        },
+                        "время": {
+                            "description": "Mute duration (e.g., 10m, 1h, 7d, 2w). Max 28 days.",
+                            "name": "время"
+                        },
+                        "пользователь": {
+                            "description": "The user to mute",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Mute a user",
+                    "name": "mute"
+                },
+                "ban": {
+                    "options": {
+                        "доказательства": {
+                            "description": "Attach evidence (if any)",
+                            "name": "доказательства"
+                        },
+                        "причина": {
+                            "description": "Reason for banning",
+                            "name": "причина"
+                        },
+                        "пользователь": {
+                            "description": "The user to ban",
+                            "name": "пользователь"
+                        }
+                    },
+                    "description": "Ban a user from the server",
+                    "name": "ban"
+                }
+            }
+        },
+        "modstats": {
+            "name": "modstats",
+            "description": "Moderator punishment statistics.",
+            "response": {},
+            "options": {
+                "moderator": {
+                    "description": "Select a moderator for statistics.",
+                    "name": "moderator"
+                }
+            }
+        },
+        "report": {
+            "name": "report",
+            "description": "Post an interactive panel for submitting reports.",
+            "response": {},
+            "options": {
+                "faq_link": {
+                    "description": "Link to server FAQ or rules (optional).",
+                    "name": "faq_link"
+                }
+            }
+        },
+        "restrict": {
+            "name": "restrict",
+            "description": "Manages command restrictions on the server.",
+            "response": {},
+            "options": {
+                "list": {
+                    "options": {
+                        "user": {
+                            "description": "Show restrictions for this user (leave empty for the entire server).",
+                            "name": "user"
+                        }
+                    },
+                    "description": "Shows a list of commands restricted on the server or for a user.",
+                    "name": "list"
+                },
+                "set": {
+                    "options": {
+                        "user": {
+                            "description": "The user for whom the restriction applies (leave empty for the entire server).",
+                            "name": "user"
+                        },
+                        "command": {
+                            "description": "The name of the command to restrict.",
+                            "name": "command"
+                        },
+                        "action": {
+                            "description": "Action: disable or enable.",
+                            "name": "action"
+                        }
+                    },
+                    "description": "Enable or disable a command for the server or a user.",
+                    "name": "set"
+                }
+            }
+        },
+        "tag": {
+            "name": "tag",
+            "description": "Manage tags (mini-reference).",
+            "response": {},
+            "options": {
+                "list": {
+                    "description": "Show all server tags.",
+                    "name": "list"
+                },
+                "get": {
+                    "options": {
+                        "name": {
+                            "description": "Tag name.",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Show tag content.",
+                    "name": "get"
+                },
+                "edit": {
+                    "options": {
+                        "content": {
+                            "description": "New tag content.",
+                            "name": "content"
+                        },
+                        "name": {
+                            "description": "Tag name to edit.",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Edit tag content.",
+                    "name": "edit"
+                },
+                "remove": {
+                    "options": {
+                        "name": {
+                            "description": "Tag name to remove.",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Remove an existing tag.",
+                    "name": "remove"
+                },
+                "add": {
+                    "options": {
+                        "content": {
+                            "description": "Tag content.",
+                            "name": "content"
+                        },
+                        "name": {
+                            "description": "Unique tag name.",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Create a new tag.",
+                    "name": "add"
+                }
+            }
+        },
+        "booru": {
+            "name": "booru",
+            "response": {},
+            "options": {
+                "random": {
+                    "options": {
+                        "no_ai": {
+                            "name": "no_ai"
+                        },
+                        "tags": {
+                            "name": "tags"
+                        },
+                        "site": {
+                            "name": "site"
+                        }
+                    },
+                    "name": "random"
+                },
+                "search": {
+                    "options": {
+                        "no_ai": {
+                            "name": "no_ai"
+                        },
+                        "page": {
+                            "name": "page"
+                        },
+                        "limit": {
+                            "name": "limit"
+                        },
+                        "tags": {
+                            "name": "tags"
+                        },
+                        "site": {
+                            "name": "site"
+                        }
+                    },
+                    "name": "search"
+                }
+            }
+        },
+        "hentai": {
+            "name": "hentai",
+            "description": "Random gallery from nhentai.",
+            "response": {},
+            "options": {}
+        },
+        "reddit": {
+            "name": "reddit",
+            "description": "Get random NSFW images from Reddit by category.",
+            "response": {},
+            "options": {
+                "category": {
+                    "description": "Content category to search for.",
+                    "name": "category"
+                }
+            }
+        },
+        "botstatus": {
+            "name": "botstatus",
+            "description": "Shows the bot's status",
+            "response": {},
+            "options": {}
+        },
+        "guild": {
+            "name": "guild",
+            "description": "guild admin command",
+            "response": {},
+            "options": {
+                "verificationlevel": {
+                    "options": {
+                        "input": {
+                            "description": "Level from 0 to 4",
+                            "name": "input"
+                        }
+                    },
+                    "description": "Change the server verification level",
+                    "name": "verificationlevel"
+                },
+                "systemchannel": {
+                    "options": {
+                        "input": {
+                            "description": "Channel for system messages",
+                            "name": "input"
+                        }
+                    },
+                    "description": "Change the server system channel",
+                    "name": "systemchannel"
+                },
+                "safetyalerts": {
+                    "options": {
+                        "input": {
+                            "description": "Channel for safety alerts",
+                            "name": "input"
+                        }
+                    },
+                    "description": "Change the server safety alerts channel",
+                    "name": "safetyalerts"
+                },
+                "rulechannel": {
+                    "options": {
+                        "input": {
+                            "description": "Channel for rules",
+                            "name": "input"
+                        }
+                    },
+                    "description": "Change the server rule channel",
+                    "name": "rulechannel"
+                },
+                "name": {
+                    "options": {
+                        "text": {
+                            "description": "Name for the server",
+                            "name": "text"
+                        }
+                    },
+                    "description": "Change the server name",
+                    "name": "name"
+                },
+                "contentfilterlevel": {
+                    "options": {
+                        "value": {
+                            "description": "Content Filter Level",
+                            "name": "value"
+                        }
+                    },
+                    "description": "Change the server Content Filter Level",
+                    "name": "contentfilterlevel"
+                },
+                "icon": {
+                    "options": {
+                        "image": {
+                            "description": "Image for server icon",
+                            "name": "image"
+                        }
+                    },
+                    "description": "Change the server icon",
+                    "name": "icon"
+                },
+                "banner": {
+                    "options": {
+                        "image": {
+                            "description": "Image for server banner (server must be level 2)",
+                            "name": "image"
+                        }
+                    },
+                    "description": "Change the server banner",
+                    "name": "banner"
+                },
+                "invites": {
+                    "options": {
+                        "value": {
+                            "description": "true - disable, false - enable",
+                            "name": "value"
+                        }
+                    },
+                    "description": "Disable or enable invites for the guild",
+                    "name": "invites"
+                }
+            }
+        },
+        "help": {
+            "name": "help",
+            "description": "Show a list of commands with pagination and category selection.",
+            "response": {},
+            "options": {}
+        },
+        "info": {
+            "name": "info",
+            "description": "Commands for getting information",
+            "response": {},
+            "options": {
+                "serverinfo": {
+                    "description": "Server information",
+                    "name": "serverinfo"
+                },
+                "userinfo": {
+                    "options": {
+                        "target": {
+                            "description": "User (optional)",
+                            "name": "target"
+                        }
+                    },
+                    "description": "User information",
+                    "name": "userinfo"
+                }
+            }
+        },
+        "play": {
+            "name": "play",
+            "description": "Plays audio from a direct link or an uploaded file.",
+            "response": {},
+            "options": {
+                "attachment": {
+                    "description": "Upload an audio file (mp3, ogg, wav, flac, m4a, opus).",
+                    "name": "attachment"
+                },
+                "url": {
+                    "description": "Direct link to an audio file (mp3, ogg, wav, flac, m4a, opus).",
+                    "name": "url"
+                }
+            }
+        },
+        "role": {
+            "name": "role",
+            "description": "role editor command",
+            "response": {},
+            "options": {
+                "info": {
+                    "options": {
+                        "role": {
+                            "description": "Select role or text role id",
+                            "name": "role"
+                        }
+                    },
+                    "description": "send embed-message about role",
+                    "name": "info"
+                },
+                "create": {
+                    "options": {
+                        "unicodeemoji": {
+                            "description": "The unicode emoji for the role",
+                            "name": "unicodeemoji"
+                        },
+                        "reason": {
+                            "description": "The reason for editing this role",
+                            "name": "reason"
+                        },
+                        "position": {
+                            "description": "The position of the role",
+                            "name": "position"
+                        },
+                        "permissions": {
+                            "description": "The permissions of the role",
+                            "name": "permissions"
+                        },
+                        "name": {
+                            "description": "The name of the role",
+                            "name": "name"
+                        },
+                        "mentionable": {
+                            "description": "Whether or not the role should be mentionable",
+                            "name": "mentionable"
+                        },
+                        "hoist": {
+                            "description": "Whether or not the role should be hoisted",
+                            "name": "hoist"
+                        },
+                        "color": {
+                            "description": "The color of the role, either a hex string or a base 10 number",
+                            "name": "color"
+                        }
+                    },
+                    "description": "Create the role",
+                    "name": "create"
+                },
+                "edit": {
+                    "options": {
+                        "unicodeemoji": {
+                            "description": "The unicode emoji for the role",
+                            "name": "unicodeemoji"
+                        },
+                        "reason": {
+                            "description": "The reason for editing this role",
+                            "name": "reason"
+                        },
+                        "position": {
+                            "description": "The position of the role",
+                            "name": "position"
+                        },
+                        "permissions": {
+                            "description": "The permissions of the role",
+                            "name": "permissions"
+                        },
+                        "name": {
+                            "description": "The name of the role",
+                            "name": "name"
+                        },
+                        "mentionable": {
+                            "description": "Whether or not the role should be mentionable",
+                            "name": "mentionable"
+                        },
+                        "icon": {
+                            "description": "The icon for the role",
+                            "name": "icon"
+                        },
+                        "hoist": {
+                            "description": "Whether or not the role should be hoisted",
+                            "name": "hoist"
+                        },
+                        "color": {
+                            "description": "The color of the role, either a hex string or a base 10 number",
+                            "name": "color"
+                        },
+                        "role": {
+                            "description": "Select role or text role id",
+                            "name": "role"
+                        }
+                    },
+                    "description": "Create or edit the role",
+                    "name": "edit"
+                },
+                "delete": {
+                    "options": {
+                        "reason": {
+                            "description": "Reason for role deletion",
+                            "name": "reason"
+                        },
+                        "role": {
+                            "description": "Select role or text role id",
+                            "name": "role"
+                        }
+                    },
+                    "description": "Deletes the role",
+                    "name": "delete"
+                }
+            }
+        },
+        "rolemenu": {
+            "name": "rolemenu",
+            "description": "Create or update a message with a role selection menu (buttons or Select Menu).",
+            "response": {},
+            "options": {
+                "delete": {
+                    "options": {
+                        "message_id": {
+                            "description": "The ID of the role menu message to delete.",
+                            "name": "message_id"
+                        }
+                    },
+                    "description": "Delete a role menu message and its data.",
+                    "name": "delete"
+                },
+                "remove-role": {
+                    "options": {
+                        "role": {
+                            "description": "The role to remove.",
+                            "name": "role"
+                        },
+                        "message_id": {
+                            "description": "The ID of the role menu message.",
+                            "name": "message_id"
+                        }
+                    },
+                    "description": "Remove a role from an existing menu (buttons or Select Menu).",
+                    "name": "remove-role"
+                },
+                "add-role": {
+                    "options": {
+                        "emoji": {
+                            "description": "Emoji to display next to the role in the menu/on the button. Format: <:name:id> or standard.",
+                            "name": "emoji"
+                        },
+                        "description": {
+                            "description": "Description of the role in the Select Menu (not used for buttons).",
+                            "name": "description"
+                        },
+                        "label": {
+                            "description": "Display name for the role in the menu/on the button (default: role name).",
+                            "name": "label"
+                        },
+                        "role": {
+                            "description": "The role to add.",
+                            "name": "role"
+                        },
+                        "message_id": {
+                            "description": "The ID of the role menu message.",
+                            "name": "message_id"
+                        }
+                    },
+                    "description": "Add a role to an existing menu (buttons or Select Menu).",
+                    "name": "add-role"
+                },
+                "create-buttons": {
+                    "options": {
+                        "description": {
+                            "description": "Description for the button message embed.",
+                            "name": "description"
+                        },
+                        "title": {
+                            "description": "Title for the button message embed.",
+                            "name": "title"
+                        },
+                        "channel": {
+                            "description": "The channel where the button message will be sent.",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Create a new message with buttons for role assignment.",
+                    "name": "create-buttons"
+                },
+                "create-select": {
+                    "options": {
+                        "placeholder": {
+                            "description": "Placeholder text for the Select Menu (default: \"Select your roles...\").",
+                            "name": "placeholder"
+                        },
+                        "description": {
+                            "description": "Description for the role menu message embed.",
+                            "name": "description"
+                        },
+                        "title": {
+                            "description": "Title for the role menu message embed.",
+                            "name": "title"
+                        },
+                        "channel": {
+                            "description": "The channel where the role menu message will be sent.",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Create a new message with a role selection Select Menu.",
+                    "name": "create-select"
+                }
+            }
+        },
+        "room": {
+            "name": "room",
+            "description": "Manage your dynamic voice room",
+            "response": {},
+            "options": {
+                "public": {
+                    "description": "Make the room public",
+                    "name": "public"
+                },
+                "private": {
+                    "description": "Make the room private (role-restricted)",
+                    "name": "private"
+                },
+                "unlock": {
+                    "description": "Unlock the room for everyone",
+                    "name": "unlock"
+                },
+                "lock": {
+                    "description": "Lock the room for everyone",
+                    "name": "lock"
+                },
+                "limit": {
+                    "options": {
+                        "number": {
+                            "description": "Maximum number of members (0 for no limit)",
+                            "name": "number"
+                        }
+                    },
+                    "description": "Set the member limit",
+                    "name": "limit"
+                },
+                "rename": {
+                    "options": {
+                        "name": {
+                            "description": "New name",
+                            "name": "name"
+                        }
+                    },
+                    "description": "Rename the room",
+                    "name": "rename"
+                }
+            }
+        },
+        "settings": {
+            "name": "settings",
+            "description": "Change bot settings",
+            "response": {},
+            "options": {
+                "set-reports-channel": {
+                    "options": {
+                        "channel": {
+                            "description": "Channel for receiving reports.",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Set the channel where reports will be sent to moderators.",
+                    "name": "set-reports-channel"
+                },
+                "to-default": {
+                    "description": "Irreversibly resets server settings",
+                    "name": "to-default"
+                },
+                "support-channel": {
+                    "options": {
+                        "channel": {
+                            "description": "Support channel/forum",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Sets the support channel",
+                    "name": "support-channel"
+                },
+                "set-main-voice": {
+                    "options": {
+                        "channel": {
+                            "description": "Main voice channel",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Set the main voice channel for creating rooms",
+                    "name": "set-main-voice"
+                },
+                "set-voice-category": {
+                    "options": {
+                        "category": {
+                            "description": "Category",
+                            "name": "category"
+                        }
+                    },
+                    "description": "Set the category for new voice channels",
+                    "name": "set-voice-category"
+                },
+                "allow-membersadd-logging": {
+                    "options": {
+                        "bool": {
+                            "description": "enable/disable",
+                            "name": "bool"
+                        }
+                    },
+                    "description": "Send messages about new/departing members",
+                    "name": "allow-membersadd-logging"
+                },
+                "allowlogging": {
+                    "options": {
+                        "bool": {
+                            "description": "enable/disable",
+                            "name": "bool"
+                        }
+                    },
+                    "description": "Send messages about used invites?",
+                    "name": "allowlogging"
+                },
+                "invite-logger-channel": {
+                    "options": {
+                        "channel": {
+                            "description": "Channel",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Channel for logging invite links",
+                    "name": "invite-logger-channel"
+                },
+                "welcomechannel": {
+                    "options": {
+                        "channel": {
+                            "description": "Channel",
+                            "name": "channel"
+                        }
+                    },
+                    "description": "Channel for new member notifications",
+                    "name": "welcomechannel"
+                }
+            }
+        },
+        "starboard": {
+            "name": "starboard",
+            "description": "Change bot settings",
+            "response": {},
+            "options": {
+                "settings": {
+                    "options": {
+                        "min-reactions": {
+                            "description": "Minimum number of stars for the starboard",
+                            "name": "min-reactions"
+                        },
+                        "enabled": {
+                            "description": "Enable starboard?",
+                            "name": "enabled"
+                        },
+                        "starboard-channel": {
+                            "description": "Starboard channel",
+                            "name": "starboard-channel"
+                        }
+                    },
+                    "description": "Starboard settings",
+                    "name": "settings"
+                }
+            }
+        },
+        "user": {
+            "name": "user",
+            "description": "Get info about a target user",
+            "response": {},
+            "options": {
+                "removerole": {
+                    "options": {
+                        "role": {
+                            "description": "Select a role",
+                            "name": "role"
+                        },
+                        "target": {
+                            "description": "Select a user",
+                            "name": "target"
+                        }
+                    },
+                    "description": "Remove a role (or multiple roles) from the member.",
+                    "name": "removerole"
+                },
+                "addrole": {
+                    "options": {
+                        "role": {
+                            "description": "Select a role",
+                            "name": "role"
+                        },
+                        "target": {
+                            "description": "Select a user",
+                            "name": "target"
+                        }
+                    },
+                    "description": "Add a role (or multiple roles) to the member.",
+                    "name": "addrole"
+                },
+                "voice": {
+                    "options": {
+                        "kick": {
+                            "description": "Kicks the member from the voice channel",
+                            "name": "kick"
+                        },
+                        "mute": {
+                            "description": "Mutes/unmutes the member in this voice channel.",
+                            "name": "mute"
+                        },
+                        "deaf": {
+                            "description": "Deafens/undeafens the member in this voice channel.",
+                            "name": "deaf"
+                        },
+                        "channel": {
+                            "description": "Move the member to a different channel",
+                            "name": "channel"
+                        },
+                        "target": {
+                            "description": "Select a user",
+                            "name": "target"
+                        }
+                    },
+                    "description": "Edit a user's voice channel state",
+                    "name": "voice"
+                }
+            }
+        }
+    }
+}

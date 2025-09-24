@@ -9,18 +9,18 @@ const {
 } = require('discord.js');
 
 const activeGames = new Set();
-const {minigame} = require('../../locales/descriptions/minigame')
+
 
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
         .setName('tictactoe')
-        .setDescription(minigame.tictactoe.description.ru)
-        .setDescriptionLocalizations(minigame.tictactoe.description)
+        .setDescription()
+        .setDescriptionLocalizations()
         .addUserOption(opt =>
             opt.setName('opponent')
-                .setDescription(minigame.tictactoe.options.opponent.description.ru)
-                .setDescriptionLocalizations(minigame.tictactoe.options.opponent.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setRequired(true)
         ),
 

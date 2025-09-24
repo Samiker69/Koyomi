@@ -1,24 +1,24 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('love')
-        .setDescription(forFunOnly.love.description.ru)
-        .setDescriptionLocalizations(forFunOnly.love.description)
+        .setDescription()
+        .setDescriptionLocalizations()
         .addUserOption(opt =>
             opt
             .setName('user1')
-            .setDescription(forFunOnly.love.options.user1.description.ru)
-            .setDescriptionLocalizations(forFunOnly.love.options.user1.description)
+            .setDescription()
+            .setDescriptionLocalizations()
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
             .setName('user2')
-            .setDescription(forFunOnly.love.options.user2.description.ru)
-            .setDescriptionLocalizations(forFunOnly.love.options.user2.description)
+            .setDescription()
+            .setDescriptionLocalizations()
             .setRequired(true)
         ),
 

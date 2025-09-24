@@ -1,17 +1,17 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
-const {moderation} = require('../../locales/descriptions/moderation')
+
 
 const data = new SlashCommandBuilder()
     .setName('message')
-    .setDescription(moderation.message.description.ru)
+    .setDescription()
 
     .addSubcommand(subcommand =>
         subcommand.setName('clear')
         .setDescription('Удаляет указанное количество сообщений от пользователей')
         .addIntegerOption(option => 
             option.setName('amount')
-                .setDescription(moderation.message.options.amount.description.ru)
-                .setDescriptionLocalizations(moderation.message.options.amount.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
@@ -20,8 +20,8 @@ const data = new SlashCommandBuilder()
         .setDescription('Закрепить сообщение')
         .addStringOption(option => 
             option.setName('id')
-            .setDescription(moderation.message.options.id.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.id.description)
+            .setDescription()
+            .setDescriptionLocalizations()
             .setRequired(true)))
 
     .addSubcommand(subcommand =>
@@ -29,8 +29,8 @@ const data = new SlashCommandBuilder()
         .setDescription('Открепить сообщение')
         .addStringOption(option =>
             option.setName('id')
-            .setDescription(moderation.message.options.id.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.id.description)
+            .setDescription()
+            .setDescriptionLocalizations()
             .setRequired(true)))
 
     .addSubcommand(subcommand => 
@@ -38,14 +38,14 @@ const data = new SlashCommandBuilder()
         .setDescription('Удаляет указанное количество сообщений от конкретного пользователя')
         .addUserOption(option =>
           option.setName('target')
-            .setDescription(moderation.message.options.target.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.target.description)
+            .setDescription()
+            .setDescriptionLocalizations()
             .setRequired(true)
         )
         .addIntegerOption(option =>
           option.setName('amount')
-            .setDescription(moderation.message.options.amount.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.amount.description)
+            .setDescription()
+            .setDescriptionLocalizations()
             .setRequired(true)
             .setMinValue(1)
             .setMaxValue(100)

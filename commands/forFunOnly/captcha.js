@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
+
 const { generateCaptcha } = require('../../functions/createCaptcha');
 const { privateAccess } = require('../../config.json');
 

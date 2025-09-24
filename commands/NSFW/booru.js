@@ -2,70 +2,70 @@ const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed
 const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
 const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
-const { nsfw } = require('../../locales/descriptions/nsfw')
+
 const { bot_log_channel } = require('../../config.json')
 
 module.exports = {
     cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('booru')
-		.setDescription(nsfw.booru.description.ru)
-        .setDescriptionLocalizations(nsfw.booru.description)
+		.setDescription()
+        .setDescriptionLocalizations()
         .setContexts(0,1,2)
         .addSubcommand(sub =>
             sub.setName('search')
-            .setDescription(nsfw.booru.search.description.ru)
-            .setDescriptionLocalizations(nsfw.booru.search.description)
+            .setDescription()
+            .setDescriptionLocalizations()
             .addStringOption(o =>
                 o.setName('site')
-                .setDescription(nsfw.booru.options.site.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.site.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
                 o.setName('tags')
-                .setDescription(nsfw.booru.options.tags.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.tags.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setRequired(true)
             )
             .addNumberOption(o => 
                 o.setName('limit')
-                .setDescription(nsfw.booru.options.limit.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.limit.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setMaxValue(100)
                 .setMinValue(1)
             )
             .addNumberOption(o => 
                 o.setName('page')
-                .setDescription(nsfw.booru.options.page.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.page.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setMinValue(0)
             )
             .addBooleanOption(o =>
                 o.setName('no_ai')
-                .setDescription(nsfw.booru.options.no_ai.description.ru)
+                .setDescription()
             )
         )
         .addSubcommand(sub =>
             sub.setName('random')
-            .setDescription(nsfw.booru.random.description.ru)
-            .setDescriptionLocalizations(nsfw.booru.random.description)
+            .setDescription()
+            .setDescriptionLocalizations()
             .addStringOption(o =>
                 o.setName('site')
-                .setDescription(nsfw.booru.options.site.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.site.description)
+                .setDescription()
+                .setDescriptionLocalizations()
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
                 o.setName('tags')
-                .setDescription(nsfw.booru.options.tags.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.tags.description)
+                .setDescription()
+                .setDescriptionLocalizations()
             )
             .addBooleanOption(o =>
                 o.setName('no_ai')
-                .setDescription(nsfw.booru.options.no_ai.description.ru)
+                .setDescription()
             )
         )
 ,
