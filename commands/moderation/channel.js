@@ -1,46 +1,49 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 const data = new SlashCommandBuilder()
-    .setName('channel')
-    .setDescription('Команды для модерации каналов')
+    .setName(localeManager.getString('commands.channel.name'))
+    .setDescription(localeManager.getString('commands.channel.description'))
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .setDMPermission(false)
     .addSubcommand(subcommand =>
         subcommand
-            .setName('lock')
-            .setDescription('Заблокировать канал')
+            .setName(localeManager.getString('commands.channel.lock.name'))
+            .setDescription(localeManager.getString('commands.channel.lock.description'))
             .addChannelOption(option =>
-                option.setName('канал')
-                    .setDescription('Канал для блокировки')
+                option.setName(localeManager.getString('commands.channel.lock.options.channel.name'))
+                    .setDescription(localeManager.getString('commands.channel.lock.options.channel.description'))
                     .addChannelTypes(ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildAnnouncement)
                     .setRequired(false)
             )
     )
     .addSubcommand(subcommand =>
         subcommand
-            .setName('unlock')
-            .setDescription('Разблокировать канал')
+            .setName(localeManager.getString('commands.channel.unlock.name'))
+            .setDescription(localeManager.getString('commands.channel.unlock.description'))
             .addChannelOption(option =>
-                option.setName('канал')
-                    .setDescription('Канал для разблокировки')
+                option.setName(localeManager.getString('commands.channel.unlock.options.channel.name'))
+                    .setDescription(localeManager.getString('commands.channel.unlock.options.channel.description'))
                      .addChannelTypes(ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildAnnouncement)
                     .setRequired(false)
             )
     )
     .addSubcommand(subcommand =>
         subcommand
-            .setName('slowmode')
-            .setDescription('Установить слоумод на канале')
+            .setName(localeManager.getString('commands.channel.slowmode.name'))
+            .setDescription(localeManager.getString('commands.channel.slowmode.description'))
             .addIntegerOption(option =>
-                option.setName('секунды')
-                    .setDescription('Длительность слоумода в секундах (0 = выключить, макс. 21600)')
+                option.setName(localeManager.getString('commands.channel.slowmode.options.seconds.name'))
+                    .setDescription(localeManager.getString('commands.channel.slowmode.options.seconds.description'))
                     .setMinValue(0)
                     .setMaxValue(21600)
                     .setRequired(true)
             )
             .addChannelOption(option =>
-                option.setName('канал')
-                    .setDescription('Канал для слоумода')
+                option.setName(localeManager.getString('commands.channel.slowmode.options.channel.name'))
+                    .setDescription(localeManager.getString('commands.channel.slowmode.options.channel.description'))
                     .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildForum, ChannelType.GuildMedia)
                     .setRequired(false)
             )

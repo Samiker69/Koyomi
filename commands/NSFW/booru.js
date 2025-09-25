@@ -2,70 +2,75 @@ const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed
 const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
 const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
+const LocaleManager = require('../../locales/localesManager');
 
-const { bot_log_channel } = require('../../config.json')
+const localeManager = new LocaleManager();
+
+const { bot_log_channel } = require('../../config.json');
 
 module.exports = {
     cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName('booru')
-		.setDescription()
-        .setDescriptionLocalizations()
+		.setName(localeManager.getString('commands.booru.name'))
+		.setDescription(localeManager.getString('commands.booru.description'))
+        
         .setContexts(0,1,2)
         .addSubcommand(sub =>
-            sub.setName('search')
-            .setDescription()
-            .setDescriptionLocalizations()
+            sub.setName(localeManager.getString('commands.booru.search.name'))
+            .setDescription(localeManager.getString('commands.booru.search.description'))
+            
             .addStringOption(o =>
-                o.setName('site')
-                .setDescription()
-                .setDescriptionLocalizations()
+                o.setName(localeManager.getString('commands.booru.search.options.site.name'))
+                .setDescription(localeManager.getString('commands.booru.search.options.site.description'))
+                
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName('tags')
-                .setDescription()
-                .setDescriptionLocalizations()
+                o.setName(localeManager.getString('commands.booru.search.options.tags.name'))
+                .setDescription(localeManager.getString('commands.booru.search.options.tags.description'))
+                
                 .setRequired(true)
             )
             .addNumberOption(o => 
-                o.setName('limit')
-                .setDescription()
-                .setDescriptionLocalizations()
+                o.setName(localeManager.getString('commands.booru.search.options.limit.name'))
+                .setDescription(localeManager.getString('commands.booru.search.options.limit.description'))
+                
                 .setMaxValue(100)
                 .setMinValue(1)
             )
             .addNumberOption(o => 
-                o.setName('page')
-                .setDescription()
-                .setDescriptionLocalizations()
+                o.setName(localeManager.getString('commands.booru.search.options.page.name'))
+                .setDescription(localeManager.getString('commands.booru.search.options.page.description'))
+                
                 .setMinValue(0)
             )
             .addBooleanOption(o =>
-                o.setName('no_ai')
-                .setDescription()
+                o.setName(localeManager.getString('commands.booru.search.options.no_ai.name'))
+                .setDescription(localeManager.getString('commands.booru.search.options.no_ai.description'))
+                
             )
         )
         .addSubcommand(sub =>
-            sub.setName('random')
-            .setDescription()
-            .setDescriptionLocalizations()
+            sub.setName(localeManager.getString('commands.booru.random.name'))
+            .setDescription(localeManager.getString('commands.booru.random.description'))
+            
             .addStringOption(o =>
-                o.setName('site')
-                .setDescription()
-                .setDescriptionLocalizations()
+                o.setName(localeManager.getString('commands.booru.random.options.site.name'))
+                .setDescription(localeManager.getString('commands.booru.random.options.site.description'))
+                
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName('tags')
-                .setDescription()
-                .setDescriptionLocalizations()
+                o.setName(localeManager.getString('commands.booru.random.options.tags.name'))
+                .setDescription(localeManager.getString('commands.booru.random.options.tags.description'))
+                
             )
             .addBooleanOption(o =>
-                o.setName('no_ai')
-                .setDescription()
+                o.setName(localeManager.getString('commands.booru.random.options.no_ai.name'))
+                .setDescription(localeManager.getString('commands.booru.random.options.no_ai.description'))
+                
             )
         )
 ,

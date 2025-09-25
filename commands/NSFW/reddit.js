@@ -1,5 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const axios = require('axios');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 const categories = {
   boobs: ['Boobies', 'BustyPetite', 'Stacked'],
@@ -120,12 +123,12 @@ async function getRedditImage(category = 'random', fetchRetries = 3) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('reddit')
-    .setDescription('Получить случайные NSFW изображения с Reddit по категориям.')
+    .setName(localeManager.getString('commands.reddit.name'))
+    .setDescription(localeManager.getString('commands.reddit.description'))
     .setNSFW(true)
     .addStringOption(option =>
-      option.setName('category')
-        .setDescription('Категория контента для поиска.')
+      option.setName(localeManager.getString('commands.reddit.options.category.name'))
+        .setDescription(localeManager.getString('commands.reddit.options.category.description'))
         .setRequired(false)
         .addChoices(...Object.keys(categories).map(cat => ({
           name: cat,

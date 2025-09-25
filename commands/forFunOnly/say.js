@@ -5,27 +5,27 @@ const config = require('../../config.json');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('say')
-    .setDescription()
-    .setDescriptionLocalizations()
+    .setDescription('someкостыль_69')
+    
     .addStringOption(opt =>
       opt
         .setName('text')
-        .setDescription()
-        .setDescriptionLocalizations()
+        .setDescription('someкостыль_69')
+        
         .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
         .setName('image')
-        .setDescription()
-        .setDescriptionLocalizations()
+        .setDescription('someкостыль_69')
+        
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
         .setName('reply_to')
-        .setDescription()
-        .setDescriptionLocalizations()
+        .setDescription('someкостыль_69')
+        
         .setRequired(false)
     ),
 

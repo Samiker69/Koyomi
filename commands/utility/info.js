@@ -1,4 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 const statusMap = {
   online: 'В сети',
@@ -10,23 +13,23 @@ const statusMap = {
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName('info')
-    .setDescription('Команды для получения информации')
+    .setName(localeManager.getString('commands.info.name'))
+    .setDescription(localeManager.getString('commands.info.description'))
     .addSubcommand(sub =>
       sub
-        .setName('userinfo')
-        .setDescription('Информация о пользователе')
+        .setName(localeManager.getString('commands.info.userinfo.name'))
+        .setDescription(localeManager.getString('commands.info.userinfo.description'))
         .addUserOption(opt =>
           opt
-            .setName('target')
-            .setDescription('Пользователь (необязательно)')
+            .setName(localeManager.getString('commands.info.userinfo.options.target.name'))
+            .setDescription(localeManager.getString('commands.info.userinfo.options.target.description'))
             .setRequired(false)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName('serverinfo')
-        .setDescription('Информация о сервере')
+        .setName(localeManager.getString('commands.info.serverinfo.name'))
+        .setDescription(localeManager.getString('commands.info.serverinfo.description'))
     ),
 
   async execute(interaction) {

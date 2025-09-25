@@ -5,67 +5,69 @@ const {
     MessageFlags
 } = require('discord.js');
 const TagsDB = require('../../functions/db/tags');
+const LocaleManager = require('../../locales/localesManager');
 
-const tags = new TagsDB()
+const tags = new TagsDB();
+const localeManager = new LocaleManager();
   
   module.exports = {
     data: new SlashCommandBuilder()
-      .setName('tag')
-      .setDescription('Управление тегами (мини-справочник)')
+      .setName(localeManager.getString('commands.tag.name'))
+      .setDescription(localeManager.getString('commands.tag.description'))
       .addSubcommand(sub =>
         sub
-          .setName('add')
-          .setDescription('Создать новый тег')
+          .setName(localeManager.getString('commands.tag.add.name'))
+          .setDescription(localeManager.getString('commands.tag.add.description'))
           .addStringOption(o =>
-            o.setName('name')
-             .setDescription('Уникальное имя тега')
+            o.setName(localeManager.getString('commands.tag.add.options.name.name'))
+             .setDescription(localeManager.getString('commands.tag.add.options.name.description'))
              .setRequired(true)
           )
           .addStringOption(o =>
-            o.setName('content')
-             .setDescription('Содержимое тега')
+            o.setName(localeManager.getString('commands.tag.add.options.content.name'))
+             .setDescription(localeManager.getString('commands.tag.add.options.content.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName('remove')
-          .setDescription('Удалить существующий тег')
+          .setName(localeManager.getString('commands.tag.remove.name'))
+          .setDescription(localeManager.getString('commands.tag.remove.description'))
           .addStringOption(o =>
-            o.setName('name')
-             .setDescription('Имя тега для удаления')
+            o.setName(localeManager.getString('commands.tag.remove.options.name.name'))
+             .setDescription(localeManager.getString('commands.tag.remove.options.name.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName('edit')
-          .setDescription('Изменить содержимое тега')
+          .setName(localeManager.getString('commands.tag.edit.name'))
+          .setDescription(localeManager.getString('commands.tag.edit.description'))
           .addStringOption(o =>
-            o.setName('name')
-             .setDescription('Имя тега для редактирования')
+            o.setName(localeManager.getString('commands.tag.edit.options.name.name'))
+             .setDescription(localeManager.getString('commands.tag.edit.options.name.description'))
              .setRequired(true)
           )
           .addStringOption(o =>
-            o.setName('content')
-             .setDescription('Новое содержимое тега')
-             .setRequired(true)
-          )
-      )
-      .addSubcommand(sub =>
-        sub
-          .setName('get')
-          .setDescription('Показать содержимое тега')
-          .addStringOption(o =>
-            o.setName('name')
-             .setDescription('Имя тега')
+            o.setName(localeManager.getString('commands.tag.edit.options.content.name'))
+             .setDescription(localeManager.getString('commands.tag.edit.options.content.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName('list')
-          .setDescription('Показать все теги сервера')
+          .setName(localeManager.getString('commands.tag.get.name'))
+          .setDescription(localeManager.getString('commands.tag.get.description'))
+          .addStringOption(o =>
+            o.setName(localeManager.getString('commands.tag.get.options.name.name'))
+             .setDescription(localeManager.getString('commands.tag.get.options.name.description'))
+             .setRequired(true)
+          )
+      )
+      .addSubcommand(sub =>
+        sub
+          .setName(localeManager.getString('commands.tag.list.name'))
+          .setDescription(localeManager.getString('commands.tag.list.description'))
       )
       .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
   
@@ -192,4 +194,3 @@ const tags = new TagsDB()
       }
     }
   };
-  

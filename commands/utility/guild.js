@@ -1,52 +1,60 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const { bot_log_channel } = require('../../config.json')
+const { bot_log_channel } = require('../../config.json');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 const data = new SlashCommandBuilder()
-		.setName('guild')
-		.setDescription('guild admin command')
+		.setName(localeManager.getString('commands.guild.name'))
+		.setDescription(localeManager.getString('commands.guild.description'))
+        
         .addSubcommand(subcommand =>
-            subcommand.setName('invites')
-            .setDescription('Disable or enable invites for the guild')
+            subcommand.setName(localeManager.getString('commands.guild.invites.name'))
+            .setDescription(localeManager.getString('commands.guild.invites.description'))
+            
             .addBooleanOption(option =>
-                option.setName('value')
-                .setDescription('true - disable, false - enable')
+                option.setName(localeManager.getString('commands.guild.invites.options.value.name'))
+                .setDescription(localeManager.getString('commands.guild.invites.options.value.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName('banner')
-            .setDescription('Change the server banner')
+            subcommand.setName(localeManager.getString('commands.guild.banner.name'))
+            .setDescription(localeManager.getString('commands.guild.banner.description'))
+            
             .addAttachmentOption(option =>
-                option.setName('image')
-                .setDescription('Image for server banner (server must be level 2)')
+                option.setName(localeManager.getString('commands.guild.banner.options.image.name'))
+                .setDescription(localeManager.getString('commands.guild.banner.options.image.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName('icon')
-            .setDescription('Change the server icon')
+            subcommand.setName(localeManager.getString('commands.guild.icon.name'))
+            .setDescription(localeManager.getString('commands.guild.icon.description'))
+            
             .addAttachmentOption(option =>
-                option.setName('image')
-                .setDescription('Image for server icon')
+                option.setName(localeManager.getString('commands.guild.icon.options.image.name'))
+                .setDescription(localeManager.getString('commands.guild.icon.options.image.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName('contentfilterlevel')
-            .setDescription('Change the server Content Filter Level')
+            subcommand.setName(localeManager.getString('commands.guild.contentfilterlevel.name'))
+            .setDescription(localeManager.getString('commands.guild.contentfilterlevel.description'))
+            
             .addStringOption(option =>
-                option.setName('value')
-                .setDescription('Content Filter Level')
+                option.setName(localeManager.getString('commands.guild.contentfilterlevel.options.value.name'))
+                .setDescription(localeManager.getString('commands.guild.contentfilterlevel.options.value.description'))
                 .addChoices(
-                    { name: 'Disabled', value: '0' },
-                    { name: 'No role user', value: '1' },
-                    { name: 'All member', value: '2' },
+                    { name: localeManager.getString('commands.guild.contentfilterlevel.options.value.choices.disabled'), value: '0' },
+                    { name: localeManager.getString('commands.guild.contentfilterlevel.options.value.choices.noroleuser'), value: '1' },
+                    { name: localeManager.getString('commands.guild.contentfilterlevel.options.value.choices.allmember'), value: '2' },
                 )
                 .setRequired(true)
             )
@@ -54,55 +62,60 @@ const data = new SlashCommandBuilder()
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName('name')
-            .setDescription('Change the server name')
+            subcommand.setName(localeManager.getString('commands.guild.name_subcommand.name'))
+            .setDescription(localeManager.getString('commands.guild.name_subcommand.description'))
+            
             .addStringOption(option =>
-                option.setName('text')
-                .setDescription('Name for the server')
+                option.setName(localeManager.getString('commands.guild.name_subcommand.options.text.name'))
+                .setDescription(localeManager.getString('commands.guild.name_subcommand.options.text.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName('rulechannel')
-            .setDescription('Change the server rule channel')
+            subcommand.setName(localeManager.getString('commands.guild.rulechannel.name'))
+            .setDescription(localeManager.getString('commands.guild.rulechannel.description'))
+            
             .addChannelOption(option =>
-                option.setName('input')
-                .setDescription('Channel for rules')
+                option.setName(localeManager.getString('commands.guild.rulechannel.options.input.name'))
+                .setDescription(localeManager.getString('commands.guild.rulechannel.options.input.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName('safetyalerts')
-            .setDescription('Change the server safety alerts channel')
+            subcommand.setName(localeManager.getString('commands.guild.safetyalerts.name'))
+            .setDescription(localeManager.getString('commands.guild.safetyalerts.description'))
+            
             .addChannelOption(option =>
-                option.setName('input')
-                .setDescription('Channel for safety alerts')
+                option.setName(localeManager.getString('commands.guild.safetyalerts.options.input.name'))
+                .setDescription(localeManager.getString('commands.guild.safetyalerts.options.input.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName('systemchannel')
-            .setDescription('Change the server system channel')
+            subcommand.setName(localeManager.getString('commands.guild.systemchannel.name'))
+            .setDescription(localeManager.getString('commands.guild.systemchannel.description'))
+            
             .addChannelOption(option =>
-                option.setName('input')
-                .setDescription('Channel for system messages')
+                option.setName(localeManager.getString('commands.guild.systemchannel.options.input.name'))
+                .setDescription(localeManager.getString('commands.guild.systemchannel.options.input.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName('verificationlevel')
-            .setDescription('Change the server verification level')
+            subcommand.setName(localeManager.getString('commands.guild.verificationlevel.name'))
+            .setDescription(localeManager.getString('commands.guild.verificationlevel.description'))
+            
             .addNumberOption(option =>
-                option.setName('input')
-                .setDescription('Level from 0 to 4')
+                option.setName(localeManager.getString('commands.guild.verificationlevel.options.input.name'))
+                .setDescription(localeManager.getString('commands.guild.verificationlevel.options.input.description'))
                 .setMaxValue(4)
                 .setMinValue(0)
                 .setRequired(true)

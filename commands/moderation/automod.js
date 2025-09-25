@@ -15,6 +15,9 @@ const {
     AutoModerationRuleEventType
 } = require('discord.js');
 
+const LocaleManager = require('../../locales/localesManager');
+const localeManager = new LocaleManager();
+
 function parseMentionString(inputString) {
     if (!inputString) return [];
     const ids = [];
@@ -52,176 +55,176 @@ async function fetchRuleById(interaction, ruleId) {
 
 
 const data = new SlashCommandBuilder()
-    .setName('automod-native')
-    .setDescription('Управление встроенными правилами автомодерации Discord')
+    .setName(localeManager.getString('commands.automod-native.name'))
+    .setDescription(localeManager.getString('commands.automod-native.description'))
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
     .addSubcommand(subcommand =>
-        subcommand.setName('add-keyword')
-            .setDescription('Добавляет новое правило фильтрации слов для нативного Автомода')
+        subcommand.setName(localeManager.getString('commands.automod-native.add-keyword.name'))
+            .setDescription(localeManager.getString('commands.automod-native.add-keyword.description'))
             .addStringOption(option =>
-                option.setName('name')
-                    .setDescription('Название правила')
+                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.name.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.name.description'))
                     .setRequired(true))
             .addStringOption(option =>
-                option.setName('keywords')
-                    .setDescription('Слова или фразы для блокировки (через запятую). Можно использовать *.')
+                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.keywords.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.keywords.description'))
                     .setRequired(true))
             .addStringOption(option =>
-                option.setName('action')
-                    .setDescription('Действие при срабатывании правила')
+                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.action.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.action.description'))
                     .setRequired(true)
                     .addChoices(
-                        { name: 'Блокировать сообщение', value: 'block_message' },
-                        { name: 'Таймаут пользователя', value: 'timeout' }
+                        { name: localeManager.getString('commands.automod-native.add-keyword.options.action.choices.block_message'), value: 'block_message' },
+                        { name: localeManager.getString('commands.automod-native.add-keyword.options.action.choices.timeout'), value: 'timeout' }
                     ))
             .addIntegerOption(option =>
-                option.setName('timeout_duration')
-                    .setDescription('Длительность таймаута в секундах (требуется для действия "Таймаут")')
+                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.timeout_duration.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.timeout_duration.description'))
                     .setRequired(false))
             .addStringOption(option =>
-                option.setName('block_message')
-                    .setDescription('Сообщение при блокировке (для действия "Блокировать сообщение")')
+                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.block_message.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.block_message.description'))
                     .setRequired(false))
             .addStringOption(option =>
-                 option.setName('exempt_roles')
-                    .setDescription('Роли, для которых правило не применяется (упоминания или ID через запятую)')
+                 option.setName(localeManager.getString('commands.automod-native.add-keyword.options.exempt_roles.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.exempt_roles.description'))
                     .setRequired(false))
             .addStringOption(option =>
-                 option.setName('exempt_channels')
-                    .setDescription('Каналы, в которых правило не применяется (упоминания или ID через запятую)')
+                 option.setName(localeManager.getString('commands.automod-native.add-keyword.options.exempt_channels.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.exempt_channels.description'))
                     .setRequired(false))
            )
 
     .addSubcommand(subcommand =>
-        subcommand.setName('edit')
-            .setDescription('Редактирует существующее правило нативного Автомода по его ID (выберите из списка)')
+        subcommand.setName(localeManager.getString('commands.automod-native.edit.name'))
+            .setDescription(localeManager.getString('commands.automod-native.edit.description'))
             .addStringOption(option =>
-                option.setName('rule_id')
-                    .setDescription('Выберите правило для редактирования по ID или названию')
+                option.setName(localeManager.getString('commands.automod-native.edit.options.rule_id.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.rule_id.description'))
                     .setRequired(true)
                     .setAutocomplete(true))
             .addStringOption(option =>
-                option.setName('name')
-                    .setDescription('Новое название правила'))
+                option.setName(localeManager.getString('commands.automod-native.edit.options.name.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.name.description')))
             .addStringOption(option =>
-                option.setName('keywords')
-                    .setDescription('Новые слова или фразы (через запятую). Можно использовать *.'))
+                option.setName(localeManager.getString('commands.automod-native.edit.options.keywords.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.keywords.description')))
             .addStringOption(option =>
-                option.setName('action')
-                    .setDescription('Новое действие при срабатывании правила')
+                option.setName(localeManager.getString('commands.automod-native.edit.options.action.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.action.description'))
                     .addChoices(
-                        { name: 'Блокировать сообщение', value: 'block_message' },
-                        { name: 'Таймаут пользователя', value: 'timeout' }
+                        { name: localeManager.getString('commands.automod-native.edit.options.action.choices.block_message'), value: 'block_message' },
+                        { name: localeManager.getString('commands.automod-native.edit.options.action.choices.timeout'), value: 'timeout' }
                     ))
             .addIntegerOption(option =>
-                option.setName('timeout_duration')
-                    .setDescription('Новая длительность таймаута в секундах (требуется, если новое действие "Таймаут")'))
+                option.setName(localeManager.getString('commands.automod-native.edit.options.timeout_duration.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.timeout_duration.description')))
             .addStringOption(option =>
-                option.setName('block_message')
-                    .setDescription('Новое сообщение при блокировке (требуется, если новое действие "Блокировать сообщение")'))
+                option.setName(localeManager.getString('commands.automod-native.edit.options.block_message.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.block_message.description')))
             .addStringOption(option =>
-                 option.setName('exempt_roles')
-                    .setDescription('Новые роли, для которых правило не применяется (упоминания или ID через запятую)'))
+                 option.setName(localeManager.getString('commands.automod-native.edit.options.exempt_roles.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.exempt_roles.description')))
             .addStringOption(option =>
-                 option.setName('exempt_channels')
-                    .setDescription('Новые каналы, в которых правило не применяется (упоминания или ID через запятия)'))
+                 option.setName(localeManager.getString('commands.automod-native.edit.options.exempt_channels.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.exempt_channels.description')))
             .addBooleanOption(option =>
-                option.setName('enabled')
-                    .setDescription('Включить или отключить правило'))
+                option.setName(localeManager.getString('commands.automod-native.edit.options.enabled.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.edit.options.enabled.description')))
            )
 
     .addSubcommand(subcommand =>
-        subcommand.setName('remove')
-            .setDescription('Удаляет правило нативного Автомода по его ID (выберите из списка)')
+        subcommand.setName(localeManager.getString('commands.automod-native.remove.name'))
+            .setDescription(localeManager.getString('commands.automod-native.remove.description'))
             .addStringOption(option =>
-                option.setName('rule_id')
-                    .setDescription('Выберите правило для удаления по ID или названию')
+                option.setName(localeManager.getString('commands.automod-native.remove.options.rule_id.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.remove.options.rule_id.description'))
                     .setRequired(true)
                     .setAutocomplete(true)))
 
     .addSubcommand(subcommand =>
-        subcommand.setName('list')
-            .setDescription('Показывает все правила нативного Автомода на сервере'))
+        subcommand.setName(localeManager.getString('commands.automod-native.list.name'))
+            .setDescription(localeManager.getString('commands.automod-native.list.description')))
 
      .addSubcommand(subcommand =>
-         subcommand.setName('view')
-             .setDescription('Показывает подробности одного правила нативного Автомода по его ID (выберите из списка)')
+         subcommand.setName(localeManager.getString('commands.automod-native.view.name'))
+             .setDescription(localeManager.getString('commands.automod-native.view.description'))
              .addStringOption(option =>
-                 option.setName('rule_id')
-                     .setDescription('Выберите правило для просмотра')
+                 option.setName(localeManager.getString('commands.automod-native.view.options.rule_id.name'))
+                     .setDescription(localeManager.getString('commands.automod-native.view.options.rule_id.description'))
                      .setRequired(true)
                      .setAutocomplete(true)))
 
     .addSubcommand(subcommand =>
-        subcommand.setName('toggle')
-            .setDescription('Включает или отключает правило нативного Автомода по его ID (выберите из списка)')
+        subcommand.setName(localeManager.getString('commands.automod-native.toggle.name'))
+            .setDescription(localeManager.getString('commands.automod-native.toggle.description'))
             .addStringOption(option =>
-                option.setName('rule_id')
-                    .setDescription('Выберите правило для переключения статуса')
+                option.setName(localeManager.getString('commands.automod-native.toggle.options.rule_id.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.toggle.options.rule_id.description'))
                     .setRequired(true)
                     .setAutocomplete(true)))
 
     .addSubcommandGroup(subcommandGroup =>
-        subcommandGroup.setName('exempt')
-            .setDescription('Управление исключениями для правил Автомода')
+        subcommandGroup.setName(localeManager.getString('commands.automod-native.exempt.name'))
+            .setDescription(localeManager.getString('commands.automod-native.exempt.description'))
             .addSubcommand(subcommand =>
-                subcommand.setName('add-role')
-                    .setDescription('Добавить роль в список исключений правила')
+                subcommand.setName(localeManager.getString('commands.automod-native.exempt.add-role.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.exempt.add-role.description'))
                     .addStringOption(option =>
-                        option.setName('rule_id')
-                            .setDescription('Выберите правило для изменения')
+                        option.setName(localeManager.getString('commands.automod-native.exempt.add-role.options.rule_id.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.exempt.add-role.options.rule_id.description'))
                             .setRequired(true)
                             .setAutocomplete(true))
                     .addRoleOption(option =>
-                        option.setName('role')
-                            .setDescription('Роль, которую нужно добавить в исключения')
+                        option.setName(localeManager.getString('commands.automod-native.exempt.add-role.options.role.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.exempt.add-role.options.role.description'))
                             .setRequired(true)))
              .addSubcommand(subcommand =>
-                subcommand.setName('remove-role')
-                    .setDescription('Удалить роль из списка исключений правила')
+                subcommand.setName(localeManager.getString('commands.automod-native.exempt.remove-role.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.exempt.remove-role.description'))
                     .addStringOption(option =>
-                        option.setName('rule_id')
-                            .setDescription('Выберите правило для изменения')
+                        option.setName(localeManager.getString('commands.automod-native.exempt.remove-role.options.rule_id.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.exempt.remove-role.options.rule_id.description'))
                             .setRequired(true)
                             .setAutocomplete(true))
                     .addRoleOption(option =>
-                        option.setName('role')
-                            .setDescription('Роль, которую нужно удалить из исключений')
+                        option.setName(localeManager.getString('commands.automod-native.exempt.remove-role.options.role.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.exempt.remove-role.options.role.description'))
                             .setRequired(true)))
             .addSubcommand(subcommand =>
-                subcommand.setName('add-channel')
-                    .setDescription('Добавить канал в список исключений правила')
+                subcommand.setName(localeManager.getString('commands.automod-native.exempt.add-channel.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.exempt.add-channel.description'))
                     .addStringOption(option =>
-                        option.setName('rule_id')
-                            .setDescription('Выберите правило для изменения')
+                        option.setName(localeManager.getString('commands.automod-native.exempt.add-channel.options.rule_id.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.exempt.add-channel.options.rule_id.description'))
                             .setRequired(true)
                             .setAutocomplete(true))
                     .addChannelOption(option =>
-                        option.setName('channel')
-                            .setDescription('Канал, который нужно добавить в исключения')
+                        option.setName(localeManager.getString('commands.automod-native.exempt.add-channel.options.channel.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.exempt.add-channel.options.channel.description'))
                             .setRequired(true)
                              .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
                             ))
              .addSubcommand(subcommand =>
-                subcommand.setName('remove-channel')
-                    .setDescription('Удалить канал из списка исключений правила')
+                subcommand.setName(localeManager.getString('commands.automod-native.exempt.remove-channel.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.exempt.remove-channel.description'))
                     .addStringOption(option =>
-                        option.setName('rule_id')
-                            .setDescription('Выберите правило для изменения')
+                        option.setName(localeManager.getString('commands.automod-native.exempt.remove-channel.options.rule_id.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.exempt.remove-channel.options.rule_id.description'))
                             .setRequired(true)
                             .setAutocomplete(true))
                     .addChannelOption(option =>
-                        option.setName('channel')
-                            .setDescription('Канал, который нужно удалить из исключений')
+                        option.setName(localeManager.getString('commands.automod-native.exempt.remove-channel.options.channel.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.exempt.remove-channel.options.channel.description'))
                             .setRequired(true)
                             .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
                             ))
            )
 
     .addSubcommand(subcommand =>
-        subcommand.setName('clear-all')
-            .setDescription('Удаляет ВСЕ правила нативного Автомода на сервере (требует подтверждения)'));
+        subcommand.setName(localeManager.getString('commands.automod-native.clear-all.name'))
+            .setDescription(localeManager.getString('commands.automod-native.clear-all.description')));
 
 
 module.exports = {

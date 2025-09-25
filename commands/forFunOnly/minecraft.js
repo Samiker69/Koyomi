@@ -6,13 +6,13 @@ module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('minecraft')
-    .setDescription()
-    .setDescriptionLocalizations()
+    .setDescription('someкостыль_69')
+    
     .addStringOption(opt =>
       opt
         .setName('player')
-        .setDescription()
-        .setDescriptionLocalizations()
+        .setDescription('someкостыль_69')
+        
         .setRequired(true)
     ),
 

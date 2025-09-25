@@ -29,7 +29,7 @@
     "@google/genai": "^1.14.0",
     "are-we-there-yet": "^4.0.2",
     "axios": "^1.11.0",
-    "better-sqlite3": "^11.10.0",
+    "better-sqlite3": "^12.4.1",
     "booru": "^2.8.1",
     "bufferutil": "^4.0.9",
     "canvas": "^3.1.2",

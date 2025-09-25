@@ -1,57 +1,54 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const ModerationDB = require('../../functions/db/case');
-const db = new ModerationDB();
+const LocaleManager = require('../../locales/localesManager');
 
+const db = new ModerationDB();
+const localeManager = new LocaleManager();
 
 const data = new SlashCommandBuilder()
-    .setName('case')
-    .setDescription()
+    .setName(localeManager.getString('commands.case.name'))
+    .setDescription(localeManager.getString('commands.case.description'))
     .addSubcommand(sub =>
-        sub.setName('remove')
-        .setDescription("Удаляет кейс")
+        sub.setName(localeManager.getString('commands.case.remove.name'))
+        .setDescription(localeManager.getString('commands.case.remove.description'))
         .addIntegerOption(opt => 
-            opt.setName('num')
-            .setDescription()
-            .setDescriptionLocalizations()
+            opt.setName(localeManager.getString('commands.case.remove.options.num.name'))
+            .setDescription(localeManager.getString('commands.case.remove.options.num.description'))
             .setMinValue(0)
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName('reason')
-        .setDescription("Сменить причину кейса")
+        sub.setName(localeManager.getString('commands.case.reason.name'))
+        .setDescription(localeManager.getString('commands.case.reason.description'))
         .addIntegerOption(opt => 
-            opt.setName('num')
-            .setDescription()
-            .setDescriptionLocalizations()
+            opt.setName(localeManager.getString('commands.case.reason.options.num.name'))
+            .setDescription(localeManager.getString('commands.case.reason.options.num.description'))
             .setMinValue(0)
             .setRequired(true)
         )
         .addStringOption(opt =>
-            opt.setName('reason')
-            .setDescription()
-            .setDescriptionLocalizations()
+            opt.setName(localeManager.getString('commands.case.reason.options.reason.name'))
+            .setDescription(localeManager.getString('commands.case.reason.options.reason.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName('view')
-        .setDescription("Показывает указанный кейс")
+        sub.setName(localeManager.getString('commands.case.view.name'))
+        .setDescription(localeManager.getString('commands.case.view.description'))
         .addIntegerOption(opt => 
-            opt.setName('num')
-            .setDescription()
-            .setDescriptionLocalizations()
+            opt.setName(localeManager.getString('commands.case.view.options.num.name'))
+            .setDescription(localeManager.getString('commands.case.view.options.num.description'))
             .setMinValue(0)
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName('user_punishments')
-        .setDescription('Проверить историю наказаний пользователя')
+        sub.setName(localeManager.getString('commands.case.user_punishments.name'))
+        .setDescription(localeManager.getString('commands.case.user_punishments.description'))
         .addUserOption(option =>
-            option.setName('user')
-                .setDescription()
-                .setDescriptionLocalizations()
+            option.setName(localeManager.getString('commands.case.user_punishments.options.user.name'))
+                .setDescription(localeManager.getString('commands.case.user_punishments.options.user.description'))
                 .setRequired(true)
         )
     ).setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)

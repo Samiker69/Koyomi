@@ -1,27 +1,29 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const starboardDB = require('../../functions/db/starboard');
+const LocaleManager = require('../../locales/localesManager');
 
 const db = new starboardDB();
+const localeManager = new LocaleManager();
 
 module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName('starboard')
-		.setDescription('Изменить настройки бота')
+		.setName(localeManager.getString('commands.starboard.name'))
+		.setDescription(localeManager.getString('commands.starboard.description'))
         .addSubcommand(sub => 
-            sub.setName('settings')
-            .setDescription('Настройки для доски звёзд')
+            sub.setName(localeManager.getString('commands.starboard.settings.name'))
+            .setDescription(localeManager.getString('commands.starboard.settings.description'))
             .addChannelOption(opt =>
-                opt.setName('starboard-channel')
-                .setDescription("Канал для доски звёзд")
+                opt.setName(localeManager.getString('commands.starboard.settings.options.starboard-channel.name'))
+                .setDescription(localeManager.getString('commands.starboard.settings.options.starboard-channel.description'))
             )
             .addBooleanOption(opt =>
-                opt.setName('enabled')
-                .setDescription("Использовать доску звёзд?")
+                opt.setName(localeManager.getString('commands.starboard.settings.options.enabled.name'))
+                .setDescription(localeManager.getString('commands.starboard.settings.options.enabled.description'))
             )
             .addIntegerOption(opt =>
-                opt.setName('min-reactions')
-                .setDescription("Минимальное кол-во звёзд для доски звёзд")
+                opt.setName(localeManager.getString('commands.starboard.settings.options.min-reactions.name'))
+                .setDescription(localeManager.getString('commands.starboard.settings.options.min-reactions.description'))
                 .setMinValue(1)
             )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)

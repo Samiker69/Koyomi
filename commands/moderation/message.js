@@ -1,51 +1,53 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
+const LocaleManager = require('../../locales/localesManager');
 
+const localeManager = new LocaleManager();
 
 const data = new SlashCommandBuilder()
-    .setName('message')
-    .setDescription()
+    .setName(localeManager.getString('commands.message.name'))
+    .setDescription(localeManager.getString('commands.message.description'))
 
     .addSubcommand(subcommand =>
-        subcommand.setName('clear')
-        .setDescription('Удаляет указанное количество сообщений от пользователей')
+        subcommand.setName(localeManager.getString('commands.message.clear.name'))
+        .setDescription(localeManager.getString('commands.message.clear.description'))
         .addIntegerOption(option => 
-            option.setName('amount')
-                .setDescription()
-                .setDescriptionLocalizations()
+            option.setName(localeManager.getString('commands.message.clear.options.amount.name'))
+                .setDescription(localeManager.getString('commands.message.clear.options.amount.description'))
+                
                 .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     .addSubcommand(subcommand =>
-        subcommand.setName('pin')
-        .setDescription('Закрепить сообщение')
+        subcommand.setName(localeManager.getString('commands.message.pin.name'))
+        .setDescription(localeManager.getString('commands.message.pin.description'))
         .addStringOption(option => 
-            option.setName('id')
-            .setDescription()
-            .setDescriptionLocalizations()
+            option.setName(localeManager.getString('commands.message.pin.options.id.name'))
+            .setDescription(localeManager.getString('commands.message.pin.options.id.description'))
+            
             .setRequired(true)))
 
     .addSubcommand(subcommand =>
-        subcommand.setName('unpin')
-        .setDescription('Открепить сообщение')
+        subcommand.setName(localeManager.getString('commands.message.unpin.name'))
+        .setDescription(localeManager.getString('commands.message.unpin.description'))
         .addStringOption(option =>
-            option.setName('id')
-            .setDescription()
-            .setDescriptionLocalizations()
+            option.setName(localeManager.getString('commands.message.unpin.options.id.name'))
+            .setDescription(localeManager.getString('commands.message.unpin.options.id.description'))
+            
             .setRequired(true)))
 
     .addSubcommand(subcommand => 
-        subcommand.setName('purge')
-        .setDescription('Удаляет указанное количество сообщений от конкретного пользователя')
+        subcommand.setName(localeManager.getString('commands.message.purge.name'))
+        .setDescription(localeManager.getString('commands.message.purge.description'))
         .addUserOption(option =>
-          option.setName('target')
-            .setDescription()
-            .setDescriptionLocalizations()
+          option.setName(localeManager.getString('commands.message.purge.options.target.name'))
+            .setDescription(localeManager.getString('commands.message.purge.options.target.description'))
+            
             .setRequired(true)
         )
         .addIntegerOption(option =>
-          option.setName('amount')
-            .setDescription()
-            .setDescriptionLocalizations()
+          option.setName(localeManager.getString('commands.message.purge.options.amount.name'))
+            .setDescription(localeManager.getString('commands.message.purge.options.amount.description'))
+            
             .setRequired(true)
             .setMinValue(1)
             .setMaxValue(100)

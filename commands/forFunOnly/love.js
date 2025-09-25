@@ -5,20 +5,20 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('love')
-        .setDescription()
-        .setDescriptionLocalizations()
+        .setDescription('someкостыль_69')
+        
         .addUserOption(opt =>
             opt
             .setName('user1')
-            .setDescription()
-            .setDescriptionLocalizations()
+            .setDescription('someкостыль_69')
+            
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
             .setName('user2')
-            .setDescription()
-            .setDescriptionLocalizations()
+            .setDescription('someкостыль_69')
+            
             .setRequired(true)
         ),
 

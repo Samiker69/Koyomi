@@ -7,20 +7,20 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
+const LocaleManager = require('../../locales/localesManager');
 
 const activeGames = new Set();
+const localeManager = new LocaleManager();
 
 
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
-        .setName('tictactoe')
-        .setDescription()
-        .setDescriptionLocalizations()
+        .setName(localeManager.getString('commands.tictactoe.name'))
+        .setDescription(localeManager.getString('commands.tictactoe.description'))
         .addUserOption(opt =>
-            opt.setName('opponent')
-                .setDescription()
-                .setDescriptionLocalizations()
+            opt.setName(localeManager.getString('commands.tictactoe.options.opponent.name'))
+                .setDescription(localeManager.getString('commands.tictactoe.options.opponent.description'))
                 .setRequired(true)
         ),
 

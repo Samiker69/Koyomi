@@ -1,11 +1,14 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { version } = require('../../package.json')
+const { version } = require('../../package.json');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 module.exports = {
   cooldown: 10,
   data: new SlashCommandBuilder()
-    .setName('botstatus')
-    .setDescription('Показывает статус бота'),
+    .setName(localeManager.getString('commands.botstatus.name'))
+    .setDescription(localeManager.getString('commands.botstatus.description')),
   async execute(interaction) {
     await interaction.reply({ content: 'Подождите...' });
 

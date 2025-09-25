@@ -426,10 +426,12 @@
         },
         "tictactoe": {
             "name": "tictactoe",
+            "description": "Play Tic-Tac-Toe with another user",
             "response": {},
             "options": {
                 "opponent": {
-                    "name": "opponent"
+                    "name": "opponent",
+                    "description": "The user you want to play against"
                 }
             }
         },
@@ -600,7 +602,12 @@
                         },
                         "action": {
                             "description": "Action when the rule is triggered",
-                            "name": "action"
+                            "name": "action",
+                            "choices": {
+                                "Block Message": "Block Message",
+                                "send_alert_to_modss": "Send Alert to Mods",
+                                "timeout": "Timeout"
+                            }
                         },
                         "keywords": {
                             "description": "Words or phrases to block (comma-separated). Wildcards (*) can be used.",

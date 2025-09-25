@@ -7,20 +7,19 @@ const fs = require('fs').promises*/
 
 const data = new SlashCommandBuilder()
     .setName('eval')
-    .setDescription()
+    .setDescription('some fun commands for bot owner only')
         .addSubcommand(subcommand =>
             subcommand.setName('presence')
             .setDescription("Устанавливает статус бота")
-            //.setDescriptionLocalizations()
             .addStringOption(option => 
                 option.setName('name-activity')
-                .setDescription()
-                .setDescriptionLocalizations()
+                .setDescription('someкостыль_69')
+                
             )
             .addStringOption(option => 
                 option.setName('status')
-                .setDescription()
-                .setDescriptionLocalizations()
+                .setDescription('someкостыль_69')
+                
                 .addChoices(
                     {name: 'online', value: PresenceUpdateStatus.Online},
                     {name: 'idle', value: PresenceUpdateStatus.Idle},
@@ -30,8 +29,8 @@ const data = new SlashCommandBuilder()
             )
             .addIntegerOption(option =>
                 option.setName('activity')
-                .setDescription()
-                .setDescriptionLocalizations()
+                .setDescription('someкостыль_69')
+                
                 .addChoices(
                     {name: 'Wathing', value: ActivityType.Watching }, 
                     {name: 'Listening', value: ActivityType.Listening },
@@ -47,8 +46,8 @@ const data = new SlashCommandBuilder()
             .setDescription("Сменить аватар бота")
             .addAttachmentOption(option =>
                 option.setName('file')
-                .setDescription()
-                .setDescriptionLocalizations()
+                .setDescription('someкостыль_69')
+                
                 .setRequired(true)
             )
         )
@@ -57,8 +56,8 @@ const data = new SlashCommandBuilder()
             .setDescription("Сменить баннер бота")
             .addAttachmentOption(option =>
                 option.setName('file')
-                .setDescription()
-                .setDescriptionLocalizations()
+                .setDescription('someкостыль_69')
+                
                 .setRequired(true)
             )
         )
