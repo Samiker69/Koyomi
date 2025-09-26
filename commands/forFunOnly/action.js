@@ -37,7 +37,7 @@ module.exports = {
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.slapslap.name'))
+      sub.setName(localeManager.getString('commands.action.slap.name'))
         .setDescription(localeManager.getString('commands.action.options.pat.description'))
         .addUserOption(opt =>
           opt.setName(localeManager.getString('commands.action.options.pat.user.name')).setDescription(localeManager.getString('commands.action.options.pat.user.description')).setRequired(true)
