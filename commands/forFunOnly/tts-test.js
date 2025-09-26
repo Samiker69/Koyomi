@@ -3,28 +3,31 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, entersState, V
 const { SlashCommandBuilder, MessageFlags, AttachmentBuilder } = require('discord.js');
 const axios = require('axios');
 const { Readable } = require('stream');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('say-tts')
-        .setDescription('Бот озвучит ваш текст в голосовом чате или отправит в чат.')
+        .setName(localeManager.getString('commands.say_tts.name'))
+        .setDescription(localeManager.getString('commands.say_tts.description'))
         .addBooleanOption(option =>
-            option.setName('voice-channel')
-                .setDescription('При true бот подключится к вашему войс каналу, а при false отправит аудио в чат.')
+            option.setName(localeManager.getString('commands.say_tts.voice_channel.name'))
+                .setDescription(localeManager.getString('commands.say_tts.voice_channel.description'))
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName('text')
-                .setDescription('Текст для озвучивания')
+            option.setName(localeManager.getString('commands.say_tts.text.name'))
+                .setDescription(localeManager.getString('commands.say_tts.text.description'))
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName('lang')
-                .setDescription('Язык генерации. Он должен совпадать с языком текста!')
+            option.setName(localeManager.getString('commands.say_tts.lang.name'))
+                .setDescription(localeManager.getString('commands.say_tts.lang.description'))
         )
         .addNumberOption(option =>
-            option.setName('speed')
-                .setDescription('Скорость речи (от 0.1 до 2)')
+            option.setName(localeManager.getString('commands.say_tts.speed.name'))
+                .setDescription(localeManager.getString('commands.say_tts.speed.description'))
                 .setMinValue(0.1)
                 .setMaxValue(2)
         ),
@@ -59,7 +62,7 @@ module.exports = {
                 const voiceChannel = member.voice.channel;
 
                 if (!voiceChannel) {
-                    return interaction.editReply({ content: 'Вы должны быть в голосовом канале, чтобы использовать эту команду!', flags: MessageFlags.Ephemeral });
+                    return interaction.editReply({ content: localeManager.getString('commands.say_tts.not_in_voice_channel'), flags: MessageFlags.Ephemeral });
                 }
 
                 // Подключаемся к голосовому каналу
@@ -91,7 +94,7 @@ module.exports = {
                 connection.subscribe(player);
 
                 // Отвечаем пользователю после начала воспроизведения
-                await interaction.editReply({ content: `Время генерации аудио: ${readyTime}\nВаша фраза "${text}" озвучивается!`, flags: MessageFlags.Ephemeral });
+                await interaction.editReply({ content: localeManager.getString('commands.say_tts.audio_generation_time_playing', { readyTime: readyTime, text: text }), flags: MessageFlags.Ephemeral });
 
                 // Обработчики завершения и ошибок
                 player.on('idle', () => {
@@ -101,18 +104,18 @@ module.exports = {
 
                 player.on('error', error => {
                     console.error('Ошибка при воспроизведении:', error);
-                    interaction.editReply({ content: 'Произошла ошибка при воспроизведении аудио.', flags: MessageFlags.Ephemeral });
+                    interaction.editReply({ content: localeManager.getString('commands.say_tts.playback_error'), flags: MessageFlags.Ephemeral });
                 });
 
             } else {
                 // Если voice-channel = false, отправляем аудио в чат
                 const attachment = new AttachmentBuilder(audioBuffer, { name: 'tts-output.wav' });
-                await interaction.editReply({ content: `Время генерации аудио: ${readyTime}\nВот ваш сгенерированный файл:`, files: [attachment] });
+                await interaction.editReply({ content: localeManager.getString('commands.say_tts.audio_generation_time_file', { readyTime: readyTime }), files: [attachment] });
             }
 
         } catch (error) {
             console.error('Ошибка в TTS-функции бота:', error);
-            await interaction.editReply({ content: 'Произошла ошибка при озвучивании текста.', flags: MessageFlags.Ephemeral });
+            await interaction.editReply({ content: localeManager.getString('commands.say_tts.error_speaking_text'), flags: MessageFlags.Ephemeral });
         }
     },
 };

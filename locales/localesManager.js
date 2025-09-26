@@ -8,7 +8,7 @@ class LocaleManager {
     getString(key, locale = this.defaultLocale) {
         try {
             console.log(`Fetching key: ${key} for locale: ${locale}`, this.parseLocaleString(key));
-            return this.parseLocaleString(key) || locales[this.defaultLocale][key];
+            return this.parseLocaleString(key);
         } catch (e) {
             console.error(`Error fetching key: ${key} for locale: ${locale}`, e);
             return key;

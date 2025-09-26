@@ -1,30 +1,33 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const config = require('../../config.json');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('say')
-    .setDescription('someкостыль_69')
+    .setName(localeManager.getString('commands.say.name'))
+    .setDescription(localeManager.getString('commands.say.description'))
     
     .addStringOption(opt =>
       opt
-        .setName('text')
-        .setDescription('someкостыль_69')
+        .setName(localeManager.getString('commands.say.text.name'))
+        .setDescription(localeManager.getString('commands.say.text.description'))
         
         .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
-        .setName('image')
-        .setDescription('someкостыль_69')
+        .setName(localeManager.getString('commands.say.image.name'))
+        .setDescription(localeManager.getString('commands.say.image.description'))
         
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
-        .setName('reply_to')
-        .setDescription('someкостыль_69')
+        .setName(localeManager.getString('commands.say.reply_to.name'))
+        .setDescription(localeManager.getString('commands.say.reply_to.description'))
         
         .setRequired(false)
     ),
@@ -32,7 +35,7 @@ module.exports = {
   async execute(interaction) {
     if (!config.privateAccess.includes(interaction.user.id)) {
       return await interaction.reply({
-        content: 'У вас нет доступа к этой команде.',
+        content: localeManager.getString('commands.say.no_permissions'),
         flags: MessageFlags.Ephemeral
       });
     }
@@ -42,7 +45,7 @@ module.exports = {
     const text = interaction.options.getString('text', false);
     const image = interaction.options.getAttachment('image');
     const replyToRaw = interaction.options.getString('reply_to');
-    if (!text && !image) return await interaction.editReply({ content: "`text` или `image` должны быть заполнены!", flags: MessageFlags.Ephemeral });
+    if (!text && !image) return await interaction.editReply({ content: localeManager.getString('commands.say.text_or_image_required'), flags: MessageFlags.Ephemeral });
     let messageReference;
 
     if (replyToRaw) {
@@ -57,13 +60,13 @@ module.exports = {
     try {
       await interaction.channel.send(sendOptions);
       await interaction.editReply({
-        content: 'Сообщение успешно отправлено.',
+        content: localeManager.getString('commands.say.message_sent_success'),
         flags: MessageFlags.Ephemeral
       });
     } catch (err) {
       console.error('Error in /say:', err);
       await interaction.editReply({
-        content: 'Не удалось отправить сообщение.',
+        content: localeManager.getString('commands.say.message_sent_failure'),
         flags: MessageFlags.Ephemeral
       });
     }

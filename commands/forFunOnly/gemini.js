@@ -8,166 +8,169 @@ const ApikeyManager = require('../../lib/ApikeyManager/ApikeyManager')
 const { GoogleGenAI } = require('@google/genai');
 const GeminiDB = require('../../functions/db/gemini_settings');
 const geminiCrashHadler = require('../../functions/gemini_crash_handler');
+const LocaleManager = require('../../locales/localesManager');
+
 const db = new GeminiDB()
+const localeManager = new LocaleManager();
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-    .setName('ai')
-    .setDescription('Действия с ai')
+    .setName(localeManager.getString('commands.ai.name'))
+    .setDescription(localeManager.getString('commands.ai.description'))
     .setContexts(0,1,2)
     .addSubcommand(sub => 
-        sub.setName('ask')
-        .setDescription('Спросить gemini о чём-либо')
+        sub.setName(localeManager.getString('commands.ai.ask.name'))
+        .setDescription(localeManager.getString('commands.ai.ask.description'))
         .addStringOption(opt => 
-            opt.setName('text')
-            .setDescription('Запрос к gemini')
+            opt.setName(localeManager.getString('commands.ai.ask.text.name'))
+            .setDescription(localeManager.getString('commands.ai.ask.text.description'))
             .setRequired(true)
         )
         .addAttachmentOption(opt => 
-            opt.setName('image') 
-                .setDescription('Изображение для отправки.')
+            opt.setName(localeManager.getString('commands.ai.ask.image.name')) 
+                .setDescription(localeManager.getString('commands.ai.ask.image.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName("invisible")
-            .setDescription("Делает ответ ai невидимым")
+            opt.setName(localeManager.getString('commands.ai.ask.invisible.name'))
+            .setDescription(localeManager.getString('commands.ai.ask.invisible.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName('add-user')
-        .setDescription('Добавляет пользователя в бд, позволяя ему пользоваться командой /ai')
+        sub.setName(localeManager.getString('commands.ai.add_user.name'))
+        .setDescription(localeManager.getString('commands.ai.add_user.description'))
         .addUserOption(opt =>
-            opt.setName('user')
-            .setDescription('Пользователь')
+            opt.setName(localeManager.getString('commands.ai.add_user.user.name'))
+            .setDescription(localeManager.getString('commands.ai.add_user.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName('remove-user')
-        .setDescription('Удаляет пользователя из бд.')
+        sub.setName(localeManager.getString('commands.ai.remove_user.name'))
+        .setDescription(localeManager.getString('commands.ai.remove_user.description'))
         .addUserOption(opt =>
-            opt.setName('user')
-            .setDescription('Пользователь')
+            opt.setName(localeManager.getString('commands.ai.remove_user.user.name'))
+            .setDescription(localeManager.getString('commands.ai.remove_user.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName("settings")
-        .setDescription("Показывает ваши текущие настройки AI")
+        sub.setName(localeManager.getString('commands.ai.settings.name'))
+        .setDescription(localeManager.getString('commands.ai.settings.description'))
     )
     .addSubcommand(sub =>
-        sub.setName('edit')
-        .setDescription('Сменить настройки ai')
+        sub.setName(localeManager.getString('commands.ai.edit.name'))
+        .setDescription(localeManager.getString('commands.ai.edit.description'))
         .addStringOption(opt =>
-            opt.setName('model')
-            .setDescription('Модель для генерации')
+            opt.setName(localeManager.getString('commands.ai.edit.model.name'))
+            .setDescription(localeManager.getString('commands.ai.edit.model.description'))
         )
         .addStringOption(opt =>
-            opt.setName('system_instructions')
-            .setDescription('Системные инструкции.')
+            opt.setName(localeManager.getString('commands.ai.edit.system_instructions.name'))
+            .setDescription(localeManager.getString('commands.ai.edit.system_instructions.description'))
         )
         .addIntegerOption(opt =>
-            opt.setName('max_output_tokens')
-            .setDescription('Максимум токенов, которыми AI ответит. Если максимум меньше, чем ответила AI, то ответ обрежется!')
+            opt.setName(localeManager.getString('commands.ai.edit.max_output_tokens.name'))
+            .setDescription(localeManager.getString('commands.ai.edit.max_output_tokens.description'))
             .setMaxValue(65536)
             .setMinValue(1)
         )
         .addNumberOption(opt =>
-            opt.setName('temperature')
-            .setDescription('Регулирует случайность(креатичность ответа). 0.1 - предсказуемые, 1-2 - очень хаотичные')
+            opt.setName(localeManager.getString('commands.ai.edit.temperature.name'))
+            .setDescription(localeManager.getString('commands.ai.edit.temperature.description'))
             .setMaxValue(2)
             .setMinValue(0.1)
         )
         .addNumberOption(opt =>
-            opt.setName('top_p')
-            .setDescription('Вероятность использования токена. 0.0 - ожидаемый токен, 1 - использует все токены')
+            opt.setName(localeManager.getString('commands.ai.edit.top_p.name'))
+            .setDescription(localeManager.getString('commands.ai.edit.top_p.description'))
             .setMaxValue(1)
             .setMinValue(-1)
         )
         .addIntegerOption(opt =>
-            opt.setName('top_k')
-            .setDescription('"Словарный запас" при генерации токена. 1-5 - маленький, 50+ - разнообразный')
+            opt.setName(localeManager.getString('commands.ai.edit.top_k.name'))
+            .setDescription(localeManager.getString('commands.ai.edit.top_k.description'))
             .setMaxValue(100)
             .setMinValue(-1)
         )
         .addIntegerOption(opt =>
-            opt.setName('history_limit')
-            .setDescription('Лимит сохранения истории. 0 - без сохранения')
+            opt.setName(localeManager.getString('commands.ai.edit.history_limit.name'))
+            .setDescription(localeManager.getString('commands.ai.edit.history_limit.description'))
             .setMaxValue(500)
             .setMinValue(0)
         )
     )
     .addSubcommand(sub =>
-        sub.setName('edit_safety')
-        .setDescription('Изменение настроек безопасности модели')
+        sub.setName(localeManager.getString('commands.ai.edit_safety.name'))
+        .setDescription(localeManager.getString('commands.ai.edit_safety.description'))
         .addStringOption(opt => 
-            opt.setName('s_category')
-            .setDescription("Название опции")
+            opt.setName(localeManager.getString('commands.ai.edit_safety.s_category.name'))
+            .setDescription(localeManager.getString('commands.ai.edit_safety.s_category.description'))
             .setChoices(
-                { name: 'Травля', value: 'HARASSMENT' },
-                { name: 'HateSpeech', value: 'HATE_SPEECH' },
-                { name: 'Откровенный_контент', value: 'SEXUALLY_EXPLICIT' },
-                { name: 'Опасный_контент', value: 'DANGEROUS_CONTENT' }
+                { name: localeManager.getString('commands.ai.edit_safety.s_category.harassment'), value: 'HARASSMENT' },
+                { name: localeManager.getString('commands.ai.edit_safety.s_category.hate_speech'), value: 'HATE_SPEECH' },
+                { name: localeManager.getString('commands.ai.edit_safety.s_category.sexually_explicit'), value: 'SEXUALLY_EXPLICIT' },
+                { name: localeManager.getString('commands.ai.edit_safety.s_category.dangerous_content'), value: 'DANGEROUS_CONTENT' }
             )
             .setRequired(true)
         )
         .addStringOption(opt => 
-            opt.setName('s_value')
-            .setDescription("Режимы безопастности")
+            opt.setName(localeManager.getString('commands.ai.edit_safety.s_value.name'))
+            .setDescription(localeManager.getString('commands.ai.edit_safety.s_value.description'))
             .setChoices(
-                { name: 'Игнорировать', value: 'BLOCK_NONE' },
-                { name: 'Мягкий', value: 'BLOCK_HIGH_AND_ABOVE' },
-                { name: 'Средний', value: 'BLOCK_MEDIUM_AND_ABOVE' },
-                { name: 'Строгий', value: 'BLOCK_LOW_AND_ABOVE' },
-                { name: 'По_умолчанию', value: 'HARM_BLOCK_THRESHOLD_UNSPECIFIED' }
+                { name: localeManager.getString('commands.ai.edit_safety.s_value.block_none'), value: 'BLOCK_NONE' },
+                { name: localeManager.getString('commands.ai.edit_safety.s_value.block_high_and_above'), value: 'BLOCK_HIGH_AND_ABOVE' },
+                { name: localeManager.getString('commands.ai.edit_safety.s_value.block_medium_and_above'), value: 'BLOCK_MEDIUM_AND_ABOVE' },
+                { name: localeManager.getString('commands.ai.edit_safety.s_value.block_low_and_above'), value: 'BLOCK_LOW_AND_ABOVE' },
+                { name: localeManager.getString('commands.ai.edit_safety.s_value.harm_block_threshold_unspecified'), value: 'HARM_BLOCK_THRESHOLD_UNSPECIFIED' }
             )
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName('add-apikey')
-        .setDescription('Добавить апи ключ. Позволяет получить доступ к функционалу AI')
+        sub.setName(localeManager.getString('commands.ai.add_apikey.name'))
+        .setDescription(localeManager.getString('commands.ai.add_apikey.description'))
         .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+            opt.setName(localeManager.getString('commands.ai.add_apikey.apikey.name'))
+            .setDescription(localeManager.getString('commands.ai.add_apikey.apikey.description'))
             .setRequired(true)
         )
         .addBooleanOption(opt =>
-            opt.setName('for-public-use')
-            .setDescription('Позволить нам использовать ваш ключ?')
+            opt.setName(localeManager.getString('commands.ai.add_apikey.for_public_use.name'))
+            .setDescription(localeManager.getString('commands.ai.add_apikey.for_public_use.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName('delete-apikey')
-        .setDescription('Удалить апи-ключ из бота')
+        sub.setName(localeManager.getString('commands.ai.delete_apikey.name'))
+        .setDescription(localeManager.getString('commands.ai.delete_apikey.description'))
         .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+            opt.setName(localeManager.getString('commands.ai.delete_apikey.apikey.name'))
+            .setDescription(localeManager.getString('commands.ai.delete_apikey.apikey.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName('delete-all')
-            .setDescription('Удалить все ваши ключи?')
+            opt.setName(localeManager.getString('commands.ai.delete_apikey.delete_all.name'))
+            .setDescription(localeManager.getString('commands.ai.delete_apikey.delete_all.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName('edit-apikey')
-        .setDescription('Изменить настройки для текущего ключа')
+        sub.setName(localeManager.getString('commands.ai.edit_apikey.name'))
+        .setDescription(localeManager.getString('commands.ai.edit_apikey.description'))
         .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+            opt.setName(localeManager.getString('commands.ai.edit_apikey.apikey.name'))
+            .setDescription(localeManager.getString('commands.ai.edit_apikey.apikey.description'))
             .setRequired(true)
         )
         .addBooleanOption(opt =>
-            opt.setName('for-public-use')
-            .setDescription('Позволить нам использовать ваш ключ?')
+            opt.setName(localeManager.getString('commands.ai.edit_apikey.for_public_use.name'))
+            .setDescription(localeManager.getString('commands.ai.edit_apikey.for_public_use.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName("model-info")
-        .setDescription("Получает информацию о модели")
+        sub.setName(localeManager.getString('commands.ai.model_info.name'))
+        .setDescription(localeManager.getString('commands.ai.model_info.description'))
         .addStringOption(opt => 
-            opt.setName("model")
-            .setDescription("Модель gemini. Оставьте пустым, чтобы применить модель из настроек")
+            opt.setName(localeManager.getString('commands.ai.model_info.model.name'))
+            .setDescription(localeManager.getString('commands.ai.model_info.model.description'))
         )
     )
 ,
@@ -179,7 +182,7 @@ module.exports = {
 
         switch (interaction.options.getSubcommand()) {
             case "ask": {
-                if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
+                if (!config) return await interaction.reply({ content: localeManager.getString('commands.ai.ask.not_in_db'), flags: MessageFlags.Ephemeral });
                 const invisible = interaction.options.getBoolean('invisible');
                 await interaction.deferReply(invisible ? { flags: MessageFlags.Ephemeral } : {});
 
@@ -187,7 +190,7 @@ module.exports = {
                     const keys = [];
                     const allKeys =  db.getAllUserTokens(userId);
                     if (!allKeys[0] && !privateAccess.includes(userId)) {
-                        return await interaction.editReply("У вас нет ни одного апи ключа для использования этой команды.")
+                        return await interaction.editReply(localeManager.getString('commands.ai.ask.no_api_key'))
                     } else if (allKeys[0] && !privateAccess.includes(userId)){
                         allKeys[0].forEach(key => {
                             keys.push({key, timeoutDuration: 60_000});
@@ -201,13 +204,13 @@ module.exports = {
 
                     if (attachment) {
                         if (!attachment.contentType.startsWith('image/')) {
-                            const text = 'Это не изображение! Вложение будет проигнорировано.\nВыполняем запрос к ai...';
+                            const text = localeManager.getString('commands.ai.ask.not_an_image');
                             await interaction.editReply(invisible === true ? {
                                 content: text,
                                 flags: MessageFlags.Ephemeral 
                             } : text);
                         } else if (attachment.size >= 20971500) {
-                            const text = "Размер изображения больше или примерно равен 20мб. Вложение будет проигнорировано.\nВыполняем запрос к ai...";
+                            const text = localeManager.getString('commands.ai.ask.image_too_large');
                             await interaction.editReply(invisible === true ? {
                                 content: text,
                                 flags: MessageFlags.Ephemeral 
@@ -253,7 +256,7 @@ module.exports = {
                     } else {
                         if (!interaction.client.keyManager) {
                             return await interaction.editReply({
-                                content: 'Функционал ИИ недоступен, так как client.keyManager пуст.',
+                                content: localeManager.getString('commands.ai.ask.ai_unavailable'),
                                 flags: MessageFlags.Ephemeral
                             });
                         }
@@ -261,14 +264,14 @@ module.exports = {
                     }
 
                     if (!response) return await interaction.editReply(invisible === true ? {
-                        content: "AI совсем ничего не ответила. Возможно, с стороны сервиса какая-то ошибка...",
+                        content: localeManager.getString('commands.ai.ask.no_ai_response'),
                         flags: MessageFlags.Ephemeral
-                    } : "AI совсем ничего не ответила. Возможно, с стороны сервиса какая-то ошибка...");
+                    } : localeManager.getString('commands.ai.ask.no_ai_response'));
 
                     const _end = Date.now()
-                    const reply = response?.text || response?.candidates?.[0]?.content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
+                    const reply = response?.text || response?.candidates?.[0]?.content || localeManager.getString('commands.ai.ask.no_ai_response_reason', { finishReason: response.candidates[0].finishReason });
                     const stringReply = String(reply);
-                    const timeText = `Время ожидания ${Math.floor((_end - interaction.createdTimestamp) / 1000 )} секунд, длина ${String(reply).length}`
+                    const timeText = localeManager.getString('commands.ai.ask.response_time_length', { time: Math.floor((_end - interaction.createdTimestamp) / 1000 ), length: String(reply).length })
                 
                     if (stringReply.length >= 1990 && stringReply.length < 9900) {
                         await interaction.editReply(invisible ? { content: timeText, flags: MessageFlags.Ephemeral } : timeText);
@@ -280,7 +283,7 @@ module.exports = {
                     } else if (stringReply.length >= 9900) {
                         const textBuffer = Buffer.from(reply, 'utf-8');
                         await interaction.followUp({
-                            content: 'AI ответила слишком длинным текстом, поэтому её ответ находится в файле.',
+                            content: localeManager.getString('commands.ai.ask.response_too_long'),
                             files: [{
                                 attachment: textBuffer,
                                 name: 'ai_reply.md'
@@ -299,7 +302,7 @@ module.exports = {
                                 db.deleteToken(userId, key);
                                 const stats = db.getUserStats(userId);
                                 if (stats.tokens < 1) db.deleteUserConfig(userId);
-                                return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                                return { text: localeManager.getString('commands.ai.ask.invalid_api_key_deleting') };
                             }
                             const response = await ai.models.generateContent(ai_request_options);
                             return response;
@@ -319,12 +322,12 @@ module.exports = {
                             db.deleteToken(userId, key);
                             const stats = db.getUserStats(userId);
                             if (stats.tokens < 1) db.deleteUserConfig(userId);
-                            return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                            return { text: localeManager.getString('commands.ai.ask.invalid_api_key_deleting') };
                         }
                         try {
                             const info = await ai.models.get({model: config.model});
-                            if (info.outputTokenLimit < config.maxOutputTokens) return info.outputTokenLimit;
-                            else return config.maxOutputTokens;
+                            if (info.outputTokenLimit < config.max_output_tokens) return info.outputTokenLimit;
+                            else return config.max_output_tokens;
                         } catch (error) {
                             return 1024;
                         }
@@ -337,10 +340,10 @@ module.exports = {
                     await interaction.editReply(`\n\`\`\`txt\n${error}\`\`\``)  
                     const errorEmbed = new EmbedBuilder()
                     .setColor('Red')
-                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .setTitle(localeManager.getString('commands.ai.error_processing_command'))
                     .addFields(
-                        { name: `Команда`, value: `${interaction.commandName}` },
-                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                        { name: localeManager.getString('commands.ai.command_field'), value: `${interaction.commandName}` },
+                        { name: localeManager.getString('commands.ai.error_field'), value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
                     )
                     .setTimestamp(new Date())
                     console.error(error);
@@ -354,20 +357,20 @@ module.exports = {
                 const user = interaction.options.getUser('user')
                 try {
                     db.addUserConfig(user.id)
-                    await interaction.reply({ content: `${user} был добавлен в базу данных`, flags: MessageFlags.Ephemeral })
+                    await interaction.reply({ content: localeManager.getString('commands.ai.add_user.success', { user: user.toString() }), flags: MessageFlags.Ephemeral })
                 } catch (error) {
                     const errorEmbed = new EmbedBuilder()
                     .setColor('Red')
-                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .setTitle(localeManager.getString('commands.ai.error_processing_command'))
                     .addFields(
-                        { name: `Команда`, value: `${interaction.commandName}` },
-                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                        { name: localeManager.getString('commands.ai.command_field'), value: `${interaction.commandName}` },
+                        { name: localeManager.getString('commands.ai.error_field'), value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
                     )
                     .setTimestamp(new Date())
                     console.error(error);
                     const logChannel = await interaction.client.channels.fetch(bot_log_channel)
                     await logChannel.send({ embeds: [errorEmbed] });
-                    await interaction.reply({ content: `Не удалось добавить пользователя в базу данных. err: ${error.message}`, flags: MessageFlags.Ephemeral })
+                    await interaction.reply({ content: localeManager.getString('commands.ai.add_user.failed', { error: error.message }), flags: MessageFlags.Ephemeral })
                 }
                 break;
             }
@@ -376,53 +379,53 @@ module.exports = {
                 const user = interaction.options.getMember('user');
                 try {
                     const promise = db.deleteUserConfig(user.id)
-                    await interaction.reply({ content: `${user} ${promise ? 'был удалён из базы данных.' : "не был удалён из базы данных. Возможно, его в ней не было"}`, flags: MessageFlags.Ephemeral })
+                    await interaction.reply({ content: localeManager.getString('commands.ai.remove_user.result', { user: user.toString(), deleted: promise }), flags: MessageFlags.Ephemeral })
                 } catch (error) {
                     const errorEmbed = new EmbedBuilder()
                     .setColor('Red')
-                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .setTitle(localeManager.getString('commands.ai.error_processing_command'))
                     .addFields(
-                        { name: `Команда`, value: `${interaction.commandName}` },
-                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                        { name: localeManager.getString('commands.ai.command_field'), value: `${interaction.commandName}` },
+                        { name: localeManager.getString('commands.ai.error_field'), value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
                     )
                     .setTimestamp(new Date())
                     console.error(error);
                     const logChannel = await interaction.client.channels.fetch(bot_log_channel)
                     await logChannel.send({ embeds: [errorEmbed] });
-                    await interaction.reply({ content: `Не удалось удалить пользователя из базы данных. err: ${error.message}`, flags: MessageFlags.Ephemeral })
+                    await interaction.reply({ content: localeManager.getString('commands.ai.remove_user.failed', { error: error.message }), flags: MessageFlags.Ephemeral })
                 }
                 break;
             }
 
             case "settings": {
-                if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
+                if (!config) return await interaction.reply({ content: localeManager.getString('commands.ai.settings.not_in_db'), flags: MessageFlags.Ephemeral });
                 const stats = db.getUserStats(userId);
 
                 const embed = new EmbedBuilder()
                 .setAuthor({ iconURL: interaction.user.displayAvatarURL({extension: "png"}), name: interaction.user.displayName })
                 .setColor("Random")
-                .setTitle('Ваши настройки gemini')
+                .setTitle(localeManager.getString('commands.ai.settings.embed_title'))
                 .setDescription(
-                    `Системные инструкции (system_instructions): ${config.system_instructions || "Пусто"}\n\n`+
-                    `Настройки безопасности:\n\`\`\`json\n${JSON.stringify(SS, null, 2)}\`\`\`\n\n`+
-                    'Совет: чтобы сбросить настройки `top_k` и `top_p`, укажите им отрицательное значение: `/ai edit top_k:-1`.\n'+
-                    'Чтобы сбросить настройки `system_instructions`, используйте команду `/ai edit system_instructions:{NULL}`'
+                    localeManager.getString('commands.ai.settings.system_instructions', { instructions: config.system_instructions || localeManager.getString('commands.ai.settings.empty') })+'\n\n'+
+                    localeManager.getString('commands.ai.settings.safety_settings')+'\n\`\`\`json\n'+JSON.stringify(SS, null, 2)+'\`\`\`\n\n'+
+                    localeManager.getString('commands.ai.settings.tip_reset_top_k_p')+'\n'+
+                    localeManager.getString('commands.ai.settings.tip_reset_system_instructions')
                 )
                 .setFields(
-                    { name: "Модель (model)", value: config.model, inline: true },
-                    { name: "Максимум токенов на ответ (max_output_tokens)", value: `${config.max_output_tokens}`, inline: true },
-                    { name: "Температура ответов (temperature)", value: `${config.temperature}`, inline: true },
-                    { name: "top_k", value: `${config.top_k}`, inline: true },
-                    { name: "top_p", value: `${config.top_p}`, inline: true },
-                    { name: "Лимит сохранения истории (history_limit)", value: `${config.history_limit}`, inline: true },
-                    { name: "Всего токенов", value: `${stats.tokens}`, inline: true },
-                    { name: "Сколько раз ваш токен был использован нами", value: `${stats.uses}`, inline: true },
+                    { name: localeManager.getString('commands.ai.settings.model_field'), value: config.model, inline: true },
+                    { name: localeManager.getString('commands.ai.settings.max_output_tokens_field'), value: `${config.max_output_tokens}`, inline: true },
+                    { name: localeManager.getString('commands.ai.settings.temperature_field'), value: `${config.temperature}`, inline: true },
+                    { name: localeManager.getString('commands.ai.settings.top_k_field'), value: `${config.top_k}`, inline: true },
+                    { name: localeManager.getString('commands.ai.settings.top_p_field'), value: `${config.top_p}`, inline: true },
+                    { name: localeManager.getString('commands.ai.settings.history_limit_field'), value: `${config.history_limit}`, inline: true },
+                    { name: localeManager.getString('commands.ai.settings.total_tokens_field'), value: `${stats.tokens}`, inline: true },
+                    { name: localeManager.getString('commands.ai.settings.uses_field'), value: `${stats.uses}`, inline: true },
                 )
                 await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
                 break;
             }
             case "edit": {
-                if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
+                if (!config) return await interaction.reply({ content: localeManager.getString('commands.ai.edit.not_in_db'), flags: MessageFlags.Ephemeral });
 
                 let top_k = interaction.options.getInteger('top_k') || config.top_k,
                 top_p = interaction.options.getNumber('top_p') || config.top_p,
@@ -443,7 +446,7 @@ module.exports = {
                 }
 
                 const result = db.updateUserConfig(userId, changes);
-                const reply = result.changes > 0 ? "Настройки были обновленны." : "Настройки не изменились"
+                const reply = result.changes > 0 ? localeManager.getString('commands.ai.edit.settings_updated') : localeManager.getString('commands.ai.edit.settings_not_changed')
                 await interaction.reply({ content: reply, flags: MessageFlags.Ephemeral })
                 break;
             }
@@ -451,8 +454,8 @@ module.exports = {
                 let result = 0,
                 s_value = interaction.options.getString('s_value'),
                 s_category = interaction.options.getString('s_category'),
-                nothingСhanged = 'Ничего не изменилось. Вероятно, эта опция уже была установлена на это значение',
-                change = `Значение категории \`${s_category}\` было изменено на \`${s_value}\``;
+                nothingСhanged = localeManager.getString('commands.ai.edit_safety.nothing_changed'),
+                change = localeManager.getString('commands.ai.edit_safety.category_changed', { category: s_category, value: s_value });
 
                 switch (s_category) {
                     case "HARASSMENT":
@@ -476,7 +479,7 @@ module.exports = {
                         break;   
                     
                     default:
-                        await interaction.reply({content: 'Незвестная категория!', flags: MessageFlags.Ephemeral});
+                        await interaction.reply({content: localeManager.getString('commands.ai.edit_safety.unknown_category'), flags: MessageFlags.Ephemeral});
                         break;
                 }
                 break;
@@ -487,10 +490,10 @@ module.exports = {
                 const public = interaction.options.getBoolean('for-public-use') || false;
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-                if (!await checkApiKey(apikey)) return await interaction.editReply({ content: "Неверный `apikey`! Скопируйте ключ из https://aistudio.google.com/apikey и вставьте его сюда", flags: MessageFlags.Ephemeral });
+                if (!await checkApiKey(apikey)) return await interaction.editReply({ content: localeManager.getString('commands.ai.add_apikey.invalid_apikey'), flags: MessageFlags.Ephemeral });
                 const result = db.addToken(userId, apikey, public);
                 db.addUserConfig(userId);
-                await interaction.editReply({ content: result.changes > 0 ? `Ваш ключ успешно добавлен! Можете пользоваться функционалом AI.`: result.message || 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.add_apikey.success') : result.message || localeManager.getString('commands.ai.add_apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
                 break;
             }
             case 'delete-apikey': {
@@ -498,17 +501,17 @@ module.exports = {
                 const all = interaction.options.getBoolean('delete-all') || false;
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-                if (!apikey && !all) return await interaction.editReply({ content: "`apikey` не может быть пустым, если вы не удаляете все токены!", flags: MessageFlags.Ephemeral });
+                if (!apikey && !all) return await interaction.editReply({ content: localeManager.getString('commands.ai.delete_apikey.apikey_empty_error'), flags: MessageFlags.Ephemeral });
 
                 if (all) {
                     const result = db.deleteAllByUser(userId);
                     db.deleteUserConfig(userId);
-                    await interaction.editReply({ content: `\`${result.changes}\` ключей было удалено.`, flags: MessageFlags.Ephemeral });
+                    await interaction.editReply({ content: localeManager.getString('commands.ai.delete_apikey.all_keys_deleted', { count: result.changes }), flags: MessageFlags.Ephemeral });
                 } else {
                     const result = db.deleteToken(userId, apikey);
                     const stats = db.getUserStats(userId);
                     if (stats.tokens < 1) db.deleteUserConfig(userId);
-                    await interaction.editReply({ content: result.changes > 0 ? `\`${apikey}\` был удалён.` : result.message || 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                    await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.delete_apikey.key_deleted', { apikey: apikey }) : result.message || localeManager.getString('commands.ai.delete_apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
@@ -518,7 +521,7 @@ module.exports = {
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
                 const result = db.updateTokenSettings(userId, apikey, { public_use: public });
-                await interaction.editReply({ content: result.changes > 0 ? `Настройки были обновлены.` : 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.edit_apikey.settings_updated') : localeManager.getString('commands.ai.edit_apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
                 break;
             }
             case "model-info": {
@@ -528,7 +531,7 @@ module.exports = {
                 if (!privateAccess.includes(userId)) {
                     const keys = [];
                     const allKeys =  db.getAllUserTokens(userId);
-                    if (!allKeys[0]) return await interaction.editReply("У вас нет ни одного апи ключа для использования этой команды.")
+                    if (!allKeys[0]) return await interaction.editReply(localeManager.getString('commands.ai.model_info.no_api_key'))
                     allKeys[0].forEach(key => {
                         keys.push({key, timeoutDuration: 60_000});
                     })
@@ -537,7 +540,7 @@ module.exports = {
                 } else {
                     if (!interaction.client.keyManager) {
                         return await interaction.editReply({
-                            content: 'Функционал ИИ недоступен, так как client.keyManager пуст.',
+                            content: localeManager.getString('commands.ai.model_info.ai_unavailable'),
                             flags: MessageFlags.Ephemeral
                         });
                     }
@@ -555,7 +558,7 @@ module.exports = {
                         db.deleteToken(userId, key);
                         const stats = db.getUserStats(userId);
                         if (stats.tokens < 1) db.deleteUserConfig(userId);
-                        return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                        return { text: localeManager.getString('commands.ai.model_info.invalid_api_key_deleting') };
                     }
                     try {
                         return await ai.models.get({model: model});
@@ -567,7 +570,7 @@ module.exports = {
             }
 
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({content: localeManager.getString('commands.ai.subcommand_not_found'), flags: MessageFlags.Ephemeral})
                 break;
         }
     }  
@@ -651,18 +654,18 @@ async function checkApiKey(apikey) {
  * Можно расширять по мере необходимости.
  */
 const actionDescriptions = {
-    generateContent: "Генерация текста, изображений и другого контента",
-    countTokens: "Подсчет токенов во вводе",
-    createCachedContent: "Кэширование данных для повторного использования",
-    batchGenerateContent: "Массовая асинхронная генерация контента",
-    streamGenerateContent: "Потоковая генерация ответов",
-    functionCalling: "Вызов внешних функций/инструментов",
-    codeExecution: "Выполнение кода (Python)",
-    structuredOutputs: "Генерация структурированных данных (JSON)",
-    multimodalUnderstanding: "Понимание мультимодальных данных (изображения, аудио, видео)",
-    liveApi: "Интерактивное голосовое/видео взаимодействие",
-    fineTuning: "Тонкая настройка модели",
-    embeddings: "Генерация встраиваний (векторов)",
+    generateContent: localeManager.getString('gemini_actions.generateContent'),
+    countTokens: localeManager.getString('gemini_actions.countTokens'),
+    createCachedContent: localeManager.getString('gemini_actions.createCachedContent'),
+    batchGenerateContent: localeManager.getString('gemini_actions.batchGenerateContent'),
+    streamGenerateContent: localeManager.getString('gemini_actions.streamGenerateContent'),
+    functionCalling: localeManager.getString('gemini_actions.functionCalling'),
+    codeExecution: localeManager.getString('gemini_actions.codeExecution'),
+    structuredOutputs: localeManager.getString('gemini_actions.structuredOutputs'),
+    multimodalUnderstanding: localeManager.getString('gemini_actions.multimodalUnderstanding'),
+    liveApi: localeManager.getString('gemini_actions.liveApi'),
+    fineTuning: localeManager.getString('gemini_actions.fineTuning'),
+    embeddings: localeManager.getString('gemini_actions.embeddings'),
 };
 
 /**
@@ -674,21 +677,21 @@ const actionDescriptions = {
 function createGeminiModelEmbed(info) {
     const supportedActionsText = info.supportedActions
         .map(action => {
-            const description = actionDescriptions[action] || `Неизвестное действие: ${action}`;
+            const description = actionDescriptions[action] || localeManager.getString('gemini_actions.unknown_action', { action: action });
             return `• **${action}**: ${description}`;
         })
         .join('\n');
 
     const embed = new EmbedBuilder()
         .setColor("DarkButNotBlack") // Или любой другой цвет, например, 0x0099FF
-        .setTitle(info.displayName || "Неизвестная модель Gemini")
-        .setDescription(`**Описание:** ${info.description || "Описание отсутствует."}`)
+        .setTitle(info.displayName || localeManager.getString('gemini_actions.unknown_model'))
+        .setDescription(localeManager.getString('gemini_actions.description_prefix', { description: info.description || localeManager.getString('gemini_actions.no_description') }))
         .addFields(
-            { name: "Идентификатор модели", value: `\`${info.name}\``, inline: true },
-            { name: "Версия", value: `\`${info.version}\``, inline: true },
-            { name: "Лимит входных токенов", value: `${info.inputTokenLimit.toLocaleString()} токенов`, inline: true },
-            { name: "Лимит выходных токенов", value: `${info.outputTokenLimit.toLocaleString()} токенов`, inline: true },
-            { name: "Поддерживаемые действия", value: supportedActionsText || "Действия не указаны." }
+            { name: localeManager.getString('gemini_actions.model_id_field'), value: `\`${info.name}\``, inline: true },
+            { name: localeManager.getString('gemini_actions.version_field'), value: `\`${info.version}\``, inline: true },
+            { name: localeManager.getString('gemini_actions.input_token_limit_field'), value: localeManager.getString('gemini_actions.tokens_value', { count: info.inputTokenLimit.toLocaleString() }), inline: true },
+            { name: localeManager.getString('gemini_actions.output_token_limit_field'), value: localeManager.getString('gemini_actions.tokens_value', { count: info.outputTokenLimit.toLocaleString() }), inline: true },
+            { name: localeManager.getString('gemini_actions.supported_actions_field'), value: supportedActionsText || localeManager.getString('gemini_actions.no_actions_specified') }
         );
 
     return embed;

@@ -1,23 +1,24 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { calc } = require('../../functions/calc');
-const localeMamager = require('../../locales/localesManager');
-const lm = new localeMamager();
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName("calc")
-        .setDescription("Калькулятор бесплатна!!!")
+        .setName(localeManager.getString('commands.calc.name'))
+        .setDescription(localeManager.getString('commands.calc.description'))
         .addStringOption(opt => 
-            opt.setName("expression")
-            .setDescription("Выражение. Например: 2+9*23/2^2")
+            opt.setName(localeManager.getString('commands.calc.expression.name'))
+            .setDescription(localeManager.getString('commands.calc.expression.description'))
             .setRequired(true)
         ),
 
     async execute(interaction) {
         const expression = interaction.options.getString("expression");
         const result = calc(expression);
-        const reply = typeof result !== "number" ? `Неверное выражение: ${result}` : `Пример: \`${expression}\`\nОтвет: ${result}`;
+        const reply = typeof result !== "number" ? localeManager.getString('commands.calc.invalid_expression', { error: result }) : localeManager.getString('commands.calc.result', { expression: expression, result: result });
 
         await interaction.reply(reply);
     }

@@ -2,152 +2,155 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 const { generateCaptcha } = require('../../functions/createCaptcha');
 const { privateAccess } = require('../../config.json');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName('captcha')
-        .setDescription("Создаёт капчу")
+        .setName(localeManager.getString('commands.captcha.name'))
+        .setDescription(localeManager.getString('commands.captcha.description'))
         .setContexts(0,1,2)
         .addBooleanOption(opt => 
-            opt.setName('invisible')
-            .setDescription('Сделать сообщение невидимым?')
+            opt.setName(localeManager.getString('commands.captcha.invisible.name'))
+            .setDescription(localeManager.getString('commands.captcha.invisible.description'))
         )
         // Базовые настройки
         .addIntegerOption(opt =>
-            opt.setName("length")
-            .setDescription("Кол-во символов")
+            opt.setName(localeManager.getString('commands.captcha.length.name'))
+            .setDescription(localeManager.getString('commands.captcha.length.description'))
             .setMinValue(1)
             .setMaxValue(12)
         )
         .addIntegerOption(opt =>
-            opt.setName('width')
-            .setDescription("Ширина изображения капчи")
+            opt.setName(localeManager.getString('commands.captcha.width.name'))
+            .setDescription(localeManager.getString('commands.captcha.width.description'))
             .setMinValue(150)
             .setMaxValue(400)
         )
         .addIntegerOption(opt =>
-            opt.setName('height')
-            .setDescription("Высота изображения капчи")
+            opt.setName(localeManager.getString('commands.captcha.height.name'))
+            .setDescription(localeManager.getString('commands.captcha.height.description'))
             .setMinValue(50)
             .setMaxValue(200)
         )
         // Настройки текста
         .addIntegerOption(opt =>
-            opt.setName('min_font_size')
-            .setDescription("Минимальный размер шрифта")
+            opt.setName(localeManager.getString('commands.captcha.min_font_size.name'))
+            .setDescription(localeManager.getString('commands.captcha.min_font_size.description'))
             .setMinValue(10)
             .setMaxValue(50)
         )
         .addIntegerOption(opt =>
-            opt.setName('max_font_size')
-            .setDescription("Максимальный размер шрифта")
+            opt.setName(localeManager.getString('commands.captcha.max_font_size.name'))
+            .setDescription(localeManager.getString('commands.captcha.max_font_size.description'))
             .setMinValue(15)
             .setMaxValue(60)
         )
         .addNumberOption(opt =>
-            opt.setName('max_rotation')
-            .setDescription("Максимальный поворот текста (0.1-2.0)")
+            opt.setName(localeManager.getString('commands.captcha.max_rotation.name'))
+            .setDescription(localeManager.getString('commands.captcha.max_rotation.description'))
             .setMinValue(0.1)
             .setMaxValue(2.0)
         )
         .addNumberOption(opt =>
-            opt.setName('max_skew')
-            .setDescription("Максимальное искажение текста (0.1-1.0)")
+            opt.setName(localeManager.getString('commands.captcha.max_skew.name'))
+            .setDescription(localeManager.getString('commands.captcha.max_skew.description'))
             .setMinValue(0.1)
             .setMaxValue(1.0)
         )
         .addBooleanOption(opt =>
-            opt.setName('text_outline')
-            .setDescription("Обводка текста")
+            opt.setName(localeManager.getString('commands.captcha.text_outline.name'))
+            .setDescription(localeManager.getString('commands.captcha.text_outline.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName('random_colors')
-            .setDescription("Случайные цвета для каждого символа")
+            opt.setName(localeManager.getString('commands.captcha.random_colors.name'))
+            .setDescription(localeManager.getString('commands.captcha.random_colors.description'))
         )
         // Настройки фона
         .addBooleanOption(opt =>
-            opt.setName('gradient_bg')
-            .setDescription("Градиентный фон")
+            opt.setName(localeManager.getString('commands.captcha.gradient_bg.name'))
+            .setDescription(localeManager.getString('commands.captcha.gradient_bg.description'))
         )
         .addStringOption(opt =>
-            opt.setName('gradient_type')
-            .setDescription("Тип градиента")
+            opt.setName(localeManager.getString('commands.captcha.gradient_type.name'))
+            .setDescription(localeManager.getString('commands.captcha.gradient_type.description'))
             .addChoices(
-                { name: 'Линейный', value: 'linear' },
-                { name: 'Радиальный', value: 'radial' }
+                { name: localeManager.getString('commands.captcha.gradient_type.linear'), value: 'linear' },
+                { name: localeManager.getString('commands.captcha.gradient_type.radial'), value: 'radial' }
             )
         )
         // Настройки шума
         .addIntegerOption(opt =>
-            opt.setName('noise_lines')
-            .setDescription("Кол-во линий шума")
+            opt.setName(localeManager.getString('commands.captcha.noise_lines.name'))
+            .setDescription(localeManager.getString('commands.captcha.noise_lines.description'))
             .setMinValue(0)
             .setMaxValue(20)
         )
         .addIntegerOption(opt =>
-            opt.setName('noise_dots')
-            .setDescription("Кол-во точек шума")
+            opt.setName(localeManager.getString('commands.captcha.noise_dots.name'))
+            .setDescription(localeManager.getString('commands.captcha.noise_dots.description'))
             .setMinValue(0)
             .setMaxValue(300)
         )
         .addIntegerOption(opt =>
-            opt.setName('noise_circles')
-            .setDescription("Кол-во кругов шума")
+            opt.setName(localeManager.getString('commands.captcha.noise_circles.name'))
+            .setDescription(localeManager.getString('commands.captcha.noise_circles.description'))
             .setMinValue(0)
             .setMaxValue(15)
         )
         .addBooleanOption(opt =>
-            opt.setName('curved_lines')
-            .setDescription("Изогнутые линии шума")
+            opt.setName(localeManager.getString('commands.captcha.curved_lines.name'))
+            .setDescription(localeManager.getString('commands.captcha.curved_lines.description'))
         )
         .addNumberOption(opt =>
-            opt.setName('noise_opacity')
-            .setDescription("Прозрачность шума (0.1-1.0)")
+            opt.setName(localeManager.getString('commands.captcha.noise_opacity.name'))
+            .setDescription(localeManager.getString('commands.captcha.noise_opacity.description'))
             .setMinValue(0.1)
             .setMaxValue(1.0)
         )
         // Настройки искажений
         .addBooleanOption(opt =>
-            opt.setName('wave_distortion')
-            .setDescription("Волновые искажения")
+            opt.setName(localeManager.getString('commands.captcha.wave_distortion.name'))
+            .setDescription(localeManager.getString('commands.captcha.wave_distortion.description'))
         )
         .addIntegerOption(opt =>
-            opt.setName('wave_amplitude')
-            .setDescription("Амплитуда волн")
+            opt.setName(localeManager.getString('commands.captcha.wave_amplitude.name'))
+            .setDescription(localeManager.getString('commands.captcha.wave_amplitude.description'))
             .setMinValue(1)
             .setMaxValue(10)
         )
         .addNumberOption(opt =>
-            opt.setName('wave_frequency')
-            .setDescription("Частота волн (0.01-0.2)")
+            opt.setName(localeManager.getString('commands.captcha.wave_frequency.name'))
+            .setDescription(localeManager.getString('commands.captcha.wave_frequency.description'))
             .setMinValue(0.01)
             .setMaxValue(0.2)
         )
         // Настройки помех
         .addBooleanOption(opt =>
-            opt.setName('scratches')
-            .setDescription("Царапины")
+            opt.setName(localeManager.getString('commands.captcha.scratches.name'))
+            .setDescription(localeManager.getString('commands.captcha.scratches.description'))
         )
         .addIntegerOption(opt =>
-            opt.setName('scratch_count')
-            .setDescription("Количество царапин")
+            opt.setName(localeManager.getString('commands.captcha.scratch_count.name'))
+            .setDescription(localeManager.getString('commands.captcha.scratch_count.description'))
             .setMinValue(1)
             .setMaxValue(10)
         )
         .addBooleanOption(opt =>
-            opt.setName('grid_interference')
-            .setDescription("Сетка помех")
+            opt.setName(localeManager.getString('commands.captcha.grid_interference.name'))
+            .setDescription(localeManager.getString('commands.captcha.grid_interference.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName('overlay_interference')
-            .setDescription("Помехи поверх текста")
+            opt.setName(localeManager.getString('commands.captcha.overlay_interference.name'))
+            .setDescription(localeManager.getString('commands.captcha.overlay_interference.description'))
         ),
 
     async execute(interaction) {
         if (!privateAccess.includes(interaction.user.id)) {
             return await interaction.reply({ 
-                content: `Вы не можете использовать эту команду`, 
+                content: localeManager.getString('commands.captcha.no_permissions'), 
                 flags: MessageFlags.Ephemeral
             });
         }
@@ -232,20 +235,20 @@ module.exports = {
 
             // Создание описания настроек для отладки
             const settingsInfo = [];
-            if (gradientBg) settingsInfo.push(`градиент (${gradientType})`);
-            if (textOutline) settingsInfo.push('обводка текста');
-            if (!randomColors) settingsInfo.push('единый цвет текста');
-            if (waveDistortion) settingsInfo.push(`волны (${waveAmplitude}/${waveFrequency})`);
-            if (scratches) settingsInfo.push(`царапины (${scratchCount})`);
-            if (gridInterference) settingsInfo.push('сетка');
-            if (!curvedLines) settingsInfo.push('прямые линии');
+            if (gradientBg) settingsInfo.push(localeManager.getString('commands.captcha.settings.gradient', { gradientType: gradientType }));
+            if (textOutline) settingsInfo.push(localeManager.getString('commands.captcha.settings.text_outline'));
+            if (!randomColors) settingsInfo.push(localeManager.getString('commands.captcha.settings.single_text_color'));
+            if (waveDistortion) settingsInfo.push(localeManager.getString('commands.captcha.settings.waves', { waveAmplitude: waveAmplitude, waveFrequency: waveFrequency }));
+            if (scratches) settingsInfo.push(localeManager.getString('commands.captcha.settings.scratches', { scratchCount: scratchCount }));
+            if (gridInterference) settingsInfo.push(localeManager.getString('commands.captcha.settings.grid'));
+            if (!curvedLines) settingsInfo.push(localeManager.getString('commands.captcha.settings.straight_lines'));
 
             const settingsText = settingsInfo.length > 0 ? 
-                `\nНастройки: ${settingsInfo.join(', ')}` : '';
+                `\n${localeManager.getString('commands.captcha.settings.prefix')}: ${settingsInfo.join(', ')}` : '';
 
             if (invisible) {
                 await interaction.editReply({ 
-                    content: `Капча готова! Исходный текст: **${captcha.text}**${settingsText}`, 
+                    content: localeManager.getString('commands.captcha.captcha_ready', { text: captcha.text, settingsText: settingsText }), 
                     flags: MessageFlags.Ephemeral, 
                     files: [{
                         attachment: captcha.data,
@@ -254,11 +257,11 @@ module.exports = {
                 });
             } else {
                 await interaction.editReply({ 
-                    content: `Капча готова! Исходный текст: **${captcha.text}**${settingsText}`, 
+                    content: localeManager.getString('commands.captcha.captcha_ready', { text: captcha.text, settingsText: settingsText }), 
                     flags: MessageFlags.Ephemeral 
                 });
                 await interaction.followUp({ 
-                    content: "Всем решать капчу!", 
+                    content: localeManager.getString('commands.captcha.solve_captcha'), 
                     files: [{
                         attachment: captcha.data,
                         name: 'captcha.png'
@@ -269,7 +272,7 @@ module.exports = {
         } catch (error) {
             console.error('Ошибка при генерации CAPTCHA:', error);
             await interaction.editReply({ 
-                content: '❌ Произошла ошибка при создании капчи. Попробуйте снова.', 
+                content: localeManager.getString('commands.captcha.error_generating_captcha'), 
                 flags: MessageFlags.Ephemeral 
             });
         }
