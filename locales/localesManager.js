@@ -1,7 +1,8 @@
 const { locales } = require("./locales");
 
 class LocaleManager {
-    defaultLocale = "en";
+    defaultLocale = "en-US";
+    langs = ["ru", "en-US", "uk"];
 
     constructor() {}
 
@@ -16,9 +17,9 @@ class LocaleManager {
     }
 
     //парсит locales и localesString, возвращая значение
-    parseLocaleString(key) {
+    parseLocaleString(key, locale = this.defaultLocale) {
         const parts = key.split('.');
-        let current = locales[this.defaultLocale]; // Начинаем с дефолтного языка
+        let current = locales[locale];
         for (const part of parts) {
             if (current && part in current) {
                 current = current[part];
@@ -29,27 +30,13 @@ class LocaleManager {
         return current;
     }
 
-    getAllCommandLocalizations(commandName, key) {
+    getAllCommandLocalizations(key) {
         const localizations = {};
-        for (const locale of Object.keys(locales)) {
-            localizations[locale] = this.getString(`commands.${commandName}.${key}`, locale);
+        for (let i = 0; i < this.langs.length; i++) {
+            localizations[this.langs[i]] = this.getString(key, this.langs[i])
         }
+        console.log(localizations);
         return localizations;
-    }
-
-    getCommandLocalization(commandName, locale = this.defaultLocale) {
-        const prefix = `commands.${commandName}`;
-        return {
-            name: this.getString(`${prefix}.name`, locale),
-            description: this.getString(`${prefix}.description`, locale),
-            options: this.getCommandOptions(commandName, locale)
-        };
-    }
-
-    getCommandOptions(commandName, locale) {
-        const prefix = `commands.${commandName}.options`;
-        const options = locales[locale][prefix];
-        return options || {};
     }
 }
 
