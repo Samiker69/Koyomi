@@ -11,65 +11,65 @@ const { bot_log_channel } = require('../../config.json');
 module.exports = {
     cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName(localeManager.getString('commands.booru.name'))
-		.setDescription(localeManager.getString('commands.booru.description'))
+		.setName(localeManager.getString('commands.booru.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.name'))
+		.setDescription(localeManager.getString('commands.booru.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.description'))
         
         .setContexts(0,1,2)
         .addSubcommand(sub =>
-            sub.setName(localeManager.getString('commands.booru.options.search.name'))
-            .setDescription(localeManager.getString('commands.booru.options.search.description'))
+            sub.setName(localeManager.getString('commands.booru.options.search.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.name'))
+            .setDescription(localeManager.getString('commands.booru.options.search.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.description'))
             
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.search.options.site.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.site.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.site.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.site.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.site.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.site.description'))
                 
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.search.options.tags.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.tags.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.tags.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.tags.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.tags.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.tags.description'))
                 
                 .setRequired(true)
             )
             .addNumberOption(o => 
-                o.setName(localeManager.getString('commands.booru.options.search.options.limit.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.limit.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.limit.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.limit.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.limit.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.limit.description'))
                 
                 .setMaxValue(100)
                 .setMinValue(1)
             )
             .addNumberOption(o => 
-                o.setName(localeManager.getString('commands.booru.options.search.options.page.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.page.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.page.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.page.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.page.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.page.description'))
                 
                 .setMinValue(0)
             )
             .addBooleanOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.search.options.no_ai.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.no_ai.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.no_ai.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.no_ai.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.no_ai.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.no_ai.description'))
                 
             )
         )
         .addSubcommand(sub =>
-            sub.setName(localeManager.getString('commands.booru.options.random.name'))
-            .setDescription(localeManager.getString('commands.booru.options.random.description'))
+            sub.setName(localeManager.getString('commands.booru.options.random.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.name'))
+            .setDescription(localeManager.getString('commands.booru.options.random.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.description'))
             
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.random.options.site.name'))
-                .setDescription(localeManager.getString('commands.booru.options.random.options.site.description'))
+                o.setName(localeManager.getString('commands.booru.options.random.options.site.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.site.name'))
+                .setDescription(localeManager.getString('commands.booru.options.random.options.site.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.site.description'))
                 
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.random.options.tags.name'))
-                .setDescription(localeManager.getString('commands.booru.options.random.options.tags.description'))
+                o.setName(localeManager.getString('commands.booru.options.random.options.tags.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.tags.name'))
+                .setDescription(localeManager.getString('commands.booru.options.random.options.tags.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.tags.description'))
                 
             )
             .addBooleanOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.random.options.no_ai.name'))
-                .setDescription(localeManager.getString('commands.booru.options.random.options.no_ai.description'))
+                o.setName(localeManager.getString('commands.booru.options.random.options.no_ai.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.no_ai.name'))
+                .setDescription(localeManager.getString('commands.booru.options.random.options.no_ai.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.no_ai.description'))
                 
             )
         )

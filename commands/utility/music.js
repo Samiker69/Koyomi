@@ -16,15 +16,15 @@ const localeManager = new LocaleManager();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.play.name'))
-        .setDescription(localeManager.getString('commands.play.description'))
+        .setName(localeManager.getString('commands.play.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.play.name'))
+        .setDescription(localeManager.getString('commands.play.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.play.description'))
         .addStringOption(option =>
-            option.setName(localeManager.getString('commands.play.options.url.name'))
-                .setDescription(localeManager.getString('commands.play.options.url.description'))
+            option.setName(localeManager.getString('commands.play.options.url.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.play.options.url.name'))
+                .setDescription(localeManager.getString('commands.play.options.url.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.play.options.url.description'))
                 .setRequired(false))
         .addAttachmentOption(option =>
-            option.setName(localeManager.getString('commands.play.options.attachment.name'))
-                .setDescription(localeManager.getString('commands.play.options.attachment.description'))
+            option.setName(localeManager.getString('commands.play.options.attachment.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.play.options.attachment.name'))
+                .setDescription(localeManager.getString('commands.play.options.attachment.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.play.options.attachment.description'))
                 .setRequired(false)),
 
     async execute(interaction) {

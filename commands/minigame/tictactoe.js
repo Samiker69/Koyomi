@@ -16,11 +16,11 @@ const localeManager = new LocaleManager();
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.tictactoe.name'))
-        .setDescription(localeManager.getString('commands.tictactoe.description'))
+        .setName(localeManager.getString('commands.tictactoe.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tictactoe.name'))
+        .setDescription(localeManager.getString('commands.tictactoe.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tictactoe.description'))
         .addUserOption(opt =>
-            opt.setName(localeManager.getString('commands.tictactoe.options.opponent.name'))
-                .setDescription(localeManager.getString('commands.tictactoe.options.opponent.description'))
+            opt.setName(localeManager.getString('commands.tictactoe.options.opponent.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tictactoe.options.opponent.name'))
+                .setDescription(localeManager.getString('commands.tictactoe.options.opponent.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tictactoe.options.opponent.description'))
                 .setRequired(true)
         ),
 

@@ -12,62 +12,62 @@ const localeManager = new LocaleManager();
   
   module.exports = {
     data: new SlashCommandBuilder()
-      .setName(localeManager.getString('commands.tag.name'))
-      .setDescription(localeManager.getString('commands.tag.description'))
+      .setName(localeManager.getString('commands.tag.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.name'))
+      .setDescription(localeManager.getString('commands.tag.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.description'))
       .addSubcommand(sub =>
         sub
-          .setName(localeManager.getString('commands.tag.options.add.name'))
-          .setDescription(localeManager.getString('commands.tag.options.add.description'))
+          .setName(localeManager.getString('commands.tag.options.add.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.add.name'))
+          .setDescription(localeManager.getString('commands.tag.options.add.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.add.description'))
           .addStringOption(o =>
-            o.setName(localeManager.getString('commands.tag.options.add.options.name.name'))
-             .setDescription(localeManager.getString('commands.tag.options.add.options.name.description'))
+            o.setName(localeManager.getString('commands.tag.options.add.options.name.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.add.options.name.name'))
+             .setDescription(localeManager.getString('commands.tag.options.add.options.name.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.add.options.name.description'))
              .setRequired(true)
           )
           .addStringOption(o =>
-            o.setName(localeManager.getString('commands.tag.options.add.options.content.name'))
-             .setDescription(localeManager.getString('commands.tag.options.add.options.content.description'))
+            o.setName(localeManager.getString('commands.tag.options.add.options.content.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.add.options.content.name'))
+             .setDescription(localeManager.getString('commands.tag.options.add.options.content.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.add.options.content.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName(localeManager.getString('commands.tag.options.remove.name'))
-          .setDescription(localeManager.getString('commands.tag.options.remove.description'))
+          .setName(localeManager.getString('commands.tag.options.remove.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.remove.name'))
+          .setDescription(localeManager.getString('commands.tag.options.remove.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.remove.description'))
           .addStringOption(o =>
-            o.setName(localeManager.getString('commands.tag.options.remove.options.name.name'))
-             .setDescription(localeManager.getString('commands.tag.options.remove.options.name.description'))
+            o.setName(localeManager.getString('commands.tag.options.remove.options.name.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.remove.options.name.name'))
+             .setDescription(localeManager.getString('commands.tag.options.remove.options.name.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.remove.options.name.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName(localeManager.getString('commands.tag.options.edit.name'))
-          .setDescription(localeManager.getString('commands.tag.options.edit.description'))
+          .setName(localeManager.getString('commands.tag.options.edit.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.edit.name'))
+          .setDescription(localeManager.getString('commands.tag.options.edit.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.edit.description'))
           .addStringOption(o =>
-            o.setName(localeManager.getString('commands.tag.options.edit.options.name.name'))
-             .setDescription(localeManager.getString('commands.tag.options.edit.options.name.description'))
+            o.setName(localeManager.getString('commands.tag.options.edit.options.name.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.edit.options.name.name'))
+             .setDescription(localeManager.getString('commands.tag.options.edit.options.name.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.edit.options.name.description'))
              .setRequired(true)
           )
           .addStringOption(o =>
-            o.setName(localeManager.getString('commands.tag.options.edit.options.content.name'))
-             .setDescription(localeManager.getString('commands.tag.options.edit.options.content.description'))
-             .setRequired(true)
-          )
-      )
-      .addSubcommand(sub =>
-        sub
-          .setName(localeManager.getString('commands.tag.options.get.name'))
-          .setDescription(localeManager.getString('commands.tag.options.get.description'))
-          .addStringOption(o =>
-            o.setName(localeManager.getString('commands.tag.options.get.options.name.name'))
-             .setDescription(localeManager.getString('commands.tag.options.get.options.name.description'))
+            o.setName(localeManager.getString('commands.tag.options.edit.options.content.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.edit.options.content.name'))
+             .setDescription(localeManager.getString('commands.tag.options.edit.options.content.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.edit.options.content.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName(localeManager.getString('commands.tag.options.list.name'))
-          .setDescription(localeManager.getString('commands.tag.options.list.description'))
+          .setName(localeManager.getString('commands.tag.options.get.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.get.name'))
+          .setDescription(localeManager.getString('commands.tag.options.get.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.get.description'))
+          .addStringOption(o =>
+            o.setName(localeManager.getString('commands.tag.options.get.options.name.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.get.options.name.name'))
+             .setDescription(localeManager.getString('commands.tag.options.get.options.name.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.get.options.name.description'))
+             .setRequired(true)
+          )
+      )
+      .addSubcommand(sub =>
+        sub
+          .setName(localeManager.getString('commands.tag.options.list.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.list.name'))
+          .setDescription(localeManager.getString('commands.tag.options.list.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tag.options.list.description'))
       )
       .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
   

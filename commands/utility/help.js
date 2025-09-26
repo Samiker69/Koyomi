@@ -89,8 +89,8 @@ function getCommandsByCategory(client) {
 module.exports = {
   cooldown: 10,
   data: new SlashCommandBuilder()
-      .setName(localeManager.getString('commands.help.name'))
-      .setDescription(localeManager.getString('commands.help.description')),
+      .setName(localeManager.getString('commands.help.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.help.name'))
+      .setDescription(localeManager.getString('commands.help.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.help.description')),
 
   async execute(interaction) {
       const categoriesMap = getCommandsByCategory(interaction.client);

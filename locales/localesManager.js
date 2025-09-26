@@ -9,7 +9,7 @@ class LocaleManager {
     getString(key, locale = this.defaultLocale) {
         try {
             //console.log(`Fetching key: ${key} for locale: ${locale}`, this.parseLocaleString(key));
-            return this.parseLocaleString(key);
+            return this.parseLocaleString(key, locale);
         } catch (e) {
             console.error(`Error fetching key: ${key} for locale: ${locale}`, e);
             return key;
@@ -30,14 +30,19 @@ class LocaleManager {
         return current;
     }
 
-    getAllCommandLocalizations(key) {
-        const localizations = {};
-        for (let i = 0; i < this.langs.length; i++) {
-            localizations[this.langs[i]] = this.getString(key, this.langs[i])
+getAllCommandLocalizations(key) {
+    const localizations = {};
+    for (const lang of this.langs) {
+        const translation = this.getString(key, lang);
+        
+        if (translation) {
+            localizations[lang] = translation;
+        } else {
+            console.error(`локализация не найдена для ${key} в языке ${lang}`)
         }
-        console.log(localizations);
-        return localizations;
     }
+    return localizations;
+}
 }
 
 module.exports = LocaleManager;

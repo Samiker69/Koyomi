@@ -7,27 +7,27 @@ const localeManager = new LocaleManager();
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.say.name'))
-    .setDescription(localeManager.getString('commands.say.description'))
+    .setName(localeManager.getString('commands.say.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say.name'))
+    .setDescription(localeManager.getString('commands.say.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say.description'))
     
     .addStringOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.options.text.name'))
-        .setDescription(localeManager.getString('commands.say.options.text.description'))
+        .setName(localeManager.getString('commands.say.options.text.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.text.name'))
+        .setDescription(localeManager.getString('commands.say.options.text.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.text.description'))
         
         .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.options.image.name'))
-        .setDescription(localeManager.getString('commands.say.options.image.description'))
+        .setName(localeManager.getString('commands.say.options.image.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.image.name'))
+        .setDescription(localeManager.getString('commands.say.options.image.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.image.description'))
         
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.options.reply_to.name'))
-        .setDescription(localeManager.getString('commands.say.options.reply_to.description'))
+        .setName(localeManager.getString('commands.say.options.reply_to.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.reply_to.name'))
+        .setDescription(localeManager.getString('commands.say.options.reply_to.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.reply_to.description'))
         
         .setRequired(false)
     ),

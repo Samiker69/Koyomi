@@ -9,25 +9,25 @@ const localeManager = new LocaleManager();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.say-tts.name'))
-        .setDescription(localeManager.getString('commands.say-tts.description'))
+        .setName(localeManager.getString('commands.say-tts.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.name'))
+        .setDescription(localeManager.getString('commands.say-tts.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.description'))
         .addBooleanOption(option =>
-            option.setName(localeManager.getString('commands.say-tts.options.voice-channel.name'))
-                .setDescription(localeManager.getString('commands.say-tts.options.voice-channel.description'))
+            option.setName(localeManager.getString('commands.say-tts.options.voice-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.options.voice-channel.name'))
+                .setDescription(localeManager.getString('commands.say-tts.options.voice-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.options.voice-channel.description'))
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName(localeManager.getString('commands.say-tts.options.text.name'))
-                .setDescription(localeManager.getString('commands.say-tts.options.text.description'))
+            option.setName(localeManager.getString('commands.say-tts.options.text.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.options.text.name'))
+                .setDescription(localeManager.getString('commands.say-tts.options.text.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.options.text.description'))
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName(localeManager.getString('commands.say-tts.options.lang.name'))
-                .setDescription(localeManager.getString('commands.say-tts.options.lang.description'))
+            option.setName(localeManager.getString('commands.say-tts.options.lang.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.options.lang.name'))
+                .setDescription(localeManager.getString('commands.say-tts.options.lang.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.options.lang.description'))
         )
         .addNumberOption(option =>
-            option.setName(localeManager.getString('commands.say-tts.options.speed.name'))
-                .setDescription(localeManager.getString('commands.say-tts.options.speed.description'))
+            option.setName(localeManager.getString('commands.say-tts.options.speed.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.options.speed.name'))
+                .setDescription(localeManager.getString('commands.say-tts.options.speed.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say-tts.options.speed.description'))
                 .setMinValue(0.1)
                 .setMaxValue(2)
         ),

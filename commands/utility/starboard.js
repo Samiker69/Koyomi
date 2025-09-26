@@ -8,22 +8,22 @@ const localeManager = new LocaleManager();
 module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName(localeManager.getString('commands.starboard.name'))
-		.setDescription(localeManager.getString('commands.starboard.description'))
+		.setName(localeManager.getString('commands.starboard.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.name'))
+		.setDescription(localeManager.getString('commands.starboard.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.description'))
         .addSubcommand(sub => 
-            sub.setName(localeManager.getString('commands.starboard.options.settings.name'))
-            .setDescription(localeManager.getString('commands.starboard.options.settings.description'))
+            sub.setName(localeManager.getString('commands.starboard.options.settings.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.name'))
+            .setDescription(localeManager.getString('commands.starboard.options.settings.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.description'))
             .addChannelOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.options.settings.options.starboard-channel.name'))
-                .setDescription(localeManager.getString('commands.starboard.options.settings.options.starboard-channel.description'))
+                opt.setName(localeManager.getString('commands.starboard.options.settings.options.starboard-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.starboard-channel.name'))
+                .setDescription(localeManager.getString('commands.starboard.options.settings.options.starboard-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.starboard-channel.description'))
             )
             .addBooleanOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.options.settings.options.enabled.name'))
-                .setDescription(localeManager.getString('commands.starboard.options.settings.options.enabled.description'))
+                opt.setName(localeManager.getString('commands.starboard.options.settings.options.enabled.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.enabled.name'))
+                .setDescription(localeManager.getString('commands.starboard.options.settings.options.enabled.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.enabled.description'))
             )
             .addIntegerOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.options.settings.options.min-reactions.name'))
-                .setDescription(localeManager.getString('commands.starboard.options.settings.options.min-reactions.description'))
+                opt.setName(localeManager.getString('commands.starboard.options.settings.options.min-reactions.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.min-reactions.name'))
+                .setDescription(localeManager.getString('commands.starboard.options.settings.options.min-reactions.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.min-reactions.description'))
                 .setMinValue(1)
             )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)

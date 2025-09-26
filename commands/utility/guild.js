@@ -5,52 +5,52 @@ const LocaleManager = require('../../locales/localesManager');
 const localeManager = new LocaleManager();
 
 const data = new SlashCommandBuilder()
-		.setName(localeManager.getString('commands.guild.name'))
-		.setDescription(localeManager.getString('commands.guild.description'))
+		.setName(localeManager.getString('commands.guild.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.name'))
+		.setDescription(localeManager.getString('commands.guild.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.description'))
         
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.invites.name'))
-            .setDescription(localeManager.getString('commands.guild.options.invites.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.invites.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.invites.name'))
+            .setDescription(localeManager.getString('commands.guild.options.invites.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.invites.description'))
             
             .addBooleanOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.invites.options.value.name'))
-                .setDescription(localeManager.getString('commands.guild.options.invites.options.value.description'))
+                option.setName(localeManager.getString('commands.guild.options.invites.options.value.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.invites.options.value.name'))
+                .setDescription(localeManager.getString('commands.guild.options.invites.options.value.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.invites.options.value.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.banner.name'))
-            .setDescription(localeManager.getString('commands.guild.options.banner.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.banner.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.banner.name'))
+            .setDescription(localeManager.getString('commands.guild.options.banner.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.banner.description'))
             
             .addAttachmentOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.banner.options.image.name'))
-                .setDescription(localeManager.getString('commands.guild.options.banner.options.image.description'))
+                option.setName(localeManager.getString('commands.guild.options.banner.options.image.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.banner.options.image.name'))
+                .setDescription(localeManager.getString('commands.guild.options.banner.options.image.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.banner.options.image.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.icon.name'))
-            .setDescription(localeManager.getString('commands.guild.options.icon.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.icon.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.icon.name'))
+            .setDescription(localeManager.getString('commands.guild.options.icon.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.icon.description'))
             
             .addAttachmentOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.icon.options.image.name'))
-                .setDescription(localeManager.getString('commands.guild.options.icon.options.image.description'))
+                option.setName(localeManager.getString('commands.guild.options.icon.options.image.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.icon.options.image.name'))
+                .setDescription(localeManager.getString('commands.guild.options.icon.options.image.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.icon.options.image.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.contentfilterlevel.name'))
-            .setDescription(localeManager.getString('commands.guild.options.contentfilterlevel.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.contentfilterlevel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.contentfilterlevel.name'))
+            .setDescription(localeManager.getString('commands.guild.options.contentfilterlevel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.contentfilterlevel.description'))
             
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.contentfilterlevel.options.value.name'))
-                .setDescription(localeManager.getString('commands.guild.options.contentfilterlevel.options.value.description'))
+                option.setName(localeManager.getString('commands.guild.options.contentfilterlevel.options.value.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.contentfilterlevel.options.value.name'))
+                .setDescription(localeManager.getString('commands.guild.options.contentfilterlevel.options.value.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.contentfilterlevel.options.value.description'))
                 .addChoices(
                     { name: localeManager.getString('commands.guild.options.contentfilterlevel.options.value.choices.disabled'), value: '0' },
                     { name: localeManager.getString('commands.guild.options.contentfilterlevel.options.value.choices.noroleuser'), value: '1' },
@@ -62,60 +62,60 @@ const data = new SlashCommandBuilder()
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.name.name'))
-            .setDescription(localeManager.getString('commands.guild.options.name.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.name.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.name.name'))
+            .setDescription(localeManager.getString('commands.guild.options.name.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.name.description'))
             
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.name.options.text.name'))
-                .setDescription(localeManager.getString('commands.guild.options.name.options.text.description'))
+                option.setName(localeManager.getString('commands.guild.options.name.options.text.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.name.options.text.name'))
+                .setDescription(localeManager.getString('commands.guild.options.name.options.text.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.name.options.text.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.rulechannel.name'))
-            .setDescription(localeManager.getString('commands.guild.options.rulechannel.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.rulechannel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.rulechannel.name'))
+            .setDescription(localeManager.getString('commands.guild.options.rulechannel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.rulechannel.description'))
             
             .addChannelOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.rulechannel.options.input.name'))
-                .setDescription(localeManager.getString('commands.guild.options.rulechannel.options.input.description'))
+                option.setName(localeManager.getString('commands.guild.options.rulechannel.options.input.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.rulechannel.options.input.name'))
+                .setDescription(localeManager.getString('commands.guild.options.rulechannel.options.input.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.rulechannel.options.input.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.safetyalerts.name'))
-            .setDescription(localeManager.getString('commands.guild.options.safetyalerts.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.safetyalerts.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.safetyalerts.name'))
+            .setDescription(localeManager.getString('commands.guild.options.safetyalerts.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.safetyalerts.description'))
             
             .addChannelOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.safetyalerts.options.input.name'))
-                .setDescription(localeManager.getString('commands.guild.options.safetyalerts.options.input.description'))
+                option.setName(localeManager.getString('commands.guild.options.safetyalerts.options.input.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.safetyalerts.options.input.name'))
+                .setDescription(localeManager.getString('commands.guild.options.safetyalerts.options.input.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.safetyalerts.options.input.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.systemchannel.name'))
-            .setDescription(localeManager.getString('commands.guild.options.systemchannel.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.systemchannel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.systemchannel.name'))
+            .setDescription(localeManager.getString('commands.guild.options.systemchannel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.systemchannel.description'))
             
             .addChannelOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.systemchannel.options.input.name'))
-                .setDescription(localeManager.getString('commands.guild.options.systemchannel.options.input.description'))
+                option.setName(localeManager.getString('commands.guild.options.systemchannel.options.input.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.systemchannel.options.input.name'))
+                .setDescription(localeManager.getString('commands.guild.options.systemchannel.options.input.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.systemchannel.options.input.description'))
                 .setRequired(true)
             )
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.guild.options.verificationlevel.name'))
-            .setDescription(localeManager.getString('commands.guild.options.verificationlevel.description'))
+            subcommand.setName(localeManager.getString('commands.guild.options.verificationlevel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.verificationlevel.name'))
+            .setDescription(localeManager.getString('commands.guild.options.verificationlevel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.verificationlevel.description'))
             
             .addNumberOption(option =>
-                option.setName(localeManager.getString('commands.guild.options.verificationlevel.options.input.name'))
-                .setDescription(localeManager.getString('commands.guild.options.verificationlevel.options.input.description'))
+                option.setName(localeManager.getString('commands.guild.options.verificationlevel.options.input.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.verificationlevel.options.input.name'))
+                .setDescription(localeManager.getString('commands.guild.options.verificationlevel.options.input.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guild.options.verificationlevel.options.input.description'))
                 .setMaxValue(4)
                 .setMinValue(0)
                 .setRequired(true)

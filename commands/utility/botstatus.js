@@ -7,8 +7,8 @@ const localeManager = new LocaleManager();
 module.exports = {
   cooldown: 10,
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.botstatus.name'))
-    .setDescription(localeManager.getString('commands.botstatus.description')),
+    .setName(localeManager.getString('commands.botstatus.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.botstatus.name'))
+    .setDescription(localeManager.getString('commands.botstatus.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.botstatus.description')),
   async execute(interaction) {
     await interaction.reply({ content: 'Подождите...' });
 

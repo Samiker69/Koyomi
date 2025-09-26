@@ -9,73 +9,73 @@ const localeManager = new LocaleManager();
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.captcha.name'))
-        .setDescription(localeManager.getString('commands.captcha.description'))
+        .setName(localeManager.getString('commands.captcha.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.name'))
+        .setDescription(localeManager.getString('commands.captcha.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.description'))
         .setContexts(0,1,2)
         .addBooleanOption(opt => 
-            opt.setName(localeManager.getString('commands.captcha.options.invisible.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.invisible.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.invisible.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.invisible.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.invisible.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.invisible.description'))
         )
         // Базовые настройки
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.length.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.length.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.length.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.length.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.length.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.length.description'))
             .setMinValue(1)
             .setMaxValue(12)
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.width.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.width.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.width.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.width.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.width.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.width.description'))
             .setMinValue(150)
             .setMaxValue(400)
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.height.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.height.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.height.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.height.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.height.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.height.description'))
             .setMinValue(50)
             .setMaxValue(200)
         )
         // Настройки текста
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.min_font_size.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.min_font_size.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.min_font_size.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.min_font_size.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.min_font_size.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.min_font_size.description'))
             .setMinValue(10)
             .setMaxValue(50)
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.max_font_size.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.max_font_size.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.max_font_size.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.max_font_size.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.max_font_size.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.max_font_size.description'))
             .setMinValue(15)
             .setMaxValue(60)
         )
         .addNumberOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.max_rotation.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.max_rotation.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.max_rotation.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.max_rotation.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.max_rotation.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.max_rotation.description'))
             .setMinValue(0.1)
             .setMaxValue(2.0)
         )
         .addNumberOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.max_skew.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.max_skew.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.max_skew.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.max_skew.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.max_skew.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.max_skew.description'))
             .setMinValue(0.1)
             .setMaxValue(1.0)
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.text_outline.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.text_outline.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.text_outline.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.text_outline.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.text_outline.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.text_outline.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.random_colors.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.random_colors.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.random_colors.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.random_colors.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.random_colors.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.random_colors.description'))
         )
         // Настройки фона
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.gradient_bg.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.gradient_bg.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.gradient_bg.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.gradient_bg.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.gradient_bg.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.gradient_bg.description'))
         )
         .addStringOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.gradient_type.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.gradient_type.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.gradient_type.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.gradient_type.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.gradient_type.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.gradient_type.description'))
             .addChoices(
                 { name: localeManager.getString('commands.captcha.options.gradient_type.choices.linear'), value: 'linear' },
                 { name: localeManager.getString('commands.captcha.options.gradient_type.choices.radial'), value: 'radial' }
@@ -83,68 +83,68 @@ module.exports = {
         )
         // Настройки шума
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.noise_lines.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.noise_lines.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.noise_lines.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.noise_lines.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.noise_lines.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.noise_lines.description'))
             .setMinValue(0)
             .setMaxValue(20)
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.noise_dots.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.noise_dots.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.noise_dots.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.noise_dots.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.noise_dots.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.noise_dots.description'))
             .setMinValue(0)
             .setMaxValue(300)
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.noise_circles.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.noise_circles.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.noise_circles.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.noise_circles.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.noise_circles.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.noise_circles.description'))
             .setMinValue(0)
             .setMaxValue(15)
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.curved_lines.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.curved_lines.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.curved_lines.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.curved_lines.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.curved_lines.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.curved_lines.description'))
         )
         .addNumberOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.noise_opacity.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.noise_opacity.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.noise_opacity.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.noise_opacity.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.noise_opacity.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.noise_opacity.description'))
             .setMinValue(0.1)
             .setMaxValue(1.0)
         )
         // Настройки искажений
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.wave_distortion.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.wave_distortion.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.wave_distortion.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.wave_distortion.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.wave_distortion.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.wave_distortion.description'))
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.wave_amplitude.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.wave_amplitude.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.wave_amplitude.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.wave_amplitude.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.wave_amplitude.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.wave_amplitude.description'))
             .setMinValue(1)
             .setMaxValue(10)
         )
         .addNumberOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.wave_frequency.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.wave_frequency.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.wave_frequency.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.wave_frequency.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.wave_frequency.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.wave_frequency.description'))
             .setMinValue(0.01)
             .setMaxValue(0.2)
         )
         // Настройки помех
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.scratches.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.scratches.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.scratches.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.scratches.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.scratches.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.scratches.description'))
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.scratch_count.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.scratch_count.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.scratch_count.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.scratch_count.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.scratch_count.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.scratch_count.description'))
             .setMinValue(1)
             .setMaxValue(10)
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.grid_interference.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.grid_interference.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.grid_interference.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.grid_interference.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.grid_interference.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.grid_interference.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.captcha.options.overlay_interference.name'))
-            .setDescription(localeManager.getString('commands.captcha.options.overlay_interference.description'))
+            opt.setName(localeManager.getString('commands.captcha.options.overlay_interference.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.overlay_interference.name'))
+            .setDescription(localeManager.getString('commands.captcha.options.overlay_interference.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.captcha.options.overlay_interference.description'))
         ),
 
     async execute(interaction) {

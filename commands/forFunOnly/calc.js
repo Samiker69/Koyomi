@@ -7,11 +7,11 @@ const localeManager = new LocaleManager();
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.calc.name'))
-        .setDescription(localeManager.getString('commands.calc.description'))
+        .setName(localeManager.getString('commands.calc.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.calc.name'))
+        .setDescription(localeManager.getString('commands.calc.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.calc.description'))
         .addStringOption(opt => 
-            opt.setName(localeManager.getString('commands.calc.options.expression.name'))
-            .setDescription(localeManager.getString('commands.calc.options.expression.description'))
+            opt.setName(localeManager.getString('commands.calc.options.expression.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.calc.options.expression.name'))
+            .setDescription(localeManager.getString('commands.calc.options.expression.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.calc.options.expression.description'))
             .setRequired(true)
         ),
 

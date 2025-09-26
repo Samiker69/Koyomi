@@ -9,49 +9,49 @@ const localeManager = new LocaleManager();
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.room.name'))
-    .setDescription(localeManager.getString('commands.room.description'))
+    .setName(localeManager.getString('commands.room.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.name'))
+    .setDescription(localeManager.getString('commands.room.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.description'))
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.room.options.rename.name'))
-        .setDescription(localeManager.getString('commands.room.options.rename.description'))
+        .setName(localeManager.getString('commands.room.options.rename.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.rename.name'))
+        .setDescription(localeManager.getString('commands.room.options.rename.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.rename.description'))
         .addStringOption(opt =>
           opt
-            .setName(localeManager.getString('commands.room.options.rename.options.name.name'))
-            .setDescription(localeManager.getString('commands.room.options.rename.options.name.description'))
+            .setName(localeManager.getString('commands.room.options.rename.options.name.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.rename.options.name.name'))
+            .setDescription(localeManager.getString('commands.room.options.rename.options.name.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.rename.options.name.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.room.options.limit.name'))
-        .setDescription(localeManager.getString('commands.room.options.limit.description'))
+        .setName(localeManager.getString('commands.room.options.limit.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.limit.name'))
+        .setDescription(localeManager.getString('commands.room.options.limit.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.limit.description'))
         .addIntegerOption(opt =>
           opt
-            .setName(localeManager.getString('commands.room.options.limit.options.number.name'))
-            .setDescription(localeManager.getString('commands.room.options.limit.options.number.description'))
+            .setName(localeManager.getString('commands.room.options.limit.options.number.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.limit.options.number.name'))
+            .setDescription(localeManager.getString('commands.room.options.limit.options.number.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.limit.options.number.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.room.options.lock.name'))
-        .setDescription(localeManager.getString('commands.room.options.lock.description'))
+        .setName(localeManager.getString('commands.room.options.lock.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.lock.name'))
+        .setDescription(localeManager.getString('commands.room.options.lock.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.lock.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.room.options.unlock.name'))
-        .setDescription(localeManager.getString('commands.room.options.unlock.description'))
+        .setName(localeManager.getString('commands.room.options.unlock.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.unlock.name'))
+        .setDescription(localeManager.getString('commands.room.options.unlock.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.unlock.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.room.options.private.name'))
-        .setDescription(localeManager.getString('commands.room.options.private.description'))
+        .setName(localeManager.getString('commands.room.options.private.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.private.name'))
+        .setDescription(localeManager.getString('commands.room.options.private.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.private.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.room.options.public.name'))
-        .setDescription(localeManager.getString('commands.room.options.public.description'))
+        .setName(localeManager.getString('commands.room.options.public.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.public.name'))
+        .setDescription(localeManager.getString('commands.room.options.public.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.public.description'))
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Connect),
 

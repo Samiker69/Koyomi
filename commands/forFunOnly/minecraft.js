@@ -6,13 +6,13 @@ const localeManager = new LocaleManager();
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.minecraft.name'))
-    .setDescription(localeManager.getString('commands.minecraft.description'))
+    .setName(localeManager.getString('commands.minecraft.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.minecraft.name'))
+    .setDescription(localeManager.getString('commands.minecraft.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.minecraft.description'))
     
     .addStringOption(opt =>
       opt
-        .setName(localeManager.getString('commands.minecraft.options.player.name'))
-        .setDescription(localeManager.getString('commands.minecraft.options.player.description'))
+        .setName(localeManager.getString('commands.minecraft.options.player.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.minecraft.options.player.name'))
+        .setDescription(localeManager.getString('commands.minecraft.options.player.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.minecraft.options.player.description'))
         
         .setRequired(true)
     ),

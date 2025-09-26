@@ -6,20 +6,20 @@ const localeManager = new LocaleManager();
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.love.name'))
-        .setDescription(localeManager.getString('commands.love.description'))
+        .setName(localeManager.getString('commands.love.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.love.name'))
+        .setDescription(localeManager.getString('commands.love.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.love.description'))
         
         .addUserOption(opt =>
             opt
-            .setName(localeManager.getString('commands.love.options.user1.name'))
-            .setDescription(localeManager.getString('commands.love.options.user1.description'))
+            .setName(localeManager.getString('commands.love.options.user1.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.love.options.user1.name'))
+            .setDescription(localeManager.getString('commands.love.options.user1.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.love.options.user1.description'))
             
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
-            .setName(localeManager.getString('commands.love.options.user2.name'))
-            .setDescription(localeManager.getString('commands.love.options.user2.description'))
+            .setName(localeManager.getString('commands.love.options.user2.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.love.options.user2.name'))
+            .setDescription(localeManager.getString('commands.love.options.user2.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.love.options.user2.description'))
             
             .setRequired(true)
         ),

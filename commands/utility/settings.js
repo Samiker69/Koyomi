@@ -9,65 +9,65 @@ const localeManager = new LocaleManager();
 module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName(localeManager.getString('commands.settings.name'))
-		.setDescription(localeManager.getString('commands.settings.description'))
+		.setName(localeManager.getString('commands.settings.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.name'))
+		.setDescription(localeManager.getString('commands.settings.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.description'))
         .addSubcommand(subcommand => 
-            subcommand.setName(localeManager.getString('commands.settings.options.welcomechannel.name'))
-            .setDescription(localeManager.getString('commands.settings.options.welcomechannel.description'))
-            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.welcomechannel.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.welcomechannel.options.channel.description')).setRequired(true)))
+            subcommand.setName(localeManager.getString('commands.settings.options.welcomechannel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.welcomechannel.name'))
+            .setDescription(localeManager.getString('commands.settings.options.welcomechannel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.welcomechannel.description'))
+            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.welcomechannel.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.welcomechannel.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.welcomechannel.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.welcomechannel.options.channel.description')).setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
             
         .addSubcommand(subcommand => 
-            subcommand.setName(localeManager.getString('commands.settings.options.invite-logger-channel.name'))
-            .setDescription(localeManager.getString('commands.settings.options.invite-logger-channel.description'))
-            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.invite-logger-channel.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.invite-logger-channel.options.channel.description')).setRequired(true)))
+            subcommand.setName(localeManager.getString('commands.settings.options.invite-logger-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.invite-logger-channel.name'))
+            .setDescription(localeManager.getString('commands.settings.options.invite-logger-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.invite-logger-channel.description'))
+            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.invite-logger-channel.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.invite-logger-channel.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.invite-logger-channel.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.invite-logger-channel.options.channel.description')).setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand => 
-            subcommand.setName(localeManager.getString('commands.settings.options.allowlogging.name'))
-            .setDescription(localeManager.getString('commands.settings.options.allowlogging.description'))
-            .addBooleanOption(option => option.setName(localeManager.getString('commands.settings.options.allowlogging.options.bool.name')).setDescription(localeManager.getString('commands.settings.options.allowlogging.options.bool.description')).setRequired(true)))
+            subcommand.setName(localeManager.getString('commands.settings.options.allowlogging.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allowlogging.name'))
+            .setDescription(localeManager.getString('commands.settings.options.allowlogging.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allowlogging.description'))
+            .addBooleanOption(option => option.setName(localeManager.getString('commands.settings.options.allowlogging.options.bool.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allowlogging.options.bool.name')).setDescription(localeManager.getString('commands.settings.options.allowlogging.options.bool.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allowlogging.options.bool.description')).setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand => 
-            subcommand.setName(localeManager.getString('commands.settings.options.allow-membersadd-logging.name'))
-            .setDescription(localeManager.getString('commands.settings.options.allow-membersadd-logging.description'))
-            .addBooleanOption(option => option.setName(localeManager.getString('commands.settings.options.allow-membersadd-logging.options.bool.name')).setDescription(localeManager.getString('commands.settings.options.allow-membersadd-logging.options.bool.description')).setRequired(true)))
+            subcommand.setName(localeManager.getString('commands.settings.options.allow-membersadd-logging.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allow-membersadd-logging.name'))
+            .setDescription(localeManager.getString('commands.settings.options.allow-membersadd-logging.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allow-membersadd-logging.description'))
+            .addBooleanOption(option => option.setName(localeManager.getString('commands.settings.options.allow-membersadd-logging.options.bool.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allow-membersadd-logging.options.bool.name')).setDescription(localeManager.getString('commands.settings.options.allow-membersadd-logging.options.bool.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allow-membersadd-logging.options.bool.description')).setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.set-voice-category.name'))
-            .setDescription(localeManager.getString('commands.settings.options.set-voice-category.description'))
-            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.set-voice-category.options.category.name')).setDescription(localeManager.getString('commands.settings.options.set-voice-category.options.category.description')).setRequired(true)))
+            subcommand.setName(localeManager.getString('commands.settings.options.set-voice-category.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-voice-category.name'))
+            .setDescription(localeManager.getString('commands.settings.options.set-voice-category.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-voice-category.description'))
+            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.set-voice-category.options.category.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-voice-category.options.category.name')).setDescription(localeManager.getString('commands.settings.options.set-voice-category.options.category.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-voice-category.options.category.description')).setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.set-main-voice.name'))
-            .setDescription(localeManager.getString('commands.settings.options.set-main-voice.description'))
-            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.set-main-voice.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.set-main-voice.options.channel.description')).setRequired(true)))
+            subcommand.setName(localeManager.getString('commands.settings.options.set-main-voice.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-main-voice.name'))
+            .setDescription(localeManager.getString('commands.settings.options.set-main-voice.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-main-voice.description'))
+            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.set-main-voice.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-main-voice.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.set-main-voice.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-main-voice.options.channel.description')).setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.support-channel.name'))
-            .setDescription(localeManager.getString('commands.settings.options.support-channel.description'))
+            subcommand.setName(localeManager.getString('commands.settings.options.support-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.support-channel.name'))
+            .setDescription(localeManager.getString('commands.settings.options.support-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.support-channel.description'))
             .addChannelOption(opt =>
-                opt.setName(localeManager.getString('commands.settings.options.support-channel.options.channel.name'))
-                .setDescription(localeManager.getString('commands.settings.options.support-channel.options.channel.description'))
+                opt.setName(localeManager.getString('commands.settings.options.support-channel.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.support-channel.options.channel.name'))
+                .setDescription(localeManager.getString('commands.settings.options.support-channel.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.support-channel.options.channel.description'))
                 .setRequired(true)
             )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.to-default.name'))
-            .setDescription(localeManager.getString('commands.settings.options.to-default.description'))
+            subcommand.setName(localeManager.getString('commands.settings.options.to-default.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.to-default.name'))
+            .setDescription(localeManager.getString('commands.settings.options.to-default.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.to-default.description'))
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.set-reports-channel.name'))
-                .setDescription(localeManager.getString('commands.settings.options.set-reports-channel.description'))
+            subcommand.setName(localeManager.getString('commands.settings.options.set-reports-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-reports-channel.name'))
+                .setDescription(localeManager.getString('commands.settings.options.set-reports-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-reports-channel.description'))
                 .addChannelOption(option =>
-                    option.setName(localeManager.getString('commands.settings.options.set-reports-channel.options.channel.name'))
-                        .setDescription(localeManager.getString('commands.settings.options.set-reports-channel.options.channel.description'))
+                    option.setName(localeManager.getString('commands.settings.options.set-reports-channel.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-reports-channel.options.channel.name'))
+                        .setDescription(localeManager.getString('commands.settings.options.set-reports-channel.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-reports-channel.options.channel.description'))
                         .setRequired(true)
                 )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),

@@ -4,49 +4,49 @@ const LocaleManager = require('../../locales/localesManager');
 const localeManager = new LocaleManager();
 
 const data = new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.message.name'))
-    .setDescription(localeManager.getString('commands.message.description'))
+    .setName(localeManager.getString('commands.message.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.name'))
+    .setDescription(localeManager.getString('commands.message.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.description'))
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.message.options.clear.name'))
-        .setDescription(localeManager.getString('commands.message.options.clear.description'))
+        subcommand.setName(localeManager.getString('commands.message.options.clear.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.clear.name'))
+        .setDescription(localeManager.getString('commands.message.options.clear.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.clear.description'))
         .addIntegerOption(option => 
-            option.setName(localeManager.getString('commands.message.options.clear.options.amount.name'))
-                .setDescription(localeManager.getString('commands.message.options.clear.options.amount.description'))
+            option.setName(localeManager.getString('commands.message.options.clear.options.amount.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.clear.options.amount.name'))
+                .setDescription(localeManager.getString('commands.message.options.clear.options.amount.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.clear.options.amount.description'))
                 
                 .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.message.options.pin.name'))
-        .setDescription(localeManager.getString('commands.message.options.pin.description'))
+        subcommand.setName(localeManager.getString('commands.message.options.pin.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.pin.name'))
+        .setDescription(localeManager.getString('commands.message.options.pin.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.pin.description'))
         .addStringOption(option => 
-            option.setName(localeManager.getString('commands.message.options.pin.options.id.name'))
-            .setDescription(localeManager.getString('commands.message.options.pin.options.id.description'))
+            option.setName(localeManager.getString('commands.message.options.pin.options.id.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.pin.options.id.name'))
+            .setDescription(localeManager.getString('commands.message.options.pin.options.id.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.pin.options.id.description'))
             
             .setRequired(true)))
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.message.options.unpin.name'))
-        .setDescription(localeManager.getString('commands.message.options.unpin.description'))
+        subcommand.setName(localeManager.getString('commands.message.options.unpin.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.unpin.name'))
+        .setDescription(localeManager.getString('commands.message.options.unpin.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.unpin.description'))
         .addStringOption(option =>
-            option.setName(localeManager.getString('commands.message.options.unpin.options.id.name'))
-            .setDescription(localeManager.getString('commands.message.options.unpin.options.id.description'))
+            option.setName(localeManager.getString('commands.message.options.unpin.options.id.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.unpin.options.id.name'))
+            .setDescription(localeManager.getString('commands.message.options.unpin.options.id.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.unpin.options.id.description'))
             
             .setRequired(true)))
 
     .addSubcommand(subcommand => 
-        subcommand.setName(localeManager.getString('commands.message.options.purge.name'))
-        .setDescription(localeManager.getString('commands.message.options.purge.description'))
+        subcommand.setName(localeManager.getString('commands.message.options.purge.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.purge.name'))
+        .setDescription(localeManager.getString('commands.message.options.purge.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.purge.description'))
         .addUserOption(option =>
-          option.setName(localeManager.getString('commands.message.options.purge.options.target.name'))
-            .setDescription(localeManager.getString('commands.message.options.purge.options.target.description'))
+          option.setName(localeManager.getString('commands.message.options.purge.options.target.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.purge.options.target.name'))
+            .setDescription(localeManager.getString('commands.message.options.purge.options.target.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.purge.options.target.description'))
             
             .setRequired(true)
         )
         .addIntegerOption(option =>
-          option.setName(localeManager.getString('commands.message.options.purge.options.amount.name'))
-            .setDescription(localeManager.getString('commands.message.options.purge.options.amount.description'))
+          option.setName(localeManager.getString('commands.message.options.purge.options.amount.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.purge.options.amount.name'))
+            .setDescription(localeManager.getString('commands.message.options.purge.options.amount.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.message.options.purge.options.amount.description'))
             
             .setRequired(true)
             .setMinValue(1)

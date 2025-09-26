@@ -224,7 +224,7 @@
                                 "invisible": "invisible"
                             }
                         },
-                        "nameactivity": {
+                        "name-activity": {
                             "name": "name-activity",
                             "description": "Activity name"
                         }

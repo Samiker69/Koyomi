@@ -123,12 +123,12 @@ async function getRedditImage(category = 'random', fetchRetries = 3) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.reddit.name'))
-    .setDescription(localeManager.getString('commands.reddit.description'))
+    .setName(localeManager.getString('commands.reddit.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.reddit.name'))
+    .setDescription(localeManager.getString('commands.reddit.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.reddit.description'))
     .setNSFW(true)
     .addStringOption(option =>
-      option.setName(localeManager.getString('commands.reddit.options.category.name'))
-        .setDescription(localeManager.getString('commands.reddit.options.category.description'))
+      option.setName(localeManager.getString('commands.reddit.options.category.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.reddit.options.category.name'))
+        .setDescription(localeManager.getString('commands.reddit.options.category.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.reddit.options.category.description'))
         .setRequired(false)
         .addChoices(...Object.keys(categories).map(cat => ({
           name: cat,

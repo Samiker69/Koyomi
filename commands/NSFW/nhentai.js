@@ -13,8 +13,8 @@ const {
   module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-      .setName(localeManager.getString('commands.hentai.name'))
-      .setDescription(localeManager.getString('commands.hentai.description')),
+      .setName(localeManager.getString('commands.hentai.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.hentai.name'))
+      .setDescription(localeManager.getString('commands.hentai.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.hentai.description')),
   
     async execute(interaction) {
       if (!interaction.channel.nsfw) return await interaction.reply({content: 'Это не NSFW канал, чертов дрочун малолетний', flags: MessageFlags.Ephemeral});

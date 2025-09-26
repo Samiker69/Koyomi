@@ -9,19 +9,19 @@ const path = require('path');
 const fs = require('fs').promises*/
 
 const data = new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.eval.name'))
-    .setDescription(localeManager.getString('commands.eval.description'))
+    .setName(localeManager.getString('commands.eval.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.name'))
+    .setDescription(localeManager.getString('commands.eval.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.description'))
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.eval.options.presence.name'))
-            .setDescription(localeManager.getString('commands.eval.options.presence.description'))
+            subcommand.setName(localeManager.getString('commands.eval.options.presence.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.name'))
+            .setDescription(localeManager.getString('commands.eval.options.presence.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.description'))
             .addStringOption(option => 
-                option.setName(localeManager.getString('commands.eval.options.presence.options.nameactivity.name'))
-                .setDescription(localeManager.getString('commands.eval.options.presence.options.nameactivity.description'))
+                option.setName(localeManager.getString('commands.eval.options.presence.options.name-activity.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.name-activity.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.name-activity.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.name-activity.description'))
                 
             )
             .addStringOption(option => 
-                option.setName(localeManager.getString('commands.eval.options.presence.options.status.name'))
-                .setDescription(localeManager.getString('commands.eval.options.presence.options.status.description'))
+                option.setName(localeManager.getString('commands.eval.options.presence.options.status.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.status.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.status.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.status.description'))
                 
                 .addChoices(
                     {name: localeManager.getString('commands.eval.options.presence.options.status.choices.online'), value: PresenceUpdateStatus.Online},
@@ -31,8 +31,8 @@ const data = new SlashCommandBuilder()
                 )
             )
             .addIntegerOption(option =>
-                option.setName(localeManager.getString('commands.eval.options.presence.options.activity.name'))
-                .setDescription(localeManager.getString('commands.eval.options.presence.options.activity.description'))
+                option.setName(localeManager.getString('commands.eval.options.presence.options.activity.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.activity.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.activity.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.activity.description'))
                 
                 .addChoices(
                     {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.watching'), value: ActivityType.Watching }, 
@@ -45,28 +45,28 @@ const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.eval.options.avatar.name'))
-            .setDescription(localeManager.getString('commands.eval.options.avatar.description'))
+            subcommand.setName(localeManager.getString('commands.eval.options.avatar.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.avatar.name'))
+            .setDescription(localeManager.getString('commands.eval.options.avatar.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.avatar.description'))
             .addAttachmentOption(option =>
-                option.setName(localeManager.getString('commands.eval.options.avatar.options.file.name'))
-                .setDescription(localeManager.getString('commands.eval.options.avatar.options.file.description'))
+                option.setName(localeManager.getString('commands.eval.options.avatar.options.file.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.avatar.options.file.name'))
+                .setDescription(localeManager.getString('commands.eval.options.avatar.options.file.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.avatar.options.file.description'))
                 
                 .setRequired(true)
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.eval.options.banner.name'))
-            .setDescription(localeManager.getString('commands.eval.options.banner.description'))
+            subcommand.setName(localeManager.getString('commands.eval.options.banner.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.banner.name'))
+            .setDescription(localeManager.getString('commands.eval.options.banner.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.banner.description'))
             .addAttachmentOption(option =>
-                option.setName(localeManager.getString('commands.eval.options.banner.options.file.name'))
-                .setDescription(localeManager.getString('commands.eval.options.banner.options.file.description'))
+                option.setName(localeManager.getString('commands.eval.options.banner.options.file.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.banner.options.file.name'))
+                .setDescription(localeManager.getString('commands.eval.options.banner.options.file.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.banner.options.file.description'))
                 
                 .setRequired(true)
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.eval.options.botinfo.name'))
-            .setDescription(localeManager.getString('commands.eval.options.botinfo.description'))
+            subcommand.setName(localeManager.getString('commands.eval.options.botinfo.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.botinfo.name'))
+            .setDescription(localeManager.getString('commands.eval.options.botinfo.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.botinfo.description'))
         )
 
 module.exports = {
@@ -82,9 +82,9 @@ module.exports = {
                 const nameactivity = interaction.options.getString('name-activity') || interaction.client.user.presence.name || '';
                 
                 try {
-                    await interaction.client.user.setPresence({ activities: [{ name: nameactivity }], status: presence });
-                    await interaction.client.user.setActivity(nameactivity, { type: activity })
-                    await interaction.reply({content: localeManager.getString('commands.eval.presence.status_changed', { presence: presence, nameActivity: nameactivity, activity: activity }), flags: MessageFlags.Ephemeral });
+                    await interaction.client.user.setPresence({ activities: [{ name: name-activity }], status: presence });
+                    await interaction.client.user.setActivity(name-activity, { type: activity })
+                    await interaction.reply({content: localeManager.getString('commands.eval.presence.status_changed', { presence: presence, nameActivity: name-activity, activity: activity }), flags: MessageFlags.Ephemeral });
                 } catch (error) {
                     await interaction.reply({content: localeManager.getString('commands.eval.presence.status_change_failed'), flags: MessageFlags.Ephemeral });
                     const errorEmbed = new EmbedBuilder()

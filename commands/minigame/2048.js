@@ -100,8 +100,8 @@ function isGameOver(board) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.2048.name'))
-        .setDescription(localeManager.getString('commands.2048.description')),
+        .setName(localeManager.getString('commands.2048.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.2048.name'))
+        .setDescription(localeManager.getString('commands.2048.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.2048.description')),
 
     async execute(interaction) {
         const playerId = interaction.user.id;

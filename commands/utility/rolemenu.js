@@ -22,106 +22,106 @@ function parseEmoji(emojiInput) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.rolemenu.name'))
-        .setDescription(localeManager.getString('commands.rolemenu.description'))
+        .setName(localeManager.getString('commands.rolemenu.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.name'))
+        .setDescription(localeManager.getString('commands.rolemenu.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.create-select.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.create-select.description'))
+                .setName(localeManager.getString('commands.rolemenu.options.create-select.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.name'))
+                .setDescription(localeManager.getString('commands.rolemenu.options.create-select.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.description'))
                 .addChannelOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.channel.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.channel.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.channel.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.channel.description'))
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.title.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.title.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.title.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.title.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.title.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.title.description'))
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.description.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.description.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.description.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.description.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.description.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.description.description'))
                         .setRequired(false)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.placeholder.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.placeholder.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.placeholder.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.placeholder.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.placeholder.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.placeholder.description'))
                         .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.create-buttons.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.description'))
+                .setName(localeManager.getString('commands.rolemenu.options.create-buttons.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.name'))
+                .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.description'))
                 .addChannelOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.channel.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.channel.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.channel.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.channel.description'))
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.title.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.title.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.title.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.title.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.title.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.title.description'))
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.description.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.description.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.description.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.description.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.description.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.description.description'))
                         .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.add-role.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.add-role.description'))
+                .setName(localeManager.getString('commands.rolemenu.options.add-role.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.name'))
+                .setDescription(localeManager.getString('commands.rolemenu.options.add-role.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.description'))
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.message_id.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.message_id.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.message_id.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.message_id.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.message_id.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.message_id.description'))
                         .setRequired(true)
                 )
                 .addRoleOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.role.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.role.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.role.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.role.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.role.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.role.description'))
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.label.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.label.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.label.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.label.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.label.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.label.description'))
                         .setRequired(false)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.description.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.description.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.description.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.description.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.description.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.description.description'))
                         .setRequired(false)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.emoji.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.emoji.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.emoji.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.emoji.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.emoji.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.emoji.description'))
                         .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.remove-role.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.description'))
+                .setName(localeManager.getString('commands.rolemenu.options.remove-role.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.name'))
+                .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.description'))
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.remove-role.options.message_id.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.options.message_id.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.remove-role.options.message_id.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.options.message_id.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.options.message_id.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.options.message_id.description'))
                         .setRequired(true)
                 )
                 .addRoleOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.remove-role.options.role.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.options.role.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.remove-role.options.role.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.options.role.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.options.role.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.options.role.description'))
                         .setRequired(true)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.delete.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.delete.description'))
+                .setName(localeManager.getString('commands.rolemenu.options.delete.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.delete.name'))
+                .setDescription(localeManager.getString('commands.rolemenu.options.delete.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.delete.description'))
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.delete.options.message_id.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.delete.options.message_id.description'))
+                    option.setName(localeManager.getString('commands.rolemenu.options.delete.options.message_id.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.delete.options.message_id.name'))
+                        .setDescription(localeManager.getString('commands.rolemenu.options.delete.options.message_id.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.delete.options.message_id.description'))
                         .setRequired(true)
                 )
         ),

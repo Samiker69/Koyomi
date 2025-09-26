@@ -20,34 +20,34 @@ async function getActionGif(query) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.action.name'))
-    .setDescription(localeManager.getString('commands.action.description'))
+    .setName(localeManager.getString('commands.action.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.name'))
+    .setDescription(localeManager.getString('commands.action.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.description'))
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.options.hug.name'))
-        .setDescription(localeManager.getString('commands.action.options.hug.description'))
+      sub.setName(localeManager.getString('commands.action.options.hug.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.hug.name'))
+        .setDescription(localeManager.getString('commands.action.options.hug.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.hug.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.hug.options.user.name')).setDescription(localeManager.getString('commands.action.options.hug.options.user.description')).setRequired(true)
+          opt.setName(localeManager.getString('commands.action.options.hug.options.user.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.hug.options.user.name')).setDescription(localeManager.getString('commands.action.options.hug.options.user.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.hug.options.user.description')).setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.options.slap.name'))
-        .setDescription(localeManager.getString('commands.action.options.slap.description'))
+      sub.setName(localeManager.getString('commands.action.options.slap.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.slap.name'))
+        .setDescription(localeManager.getString('commands.action.options.slap.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.slap.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.slap.options.user.name')).setDescription(localeManager.getString('commands.action.options.slap.options.user.description')).setRequired(true)
+          opt.setName(localeManager.getString('commands.action.options.slap.options.user.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.slap.options.user.name')).setDescription(localeManager.getString('commands.action.options.slap.options.user.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.slap.options.user.description')).setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.options.pat.name'))
-        .setDescription(localeManager.getString('commands.action.options.pat.description'))
+      sub.setName(localeManager.getString('commands.action.options.pat.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.pat.name'))
+        .setDescription(localeManager.getString('commands.action.options.pat.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.pat.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.pat.options.user.name')).setDescription(localeManager.getString('commands.action.options.pat.options.user.description')).setRequired(true)
+          opt.setName(localeManager.getString('commands.action.options.pat.options.user.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.pat.options.user.name')).setDescription(localeManager.getString('commands.action.options.pat.options.user.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.pat.options.user.description')).setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.options.kiss.name'))
-        .setDescription(localeManager.getString('commands.action.options.kiss.description'))
+      sub.setName(localeManager.getString('commands.action.options.kiss.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.kiss.name'))
+        .setDescription(localeManager.getString('commands.action.options.kiss.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.kiss.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.kiss.options.user.name')).setDescription(localeManager.getString('commands.action.options.kiss.options.user.description')).setRequired(true)
+          opt.setName(localeManager.getString('commands.action.options.kiss.options.user.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.kiss.options.user.name')).setDescription(localeManager.getString('commands.action.options.kiss.options.user.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.kiss.options.user.description')).setRequired(true)
         )
     ),
 
