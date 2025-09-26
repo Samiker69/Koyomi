@@ -17,19 +17,19 @@ module.exports = {
     .setDescription(localeManager.getString('commands.info.description'))
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.info.userinfo.name'))
-        .setDescription(localeManager.getString('commands.info.userinfo.description'))
+        .setName(localeManager.getString('commands.info.options.userinfo.name'))
+        .setDescription(localeManager.getString('commands.info.options.userinfo.description'))
         .addUserOption(opt =>
           opt
-            .setName(localeManager.getString('commands.info.userinfo.options.target.name'))
-            .setDescription(localeManager.getString('commands.info.userinfo.options.target.description'))
+            .setName(localeManager.getString('commands.info.options.userinfo.options.target.name'))
+            .setDescription(localeManager.getString('commands.info.options.userinfo.options.target.description'))
             .setRequired(false)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.info.serverinfo.name'))
-        .setDescription(localeManager.getString('commands.info.serverinfo.description'))
+        .setName(localeManager.getString('commands.info.options.serverinfo.name'))
+        .setDescription(localeManager.getString('commands.info.options.serverinfo.description'))
     ),
 
   async execute(interaction) {

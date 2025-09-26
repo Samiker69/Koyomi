@@ -11,8 +11,8 @@ module.exports = {
     
     .addStringOption(opt =>
       opt
-        .setName(localeManager.getString('commands.minecraft.player.name'))
-        .setDescription(localeManager.getString('commands.minecraft.player.description'))
+        .setName(localeManager.getString('commands.minecraft.options.player.name'))
+        .setDescription(localeManager.getString('commands.minecraft.options.player.description'))
         
         .setRequired(true)
     ),

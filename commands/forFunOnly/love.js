@@ -11,15 +11,15 @@ module.exports = {
         
         .addUserOption(opt =>
             opt
-            .setName(localeManager.getString('commands.love.user1.name'))
-            .setDescription(localeManager.getString('commands.love.user1.description'))
+            .setName(localeManager.getString('commands.love.options.user1.name'))
+            .setDescription(localeManager.getString('commands.love.options.user1.description'))
             
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
-            .setName(localeManager.getString('commands.love.user2.name'))
-            .setDescription(localeManager.getString('commands.love.user2.description'))
+            .setName(localeManager.getString('commands.love.options.user2.name'))
+            .setDescription(localeManager.getString('commands.love.options.user2.description'))
             
             .setRequired(true)
         ),

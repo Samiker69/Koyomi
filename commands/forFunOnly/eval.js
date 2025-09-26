@@ -12,61 +12,61 @@ const data = new SlashCommandBuilder()
     .setName(localeManager.getString('commands.eval.name'))
     .setDescription(localeManager.getString('commands.eval.description'))
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.eval.presence.name'))
-            .setDescription(localeManager.getString('commands.eval.presence.description'))
+            subcommand.setName(localeManager.getString('commands.eval.options.presence.name'))
+            .setDescription(localeManager.getString('commands.eval.options.presence.description'))
             .addStringOption(option => 
-                option.setName(localeManager.getString('commands.eval.presence.name_activity.name'))
-                .setDescription(localeManager.getString('commands.eval.presence.name_activity.description'))
+                option.setName(localeManager.getString('commands.eval.options.presence.options.nameactivity.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.nameactivity.description'))
                 
             )
             .addStringOption(option => 
-                option.setName(localeManager.getString('commands.eval.presence.status.name'))
-                .setDescription(localeManager.getString('commands.eval.presence.status.description'))
+                option.setName(localeManager.getString('commands.eval.options.presence.options.status.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.status.description'))
                 
                 .addChoices(
-                    {name: localeManager.getString('commands.eval.presence.status.online'), value: PresenceUpdateStatus.Online},
-                    {name: localeManager.getString('commands.eval.presence.status.idle'), value: PresenceUpdateStatus.Idle},
-                    {name: localeManager.getString('commands.eval.presence.status.dnd'), value: PresenceUpdateStatus.DoNotDisturb},
-                    {name: localeManager.getString('commands.eval.presence.status.invisible'), value: PresenceUpdateStatus.Invisible}
+                    {name: localeManager.getString('commands.eval.options.presence.options.status.choices.online'), value: PresenceUpdateStatus.Online},
+                    {name: localeManager.getString('commands.eval.options.presence.options.status.choices.idle'), value: PresenceUpdateStatus.Idle},
+                    {name: localeManager.getString('commands.eval.options.presence.options.status.choices.dnd'), value: PresenceUpdateStatus.DoNotDisturb},
+                    {name: localeManager.getString('commands.eval.options.presence.options.status.choices.invisible'), value: PresenceUpdateStatus.Invisible}
                 )
             )
             .addIntegerOption(option =>
-                option.setName(localeManager.getString('commands.eval.presence.activity.name'))
-                .setDescription(localeManager.getString('commands.eval.presence.activity.description'))
+                option.setName(localeManager.getString('commands.eval.options.presence.options.activity.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.activity.description'))
                 
                 .addChoices(
-                    {name: localeManager.getString('commands.eval.presence.activity.watching'), value: ActivityType.Watching }, 
-                    {name: localeManager.getString('commands.eval.presence.activity.listening'), value: ActivityType.Listening },
-                    {name: localeManager.getString('commands.eval.presence.activity.competing'), value: ActivityType.Competing },
-                    {name: localeManager.getString('commands.eval.presence.activity.playing'), value: ActivityType.Playing },
-                    {name: localeManager.getString('commands.eval.presence.activity.streaming'), value: ActivityType.Streaming },
-                    {name: localeManager.getString('commands.eval.presence.activity.custom'), value: ActivityType.Custom },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.watching'), value: ActivityType.Watching }, 
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.listening'), value: ActivityType.Listening },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.competing'), value: ActivityType.Competing },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.playing'), value: ActivityType.Playing },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.streaming'), value: ActivityType.Streaming },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.custom'), value: ActivityType.Custom },
                 )
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.eval.avatar.name'))
-            .setDescription(localeManager.getString('commands.eval.avatar.description'))
+            subcommand.setName(localeManager.getString('commands.eval.options.avatar.name'))
+            .setDescription(localeManager.getString('commands.eval.options.avatar.description'))
             .addAttachmentOption(option =>
-                option.setName(localeManager.getString('commands.eval.avatar.file.name'))
-                .setDescription(localeManager.getString('commands.eval.avatar.file.description'))
+                option.setName(localeManager.getString('commands.eval.options.avatar.options.file.name'))
+                .setDescription(localeManager.getString('commands.eval.options.avatar.options.file.description'))
                 
                 .setRequired(true)
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.eval.banner.name'))
-            .setDescription(localeManager.getString('commands.eval.banner.description'))
+            subcommand.setName(localeManager.getString('commands.eval.options.banner.name'))
+            .setDescription(localeManager.getString('commands.eval.options.banner.description'))
             .addAttachmentOption(option =>
-                option.setName(localeManager.getString('commands.eval.banner.file.name'))
-                .setDescription(localeManager.getString('commands.eval.banner.file.description'))
+                option.setName(localeManager.getString('commands.eval.options.banner.options.file.name'))
+                .setDescription(localeManager.getString('commands.eval.options.banner.options.file.description'))
                 
                 .setRequired(true)
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.eval.botinfo.name'))
-            .setDescription(localeManager.getString('commands.eval.botinfo.description'))
+            subcommand.setName(localeManager.getString('commands.eval.options.botinfo.name'))
+            .setDescription(localeManager.getString('commands.eval.options.botinfo.description'))
         )
 
 module.exports = {

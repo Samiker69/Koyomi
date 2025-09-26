@@ -26,28 +26,28 @@ module.exports = {
       sub.setName(localeManager.getString('commands.action.options.hug.name'))
         .setDescription(localeManager.getString('commands.action.options.hug.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.hug.options.user.name')).setDescription(localeManager.getString('commands.action.options.hug.user.description')).setRequired(true)
+          opt.setName(localeManager.getString('commands.action.options.hug.options.user.name')).setDescription(localeManager.getString('commands.action.options.hug.options.user.description')).setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub.setName(localeManager.getString('commands.action.options.slap.name'))
         .setDescription(localeManager.getString('commands.action.options.slap.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.slap.user.name')).setDescription(localeManager.getString('commands.action.options.slap.user.description')).setRequired(true)
+          opt.setName(localeManager.getString('commands.action.options.slap.options.user.name')).setDescription(localeManager.getString('commands.action.options.slap.options.user.description')).setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.slap.name'))
+      sub.setName(localeManager.getString('commands.action.options.pat.name'))
         .setDescription(localeManager.getString('commands.action.options.pat.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.pat.user.name')).setDescription(localeManager.getString('commands.action.options.pat.user.description')).setRequired(true)
+          opt.setName(localeManager.getString('commands.action.options.pat.options.user.name')).setDescription(localeManager.getString('commands.action.options.pat.options.user.description')).setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub.setName(localeManager.getString('commands.action.options.kiss.name'))
         .setDescription(localeManager.getString('commands.action.options.kiss.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.kiss.user.name')).setDescription(localeManager.getString('commands.action.options.kiss.user.description')).setRequired(true)
+          opt.setName(localeManager.getString('commands.action.options.kiss.options.user.name')).setDescription(localeManager.getString('commands.action.options.kiss.options.user.description')).setRequired(true)
         )
     ),
 

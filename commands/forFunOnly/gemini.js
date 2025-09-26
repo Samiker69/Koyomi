@@ -20,157 +20,157 @@ module.exports = {
     .setDescription(localeManager.getString('commands.ai.description'))
     .setContexts(0,1,2)
     .addSubcommand(sub => 
-        sub.setName(localeManager.getString('commands.ai.ask.name'))
-        .setDescription(localeManager.getString('commands.ai.ask.description'))
+        sub.setName(localeManager.getString('commands.ai.options.ask.name'))
+        .setDescription(localeManager.getString('commands.ai.options.ask.description'))
         .addStringOption(opt => 
-            opt.setName(localeManager.getString('commands.ai.ask.text.name'))
-            .setDescription(localeManager.getString('commands.ai.ask.text.description'))
+            opt.setName(localeManager.getString('commands.ai.options.ask.options.text.name'))
+            .setDescription(localeManager.getString('commands.ai.options.ask.options.text.description'))
             .setRequired(true)
         )
         .addAttachmentOption(opt => 
-            opt.setName(localeManager.getString('commands.ai.ask.image.name')) 
-                .setDescription(localeManager.getString('commands.ai.ask.image.description'))
+            opt.setName(localeManager.getString('commands.ai.options.ask.options.image.name')) 
+                .setDescription(localeManager.getString('commands.ai.options.ask.options.image.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.ask.invisible.name'))
-            .setDescription(localeManager.getString('commands.ai.ask.invisible.description'))
+            opt.setName(localeManager.getString('commands.ai.options.ask.options.invisible.name'))
+            .setDescription(localeManager.getString('commands.ai.options.ask.options.invisible.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.add_user.name'))
-        .setDescription(localeManager.getString('commands.ai.add_user.description'))
+        sub.setName(localeManager.getString('commands.ai.options.add_user.name'))
+        .setDescription(localeManager.getString('commands.ai.options.add_user.description'))
         .addUserOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.add_user.user.name'))
-            .setDescription(localeManager.getString('commands.ai.add_user.user.description'))
+            opt.setName(localeManager.getString('commands.ai.options.add_user.options.user.name'))
+            .setDescription(localeManager.getString('commands.ai.options.add_user.options.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.remove_user.name'))
-        .setDescription(localeManager.getString('commands.ai.remove_user.description'))
+        sub.setName(localeManager.getString('commands.ai.options.remove_user.name'))
+        .setDescription(localeManager.getString('commands.ai.options.remove_user.description'))
         .addUserOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.remove_user.user.name'))
-            .setDescription(localeManager.getString('commands.ai.remove_user.user.description'))
+            opt.setName(localeManager.getString('commands.ai.options.remove_user.options.user.name'))
+            .setDescription(localeManager.getString('commands.ai.options.remove_user.options.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.settings.name'))
-        .setDescription(localeManager.getString('commands.ai.settings.description'))
+        sub.setName(localeManager.getString('commands.ai.options.settings.name'))
+        .setDescription(localeManager.getString('commands.ai.options.settings.description'))
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.edit.name'))
-        .setDescription(localeManager.getString('commands.ai.edit.description'))
+        sub.setName(localeManager.getString('commands.ai.options.edit.name'))
+        .setDescription(localeManager.getString('commands.ai.options.edit.description'))
         .addStringOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit.model.name'))
-            .setDescription(localeManager.getString('commands.ai.edit.model.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit.options.model.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit.options.model.description'))
         )
         .addStringOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit.system_instructions.name'))
-            .setDescription(localeManager.getString('commands.ai.edit.system_instructions.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit.options.system_instructions.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit.options.system_instructions.description'))
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit.max_output_tokens.name'))
-            .setDescription(localeManager.getString('commands.ai.edit.max_output_tokens.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit.options.max_output_tokens.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit.options.max_output_tokens.description'))
             .setMaxValue(65536)
             .setMinValue(1)
         )
         .addNumberOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit.temperature.name'))
-            .setDescription(localeManager.getString('commands.ai.edit.temperature.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit.options.temperature.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit.options.temperature.description'))
             .setMaxValue(2)
             .setMinValue(0.1)
         )
         .addNumberOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit.top_p.name'))
-            .setDescription(localeManager.getString('commands.ai.edit.top_p.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit.options.top_p.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit.options.top_p.description'))
             .setMaxValue(1)
             .setMinValue(-1)
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit.top_k.name'))
-            .setDescription(localeManager.getString('commands.ai.edit.top_k.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit.options.top_k.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit.options.top_k.description'))
             .setMaxValue(100)
             .setMinValue(-1)
         )
         .addIntegerOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit.history_limit.name'))
-            .setDescription(localeManager.getString('commands.ai.edit.history_limit.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit.options.history_limit.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit.options.history_limit.description'))
             .setMaxValue(500)
             .setMinValue(0)
         )
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.edit_safety.name'))
-        .setDescription(localeManager.getString('commands.ai.edit_safety.description'))
+        sub.setName(localeManager.getString('commands.ai.options.edit_safety.name'))
+        .setDescription(localeManager.getString('commands.ai.options.edit_safety.description'))
         .addStringOption(opt => 
-            opt.setName(localeManager.getString('commands.ai.edit_safety.s_category.name'))
-            .setDescription(localeManager.getString('commands.ai.edit_safety.s_category.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit_safety.options.s_category.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit_safety.options.s_category.description'))
             .setChoices(
-                { name: localeManager.getString('commands.ai.edit_safety.s_category.harassment'), value: 'HARASSMENT' },
-                { name: localeManager.getString('commands.ai.edit_safety.s_category.hate_speech'), value: 'HATE_SPEECH' },
-                { name: localeManager.getString('commands.ai.edit_safety.s_category.sexually_explicit'), value: 'SEXUALLY_EXPLICIT' },
-                { name: localeManager.getString('commands.ai.edit_safety.s_category.dangerous_content'), value: 'DANGEROUS_CONTENT' }
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_category.choices.harassment'), value: 'HARASSMENT' },
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_category.choices.hate_speech'), value: 'HATE_SPEECH' },
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_category.choices.sexually_explicit'), value: 'SEXUALLY_EXPLICIT' },
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_category.choices.dangerous_content'), value: 'DANGEROUS_CONTENT' }
             )
             .setRequired(true)
         )
         .addStringOption(opt => 
-            opt.setName(localeManager.getString('commands.ai.edit_safety.s_value.name'))
-            .setDescription(localeManager.getString('commands.ai.edit_safety.s_value.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit_safety.options.s_value.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit_safety.options.s_value.description'))
             .setChoices(
-                { name: localeManager.getString('commands.ai.edit_safety.s_value.block_none'), value: 'BLOCK_NONE' },
-                { name: localeManager.getString('commands.ai.edit_safety.s_value.block_high_and_above'), value: 'BLOCK_HIGH_AND_ABOVE' },
-                { name: localeManager.getString('commands.ai.edit_safety.s_value.block_medium_and_above'), value: 'BLOCK_MEDIUM_AND_ABOVE' },
-                { name: localeManager.getString('commands.ai.edit_safety.s_value.block_low_and_above'), value: 'BLOCK_LOW_AND_ABOVE' },
-                { name: localeManager.getString('commands.ai.edit_safety.s_value.harm_block_threshold_unspecified'), value: 'HARM_BLOCK_THRESHOLD_UNSPECIFIED' }
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_value.choices.block_none'), value: 'BLOCK_NONE' },
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_value.choices.block_high_and_above'), value: 'BLOCK_HIGH_AND_ABOVE' },
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_value.choices.block_medium_and_above'), value: 'BLOCK_MEDIUM_AND_ABOVE' },
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_value.choices.block_low_and_above'), value: 'BLOCK_LOW_AND_ABOVE' },
+                { name: localeManager.getString('commands.ai.options.edit_safety.options.s_value.choices.harm_block_threshold_unspecified'), value: 'HARM_BLOCK_THRESHOLD_UNSPECIFIED' }
             )
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.add_apikey.name'))
-        .setDescription(localeManager.getString('commands.ai.add_apikey.description'))
+        sub.setName(localeManager.getString('commands.ai.options.add-apikey.name'))
+        .setDescription(localeManager.getString('commands.ai.options.add-apikey.description'))
         .addStringOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.add_apikey.apikey.name'))
-            .setDescription(localeManager.getString('commands.ai.add_apikey.apikey.description'))
+            opt.setName(localeManager.getString('commands.ai.options.add-apikey.options.apikey.name'))
+            .setDescription(localeManager.getString('commands.ai.options.add-apikey.options.apikey.description'))
             .setRequired(true)
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.add_apikey.for_public_use.name'))
-            .setDescription(localeManager.getString('commands.ai.add_apikey.for_public_use.description'))
+            opt.setName(localeManager.getString('commands.ai.options.add-apikey.options.for-public-use.name'))
+            .setDescription(localeManager.getString('commands.ai.options.add-apikey.options.for-public-use.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.delete_apikey.name'))
-        .setDescription(localeManager.getString('commands.ai.delete_apikey.description'))
+        sub.setName(localeManager.getString('commands.ai.options.delete-apikey.name'))
+        .setDescription(localeManager.getString('commands.ai.options.delete-apikey.description'))
         .addStringOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.delete_apikey.apikey.name'))
-            .setDescription(localeManager.getString('commands.ai.delete_apikey.apikey.description'))
+            opt.setName(localeManager.getString('commands.ai.options.delete-apikey.options.apikey.name'))
+            .setDescription(localeManager.getString('commands.ai.options.delete-apikey.options.apikey.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.delete_apikey.delete_all.name'))
-            .setDescription(localeManager.getString('commands.ai.delete_apikey.delete_all.description'))
+            opt.setName(localeManager.getString('commands.ai.options.delete-apikey.options.delete-all.name'))
+            .setDescription(localeManager.getString('commands.ai.options.delete-apikey.options.delete-all.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.edit_apikey.name'))
-        .setDescription(localeManager.getString('commands.ai.edit_apikey.description'))
+        sub.setName(localeManager.getString('commands.ai.options.edit-apikey.name'))
+        .setDescription(localeManager.getString('commands.ai.options.edit-apikey.description'))
         .addStringOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit_apikey.apikey.name'))
-            .setDescription(localeManager.getString('commands.ai.edit_apikey.apikey.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit-apikey.options.apikey.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit-apikey.options.apikey.description'))
             .setRequired(true)
         )
         .addBooleanOption(opt =>
-            opt.setName(localeManager.getString('commands.ai.edit_apikey.for_public_use.name'))
-            .setDescription(localeManager.getString('commands.ai.edit_apikey.for_public_use.description'))
+            opt.setName(localeManager.getString('commands.ai.options.edit-apikey.options.for-public-use.name'))
+            .setDescription(localeManager.getString('commands.ai.options.edit-apikey.options.for-public-use.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName(localeManager.getString('commands.ai.model_info.name'))
-        .setDescription(localeManager.getString('commands.ai.model_info.description'))
+        sub.setName(localeManager.getString('commands.ai.options.model-info.name'))
+        .setDescription(localeManager.getString('commands.ai.options.model-info.description'))
         .addStringOption(opt => 
-            opt.setName(localeManager.getString('commands.ai.model_info.model.name'))
-            .setDescription(localeManager.getString('commands.ai.model_info.model.description'))
+            opt.setName(localeManager.getString('commands.ai.options.model-info.options.model.name'))
+            .setDescription(localeManager.getString('commands.ai.options.model-info.options.model.description'))
         )
     )
 ,
@@ -353,7 +353,7 @@ module.exports = {
                 break;
             }
 
-            case "add-user": {
+            case "add_user": {
                 const user = interaction.options.getUser('user')
                 try {
                     db.addUserConfig(user.id)
@@ -375,7 +375,7 @@ module.exports = {
                 break;
             }
 
-            case "remove-user": {
+            case "remove_user": {
                 const user = interaction.options.getMember('user');
                 try {
                     const promise = db.deleteUserConfig(user.id)
@@ -490,10 +490,10 @@ module.exports = {
                 const public = interaction.options.getBoolean('for-public-use') || false;
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-                if (!await checkApiKey(apikey)) return await interaction.editReply({ content: localeManager.getString('commands.ai.add_apikey.invalid_apikey'), flags: MessageFlags.Ephemeral });
+                if (!await checkApiKey(apikey)) return await interaction.editReply({ content: localeManager.getString('commands.ai.add-apikey.invalid_apikey'), flags: MessageFlags.Ephemeral });
                 const result = db.addToken(userId, apikey, public);
                 db.addUserConfig(userId);
-                await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.add_apikey.success') : result.message || localeManager.getString('commands.ai.add_apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
+                await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.add-apikey.success') : result.message || localeManager.getString('commands.ai.add-apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
                 break;
             }
             case 'delete-apikey': {
@@ -501,17 +501,17 @@ module.exports = {
                 const all = interaction.options.getBoolean('delete-all') || false;
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-                if (!apikey && !all) return await interaction.editReply({ content: localeManager.getString('commands.ai.delete_apikey.apikey_empty_error'), flags: MessageFlags.Ephemeral });
+                if (!apikey && !all) return await interaction.editReply({ content: localeManager.getString('commands.ai.delete-apikey.apikey_empty_error'), flags: MessageFlags.Ephemeral });
 
                 if (all) {
                     const result = db.deleteAllByUser(userId);
                     db.deleteUserConfig(userId);
-                    await interaction.editReply({ content: localeManager.getString('commands.ai.delete_apikey.all_keys_deleted', { count: result.changes }), flags: MessageFlags.Ephemeral });
+                    await interaction.editReply({ content: localeManager.getString('commands.ai.delete-apikey.all_keys_deleted', { count: result.changes }), flags: MessageFlags.Ephemeral });
                 } else {
                     const result = db.deleteToken(userId, apikey);
                     const stats = db.getUserStats(userId);
                     if (stats.tokens < 1) db.deleteUserConfig(userId);
-                    await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.delete_apikey.key_deleted', { apikey: apikey }) : result.message || localeManager.getString('commands.ai.delete_apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
+                    await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.delete-apikey.key_deleted', { apikey: apikey }) : result.message || localeManager.getString('commands.ai.delete-apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
@@ -521,7 +521,7 @@ module.exports = {
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
                 const result = db.updateTokenSettings(userId, apikey, { public_use: public });
-                await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.edit_apikey.settings_updated') : localeManager.getString('commands.ai.edit_apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
+                await interaction.editReply({ content: result.changes > 0 ? localeManager.getString('commands.ai.edit-apikey.settings_updated') : localeManager.getString('commands.ai.edit-apikey.nothing_changed'), flags: MessageFlags.Ephemeral });
                 break;
             }
             case "model-info": {
@@ -531,7 +531,7 @@ module.exports = {
                 if (!privateAccess.includes(userId)) {
                     const keys = [];
                     const allKeys =  db.getAllUserTokens(userId);
-                    if (!allKeys[0]) return await interaction.editReply(localeManager.getString('commands.ai.model_info.no_api_key'))
+                    if (!allKeys[0]) return await interaction.editReply(localeManager.getString('commands.ai.model-info.no_api_key'))
                     allKeys[0].forEach(key => {
                         keys.push({key, timeoutDuration: 60_000});
                     })
@@ -540,7 +540,7 @@ module.exports = {
                 } else {
                     if (!interaction.client.keyManager) {
                         return await interaction.editReply({
-                            content: localeManager.getString('commands.ai.model_info.ai_unavailable'),
+                            content: localeManager.getString('commands.ai.model-info.ai_unavailable'),
                             flags: MessageFlags.Ephemeral
                         });
                     }
@@ -558,7 +558,7 @@ module.exports = {
                         db.deleteToken(userId, key);
                         const stats = db.getUserStats(userId);
                         if (stats.tokens < 1) db.deleteUserConfig(userId);
-                        return { text: localeManager.getString('commands.ai.model_info.invalid_api_key_deleting') };
+                        return { text: localeManager.getString('commands.ai.model-info.invalid_api_key_deleting') };
                     }
                     try {
                         return await ai.models.get({model: model});

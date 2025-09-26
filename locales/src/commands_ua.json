@@ -275,7 +275,13 @@
                         },
                         "s_category": {
                             "description": "Назва опції",
-                            "name": "s_category"
+                                                        "name": "s_category",
+                            "choices": {
+                                "harassment": "harassment",
+                                "hate_speech": "Hatespeech",
+                                "sexually_explicit": "Sexually explicit",
+                                "dangerous_content": "Dangerous content"
+                            }
                         }
                     },
                     "description": "Зміна налаштувань безпеки моделі",
@@ -319,7 +325,7 @@
                     "description": "Показує ваші поточні налаштування ШІ",
                     "name": "settings"
                 },
-                "remove-user": {
+                "remove_user": {
                     "options": {
                         "user": {
                             "description": "Користувач",
@@ -327,9 +333,9 @@
                         }
                     },
                     "description": "Видаляє користувача з БД.",
-                    "name": "remove-user"
+                    "name": "remove_user"
                 },
-                "add-user": {
+                "add_user": {
                     "options": {
                         "user": {
                             "description": "Користувач",
@@ -337,7 +343,7 @@
                         }
                     },
                     "description": "Додає користувача до БД, дозволяючи йому користуватися командою /ai",
-                    "name": "add-user"
+                    "name": "add_user"
                 },
                 "ask": {
                     "options": {
@@ -667,13 +673,13 @@
             "options": {
                 "slowmode": {
                     "options": {
-                        "канал": {
+                        "channel": {
                             "description": "Канал для повільного режиму",
                             "name": "канал"
                         },
-                        "секунды": {
+                        "seconds": {
                             "description": "Тривалість повільного режиму в секундах (0 = вимкнути, макс. 21600)",
-                            "name": "секунды"
+                            "name": "seconds"
                         }
                     },
                     "description": "Встановити повільний режим на каналі",
@@ -681,7 +687,7 @@
                 },
                 "unlock": {
                     "options": {
-                        "канал": {
+                        "channel": {
                             "description": "Канал для розблокування",
                             "name": "канал"
                         }
@@ -691,7 +697,7 @@
                 },
                 "lock": {
                     "options": {
-                        "канал": {
+                        "channel": {
                             "description": "Канал для блокування",
                             "name": "канал"
                         }
@@ -753,19 +759,19 @@
             "options": {
                 "unwarn": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Додайте докази (якщо є)",
                             "name": "доказательства"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Причина зняття попередження",
                             "name": "причина"
                         },
-                        "кейс": {
+                        "case": {
                             "description": "Номер кейсу з попередженням, яке потрібно зняти",
                             "name": "кейс"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "Користувач для зняття останнього попередження",
                             "name": "пользователь"
                         }
@@ -775,15 +781,15 @@
                 },
                 "warn": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Додайте докази (якщо є)",
                             "name": "доказательства"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Причина попередження",
                             "name": "причина"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "Користувач для попередження",
                             "name": "пользователь"
                         }
@@ -811,15 +817,15 @@
                 },
                 "unmute": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Додайте докази (якщо є)",
                             "name": "доказательства"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Причина зняття муту",
                             "name": "причина"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "Користувач, з якого знімають мут",
                             "name": "пользователь"
                         }
@@ -829,15 +835,15 @@
                 },
                 "kick": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Додайте докази (якщо є)",
                             "name": "доказательства"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Причина вигнання",
                             "name": "причина"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "Користувач для вигнання",
                             "name": "пользователь"
                         }
@@ -847,19 +853,19 @@
                 },
                 "mute": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Додайте докази (якщо є)",
                             "name": "доказательства"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Причина муту",
                             "name": "причина"
                         },
-                        "время": {
+                        "time": {
                             "description": "Тривалість муту (наприклад, 10m, 1h, 7d, 2w). Макс. 28 днів.",
                             "name": "время"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "Користувач для муту",
                             "name": "пользователь"
                         }
@@ -869,15 +875,15 @@
                 },
                 "ban": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Додайте докази (якщо є)",
                             "name": "доказательства"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Причина бану",
                             "name": "причина"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "Користувач для бану",
                             "name": "пользователь"
                         }

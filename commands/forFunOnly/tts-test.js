@@ -9,25 +9,25 @@ const localeManager = new LocaleManager();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.say_tts.name'))
-        .setDescription(localeManager.getString('commands.say_tts.description'))
+        .setName(localeManager.getString('commands.say-tts.name'))
+        .setDescription(localeManager.getString('commands.say-tts.description'))
         .addBooleanOption(option =>
-            option.setName(localeManager.getString('commands.say_tts.voice_channel.name'))
-                .setDescription(localeManager.getString('commands.say_tts.voice_channel.description'))
+            option.setName(localeManager.getString('commands.say-tts.options.voice-channel.name'))
+                .setDescription(localeManager.getString('commands.say-tts.options.voice-channel.description'))
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName(localeManager.getString('commands.say_tts.text.name'))
-                .setDescription(localeManager.getString('commands.say_tts.text.description'))
+            option.setName(localeManager.getString('commands.say-tts.options.text.name'))
+                .setDescription(localeManager.getString('commands.say-tts.options.text.description'))
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName(localeManager.getString('commands.say_tts.lang.name'))
-                .setDescription(localeManager.getString('commands.say_tts.lang.description'))
+            option.setName(localeManager.getString('commands.say-tts.options.lang.name'))
+                .setDescription(localeManager.getString('commands.say-tts.options.lang.description'))
         )
         .addNumberOption(option =>
-            option.setName(localeManager.getString('commands.say_tts.speed.name'))
-                .setDescription(localeManager.getString('commands.say_tts.speed.description'))
+            option.setName(localeManager.getString('commands.say-tts.options.speed.name'))
+                .setDescription(localeManager.getString('commands.say-tts.options.speed.description'))
                 .setMinValue(0.1)
                 .setMaxValue(2)
         ),
@@ -62,7 +62,7 @@ module.exports = {
                 const voiceChannel = member.voice.channel;
 
                 if (!voiceChannel) {
-                    return interaction.editReply({ content: localeManager.getString('commands.say_tts.not_in_voice_channel'), flags: MessageFlags.Ephemeral });
+                    return interaction.editReply({ content: localeManager.getString('commands.say-tts.not_in_voice-channel'), flags: MessageFlags.Ephemeral });
                 }
 
                 // Подключаемся к голосовому каналу
@@ -94,7 +94,7 @@ module.exports = {
                 connection.subscribe(player);
 
                 // Отвечаем пользователю после начала воспроизведения
-                await interaction.editReply({ content: localeManager.getString('commands.say_tts.audio_generation_time_playing', { readyTime: readyTime, text: text }), flags: MessageFlags.Ephemeral });
+                await interaction.editReply({ content: localeManager.getString('commands.say-tts.audio_generation_time_playing', { readyTime: readyTime, text: text }), flags: MessageFlags.Ephemeral });
 
                 // Обработчики завершения и ошибок
                 player.on('idle', () => {
@@ -104,18 +104,18 @@ module.exports = {
 
                 player.on('error', error => {
                     console.error('Ошибка при воспроизведении:', error);
-                    interaction.editReply({ content: localeManager.getString('commands.say_tts.playback_error'), flags: MessageFlags.Ephemeral });
+                    interaction.editReply({ content: localeManager.getString('commands.say-tts.playback_error'), flags: MessageFlags.Ephemeral });
                 });
 
             } else {
                 // Если voice-channel = false, отправляем аудио в чат
                 const attachment = new AttachmentBuilder(audioBuffer, { name: 'tts-output.wav' });
-                await interaction.editReply({ content: localeManager.getString('commands.say_tts.audio_generation_time_file', { readyTime: readyTime }), files: [attachment] });
+                await interaction.editReply({ content: localeManager.getString('commands.say-tts.audio_generation_time_file', { readyTime: readyTime }), files: [attachment] });
             }
 
         } catch (error) {
             console.error('Ошибка в TTS-функции бота:', error);
-            await interaction.editReply({ content: localeManager.getString('commands.say_tts.error_speaking_text'), flags: MessageFlags.Ephemeral });
+            await interaction.editReply({ content: localeManager.getString('commands.say-tts.error_speaking_text'), flags: MessageFlags.Ephemeral });
         }
     },
 };

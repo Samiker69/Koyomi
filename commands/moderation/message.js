@@ -8,45 +8,45 @@ const data = new SlashCommandBuilder()
     .setDescription(localeManager.getString('commands.message.description'))
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.message.clear.name'))
-        .setDescription(localeManager.getString('commands.message.clear.description'))
+        subcommand.setName(localeManager.getString('commands.message.options.clear.name'))
+        .setDescription(localeManager.getString('commands.message.options.clear.description'))
         .addIntegerOption(option => 
-            option.setName(localeManager.getString('commands.message.clear.options.amount.name'))
-                .setDescription(localeManager.getString('commands.message.clear.options.amount.description'))
+            option.setName(localeManager.getString('commands.message.options.clear.options.amount.name'))
+                .setDescription(localeManager.getString('commands.message.options.clear.options.amount.description'))
                 
                 .setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.message.pin.name'))
-        .setDescription(localeManager.getString('commands.message.pin.description'))
+        subcommand.setName(localeManager.getString('commands.message.options.pin.name'))
+        .setDescription(localeManager.getString('commands.message.options.pin.description'))
         .addStringOption(option => 
-            option.setName(localeManager.getString('commands.message.pin.options.id.name'))
-            .setDescription(localeManager.getString('commands.message.pin.options.id.description'))
+            option.setName(localeManager.getString('commands.message.options.pin.options.id.name'))
+            .setDescription(localeManager.getString('commands.message.options.pin.options.id.description'))
             
             .setRequired(true)))
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.message.unpin.name'))
-        .setDescription(localeManager.getString('commands.message.unpin.description'))
+        subcommand.setName(localeManager.getString('commands.message.options.unpin.name'))
+        .setDescription(localeManager.getString('commands.message.options.unpin.description'))
         .addStringOption(option =>
-            option.setName(localeManager.getString('commands.message.unpin.options.id.name'))
-            .setDescription(localeManager.getString('commands.message.unpin.options.id.description'))
+            option.setName(localeManager.getString('commands.message.options.unpin.options.id.name'))
+            .setDescription(localeManager.getString('commands.message.options.unpin.options.id.description'))
             
             .setRequired(true)))
 
     .addSubcommand(subcommand => 
-        subcommand.setName(localeManager.getString('commands.message.purge.name'))
-        .setDescription(localeManager.getString('commands.message.purge.description'))
+        subcommand.setName(localeManager.getString('commands.message.options.purge.name'))
+        .setDescription(localeManager.getString('commands.message.options.purge.description'))
         .addUserOption(option =>
-          option.setName(localeManager.getString('commands.message.purge.options.target.name'))
-            .setDescription(localeManager.getString('commands.message.purge.options.target.description'))
+          option.setName(localeManager.getString('commands.message.options.purge.options.target.name'))
+            .setDescription(localeManager.getString('commands.message.options.purge.options.target.description'))
             
             .setRequired(true)
         )
         .addIntegerOption(option =>
-          option.setName(localeManager.getString('commands.message.purge.options.amount.name'))
-            .setDescription(localeManager.getString('commands.message.purge.options.amount.description'))
+          option.setName(localeManager.getString('commands.message.options.purge.options.amount.name'))
+            .setDescription(localeManager.getString('commands.message.options.purge.options.amount.description'))
             
             .setRequired(true)
             .setMinValue(1)

@@ -275,7 +275,13 @@
                         },
                         "s_category": {
                             "description": "Название опции",
-                            "name": "s_category"
+                                                        "name": "s_category",
+                            "choices": {
+                                "harassment": "harassment",
+                                "hate_speech": "Hatespeech",
+                                "sexually_explicit": "Sexually explicit",
+                                "dangerous_content": "Dangerous content"
+                            }
                         }
                     },
                     "description": "Изменение настроек безопасности модели",
@@ -319,7 +325,7 @@
                     "description": "Показывает ваши текущие настройки AI",
                     "name": "settings"
                 },
-                "remove-user": {
+                "remove_user": {
                     "options": {
                         "user": {
                             "description": "Пользователь",
@@ -327,9 +333,9 @@
                         }
                     },
                     "description": "Удаляет пользователя из бд.",
-                    "name": "remove-user"
+                    "name": "remove_user"
                 },
-                "add-user": {
+                "add_user": {
                     "options": {
                         "user": {
                             "description": "Пользователь",
@@ -337,7 +343,7 @@
                         }
                     },
                     "description": "Добавляет пользователя в бд, позволяя ему пользоваться командой /ai",
-                    "name": "add-user"
+                    "name": "add_user"
                 },
                 "ask": {
                     "options": {
@@ -671,9 +677,9 @@
                             "description": "Канал для слоумода",
                             "name": "канал"
                         },
-                        "секунды": {
+                        "seconds": {
                             "description": "Длительность слоумода в секундах (0 = выключить, макс. 21600)",
-                            "name": "секунды"
+                            "name": "seconds"
                         }
                     },
                     "description": "Установить слоумод на канале",

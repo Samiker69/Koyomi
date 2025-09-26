@@ -119,7 +119,11 @@
                 },
                 "gradient_type": {
                     "description": "Gradient type",
-                    "name": "gradient_type"
+                    "name": "gradient_type",
+                    "choices": {
+                        "linear": "linear",
+                        "radial": "radial"
+                    }
                 },
                 "gradient_bg": {
                     "description": "Gradient background",
@@ -169,6 +173,7 @@
         },
         "eval": {
             "name": "eval",
+            "description": "Only bot owner can use this command",
             "response": {},
             "options": {
                 "botinfo": {
@@ -178,7 +183,8 @@
                 "banner": {
                     "options": {
                         "file": {
-                            "name": "file"
+                            "name": "file",
+                            "description": "Image file"
                         }
                     },
                     "description": "Change bot banner",
@@ -187,7 +193,8 @@
                 "avatar": {
                     "options": {
                         "file": {
-                            "name": "file"
+                            "name": "file",
+                            "description": "Image file"
                         }
                     },
                     "description": "Change bot avatar",
@@ -196,13 +203,30 @@
                 "presence": {
                     "options": {
                         "activity": {
-                            "name": "activity"
+                            "name": "activity",
+                            "description": "Activity type",
+                            "choices": {
+                                "playing": "playing",
+                                "watching": "watching",
+                                "listening": "listening",
+                                "competing": "competing",
+                                "streaming": "streaming",
+                                "custom": "custom"
+                            }
                         },
                         "status": {
-                            "name": "status"
+                            "name": "status",
+                            "description": "Bot status",
+                            "choices": {
+                                "online": "online",
+                                "idle": "idle",
+                                "dnd": "dnd",
+                                "invisible": "invisible"
+                            }
                         },
-                        "name-activity": {
-                            "name": "name-activity"
+                        "nameactivity": {
+                            "name": "name-activity",
+                            "description": "Activity name"
                         }
                     },
                     "description": "Sets the bot's status",
@@ -271,11 +295,24 @@
                     "options": {
                         "s_value": {
                             "description": "Safety modes",
-                            "name": "s_value"
+                            "name": "s_value",
+                            "choices": {
+                                "block_none": "Block none",
+                                "block_high_and_above": "Block high and above",
+                                "block_medium_and_above": "Block medium and above",
+                                "block_low_and_above": "Block low and above",
+                                "harm_block_threshold_unspecified": "Harm block threshold unspecified"
+                            }
                         },
                         "s_category": {
                             "description": "Option name",
-                            "name": "s_category"
+                            "name": "s_category",
+                            "choices": {
+                                "harassment": "harassment",
+                                "hate_speech": "Hatespeech",
+                                "sexually_explicit": "Sexually explicit",
+                                "dangerous_content": "Dangerous content"
+                            }
                         }
                     },
                     "description": "Change model safety settings",
@@ -300,7 +337,7 @@
                             "name": "temperature"
                         },
                         "max_output_tokens": {
-                            "description": "Maximum tokens AI will respond with. If the maximum is less than AI's response, the response will be truncated!",
+                            "description": "Maximum tokens AI will respond with.",
                             "name": "max_output_tokens"
                         },
                         "system_instructions": {
@@ -319,7 +356,7 @@
                     "description": "Shows your current AI settings",
                     "name": "settings"
                 },
-                "remove-user": {
+                "remove_user": {
                     "options": {
                         "user": {
                             "description": "User",
@@ -327,9 +364,9 @@
                         }
                     },
                     "description": "Removes a user from the database.",
-                    "name": "remove-user"
+                    "name": "remove_user"
                 },
-                "add-user": {
+                "add_user": {
                     "options": {
                         "user": {
                             "description": "User",
@@ -337,7 +374,7 @@
                         }
                     },
                     "description": "Adds a user to the database, allowing them to use the /ai command",
-                    "name": "add-user"
+                    "name": "add_user"
                 },
                 "ask": {
                     "options": {
@@ -361,37 +398,46 @@
         },
         "love": {
             "name": "love",
+            "description": "Calc love beetwen 2 users",
             "response": {},
             "options": {
                 "user2": {
-                    "name": "user2"
+                    "name": "user2",
+                    "description": "Member"
                 },
                 "user1": {
-                    "name": "user1"
+                    "name": "user1",
+                    "description": "Member"
                 }
             }
         },
         "minecraft": {
             "name": "minecraft",
+            "description": "Search minecraft account",
             "response": {},
             "options": {
                 "player": {
-                    "name": "player"
+                    "name": "player",
+                    "description": "Nickname of player"
                 }
             }
         },
         "say": {
             "name": "say",
+            "description": "Send message",
             "response": {},
             "options": {
                 "reply_to": {
-                    "name": "reply_to"
+                    "name": "reply_to",
+                    "description": "Message id"
                 },
                 "image": {
-                    "name": "image"
+                    "name": "image",
+                    "description": "File"
                 },
                 "text": {
-                    "name": "text"
+                    "name": "text",
+                    "description": "Text to send"
                 }
             }
         },
@@ -564,7 +610,11 @@
                         },
                         "action": {
                             "description": "New action when the rule is triggered",
-                            "name": "action"
+                            "name": "action",
+                            "choices": {
+                                "block_message": "Block Message",
+                                "timeout": "Timeout"
+                            }
                         },
                         "keywords": {
                             "description": "New words or phrases (comma-separated). Wildcards (*) can be used.",
@@ -604,8 +654,7 @@
                             "description": "Action when the rule is triggered",
                             "name": "action",
                             "choices": {
-                                "Block Message": "Block Message",
-                                "send_alert_to_modss": "Send Alert to Mods",
+                                "block_message": "Block Message",
                                 "timeout": "Timeout"
                             }
                         },
@@ -625,12 +674,14 @@
         },
         "case": {
             "name": "case",
+            "description": "Actions with cases",
             "response": {},
             "options": {
                 "user_punishments": {
                     "options": {
                         "user": {
-                            "name": "user"
+                            "name": "user",
+                            "description": "@Member or memberId"
                         }
                     },
                     "description": "Check a user's punishment history",
@@ -639,7 +690,8 @@
                 "view": {
                     "options": {
                         "num": {
-                            "name": "num"
+                            "name": "num",
+                            "description": "Number of case"
                         }
                     },
                     "description": "Shows the specified case",
@@ -648,10 +700,12 @@
                 "reason": {
                     "options": {
                         "reason": {
-                            "name": "reason"
+                            "name": "reason",
+                            "description": "New reason"
                         },
                         "num": {
-                            "name": "num"
+                            "name": "num",
+                            "description": "Number of case"
                         }
                     },
                     "description": "Change the reason for a case",
@@ -660,10 +714,12 @@
                 "remove": {
                     "options": {
                         "num": {
-                            "name": "num"
+                            "name": "num",
+                            "description": "Number of case"
                         }
                     },
-                    "name": "remove"
+                    "name": "remove",
+                    "description": "Remove case from guild"
                 }
             }
         },
@@ -674,13 +730,13 @@
             "options": {
                 "slowmode": {
                     "options": {
-                        "канал": {
+                        "channel": {
                             "description": "The channel for slowmode",
                             "name": "канал"
                         },
-                        "секунды": {
+                        "seconds": {
                             "description": "Slowmode duration in seconds (0 = disable, max 21600)",
-                            "name": "секунды"
+                            "name": "seconds"
                         }
                     },
                     "description": "Set slowmode on a channel",
@@ -688,7 +744,7 @@
                 },
                 "unlock": {
                     "options": {
-                        "канал": {
+                        "channel": {
                             "description": "The channel to unlock",
                             "name": "канал"
                         }
@@ -698,7 +754,7 @@
                 },
                 "lock": {
                     "options": {
-                        "канал": {
+                        "channel": {
                             "description": "The channel to lock",
                             "name": "канал"
                         }
@@ -710,15 +766,18 @@
         },
         "message": {
             "name": "message",
+            "description": "Actions with message",
             "response": {},
             "options": {
                 "purge": {
                     "options": {
                         "amount": {
-                            "name": "amount"
+                            "name": "amount",
+                            "description": "Amount of messages to delete"
                         },
                         "target": {
-                            "name": "target"
+                            "name": "target",
+                            "description": "Specific user"
                         }
                     },
                     "description": "Deletes a specified number of messages from a specific user",
@@ -727,7 +786,8 @@
                 "unpin": {
                     "options": {
                         "id": {
-                            "name": "id"
+                            "name": "id",
+                            "description": "Id of message"
                         }
                     },
                     "description": "Unpin a message",
@@ -736,7 +796,8 @@
                 "pin": {
                     "options": {
                         "id": {
-                            "name": "id"
+                            "name": "id",
+                            "description": "Id of message"
                         }
                     },
                     "description": "Pin a message",
@@ -745,7 +806,8 @@
                 "clear": {
                     "options": {
                         "amount": {
-                            "name": "amount"
+                            "name": "amount",
+                            "description": "Amount of messages to delete"
                         }
                     },
                     "description": "Deletes a specified number of messages from users",
@@ -760,21 +822,21 @@
             "options": {
                 "unwarn": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Attach evidence (if any)",
-                            "name": "доказательства"
+                            "name": "evidence"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Reason for removing the warning",
-                            "name": "причина"
+                            "name": "reason"
                         },
-                        "кейс": {
+                        "case": {
                             "description": "Case number of the warning to remove",
-                            "name": "кейс"
+                            "name": "case"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "The user to remove the last warning from",
-                            "name": "пользователь"
+                            "name": "user"
                         }
                     },
                     "description": "Remove a user's warning",
@@ -782,17 +844,17 @@
                 },
                 "warn": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Attach evidence (if any)",
-                            "name": "доказательства"
+                            "name": "evidence"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Reason for the warning",
-                            "name": "причина"
+                            "name": "reason"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "The user to warn",
-                            "name": "пользователь"
+                            "name": "user"
                         }
                     },
                     "description": "Issue a warning to a user",
@@ -818,17 +880,17 @@
                 },
                 "unmute": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Attach evidence (if any)",
-                            "name": "доказательства"
+                            "name": "evidence"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Reason for unmuting",
-                            "name": "причина"
+                            "name": "reason"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "The user to unmute",
-                            "name": "пользователь"
+                            "name": "user"
                         }
                     },
                     "description": "Remove mute (timeout) from a user",
@@ -836,17 +898,17 @@
                 },
                 "kick": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Attach evidence (if any)",
-                            "name": "доказательства"
+                            "name": "evidence"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Reason for kicking",
-                            "name": "причина"
+                            "name": "reason"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "The user to kick",
-                            "name": "пользователь"
+                            "name": "user"
                         }
                     },
                     "description": "Kick a user from the server",
@@ -854,21 +916,21 @@
                 },
                 "mute": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Attach evidence (if any)",
-                            "name": "доказательства"
+                            "name": "evidence"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Reason for muting",
-                            "name": "причина"
+                            "name": "reason"
                         },
-                        "время": {
+                        "time": {
                             "description": "Mute duration (e.g., 10m, 1h, 7d, 2w). Max 28 days.",
-                            "name": "время"
+                            "name": "time"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "The user to mute",
-                            "name": "пользователь"
+                            "name": "user"
                         }
                     },
                     "description": "Mute a user",
@@ -876,17 +938,17 @@
                 },
                 "ban": {
                     "options": {
-                        "доказательства": {
+                        "evidence": {
                             "description": "Attach evidence (if any)",
-                            "name": "доказательства"
+                            "name": "evidence"
                         },
-                        "причина": {
+                        "reason": {
                             "description": "Reason for banning",
-                            "name": "причина"
+                            "name": "reason"
                         },
-                        "пользователь": {
+                        "user": {
                             "description": "The user to ban",
-                            "name": "пользователь"
+                            "name": "user"
                         }
                     },
                     "description": "Ban a user from the server",
@@ -1012,41 +1074,52 @@
         },
         "booru": {
             "name": "booru",
+            "description": "View any booru",
             "response": {},
             "options": {
                 "random": {
                     "options": {
                         "no_ai": {
-                            "name": "no_ai"
+                            "name": "no_ai",
+                            "description": "Automatic add -ai tags"
                         },
                         "tags": {
-                            "name": "tags"
+                            "name": "tags",
+                            "description": "Automatic add -ai tags"
                         },
                         "site": {
-                            "name": "site"
+                            "name": "site",
+                            "description": "Automatic add -ai tags"
                         }
                     },
-                    "name": "random"
+                    "name": "random",
+                    "description": "Get random post"
                 },
                 "search": {
                     "options": {
                         "no_ai": {
-                            "name": "no_ai"
+                            "name": "no_ai",
+                            "description": "Automatic add -ai tags"
                         },
                         "page": {
-                            "name": "page"
+                            "name": "page",
+                            "description": "Page for search"
                         },
                         "limit": {
-                            "name": "limit"
+                            "name": "limit",
+                            "description": "limit on posts received"
                         },
                         "tags": {
-                            "name": "tags"
+                            "name": "tags",
+                            "description": "Automatic add -ai tags"
                         },
                         "site": {
-                            "name": "site"
+                            "name": "site",
+                            "description": "Automatic add -ai tags"
                         }
                     },
-                    "name": "search"
+                    "name": "search",
+                    "description": "Search posts by query"
                 }
             }
         },
@@ -1132,7 +1205,12 @@
                     "options": {
                         "value": {
                             "description": "Content Filter Level",
-                            "name": "value"
+                            "name": "value",
+                            "choices": {
+                                "disabled": "Disabled",
+                                "noroleuser": "Members without roles",
+                                "allmember": "All members"
+                            }
                         }
                     },
                     "description": "Change the server Content Filter Level",

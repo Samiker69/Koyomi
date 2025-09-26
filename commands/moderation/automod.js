@@ -60,171 +60,171 @@ const data = new SlashCommandBuilder()
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.automod-native.add-keyword.name'))
-            .setDescription(localeManager.getString('commands.automod-native.add-keyword.description'))
+        subcommand.setName(localeManager.getString('commands.automod-native.options.add-keyword.name'))
+            .setDescription(localeManager.getString('commands.automod-native.options.add-keyword.description'))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.name.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.name.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.add-keyword.options.name.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.add-keyword.options.name.description'))
                     .setRequired(true))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.keywords.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.keywords.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.add-keyword.options.keywords.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.add-keyword.options.keywords.description'))
                     .setRequired(true))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.action.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.action.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.add-keyword.options.action.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.add-keyword.options.action.description'))
                     .setRequired(true)
                     .addChoices(
-                        { name: localeManager.getString('commands.automod-native.add-keyword.options.action.choices.block_message'), value: 'block_message' },
-                        { name: localeManager.getString('commands.automod-native.add-keyword.options.action.choices.timeout'), value: 'timeout' }
+                        { name: localeManager.getString('commands.automod-native.options.add-keyword.options.action.choices.block_message'), value: 'block_message' },
+                        { name: localeManager.getString('commands.automod-native.options.add-keyword.options.action.choices.timeout'), value: 'timeout' }
                     ))
             .addIntegerOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.timeout_duration.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.timeout_duration.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.add-keyword.options.timeout_duration.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.add-keyword.options.timeout_duration.description'))
                     .setRequired(false))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.add-keyword.options.block_message.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.block_message.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.add-keyword.options.block_message.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.add-keyword.options.block_message.description'))
                     .setRequired(false))
             .addStringOption(option =>
-                 option.setName(localeManager.getString('commands.automod-native.add-keyword.options.exempt_roles.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.exempt_roles.description'))
+                 option.setName(localeManager.getString('commands.automod-native.options.add-keyword.options.exempt_roles.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.add-keyword.options.exempt_roles.description'))
                     .setRequired(false))
             .addStringOption(option =>
-                 option.setName(localeManager.getString('commands.automod-native.add-keyword.options.exempt_channels.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.add-keyword.options.exempt_channels.description'))
+                 option.setName(localeManager.getString('commands.automod-native.options.add-keyword.options.exempt_channels.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.add-keyword.options.exempt_channels.description'))
                     .setRequired(false))
            )
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.automod-native.edit.name'))
-            .setDescription(localeManager.getString('commands.automod-native.edit.description'))
+        subcommand.setName(localeManager.getString('commands.automod-native.options.edit.name'))
+            .setDescription(localeManager.getString('commands.automod-native.options.edit.description'))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.edit.options.rule_id.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.rule_id.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.edit.options.rule_id.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.rule_id.description'))
                     .setRequired(true)
                     .setAutocomplete(true))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.edit.options.name.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.name.description')))
+                option.setName(localeManager.getString('commands.automod-native.options.edit.options.name.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.name.description')))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.edit.options.keywords.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.keywords.description')))
+                option.setName(localeManager.getString('commands.automod-native.options.edit.options.keywords.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.keywords.description')))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.edit.options.action.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.action.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.edit.options.action.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.action.description'))
                     .addChoices(
-                        { name: localeManager.getString('commands.automod-native.edit.options.action.choices.block_message'), value: 'block_message' },
-                        { name: localeManager.getString('commands.automod-native.edit.options.action.choices.timeout'), value: 'timeout' }
+                        { name: localeManager.getString('commands.automod-native.options.edit.options.action.choices.block_message'), value: 'block_message' },
+                        { name: localeManager.getString('commands.automod-native.options.edit.options.action.choices.timeout'), value: 'timeout' }
                     ))
             .addIntegerOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.edit.options.timeout_duration.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.timeout_duration.description')))
+                option.setName(localeManager.getString('commands.automod-native.options.edit.options.timeout_duration.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.timeout_duration.description')))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.edit.options.block_message.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.block_message.description')))
+                option.setName(localeManager.getString('commands.automod-native.options.edit.options.block_message.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.block_message.description')))
             .addStringOption(option =>
-                 option.setName(localeManager.getString('commands.automod-native.edit.options.exempt_roles.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.exempt_roles.description')))
+                 option.setName(localeManager.getString('commands.automod-native.options.edit.options.exempt_roles.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.exempt_roles.description')))
             .addStringOption(option =>
-                 option.setName(localeManager.getString('commands.automod-native.edit.options.exempt_channels.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.exempt_channels.description')))
+                 option.setName(localeManager.getString('commands.automod-native.options.edit.options.exempt_channels.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.exempt_channels.description')))
             .addBooleanOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.edit.options.enabled.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.edit.options.enabled.description')))
+                option.setName(localeManager.getString('commands.automod-native.options.edit.options.enabled.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.edit.options.enabled.description')))
            )
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.automod-native.remove.name'))
-            .setDescription(localeManager.getString('commands.automod-native.remove.description'))
+        subcommand.setName(localeManager.getString('commands.automod-native.options.remove.name'))
+            .setDescription(localeManager.getString('commands.automod-native.options.remove.description'))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.remove.options.rule_id.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.remove.options.rule_id.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.remove.options.rule_id.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.remove.options.rule_id.description'))
                     .setRequired(true)
                     .setAutocomplete(true)))
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.automod-native.list.name'))
-            .setDescription(localeManager.getString('commands.automod-native.list.description')))
+        subcommand.setName(localeManager.getString('commands.automod-native.options.list.name'))
+            .setDescription(localeManager.getString('commands.automod-native.options.list.description')))
 
      .addSubcommand(subcommand =>
-         subcommand.setName(localeManager.getString('commands.automod-native.view.name'))
-             .setDescription(localeManager.getString('commands.automod-native.view.description'))
+         subcommand.setName(localeManager.getString('commands.automod-native.options.view.name'))
+             .setDescription(localeManager.getString('commands.automod-native.options.view.description'))
              .addStringOption(option =>
-                 option.setName(localeManager.getString('commands.automod-native.view.options.rule_id.name'))
-                     .setDescription(localeManager.getString('commands.automod-native.view.options.rule_id.description'))
+                 option.setName(localeManager.getString('commands.automod-native.options.view.options.rule_id.name'))
+                     .setDescription(localeManager.getString('commands.automod-native.options.view.options.rule_id.description'))
                      .setRequired(true)
                      .setAutocomplete(true)))
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.automod-native.toggle.name'))
-            .setDescription(localeManager.getString('commands.automod-native.toggle.description'))
+        subcommand.setName(localeManager.getString('commands.automod-native.options.toggle.name'))
+            .setDescription(localeManager.getString('commands.automod-native.options.toggle.description'))
             .addStringOption(option =>
-                option.setName(localeManager.getString('commands.automod-native.toggle.options.rule_id.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.toggle.options.rule_id.description'))
+                option.setName(localeManager.getString('commands.automod-native.options.toggle.options.rule_id.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.toggle.options.rule_id.description'))
                     .setRequired(true)
                     .setAutocomplete(true)))
 
     .addSubcommandGroup(subcommandGroup =>
-        subcommandGroup.setName(localeManager.getString('commands.automod-native.exempt.name'))
-            .setDescription(localeManager.getString('commands.automod-native.exempt.description'))
+        subcommandGroup.setName(localeManager.getString('commands.automod-native.options.exempt.name'))
+            .setDescription(localeManager.getString('commands.automod-native.options.exempt.description'))
             .addSubcommand(subcommand =>
-                subcommand.setName(localeManager.getString('commands.automod-native.exempt.add-role.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.exempt.add-role.description'))
+                subcommand.setName(localeManager.getString('commands.automod-native.options.exempt.options.add-role.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.add-role.description'))
                     .addStringOption(option =>
-                        option.setName(localeManager.getString('commands.automod-native.exempt.add-role.options.rule_id.name'))
-                            .setDescription(localeManager.getString('commands.automod-native.exempt.add-role.options.rule_id.description'))
+                        option.setName(localeManager.getString('commands.automod-native.options.exempt.options.add-role.options.rule_id.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.add-role.options.rule_id.description'))
                             .setRequired(true)
                             .setAutocomplete(true))
                     .addRoleOption(option =>
-                        option.setName(localeManager.getString('commands.automod-native.exempt.add-role.options.role.name'))
-                            .setDescription(localeManager.getString('commands.automod-native.exempt.add-role.options.role.description'))
+                        option.setName(localeManager.getString('commands.automod-native.options.exempt.options.add-role.options.role.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.add-role.options.role.description'))
                             .setRequired(true)))
              .addSubcommand(subcommand =>
-                subcommand.setName(localeManager.getString('commands.automod-native.exempt.remove-role.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.exempt.remove-role.description'))
+                subcommand.setName(localeManager.getString('commands.automod-native.options.exempt.options.remove-role.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.remove-role.description'))
                     .addStringOption(option =>
-                        option.setName(localeManager.getString('commands.automod-native.exempt.remove-role.options.rule_id.name'))
-                            .setDescription(localeManager.getString('commands.automod-native.exempt.remove-role.options.rule_id.description'))
+                        option.setName(localeManager.getString('commands.automod-native.options.exempt.options.remove-role.options.rule_id.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.remove-role.options.rule_id.description'))
                             .setRequired(true)
                             .setAutocomplete(true))
                     .addRoleOption(option =>
-                        option.setName(localeManager.getString('commands.automod-native.exempt.remove-role.options.role.name'))
-                            .setDescription(localeManager.getString('commands.automod-native.exempt.remove-role.options.role.description'))
+                        option.setName(localeManager.getString('commands.automod-native.options.exempt.options.remove-role.options.role.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.remove-role.options.role.description'))
                             .setRequired(true)))
             .addSubcommand(subcommand =>
-                subcommand.setName(localeManager.getString('commands.automod-native.exempt.add-channel.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.exempt.add-channel.description'))
+                subcommand.setName(localeManager.getString('commands.automod-native.options.exempt.options.add-channel.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.add-channel.description'))
                     .addStringOption(option =>
-                        option.setName(localeManager.getString('commands.automod-native.exempt.add-channel.options.rule_id.name'))
-                            .setDescription(localeManager.getString('commands.automod-native.exempt.add-channel.options.rule_id.description'))
+                        option.setName(localeManager.getString('commands.automod-native.options.exempt.options.add-channel.options.rule_id.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.add-channel.options.rule_id.description'))
                             .setRequired(true)
                             .setAutocomplete(true))
                     .addChannelOption(option =>
-                        option.setName(localeManager.getString('commands.automod-native.exempt.add-channel.options.channel.name'))
-                            .setDescription(localeManager.getString('commands.automod-native.exempt.add-channel.options.channel.description'))
+                        option.setName(localeManager.getString('commands.automod-native.options.exempt.options.add-channel.options.channel.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.add-channel.options.channel.description'))
                             .setRequired(true)
                              .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
                             ))
              .addSubcommand(subcommand =>
-                subcommand.setName(localeManager.getString('commands.automod-native.exempt.remove-channel.name'))
-                    .setDescription(localeManager.getString('commands.automod-native.exempt.remove-channel.description'))
+                subcommand.setName(localeManager.getString('commands.automod-native.options.exempt.options.remove-channel.name'))
+                    .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.remove-channel.description'))
                     .addStringOption(option =>
-                        option.setName(localeManager.getString('commands.automod-native.exempt.remove-channel.options.rule_id.name'))
-                            .setDescription(localeManager.getString('commands.automod-native.exempt.remove-channel.options.rule_id.description'))
+                        option.setName(localeManager.getString('commands.automod-native.options.exempt.options.remove-channel.options.rule_id.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.remove-channel.options.rule_id.description'))
                             .setRequired(true)
                             .setAutocomplete(true))
                     .addChannelOption(option =>
-                        option.setName(localeManager.getString('commands.automod-native.exempt.remove-channel.options.channel.name'))
-                            .setDescription(localeManager.getString('commands.automod-native.exempt.remove-channel.options.channel.description'))
+                        option.setName(localeManager.getString('commands.automod-native.options.exempt.options.remove-channel.options.channel.name'))
+                            .setDescription(localeManager.getString('commands.automod-native.options.exempt.options.remove-channel.options.channel.description'))
                             .setRequired(true)
                             .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
                             ))
            )
 
     .addSubcommand(subcommand =>
-        subcommand.setName(localeManager.getString('commands.automod-native.clear-all.name'))
-            .setDescription(localeManager.getString('commands.automod-native.clear-all.description')));
+        subcommand.setName(localeManager.getString('commands.automod-native.options.clear-all.name'))
+            .setDescription(localeManager.getString('commands.automod-native.options.clear-all.description')));
 
 
 module.exports = {

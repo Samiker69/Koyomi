@@ -10,8 +10,8 @@ module.exports = {
         .setName(localeManager.getString('commands.calc.name'))
         .setDescription(localeManager.getString('commands.calc.description'))
         .addStringOption(opt => 
-            opt.setName(localeManager.getString('commands.calc.expression.name'))
-            .setDescription(localeManager.getString('commands.calc.expression.description'))
+            opt.setName(localeManager.getString('commands.calc.options.expression.name'))
+            .setDescription(localeManager.getString('commands.calc.options.expression.description'))
             .setRequired(true)
         ),
 

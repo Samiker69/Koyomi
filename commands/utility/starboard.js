@@ -11,19 +11,19 @@ module.exports = {
 		.setName(localeManager.getString('commands.starboard.name'))
 		.setDescription(localeManager.getString('commands.starboard.description'))
         .addSubcommand(sub => 
-            sub.setName(localeManager.getString('commands.starboard.settings.name'))
-            .setDescription(localeManager.getString('commands.starboard.settings.description'))
+            sub.setName(localeManager.getString('commands.starboard.options.settings.name'))
+            .setDescription(localeManager.getString('commands.starboard.options.settings.description'))
             .addChannelOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.settings.options.starboard-channel.name'))
-                .setDescription(localeManager.getString('commands.starboard.settings.options.starboard-channel.description'))
+                opt.setName(localeManager.getString('commands.starboard.options.settings.options.starboard-channel.name'))
+                .setDescription(localeManager.getString('commands.starboard.options.settings.options.starboard-channel.description'))
             )
             .addBooleanOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.settings.options.enabled.name'))
-                .setDescription(localeManager.getString('commands.starboard.settings.options.enabled.description'))
+                opt.setName(localeManager.getString('commands.starboard.options.settings.options.enabled.name'))
+                .setDescription(localeManager.getString('commands.starboard.options.settings.options.enabled.description'))
             )
             .addIntegerOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.settings.options.min-reactions.name'))
-                .setDescription(localeManager.getString('commands.starboard.settings.options.min-reactions.description'))
+                opt.setName(localeManager.getString('commands.starboard.options.settings.options.min-reactions.name'))
+                .setDescription(localeManager.getString('commands.starboard.options.settings.options.min-reactions.description'))
                 .setMinValue(1)
             )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)

@@ -12,22 +12,22 @@ module.exports = {
     
     .addStringOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.text.name'))
-        .setDescription(localeManager.getString('commands.say.text.description'))
+        .setName(localeManager.getString('commands.say.options.text.name'))
+        .setDescription(localeManager.getString('commands.say.options.text.description'))
         
         .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.image.name'))
-        .setDescription(localeManager.getString('commands.say.image.description'))
+        .setName(localeManager.getString('commands.say.options.image.name'))
+        .setDescription(localeManager.getString('commands.say.options.image.description'))
         
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.reply_to.name'))
-        .setDescription(localeManager.getString('commands.say.reply_to.description'))
+        .setName(localeManager.getString('commands.say.options.reply_to.name'))
+        .setDescription(localeManager.getString('commands.say.options.reply_to.description'))
         
         .setRequired(false)
     ),

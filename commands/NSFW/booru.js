@@ -16,60 +16,60 @@ module.exports = {
         
         .setContexts(0,1,2)
         .addSubcommand(sub =>
-            sub.setName(localeManager.getString('commands.booru.search.name'))
-            .setDescription(localeManager.getString('commands.booru.search.description'))
+            sub.setName(localeManager.getString('commands.booru.options.search.name'))
+            .setDescription(localeManager.getString('commands.booru.options.search.description'))
             
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.search.options.site.name'))
-                .setDescription(localeManager.getString('commands.booru.search.options.site.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.site.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.site.description'))
                 
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.search.options.tags.name'))
-                .setDescription(localeManager.getString('commands.booru.search.options.tags.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.tags.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.tags.description'))
                 
                 .setRequired(true)
             )
             .addNumberOption(o => 
-                o.setName(localeManager.getString('commands.booru.search.options.limit.name'))
-                .setDescription(localeManager.getString('commands.booru.search.options.limit.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.limit.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.limit.description'))
                 
                 .setMaxValue(100)
                 .setMinValue(1)
             )
             .addNumberOption(o => 
-                o.setName(localeManager.getString('commands.booru.search.options.page.name'))
-                .setDescription(localeManager.getString('commands.booru.search.options.page.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.page.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.page.description'))
                 
                 .setMinValue(0)
             )
             .addBooleanOption(o =>
-                o.setName(localeManager.getString('commands.booru.search.options.no_ai.name'))
-                .setDescription(localeManager.getString('commands.booru.search.options.no_ai.description'))
+                o.setName(localeManager.getString('commands.booru.options.search.options.no_ai.name'))
+                .setDescription(localeManager.getString('commands.booru.options.search.options.no_ai.description'))
                 
             )
         )
         .addSubcommand(sub =>
-            sub.setName(localeManager.getString('commands.booru.random.name'))
-            .setDescription(localeManager.getString('commands.booru.random.description'))
+            sub.setName(localeManager.getString('commands.booru.options.random.name'))
+            .setDescription(localeManager.getString('commands.booru.options.random.description'))
             
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.random.options.site.name'))
-                .setDescription(localeManager.getString('commands.booru.random.options.site.description'))
+                o.setName(localeManager.getString('commands.booru.options.random.options.site.name'))
+                .setDescription(localeManager.getString('commands.booru.options.random.options.site.description'))
                 
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.random.options.tags.name'))
-                .setDescription(localeManager.getString('commands.booru.random.options.tags.description'))
+                o.setName(localeManager.getString('commands.booru.options.random.options.tags.name'))
+                .setDescription(localeManager.getString('commands.booru.options.random.options.tags.description'))
                 
             )
             .addBooleanOption(o =>
-                o.setName(localeManager.getString('commands.booru.random.options.no_ai.name'))
-                .setDescription(localeManager.getString('commands.booru.random.options.no_ai.description'))
+                o.setName(localeManager.getString('commands.booru.options.random.options.no_ai.name'))
+                .setDescription(localeManager.getString('commands.booru.options.random.options.no_ai.description'))
                 
             )
         )
