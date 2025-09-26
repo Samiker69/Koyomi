@@ -1,54 +1,57 @@
 // commands/room.js
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const Settings = require('../../functions/db/settings');
+const LocaleManager = require('../../locales/localesManager');
+
 const Sdb = new Settings();
+const localeManager = new LocaleManager();
 
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName('room')
-    .setDescription('Управление вашей динамической голосовой комнатой')
+    .setName(localeManager.getString('commands.room.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.name'))
+    .setDescription(localeManager.getString('commands.room.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.description'))
     .addSubcommand(sub =>
       sub
-        .setName('rename')
-        .setDescription('Переименовать комнату')
+        .setName(localeManager.getString('commands.room.options.rename.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.rename.name'))
+        .setDescription(localeManager.getString('commands.room.options.rename.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.rename.description'))
         .addStringOption(opt =>
           opt
-            .setName('name')
-            .setDescription('Новое название')
+            .setName(localeManager.getString('commands.room.options.rename.options.name.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.rename.options.name.name'))
+            .setDescription(localeManager.getString('commands.room.options.rename.options.name.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.rename.options.name.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName('limit')
-        .setDescription('Установить лимит участников')
+        .setName(localeManager.getString('commands.room.options.limit.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.limit.name'))
+        .setDescription(localeManager.getString('commands.room.options.limit.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.limit.description'))
         .addIntegerOption(opt =>
           opt
-            .setName('number')
-            .setDescription('Максимальное число участников (0 — без лимита)')
+            .setName(localeManager.getString('commands.room.options.limit.options.number.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.limit.options.number.name'))
+            .setDescription(localeManager.getString('commands.room.options.limit.options.number.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.limit.options.number.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName('lock')
-        .setDescription('Закрыть комнату для всех')
+        .setName(localeManager.getString('commands.room.options.lock.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.lock.name'))
+        .setDescription(localeManager.getString('commands.room.options.lock.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.lock.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName('unlock')
-        .setDescription('Открыть комнату для всех')
+        .setName(localeManager.getString('commands.room.options.unlock.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.unlock.name'))
+        .setDescription(localeManager.getString('commands.room.options.unlock.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.unlock.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName('private')
-        .setDescription('Сделать комнату приватной (только для роли)')
+        .setName(localeManager.getString('commands.room.options.private.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.private.name'))
+        .setDescription(localeManager.getString('commands.room.options.private.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.private.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName('public')
-        .setDescription('Сделать комнату публичной')
+        .setName(localeManager.getString('commands.room.options.public.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.public.name'))
+        .setDescription(localeManager.getString('commands.room.options.public.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.room.options.public.description'))
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Connect),
 

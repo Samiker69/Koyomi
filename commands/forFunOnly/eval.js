@@ -1,77 +1,79 @@
 const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType, EmbedBuilder, ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { privateAccess, bot_log_channel } = require('../../config.json');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
+
 /*const { default: axios } = require('axios');
 const path = require('path');
 const fs = require('fs').promises*/
 
 const data = new SlashCommandBuilder()
-    .setName('eval')
-    .setDescription(forFunOnly.eval.description.ru)
+    .setName(localeManager.getString('commands.eval.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.name'))
+    .setDescription(localeManager.getString('commands.eval.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.description'))
         .addSubcommand(subcommand =>
-            subcommand.setName('presence')
-            .setDescription("Устанавливает статус бота")
-            //.setDescriptionLocalizations(forFunOnly.eval.description)
+            subcommand.setName(localeManager.getString('commands.eval.options.presence.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.name'))
+            .setDescription(localeManager.getString('commands.eval.options.presence.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.description'))
             .addStringOption(option => 
-                option.setName('name-activity')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                option.setName(localeManager.getString('commands.eval.options.presence.options.name-activity.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.name-activity.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.name-activity.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.name-activity.description'))
+                
             )
             .addStringOption(option => 
-                option.setName('status')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                option.setName(localeManager.getString('commands.eval.options.presence.options.status.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.status.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.status.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.status.description'))
+                
                 .addChoices(
-                    {name: 'online', value: PresenceUpdateStatus.Online},
-                    {name: 'idle', value: PresenceUpdateStatus.Idle},
-                    {name: 'dnd', value: PresenceUpdateStatus.DoNotDisturb},
-                    {name: 'invisible', value: PresenceUpdateStatus.Invisible}
+                    {name: localeManager.getString('commands.eval.options.presence.options.status.choices.online'), value: PresenceUpdateStatus.Online},
+                    {name: localeManager.getString('commands.eval.options.presence.options.status.choices.idle'), value: PresenceUpdateStatus.Idle},
+                    {name: localeManager.getString('commands.eval.options.presence.options.status.choices.dnd'), value: PresenceUpdateStatus.DoNotDisturb},
+                    {name: localeManager.getString('commands.eval.options.presence.options.status.choices.invisible'), value: PresenceUpdateStatus.Invisible}
                 )
             )
             .addIntegerOption(option =>
-                option.setName('activity')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                option.setName(localeManager.getString('commands.eval.options.presence.options.activity.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.activity.name'))
+                .setDescription(localeManager.getString('commands.eval.options.presence.options.activity.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.presence.options.activity.description'))
+                
                 .addChoices(
-                    {name: 'Wathing', value: ActivityType.Watching }, 
-                    {name: 'Listening', value: ActivityType.Listening },
-                    {name: 'Competing', value: ActivityType.Competing },
-                    {name: 'Playing', value: ActivityType.Playing },
-                    {name: 'Streaming', value: ActivityType.Streaming },
-                    {name: 'Custom', value: ActivityType.Custom },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.watching'), value: ActivityType.Watching }, 
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.listening'), value: ActivityType.Listening },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.competing'), value: ActivityType.Competing },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.playing'), value: ActivityType.Playing },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.streaming'), value: ActivityType.Streaming },
+                    {name: localeManager.getString('commands.eval.options.presence.options.activity.choices.custom'), value: ActivityType.Custom },
                 )
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName('avatar')
-            .setDescription("Сменить аватар бота")
+            subcommand.setName(localeManager.getString('commands.eval.options.avatar.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.avatar.name'))
+            .setDescription(localeManager.getString('commands.eval.options.avatar.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.avatar.description'))
             .addAttachmentOption(option =>
-                option.setName('file')
-                .setDescription(forFunOnly.eval.options.avatar.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.avatar.description)
+                option.setName(localeManager.getString('commands.eval.options.avatar.options.file.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.avatar.options.file.name'))
+                .setDescription(localeManager.getString('commands.eval.options.avatar.options.file.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.avatar.options.file.description'))
+                
                 .setRequired(true)
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName('banner')
-            .setDescription("Сменить баннер бота")
+            subcommand.setName(localeManager.getString('commands.eval.options.banner.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.banner.name'))
+            .setDescription(localeManager.getString('commands.eval.options.banner.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.banner.description'))
             .addAttachmentOption(option =>
-                option.setName('file')
-                .setDescription(forFunOnly.eval.options.avatar.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.avatar.description)
+                option.setName(localeManager.getString('commands.eval.options.banner.options.file.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.banner.options.file.name'))
+                .setDescription(localeManager.getString('commands.eval.options.banner.options.file.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.banner.options.file.description'))
+                
                 .setRequired(true)
             )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName('botinfo')
-            .setDescription("Показывает подробную информацию о боте")
+            subcommand.setName(localeManager.getString('commands.eval.options.botinfo.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.botinfo.name'))
+            .setDescription(localeManager.getString('commands.eval.options.botinfo.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.eval.options.botinfo.description'))
         )
 
 module.exports = {
     cooldown: 5,
     data,
     async execute(interaction) {
-        if (!privateAccess.includes(interaction.user.id)) return await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral})
+        if (!privateAccess.includes(interaction.user.id)) return await interaction.reply({ content: localeManager.getString('commands.eval.no_permissions'), flags: MessageFlags.Ephemeral})
 
         switch (interaction.options.getSubcommand()) {
             case "presence": {
@@ -80,17 +82,17 @@ module.exports = {
                 const nameactivity = interaction.options.getString('name-activity') || interaction.client.user.presence.name || '';
                 
                 try {
-                    await interaction.client.user.setPresence({ activities: [{ name: nameactivity }], status: presence });
-                    await interaction.client.user.setActivity(nameactivity, { type: activity })
-                    await interaction.reply({content: `Cтатус изменён. ${presence}, ${nameactivity}, ${activity}`, flags: MessageFlags.Ephemeral });
+                    await interaction.client.user.setPresence({ activities: [{ name: name-activity }], status: presence });
+                    await interaction.client.user.setActivity(name-activity, { type: activity })
+                    await interaction.reply({content: localeManager.getString('commands.eval.presence.status_changed', { presence: presence, nameActivity: name-activity, activity: activity }), flags: MessageFlags.Ephemeral });
                 } catch (error) {
-                    await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
+                    await interaction.reply({content: localeManager.getString('commands.eval.presence.status_change_failed'), flags: MessageFlags.Ephemeral });
                     const errorEmbed = new EmbedBuilder()
                     .setColor('Red')
-                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .setTitle(localeManager.getString('commands.eval.error_processing_command'))
                     .addFields(
-                        { name: `Команда`, value: `${interaction.commandName}` },
-                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                        { name: localeManager.getString('commands.eval.command_field'), value: `${interaction.commandName}` },
+                        { name: localeManager.getString('commands.eval.error_field'), value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
                     )
                     .setTimestamp(new Date())
                     console.error(error);
@@ -110,15 +112,15 @@ module.exports = {
                     //await fs.writeFile('images/avatar.png', file.data)
 
                     await interaction.client.user.setAvatar(image);
-                    await interaction.editReply({content: `Аватар изменён`, flags: MessageFlags.Ephemeral});
+                    await interaction.editReply({content: localeManager.getString('commands.eval.avatar.changed'), flags: MessageFlags.Ephemeral});
                 } catch (error) {
-                    await interaction.editReply({content: `Не удалось изменить аватар`, flags: MessageFlags.Ephemeral});
+                    await interaction.editReply({content: localeManager.getString('commands.eval.avatar.change_failed'), flags: MessageFlags.Ephemeral});
                     const errorEmbed = new EmbedBuilder()
                     .setColor('Red')
-                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .setTitle(localeManager.getString('commands.eval.error_processing_command'))
                     .addFields(
-                        { name: `Команда`, value: `${interaction.commandName}` },
-                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                        { name: localeManager.getString('commands.eval.command_field'), value: `${interaction.commandName}` },
+                        { name: localeManager.getString('commands.eval.error_field'), value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
                     )
                     .setTimestamp(new Date())
                     console.error(error);
@@ -137,15 +139,15 @@ module.exports = {
                     //await fs.writeFile('images/banner.png', file.data)
 
                     await interaction.client.user.setBanner(image);
-                    await interaction.editReply({content: `Баннер изменён`, flags: MessageFlags.Ephemeral});
+                    await interaction.editReply({content: localeManager.getString('commands.eval.banner.changed'), flags: MessageFlags.Ephemeral});
                 } catch (error) {
-                    await interaction.editReply({content: `Не удалось изменить баннер`, flags: MessageFlags.Ephemeral});
+                    await interaction.editReply({content: localeManager.getString('commands.eval.banner.change_failed'), flags: MessageFlags.Ephemeral});
                     const errorEmbed = new EmbedBuilder()
                     .setColor('Red')
-                    .setTitle(`Произошла ошибка при обработке команды`)
+                    .setTitle(localeManager.getString('commands.eval.error_processing_command'))
                     .addFields(
-                        { name: `Команда`, value: `${interaction.commandName}` },
-                        { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                        { name: localeManager.getString('commands.eval.command_field'), value: `${interaction.commandName}` },
+                        { name: localeManager.getString('commands.eval.error_field'), value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
                     )
                     .setTimestamp(new Date())
                     console.error(error);
@@ -159,7 +161,7 @@ module.exports = {
                 const row = new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
                       .setCustomId(`eval_botinfo_guilds`)
-                      .setLabel('Сервера')
+                      .setLabel(localeManager.getString('commands.eval.botinfo.guilds_button'))
                       .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
                       .setLabel('ъ')
@@ -168,11 +170,10 @@ module.exports = {
                   );
 
                 const embed = new EmbedBuilder()
-                .setTitle("Информация о текущем клиенте бота")
+                .setTitle(localeManager.getString('commands.eval.botinfo.embed_title'))
                 .setColor('Random')
                 .setDescription(
-                    "`Сервера` - на каких серверах находится этот бот\n"+
-                    "Здесь могла быть ваша реклама https://samiker.xyz"
+                    localeManager.getString('commands.eval.botinfo.embed_description')
                 )
 
                 return await interaction.editReply({
@@ -183,7 +184,7 @@ module.exports = {
             }
         
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({content: localeManager.getString('commands.eval.subcommand_not_found'), flags: MessageFlags.Ephemeral})
                 break;
         }
     }

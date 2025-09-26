@@ -1,48 +1,48 @@
-const { locales } = require("../locales");
+const { locales } = require("./locales");
 
 class LocaleManager {
-    static instance;
-    defaultLocale = "en";
+    defaultLocale = "en-US";
+    langs = ["ru", "en-US", "uk"];
 
     constructor() {}
 
-    static getInstance() {
-        if (!LocaleManager.instance) {
-            LocaleManager.instance = new LocaleManager();
-        }
-        return LocaleManager.instance;
-    }
-
     getString(key, locale = this.defaultLocale) {
         try {
-            return locales[locale][key] || locales[this.defaultLocale][key];
+            //console.log(`Fetching key: ${key} for locale: ${locale}`, this.parseLocaleString(key));
+            return this.parseLocaleString(key, locale);
         } catch (e) {
+            console.error(`Error fetching key: ${key} for locale: ${locale}`, e);
             return key;
         }
     }
 
-    getAllCommandLocalizations(commandName, key) {
-        const localizations = {};
-        for (const locale of Object.keys(locales)) {
-            localizations[locale] = this.getString(`commands.${commandName}.${key}`, locale);
+    //парсит locales и localesString, возвращая значение
+    parseLocaleString(key, locale = this.defaultLocale) {
+        const parts = key.split('.');
+        let current = locales[locale];
+        for (const part of parts) {
+            if (current && part in current) {
+                current = current[part];
+            } else {
+                return null; // Ключ не найден
+            }
         }
-        return localizations;
+        return current;
     }
 
-    getCommandLocalization(commandName, locale = this.defaultLocale) {
-        const prefix = `commands.${commandName}`;
-        return {
-            name: this.getString(`${prefix}.name`, locale),
-            description: this.getString(`${prefix}.description`, locale),
-            options: this.getCommandOptions(commandName, locale)
-        };
+getAllCommandLocalizations(key) {
+    const localizations = {};
+    for (const lang of this.langs) {
+        const translation = this.getString(key, lang);
+        
+        if (translation) {
+            localizations[lang] = translation;
+        } else {
+            console.error(`локализация не найдена для ${key} в языке ${lang}`)
+        }
     }
-
-    getCommandOptions(commandName, locale) {
-        const prefix = `commands.${commandName}.options`;
-        const options = locales[locale][prefix];
-        return options || {};
-    }
+    return localizations;
+}
 }
 
-module.exports = { LocaleManager };
+module.exports = LocaleManager;

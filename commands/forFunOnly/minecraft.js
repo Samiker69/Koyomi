@@ -1,18 +1,19 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const LocaleManager = require('../../locales/localesManager');
 
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+const localeManager = new LocaleManager();
 
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName('minecraft')
-    .setDescription(forFunOnly.minecraft.description.ru)
-    .setDescriptionLocalizations(forFunOnly.minecraft.description)
+    .setName(localeManager.getString('commands.minecraft.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.minecraft.name'))
+    .setDescription(localeManager.getString('commands.minecraft.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.minecraft.description'))
+    
     .addStringOption(opt =>
       opt
-        .setName('player')
-        .setDescription(forFunOnly.minecraft.options.player.description.ru)
-        .setDescriptionLocalizations(forFunOnly.minecraft.options.player.description)
+        .setName(localeManager.getString('commands.minecraft.options.player.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.minecraft.options.player.name'))
+        .setDescription(localeManager.getString('commands.minecraft.options.player.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.minecraft.options.player.description'))
+        
         .setRequired(true)
     ),
 
@@ -26,7 +27,7 @@ module.exports = {
         `https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(player)}`
       );
       if (!res.ok) {
-        return interaction.editReply(`Игрок \`${player}\` не найден.`);
+        return interaction.editReply(localeManager.getString('commands.minecraft.player_not_found', { player: player }));
       }
       const { id: uuid } = await res.json();
 
@@ -35,14 +36,14 @@ module.exports = {
       const profileUrl      = `https://namemc.com/profile/${player}`;
 
       const embed = new EmbedBuilder()
-        .setTitle(`Информация по игроку ${player}`)
+        .setTitle(localeManager.getString('commands.minecraft.embed_title', { player: player }))
         .setColor(0x9B59B6)
         .setThumbnail(skinRenderUrl)
         .addFields(
-          { name: 'Рендер скина',       value: `[Посмотреть](${skinRenderUrl})`,   inline: true },
-          { name: 'Скачать скин',       value: `[Скачать](${skinDownloadUrl})`,    inline: true },
-          { name: 'Профиль на NameMC',  value: `[Перейти](${profileUrl})`,         inline: true },
-          { name: 'UUID',               value: uuid,                                inline: true }
+          { name: localeManager.getString('commands.minecraft.skin_render_field'),       value: `[${localeManager.getString('commands.minecraft.view_button')}](${skinRenderUrl})`,   inline: true },
+          { name: localeManager.getString('commands.minecraft.download_skin_field'),       value: `[${localeManager.getString('commands.minecraft.download_button')}](${skinDownloadUrl})`,    inline: true },
+          { name: localeManager.getString('commands.minecraft.namemc_profile_field'),  value: `[${localeManager.getString('commands.minecraft.go_button')}](${profileUrl})`,         inline: true },
+          { name: localeManager.getString('commands.minecraft.uuid_field'),               value: uuid,                                inline: true }
         )
         .setTimestamp();
 
@@ -50,7 +51,7 @@ module.exports = {
     } catch (err) {
       console.error('Error in /minecraft command:', err);
       try {
-        await interaction.editReply('Произошла ошибка при получении данных.');
+        await interaction.editReply(localeManager.getString('commands.minecraft.error_fetching_data'));
       } catch {
       }
     }

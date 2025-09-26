@@ -1,24 +1,26 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+const LocaleManager = require('../../locales/localesManager');
+
+const localeManager = new LocaleManager();
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName('love')
-        .setDescription(forFunOnly.love.description.ru)
-        .setDescriptionLocalizations(forFunOnly.love.description)
+        .setName(localeManager.getString('commands.love.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.love.name'))
+        .setDescription(localeManager.getString('commands.love.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.love.description'))
+        
         .addUserOption(opt =>
             opt
-            .setName('user1')
-            .setDescription(forFunOnly.love.options.user1.description.ru)
-            .setDescriptionLocalizations(forFunOnly.love.options.user1.description)
+            .setName(localeManager.getString('commands.love.options.user1.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.love.options.user1.name'))
+            .setDescription(localeManager.getString('commands.love.options.user1.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.love.options.user1.description'))
+            
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
-            .setName('user2')
-            .setDescription(forFunOnly.love.options.user2.description.ru)
-            .setDescriptionLocalizations(forFunOnly.love.options.user2.description)
+            .setName(localeManager.getString('commands.love.options.user2.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.love.options.user2.name'))
+            .setDescription(localeManager.getString('commands.love.options.user2.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.love.options.user2.description'))
+            
             .setRequired(true)
         ),
 
@@ -38,11 +40,11 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setColor(0x9B59B6)
-            .setTitle('💕 Love Calculator')
-            .setDescription(`${u1} и ${u2}`)
+            .setTitle(localeManager.getString('commands.love.embed_title'))
+            .setDescription(localeManager.getString('commands.love.embed_description', { user1: u1.toString(), user2: u2.toString() }))
             .addFields(
-                { name: 'Совместимость', value: `**${percentage}%**`, inline: true },
-                { name: 'Индикатор',     value: bar,               inline: false }
+                { name: localeManager.getString('commands.love.compatibility_field'), value: `**${percentage}%**`, inline: true },
+                { name: localeManager.getString('commands.love.indicator_field'),     value: bar,               inline: false }
             );
 
         await interaction.reply({ embeds: [embed] });
