@@ -119,7 +119,11 @@
                 },
                 "gradient_type": {
                     "description": "Тип градиента",
-                    "name": "gradient_type"
+                    "name": "gradient_type",
+                    "choices": {
+                        "linear": "линейный",
+                        "radial": "радиальный"
+                    }
                 },
                 "gradient_bg": {
                     "description": "Градиентный фон",
@@ -169,6 +173,7 @@
         },
         "eval": {
             "name": "eval",
+            "description": "Эту команду может использовать только владелец бота",
             "response": {},
             "options": {
                 "botinfo": {
@@ -178,7 +183,8 @@
                 "banner": {
                     "options": {
                         "file": {
-                            "name": "file"
+                            "name": "file",
+                            "description": "Файл изображения"
                         }
                     },
                     "description": "Сменить баннер бота",
@@ -187,7 +193,8 @@
                 "avatar": {
                     "options": {
                         "file": {
-                            "name": "file"
+                            "name": "file",
+                            "description": "Файл изображения"
                         }
                     },
                     "description": "Сменить аватар бота",
@@ -196,13 +203,30 @@
                 "presence": {
                     "options": {
                         "activity": {
-                            "name": "activity"
+                            "name": "activity",
+                            "description": "Тип активности",
+                            "choices": {
+                                "playing": "играет в",
+                                "watching": "смотрит",
+                                "listening": "слушает",
+                                "competing": "соревнуется в",
+                                "streaming": "стримит",
+                                "custom": "пользовательский"
+                            }
                         },
                         "status": {
-                            "name": "status"
+                            "name": "status",
+                            "description": "Статус бота",
+                            "choices": {
+                                "online": "в сети",
+                                "idle": "неактивен",
+                                "dnd": "не беспокоить",
+                                "invisible": "невидимый"
+                            }
                         },
                         "name-activity": {
-                            "name": "name-activity"
+                            "name": "name-activity",
+                            "description": "Название активности"
                         }
                     },
                     "description": "Устанавливает статус бота",
@@ -271,16 +295,23 @@
                     "options": {
                         "s_value": {
                             "description": "Режимы безопасности",
-                            "name": "s_value"
+                            "name": "s_value",
+                            "choices": {
+                                "block_none": "Ничего не блокировать",
+                                "block_high_and_above": "Блокировать высокий уровень и выше",
+                                "block_medium_and_above": "Блокировать средний уровень и выше",
+                                "block_low_and_above": "Блокировать низкий уровень и выше",
+                                "harm_block_threshold_unspecified": "Порог блокировки не указан"
+                            }
                         },
                         "s_category": {
                             "description": "Название опции",
-                                                        "name": "s_category",
+                            "name": "s_category",
                             "choices": {
-                                "harassment": "harassment",
-                                "hate_speech": "Hatespeech",
-                                "sexually_explicit": "Sexually explicit",
-                                "dangerous_content": "Dangerous content"
+                                "harassment": "Домогательства",
+                                "hate_speech": "Язык вражды",
+                                "sexually_explicit": "Откровенный контент",
+                                "dangerous_content": "Опасный контент"
                             }
                         }
                     },
@@ -306,7 +337,7 @@
                             "name": "temperature"
                         },
                         "max_output_tokens": {
-                            "description": "Максимум токенов, которыми ИИ ответит. Если максимум меньше, чем ответил ИИ, то ответ будет обрезан!",
+                            "description": "Максимум токенов, которыми ИИ ответит.",
                             "name": "max_output_tokens"
                         },
                         "system_instructions": {
@@ -367,37 +398,46 @@
         },
         "love": {
             "name": "love",
+            "description": "Рассчитать любовь между 2 пользователями",
             "response": {},
             "options": {
                 "user2": {
-                    "name": "user2"
+                    "name": "user2",
+                    "description": "Участник"
                 },
                 "user1": {
-                    "name": "user1"
+                    "name": "user1",
+                    "description": "Участник"
                 }
             }
         },
         "minecraft": {
             "name": "minecraft",
+            "description": "Поиск аккаунта minecraft",
             "response": {},
             "options": {
                 "player": {
-                    "name": "player"
+                    "name": "player",
+                    "description": "Никнейм игрока"
                 }
             }
         },
         "say": {
             "name": "say",
+            "description": "Отправить сообщение",
             "response": {},
             "options": {
                 "reply_to": {
-                    "name": "reply_to"
+                    "name": "reply_to",
+                    "description": "ID сообщения"
                 },
                 "image": {
-                    "name": "image"
+                    "name": "image",
+                    "description": "Файл"
                 },
                 "text": {
-                    "name": "text"
+                    "name": "text",
+                    "description": "Текст для отправки"
                 }
             }
         },
@@ -432,10 +472,12 @@
         },
         "tictactoe": {
             "name": "tictactoe",
+            "description": "Сыграть в крестики-нолики с другим пользователем",
             "response": {},
             "options": {
                 "opponent": {
-                    "name": "opponent"
+                    "name": "opponent",
+                    "description": "Пользователь, с которым вы хотите сыграть"
                 }
             }
         },
@@ -568,7 +610,11 @@
                         },
                         "action": {
                             "description": "Новое действие при срабатывании правила",
-                            "name": "action"
+                            "name": "action",
+                            "choices": {
+                                "block_message": "Блокировать сообщение",
+                                "timeout": "Таймаут"
+                            }
                         },
                         "keywords": {
                             "description": "Новые слова или фразы (через запятую). Можно использовать *.",
@@ -606,7 +652,11 @@
                         },
                         "action": {
                             "description": "Действие при срабатывании правила",
-                            "name": "action"
+                            "name": "action",
+                            "choices": {
+                                "block_message": "Блокировать сообщение",
+                                "timeout": "Таймаут"
+                            }
                         },
                         "keywords": {
                             "description": "Слова или фразы для блокировки (через запятую). Можно использовать *.",
@@ -624,12 +674,14 @@
         },
         "case": {
             "name": "case",
+            "description": "Действия с кейсами",
             "response": {},
             "options": {
                 "user_punishments": {
                     "options": {
                         "user": {
-                            "name": "user"
+                            "name": "user",
+                            "description": "@Участник или ID участника"
                         }
                     },
                     "description": "Проверить историю наказаний пользователя",
@@ -638,7 +690,8 @@
                 "view": {
                     "options": {
                         "num": {
-                            "name": "num"
+                            "name": "num",
+                            "description": "Номер кейса"
                         }
                     },
                     "description": "Показывает указанный кейс",
@@ -647,10 +700,12 @@
                 "reason": {
                     "options": {
                         "reason": {
-                            "name": "reason"
+                            "name": "reason",
+                            "description": "Новая причина"
                         },
                         "num": {
-                            "name": "num"
+                            "name": "num",
+                            "description": "Номер кейса"
                         }
                     },
                     "description": "Сменить причину кейса",
@@ -659,10 +714,12 @@
                 "remove": {
                     "options": {
                         "num": {
-                            "name": "num"
+                            "name": "num",
+                            "description": "Номер кейса"
                         }
                     },
-                    "name": "remove"
+                    "name": "remove",
+                    "description": "Удалить кейс с сервера"
                 }
             }
         },
@@ -709,15 +766,18 @@
         },
         "message": {
             "name": "message",
+            "description": "Действия с сообщениями",
             "response": {},
             "options": {
                 "purge": {
                     "options": {
                         "amount": {
-                            "name": "amount"
+                            "name": "amount",
+                            "description": "Количество сообщений для удаления"
                         },
                         "target": {
-                            "name": "target"
+                            "name": "target",
+                            "description": "Конкретный пользователь"
                         }
                     },
                     "description": "Удаляет указанное количество сообщений от конкретного пользователя",
@@ -726,7 +786,8 @@
                 "unpin": {
                     "options": {
                         "id": {
-                            "name": "id"
+                            "name": "id",
+                            "description": "ID сообщения"
                         }
                     },
                     "description": "Открепить сообщение",
@@ -735,7 +796,8 @@
                 "pin": {
                     "options": {
                         "id": {
-                            "name": "id"
+                            "name": "id",
+                            "description": "ID сообщения"
                         }
                     },
                     "description": "Закрепить сообщение",
@@ -744,7 +806,8 @@
                 "clear": {
                     "options": {
                         "amount": {
-                            "name": "amount"
+                            "name": "amount",
+                            "description": "Количество сообщений для удаления"
                         }
                     },
                     "description": "Удаляет указанное количество сообщений от пользователей",
@@ -1011,41 +1074,52 @@
         },
         "booru": {
             "name": "booru",
+            "description": "Просмотр любого booru",
             "response": {},
             "options": {
                 "random": {
                     "options": {
                         "no_ai": {
-                            "name": "no_ai"
+                            "name": "no_ai",
+                            "description": "Автоматически добавлять теги -ai"
                         },
                         "tags": {
-                            "name": "tags"
+                            "name": "tags",
+                            "description": "Теги для поиска"
                         },
                         "site": {
-                            "name": "site"
+                            "name": "site",
+                            "description": "Сайт для поиска (например, rule34.xxx, gelbooru.com)"
                         }
                     },
-                    "name": "random"
+                    "name": "random",
+                    "description": "Получить случайный пост"
                 },
                 "search": {
                     "options": {
                         "no_ai": {
-                            "name": "no_ai"
+                            "name": "no_ai",
+                            "description": "Автоматически добавлять теги -ai"
                         },
                         "page": {
-                            "name": "page"
+                            "name": "page",
+                            "description": "Страница для поиска"
                         },
                         "limit": {
-                            "name": "limit"
+                            "name": "limit",
+                            "description": "Лимит получаемых постов"
                         },
                         "tags": {
-                            "name": "tags"
+                            "name": "tags",
+                            "description": "Теги для поиска"
                         },
                         "site": {
-                            "name": "site"
+                            "name": "site",
+                            "description": "Сайт для поиска (например, rule34.xxx, gelbooru.com)"
                         }
                     },
-                    "name": "search"
+                    "name": "search",
+                    "description": "Искать посты по запросу"
                 }
             }
         },
@@ -1131,7 +1205,12 @@
                     "options": {
                         "value": {
                             "description": "Уровень фильтрации контента",
-                            "name": "value"
+                            "name": "value",
+                            "choices": {
+                                "disabled": "Отключено",
+                                "noroleuser": "Участники без ролей",
+                                "allmember": "Все участники"
+                            }
                         }
                     },
                     "description": "Изменить уровень фильтрации контента сервера",
