@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const fetch = require('node-fetch');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 
 module.exports = {
