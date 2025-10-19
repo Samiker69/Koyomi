@@ -20,39 +20,31 @@
   "homepage": "https://github.com/Samiker69/MojoAdministrator#readme",
   "dependencies": {
     "@discordjs/opus": "github:discordjs/opus",
-    "@discordjs/voice": "^0.18.0",
-    "@google/genai": "^1.14.0",
+    "@discordjs/voice": "^0.19.0",
+    "@google/genai": "^1.25.0",
     "are-we-there-yet": "^4.0.2",
-    "axios": "^1.11.0",
-    "better-sqlite3": "^11.10.0",
+    "axios": "^1.12.2",
+    "better-sqlite3": "^12.4.1",
     "booru": "^2.8.1",
     "bufferutil": "^4.0.9",
-    "canvas": "^3.1.2",
-    "discord.js": "^14.21.0",
-    "dotenv": "^16.6.1",
+    "canvas": "^3.2.0",
+    "discord.js": "^14.23.2",
+    "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "gauge": "^5.0.2",
     "glob": "^11.0.3",
     "inflight": "^1.0.6",
-    "nhentai": "^3.0.0",
+    "nhentai": "^4.0.0",
     "npmlog": "^7.0.1",
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
     "play-dl": "^1.9.7",
-<<<<<<< HEAD
-<<<<<<< HEAD
     "rimraf": "^6.0.1",
     "ws": "^8.18.3"
-=======
-    "rimraf": "^6.0.1"
->>>>>>> parent of deaf36e (Merge pull request #1 from Samiker69/translates)
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
-=======
-    "rimraf": "^6.0.1"
->>>>>>> parent of 5674a78 (Поднята версия до 0.7.5)
+    "nodemon": "^3.1.10"
   }
 }
