@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const fetch = require('node-fetch');
 
 const TENOR_API_KEY = process.env.TENOR_API_KEY || 'LIVDSRZULELA';
 
