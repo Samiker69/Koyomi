@@ -1,7 +1,7 @@
 const locales = {
-    "ru": require("./src/commands_ru.json"),
-    "en-US": require("./src/commands_en.json"),
-    "uk": require("./src/commands_ua.json")
+    "ru": require("./ru.json"),
+    "en": require("./en.json"),
+    "uk": require("./uk.json")
 };
 
 module.exports.locales = locales;

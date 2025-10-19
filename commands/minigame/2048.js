@@ -7,11 +7,9 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
-const LocaleManager = require('../../locales/localesManager');
 
 const activeGames = new Set();
 const cooldowns = new Map();
-const localeManager = new LocaleManager();
 
 const tileEmojis = {
     0: '⬛', 2: '2️⃣', 4: '4️⃣', 8: '🟦', 16: '🟩', 32: '🟨',
@@ -100,8 +98,8 @@ function isGameOver(board) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.2048.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.2048.name'))
-        .setDescription(localeManager.getString('commands.2048.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.2048.description')),
+        .setName('2048')
+        .setDescription('Начать одиночную игру 2048'),
 
     async execute(interaction) {
         const playerId = interaction.user.id;

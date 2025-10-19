@@ -1,9 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const SettingsDB = require('../../functions/db/settings');
-const LocaleManager = require('../../locales/localesManager');
 
 const Sdb = new SettingsDB();
-const localeManager = new LocaleManager();
 
 function parseEmoji(emojiInput) {
     if (!emojiInput) return null;
@@ -22,106 +20,106 @@ function parseEmoji(emojiInput) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.rolemenu.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.name'))
-        .setDescription(localeManager.getString('commands.rolemenu.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.description'))
+        .setName('rolemenu')
+        .setDescription('Создать или обновить сообщение с меню выбора ролей (кнопки или Select Menu).')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.create-select.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.create-select.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.description'))
+                .setName('create-select')
+                .setDescription('Создать новое сообщение с Select Menu выбора ролей.')
                 .addChannelOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.channel.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.channel.description'))
+                    option.setName('channel')
+                        .setDescription('Канал, куда будет отправлено сообщение с меню ролей.')
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.title.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.title.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.title.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.title.description'))
+                    option.setName('title')
+                        .setDescription('Заголовок для эмбеда сообщения с меню ролей.')
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.description.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.description.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.description.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.description.description'))
+                    option.setName('description')
+                        .setDescription('Описание для эмбеда сообщения с меню ролей.')
                         .setRequired(false)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-select.options.placeholder.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.placeholder.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-select.options.placeholder.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-select.options.placeholder.description'))
+                    option.setName('placeholder')
+                        .setDescription('Текст-заглушка для Select Menu (по умолчанию: "Выберите ваши роли...").')
                         .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.create-buttons.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.description'))
+                .setName('create-buttons')
+                .setDescription('Создать новое сообщение с кнопками для выдачи ролей.')
                 .addChannelOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.channel.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.channel.description'))
+                    option.setName('channel')
+                        .setDescription('Канал, куда будет отправлено сообщение с кнопками.')
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.title.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.title.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.title.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.title.description'))
+                    option.setName('title')
+                        .setDescription('Заголовок для эмбеда сообщения с кнопками.')
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.create-buttons.options.description.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.description.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.create-buttons.options.description.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.create-buttons.options.description.description'))
+                    option.setName('description')
+                        .setDescription('Описание для эмбеда сообщения с кнопками.')
                         .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.add-role.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.add-role.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.description'))
+                .setName('add-role')
+                .setDescription('Добавить роль в существующее меню (кнопки или Select Menu).')
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.message_id.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.message_id.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.message_id.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.message_id.description'))
+                    option.setName('message_id')
+                        .setDescription('ID сообщения с меню выбора ролей.')
                         .setRequired(true)
                 )
                 .addRoleOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.role.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.role.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.role.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.role.description'))
+                    option.setName('role')
+                        .setDescription('Роль, которую нужно добавить.')
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.label.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.label.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.label.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.label.description'))
+                    option.setName('label')
+                        .setDescription('Отображаемое имя роли в меню/на кнопке (по умолчанию: название роли).')
                         .setRequired(false)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.description.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.description.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.description.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.description.description'))
+                    option.setName('description')
+                        .setDescription('Описание роли в Select Menu (не используется для кнопок).')
                         .setRequired(false)
                 )
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.add-role.options.emoji.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.emoji.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.add-role.options.emoji.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.add-role.options.emoji.description'))
+                    option.setName('emoji')
+                        .setDescription('Emoji для отображения рядом с ролью в меню/на кнопке. Формат: <:name:id> или стандартный.')
                         .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.remove-role.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.description'))
+                .setName('remove-role')
+                .setDescription('Удалить роль из существующего меню (кнопки или Select Menu).')
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.remove-role.options.message_id.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.options.message_id.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.options.message_id.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.options.message_id.description'))
+                    option.setName('message_id')
+                        .setDescription('ID сообщения с меню выбора ролей.')
                         .setRequired(true)
                 )
                 .addRoleOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.remove-role.options.role.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.options.role.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.remove-role.options.role.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.remove-role.options.role.description'))
+                    option.setName('role')
+                        .setDescription('Роль, которую нужно удалить.')
                         .setRequired(true)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.getString('commands.rolemenu.options.delete.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.delete.name'))
-                .setDescription(localeManager.getString('commands.rolemenu.options.delete.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.delete.description'))
+                .setName('delete')
+                .setDescription('Удалить сообщение с меню выбора ролей и его данные.')
                 .addStringOption(option =>
-                    option.setName(localeManager.getString('commands.rolemenu.options.delete.options.message_id.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.delete.options.message_id.name'))
-                        .setDescription(localeManager.getString('commands.rolemenu.options.delete.options.message_id.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.rolemenu.options.delete.options.message_id.description'))
+                    option.setName('message_id')
+                        .setDescription('ID сообщения с меню выбора ролей, которое нужно удалить.')
                         .setRequired(true)
                 )
         ),

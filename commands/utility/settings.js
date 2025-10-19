@@ -1,73 +1,71 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder, ChannelType } = require('discord.js');
-const settings = require('../../functions/db/settings');
-const { bot_log_channel } = require('../../config.json');
-const LocaleManager = require('../../locales/localesManager');
+const settings = require('../../functions/db/settings')
+const { bot_log_channel } = require('../../config.json')
 
-const Sdb = new settings();
-const localeManager = new LocaleManager();
+const Sdb = new settings()
 
 module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName(localeManager.getString('commands.settings.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.name'))
-		.setDescription(localeManager.getString('commands.settings.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.description'))
+		.setName('settings')
+		.setDescription('Изменить настройки бота')
         .addSubcommand(subcommand => 
-            subcommand.setName(localeManager.getString('commands.settings.options.welcomechannel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.welcomechannel.name'))
-            .setDescription(localeManager.getString('commands.settings.options.welcomechannel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.welcomechannel.description'))
-            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.welcomechannel.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.welcomechannel.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.welcomechannel.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.welcomechannel.options.channel.description')).setRequired(true)))
+            subcommand.setName('welcomechannel')
+            .setDescription('Канал для уведомления о новых участниках')
+            .addChannelOption(option => option.setName('channel').setDescription('Канал').setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
             
         .addSubcommand(subcommand => 
-            subcommand.setName(localeManager.getString('commands.settings.options.invite-logger-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.invite-logger-channel.name'))
-            .setDescription(localeManager.getString('commands.settings.options.invite-logger-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.invite-logger-channel.description'))
-            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.invite-logger-channel.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.invite-logger-channel.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.invite-logger-channel.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.invite-logger-channel.options.channel.description')).setRequired(true)))
+            subcommand.setName('invite-logger-channel')
+            .setDescription('Канал для логирования ссылок приглашений')
+            .addChannelOption(option => option.setName('channel').setDescription('Канал').setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand => 
-            subcommand.setName(localeManager.getString('commands.settings.options.allowlogging.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allowlogging.name'))
-            .setDescription(localeManager.getString('commands.settings.options.allowlogging.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allowlogging.description'))
-            .addBooleanOption(option => option.setName(localeManager.getString('commands.settings.options.allowlogging.options.bool.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allowlogging.options.bool.name')).setDescription(localeManager.getString('commands.settings.options.allowlogging.options.bool.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allowlogging.options.bool.description')).setRequired(true)))
+            subcommand.setName('allowlogging')
+            .setDescription('Отправлять сообщения об использованной ссылке?')
+            .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand => 
-            subcommand.setName(localeManager.getString('commands.settings.options.allow-membersadd-logging.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allow-membersadd-logging.name'))
-            .setDescription(localeManager.getString('commands.settings.options.allow-membersadd-logging.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allow-membersadd-logging.description'))
-            .addBooleanOption(option => option.setName(localeManager.getString('commands.settings.options.allow-membersadd-logging.options.bool.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allow-membersadd-logging.options.bool.name')).setDescription(localeManager.getString('commands.settings.options.allow-membersadd-logging.options.bool.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.allow-membersadd-logging.options.bool.description')).setRequired(true)))
+            subcommand.setName('allow-membersadd-logging')
+            .setDescription('Отправлять сообщения о новых/ушедших участниках')
+            .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.set-voice-category.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-voice-category.name'))
-            .setDescription(localeManager.getString('commands.settings.options.set-voice-category.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-voice-category.description'))
-            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.set-voice-category.options.category.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-voice-category.options.category.name')).setDescription(localeManager.getString('commands.settings.options.set-voice-category.options.category.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-voice-category.options.category.description')).setRequired(true)))
+            subcommand.setName('set-voice-category')
+            .setDescription('Установить категорию для новых войс-каналов')
+            .addChannelOption(option => option.setName('category').setDescription('Категория').setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.set-main-voice.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-main-voice.name'))
-            .setDescription(localeManager.getString('commands.settings.options.set-main-voice.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-main-voice.description'))
-            .addChannelOption(option => option.setName(localeManager.getString('commands.settings.options.set-main-voice.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-main-voice.options.channel.name')).setDescription(localeManager.getString('commands.settings.options.set-main-voice.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-main-voice.options.channel.description')).setRequired(true)))
+            subcommand.setName('set-main-voice')
+            .setDescription('Установить основной голосовой канал для создания комнат')
+            .addChannelOption(option => option.setName('channel').setDescription('Основной войс').setRequired(true)))
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.support-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.support-channel.name'))
-            .setDescription(localeManager.getString('commands.settings.options.support-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.support-channel.description'))
+            subcommand.setName("support-channel")
+            .setDescription('Задаёт канал поддержки')
             .addChannelOption(opt =>
-                opt.setName(localeManager.getString('commands.settings.options.support-channel.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.support-channel.options.channel.name'))
-                .setDescription(localeManager.getString('commands.settings.options.support-channel.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.support-channel.options.channel.description'))
+                opt.setName('channel')
+                .setDescription("Канал/форум поддержки")
                 .setRequired(true)
             )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.to-default.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.to-default.name'))
-            .setDescription(localeManager.getString('commands.settings.options.to-default.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.to-default.description'))
+            subcommand.setName('to-default')
+            .setDescription('Безвозвратно сбрасывает настройки сервера')
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
         .addSubcommand(subcommand =>
-            subcommand.setName(localeManager.getString('commands.settings.options.set-reports-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-reports-channel.name'))
-                .setDescription(localeManager.getString('commands.settings.options.set-reports-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-reports-channel.description'))
+            subcommand.setName('set-reports-channel')
+                .setDescription('Установить канал, куда будут приходить жалобы модераторам.')
                 .addChannelOption(option =>
-                    option.setName(localeManager.getString('commands.settings.options.set-reports-channel.options.channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-reports-channel.options.channel.name'))
-                        .setDescription(localeManager.getString('commands.settings.options.set-reports-channel.options.channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.settings.options.set-reports-channel.options.channel.description'))
+                    option.setName('channel')
+                        .setDescription('Канал для получения жалоб.')
                         .setRequired(true)
                 )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),

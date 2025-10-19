@@ -10,21 +10,18 @@ const {
 } = require('@discordjs/voice');
 const axios = require('axios'); // Для получения потоков по HTTP(S)
 const path = require('node:path'); // Для извлечения имени файла из URL
-const LocaleManager = require('../../locales/localesManager');
-
-const localeManager = new LocaleManager();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.play.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.play.name'))
-        .setDescription(localeManager.getString('commands.play.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.play.description'))
+        .setName('play')
+        .setDescription('Воспроизводит аудио по прямой ссылке или из загруженного файла.')
         .addStringOption(option =>
-            option.setName(localeManager.getString('commands.play.options.url.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.play.options.url.name'))
-                .setDescription(localeManager.getString('commands.play.options.url.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.play.options.url.description'))
+            option.setName('url')
+                .setDescription('Прямая ссылка на аудиофайл (mp3, ogg, wav, flac, m4a, opus).')
                 .setRequired(false))
         .addAttachmentOption(option =>
-            option.setName(localeManager.getString('commands.play.options.attachment.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.play.options.attachment.name'))
-                .setDescription(localeManager.getString('commands.play.options.attachment.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.play.options.attachment.description'))
+            option.setName('attachment')
+                .setDescription('Загрузите аудиофайл (mp3, ogg, wav, flac, m4a, opus).')
                 .setRequired(false)),
 
     async execute(interaction) {

@@ -2,75 +2,70 @@ const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed
 const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
 const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
-const LocaleManager = require('../../locales/localesManager');
-
-const localeManager = new LocaleManager();
-
-const { bot_log_channel } = require('../../config.json');
+const { nsfw } = require('../../locales/descriptions/nsfw')
+const { bot_log_channel } = require('../../config.json')
 
 module.exports = {
     cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName(localeManager.getString('commands.booru.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.name'))
-		.setDescription(localeManager.getString('commands.booru.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.description'))
-        
+		.setName('booru')
+		.setDescription(nsfw.booru.description.ru)
+        .setDescriptionLocalizations(nsfw.booru.description)
         .setContexts(0,1,2)
         .addSubcommand(sub =>
-            sub.setName(localeManager.getString('commands.booru.options.search.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.name'))
-            .setDescription(localeManager.getString('commands.booru.options.search.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.description'))
-            
+            sub.setName('search')
+            .setDescription(nsfw.booru.search.description.ru)
+            .setDescriptionLocalizations(nsfw.booru.search.description)
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.search.options.site.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.site.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.site.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.site.description'))
-                
+                o.setName('site')
+                .setDescription(nsfw.booru.options.site.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.site.description)
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.search.options.tags.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.tags.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.tags.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.tags.description'))
-                
+                o.setName('tags')
+                .setDescription(nsfw.booru.options.tags.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.tags.description)
                 .setRequired(true)
             )
             .addNumberOption(o => 
-                o.setName(localeManager.getString('commands.booru.options.search.options.limit.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.limit.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.limit.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.limit.description'))
-                
+                o.setName('limit')
+                .setDescription(nsfw.booru.options.limit.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.limit.description)
                 .setMaxValue(100)
                 .setMinValue(1)
             )
             .addNumberOption(o => 
-                o.setName(localeManager.getString('commands.booru.options.search.options.page.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.page.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.page.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.page.description'))
-                
+                o.setName('page')
+                .setDescription(nsfw.booru.options.page.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.page.description)
                 .setMinValue(0)
             )
             .addBooleanOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.search.options.no_ai.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.no_ai.name'))
-                .setDescription(localeManager.getString('commands.booru.options.search.options.no_ai.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.search.options.no_ai.description'))
-                
+                o.setName('no_ai')
+                .setDescription(nsfw.booru.options.no_ai.description.ru)
             )
         )
         .addSubcommand(sub =>
-            sub.setName(localeManager.getString('commands.booru.options.random.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.name'))
-            .setDescription(localeManager.getString('commands.booru.options.random.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.description'))
-            
+            sub.setName('random')
+            .setDescription(nsfw.booru.random.description.ru)
+            .setDescriptionLocalizations(nsfw.booru.random.description)
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.random.options.site.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.site.name'))
-                .setDescription(localeManager.getString('commands.booru.options.random.options.site.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.site.description'))
-                
+                o.setName('site')
+                .setDescription(nsfw.booru.options.site.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.site.description)
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.random.options.tags.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.tags.name'))
-                .setDescription(localeManager.getString('commands.booru.options.random.options.tags.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.tags.description'))
-                
+                o.setName('tags')
+                .setDescription(nsfw.booru.options.tags.description.ru)
+                .setDescriptionLocalizations(nsfw.booru.options.tags.description)
             )
             .addBooleanOption(o =>
-                o.setName(localeManager.getString('commands.booru.options.random.options.no_ai.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.no_ai.name'))
-                .setDescription(localeManager.getString('commands.booru.options.random.options.no_ai.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.booru.options.random.options.no_ai.description'))
-                
+                o.setName('no_ai')
+                .setDescription(nsfw.booru.options.no_ai.description.ru)
             )
         )
 ,

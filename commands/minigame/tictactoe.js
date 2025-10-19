@@ -7,20 +7,20 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
-const LocaleManager = require('../../locales/localesManager');
 
 const activeGames = new Set();
-const localeManager = new LocaleManager();
-
+const {minigame} = require('../../locales/descriptions/minigame')
 
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.tictactoe.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tictactoe.name'))
-        .setDescription(localeManager.getString('commands.tictactoe.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tictactoe.description'))
+        .setName('tictactoe')
+        .setDescription(minigame.tictactoe.description.ru)
+        .setDescriptionLocalizations(minigame.tictactoe.description)
         .addUserOption(opt =>
-            opt.setName(localeManager.getString('commands.tictactoe.options.opponent.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.tictactoe.options.opponent.name'))
-                .setDescription(localeManager.getString('commands.tictactoe.options.opponent.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.tictactoe.options.opponent.description'))
+            opt.setName('opponent')
+                .setDescription(minigame.tictactoe.options.opponent.description.ru)
+                .setDescriptionLocalizations(minigame.tictactoe.options.opponent.description)
                 .setRequired(true)
         ),
 

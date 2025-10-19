@@ -1,29 +1,27 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const starboardDB = require('../../functions/db/starboard');
-const LocaleManager = require('../../locales/localesManager');
 
 const db = new starboardDB();
-const localeManager = new LocaleManager();
 
 module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName(localeManager.getString('commands.starboard.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.name'))
-		.setDescription(localeManager.getString('commands.starboard.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.description'))
+		.setName('starboard')
+		.setDescription('Изменить настройки бота')
         .addSubcommand(sub => 
-            sub.setName(localeManager.getString('commands.starboard.options.settings.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.name'))
-            .setDescription(localeManager.getString('commands.starboard.options.settings.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.description'))
+            sub.setName('settings')
+            .setDescription('Настройки для доски звёзд')
             .addChannelOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.options.settings.options.starboard-channel.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.starboard-channel.name'))
-                .setDescription(localeManager.getString('commands.starboard.options.settings.options.starboard-channel.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.starboard-channel.description'))
+                opt.setName('starboard-channel')
+                .setDescription("Канал для доски звёзд")
             )
             .addBooleanOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.options.settings.options.enabled.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.enabled.name'))
-                .setDescription(localeManager.getString('commands.starboard.options.settings.options.enabled.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.enabled.description'))
+                opt.setName('enabled')
+                .setDescription("Использовать доску звёзд?")
             )
             .addIntegerOption(opt =>
-                opt.setName(localeManager.getString('commands.starboard.options.settings.options.min-reactions.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.min-reactions.name'))
-                .setDescription(localeManager.getString('commands.starboard.options.settings.options.min-reactions.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.starboard.options.settings.options.min-reactions.description'))
+                opt.setName('min-reactions')
+                .setDescription("Минимальное кол-во звёзд для доски звёзд")
                 .setMinValue(1)
             )
         ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)

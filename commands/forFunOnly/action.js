@@ -1,8 +1,6 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
-const LocaleManager = require('../../locales/localesManager');
 
 const TENOR_API_KEY = process.env.TENOR_API_KEY || 'LIVDSRZULELA';
-const localeManager = new LocaleManager();
 
 async function getActionGif(query) {
   const url = `https://g.tenor.com/v1/search?q=${query}&key=${TENOR_API_KEY}&limit=50`;
@@ -20,34 +18,34 @@ async function getActionGif(query) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.action.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.name'))
-    .setDescription(localeManager.getString('commands.action.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.description'))
+    .setName('action')
+    .setDescription('Различные действия с пользователями в аниме стиле.')
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.options.hug.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.hug.name'))
-        .setDescription(localeManager.getString('commands.action.options.hug.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.hug.description'))
+      sub.setName('hug')
+        .setDescription('Обнять пользователя.')
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.hug.options.user.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.hug.options.user.name')).setDescription(localeManager.getString('commands.action.options.hug.options.user.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.hug.options.user.description')).setRequired(true)
+          opt.setName('user').setDescription('Кого обнять?').setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.options.slap.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.slap.name'))
-        .setDescription(localeManager.getString('commands.action.options.slap.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.slap.description'))
+      sub.setName('slap')
+        .setDescription('Ударить пользователя пощёчиной.')
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.slap.options.user.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.slap.options.user.name')).setDescription(localeManager.getString('commands.action.options.slap.options.user.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.slap.options.user.description')).setRequired(true)
+          opt.setName('user').setDescription('Кого ударить?').setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.options.pat.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.pat.name'))
-        .setDescription(localeManager.getString('commands.action.options.pat.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.pat.description'))
+      sub.setName('pat')
+        .setDescription('Погладить пользователя.')
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.pat.options.user.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.pat.options.user.name')).setDescription(localeManager.getString('commands.action.options.pat.options.user.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.pat.options.user.description')).setRequired(true)
+          opt.setName('user').setDescription('Кого погладить?').setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.getString('commands.action.options.kiss.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.kiss.name'))
-        .setDescription(localeManager.getString('commands.action.options.kiss.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.kiss.description'))
+      sub.setName('kiss')
+        .setDescription('Поцеловать пользователя.')
         .addUserOption(opt =>
-          opt.setName(localeManager.getString('commands.action.options.kiss.options.user.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.kiss.options.user.name')).setDescription(localeManager.getString('commands.action.options.kiss.options.user.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.action.options.kiss.options.user.description')).setRequired(true)
+          opt.setName('user').setDescription('Кого поцеловать?').setRequired(true)
         )
     ),
 
@@ -58,7 +56,7 @@ module.exports = {
 
     if (target.id === author.id) {
       return interaction.reply({
-        content: localeManager.getString('commands.action.self_action_error'),
+        content: 'Ты не можешь сделать это с самим собой!',
         flags: MessageFlags.Ephemeral
       });
     }
@@ -69,26 +67,26 @@ module.exports = {
     switch (sub) {
       case 'hug':
         searchQuery = 'anime+hug';
-        text = localeManager.getString('commands.action.options.hug.message', { author: author.toString(), target: target.toString() });
+        text = `${author} обнимает ${target}! 🫂`;
         break;
       case 'slap':
         searchQuery = 'anime+slap';
-        text = localeManager.getString('commands.action.options.slap.message', { author: author.toString(), target: target.toString() });
+        text = `${author} даёт пощёчину ${target}! 👋`;
         break;
       case 'pat':
         searchQuery = 'anime+pat';
-        text = localeManager.getString('commands.action.options.pat.message', { author: author.toString(), target: target.toString() });
+        text = `${author} гладит ${target}! 🐾`;
         break;
       case 'kiss':
         searchQuery = 'anime+kiss';
-        text = localeManager.getString('commands.action.options.kiss.message', { author: author.toString(), target: target.toString() });
+        text = `${author} целует ${target}! 💋`;
         break;
     }
 
     const gifUrl = await getActionGif(searchQuery);
     if (!gifUrl) {
       return interaction.reply({
-        content: localeManager.getString('commands.action.gif_not_found_error'),
+        content: 'Не удалось найти подходящую гифку, попробуй позже!',
         flags: MessageFlags.Ephemeral
       });
     }

@@ -1,7 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const LocaleManager = require('../../locales/localesManager');
-
-const localeManager = new LocaleManager();
 
 const statusMap = {
   online: 'В сети',
@@ -13,23 +10,23 @@ const statusMap = {
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.info.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.info.name'))
-    .setDescription(localeManager.getString('commands.info.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.info.description'))
+    .setName('info')
+    .setDescription('Команды для получения информации')
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.info.options.userinfo.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.info.options.userinfo.name'))
-        .setDescription(localeManager.getString('commands.info.options.userinfo.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.info.options.userinfo.description'))
+        .setName('userinfo')
+        .setDescription('Информация о пользователе')
         .addUserOption(opt =>
           opt
-            .setName(localeManager.getString('commands.info.options.userinfo.options.target.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.info.options.userinfo.options.target.name'))
-            .setDescription(localeManager.getString('commands.info.options.userinfo.options.target.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.info.options.userinfo.options.target.description'))
+            .setName('target')
+            .setDescription('Пользователь (необязательно)')
             .setRequired(false)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.getString('commands.info.options.serverinfo.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.info.options.serverinfo.name'))
-        .setDescription(localeManager.getString('commands.info.options.serverinfo.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.info.options.serverinfo.description'))
+        .setName('serverinfo')
+        .setDescription('Информация о сервере')
     ),
 
   async execute(interaction) {

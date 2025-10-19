@@ -6,15 +6,12 @@ const {
     MessageFlags
   } = require('discord.js');
   const { fetchDoujin } = require('../../functions/fetchDoujin');
-  const LocaleManager = require('../../locales/localesManager');
-  
-  const localeManager = new LocaleManager();
   
   module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-      .setName(localeManager.getString('commands.hentai.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.hentai.name'))
-      .setDescription(localeManager.getString('commands.hentai.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.hentai.description')),
+      .setName('hentai')
+      .setDescription('Случайная галерея с nhentai'),
   
     async execute(interaction) {
       if (!interaction.channel.nsfw) return await interaction.reply({content: 'Это не NSFW канал, чертов дрочун малолетний', flags: MessageFlags.Ephemeral});

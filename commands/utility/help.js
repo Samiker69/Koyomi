@@ -11,9 +11,6 @@ const {
 } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const LocaleManager = require('../../locales/localesManager');
-
-const localeManager = new LocaleManager();
 
 async function safeReply(interaction, content, isEphemeral = true) {
   const flags = isEphemeral ? MessageFlags.Ephemeral : 0;
@@ -89,8 +86,8 @@ function getCommandsByCategory(client) {
 module.exports = {
   cooldown: 10,
   data: new SlashCommandBuilder()
-      .setName(localeManager.getString('commands.help.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.help.name'))
-      .setDescription(localeManager.getString('commands.help.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.help.description')),
+      .setName('help')
+      .setDescription('Показать список команд с пагинацией и выбором категории.'),
 
   async execute(interaction) {
       const categoriesMap = getCommandsByCategory(interaction.client);

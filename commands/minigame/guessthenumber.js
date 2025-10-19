@@ -7,16 +7,14 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
-const LocaleManager = require('../../locales/localesManager');
 
 const activeGames = new Set();
-const localeManager = new LocaleManager();
 
 module.exports = {
     cooldown: 15,
     data: new SlashCommandBuilder()
-        .setName(localeManager.getString('commands.guessthenumber.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.guessthenumber.name'))
-        .setDescription(localeManager.getString('commands.guessthenumber.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.guessthenumber.description')),
+        .setName('guessthenumber')
+        .setDescription('Угадай число на скорость'),
 
     async execute(interaction) {
         const channelId = interaction.channelId;

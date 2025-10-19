@@ -1,41 +1,38 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const config = require('../../config.json');
-const LocaleManager = require('../../locales/localesManager');
-
-const localeManager = new LocaleManager();
-
+const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.getString('commands.say.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say.name'))
-    .setDescription(localeManager.getString('commands.say.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say.description'))
-    
+    .setName('say')
+    .setDescription(forFunOnly.say.description.ru)
+    .setDescriptionLocalizations(forFunOnly.say.description)
     .addStringOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.options.text.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.text.name'))
-        .setDescription(localeManager.getString('commands.say.options.text.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.text.description'))
-        
+        .setName('text')
+        .setDescription(forFunOnly.say.options.text.description.ru)
+        .setDescriptionLocalizations(forFunOnly.say.options.text.description)
         .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.options.image.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.image.name'))
-        .setDescription(localeManager.getString('commands.say.options.image.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.image.description'))
-        
+        .setName('image')
+        .setDescription(forFunOnly.say.options.image.description.ru)
+        .setDescriptionLocalizations(forFunOnly.say.options.image.description)
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
-        .setName(localeManager.getString('commands.say.options.reply_to.name')).setNameLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.reply_to.name'))
-        .setDescription(localeManager.getString('commands.say.options.reply_to.description')).setDescriptionLocalizations(localeManager.getAllCommandLocalizations('commands.say.options.reply_to.description'))
-        
+        .setName('reply_to')
+        .setDescription(forFunOnly.say.options.reply_to.description.ru)
+        .setDescriptionLocalizations(forFunOnly.say.options.reply_to.description)
         .setRequired(false)
     ),
 
   async execute(interaction) {
     if (!config.privateAccess.includes(interaction.user.id)) {
       return await interaction.reply({
-        content: localeManager.getString('commands.say.no_permissions'),
+        content: 'У вас нет доступа к этой команде.',
         flags: MessageFlags.Ephemeral
       });
     }
@@ -45,7 +42,7 @@ module.exports = {
     const text = interaction.options.getString('text', false);
     const image = interaction.options.getAttachment('image');
     const replyToRaw = interaction.options.getString('reply_to');
-    if (!text && !image) return await interaction.editReply({ content: localeManager.getString('commands.say.text_or_image_required'), flags: MessageFlags.Ephemeral });
+    if (!text && !image) return await interaction.editReply({ content: "`text` или `image` должны быть заполнены!", flags: MessageFlags.Ephemeral });
     let messageReference;
 
     if (replyToRaw) {
@@ -60,13 +57,13 @@ module.exports = {
     try {
       await interaction.channel.send(sendOptions);
       await interaction.editReply({
-        content: localeManager.getString('commands.say.message_sent_success'),
+        content: 'Сообщение успешно отправлено.',
         flags: MessageFlags.Ephemeral
       });
     } catch (err) {
       console.error('Error in /say:', err);
       await interaction.editReply({
-        content: localeManager.getString('commands.say.message_sent_failure'),
+        content: 'Не удалось отправить сообщение.',
         flags: MessageFlags.Ephemeral
       });
     }
