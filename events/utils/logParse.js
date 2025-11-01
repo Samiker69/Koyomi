@@ -6,7 +6,7 @@ const Sdb = new settings()
 
 async function getModLink(modName) {
     try {
-        const modrinthResponse = await fetch(`https://api.modrinth.com/v2/search?query=${encodeURIComponent(modName)}&facets=[["project_type:mod"]]`);
+        const modrinthResponse = await fetch(`httpshttps://api.modrinth.com/v2/search?query=${encodeURIComponent(modName)}&facets=[["project_type:mod"]]`);
         const modrinthData = await modrinthResponse.json();
         
         if (modrinthData.hits && modrinthData.hits.length > 0) {
@@ -115,15 +115,40 @@ module.exports = {
             const message = await thread.fetchStarterMessage();
             if (message.author.bot) return;
 
-            const logText = await FindTxtInMessage(message, "latestlog");
+            const logAttachments = message.attachments.filter(att => /latestlog/i.test(att.name));
+            let logText = null;
+
+            if (logAttachments.size > 0) {
+                const validLog = logAttachments.find(att => 
+                    att.name.endsWith('.txt') || 
+                    att.contentType?.startsWith('text/plain')
+                );
+
+                if (validLog) {
+                    logText = await FindTxtInMessage(message, "latestlog");
+                }
+            }
+
             if (!logText) {
                 await sendInstruction(thread)
                 const collector = thread.createMessageCollector();
                 collector.on('collect', async (msg) => {
-                    const attachment = msg.attachments.find(att => /latestlog/i.test(att.name));
+                    
+                
+                    const attachment = msg.attachments.find(att => 
+                        /latestlog/i.test(att.name) && 
+                        (att.name.endsWith('.txt') || att.contentType?.startsWith('text/plain'))
+                    );
+
                     if (attachment) {
-                        await sendAnalyzedLog(msg, await FindTxtInMessage(msg, "latestlog"));
-                        collector.stop("Файл найден");
+                        const collectedLogText = await FindTxtInMessage(msg, "latestlog");
+                        
+                        if (collectedLogText) {
+                            await sendAnalyzedLog(msg, collectedLogText);
+                            collector.stop("Файл найден");
+                        } else {
+                            await msg.reply("Не удалось прочитать файл лога. Попробуйте отправить его снова.");
+                        }
                     }
                 });
 

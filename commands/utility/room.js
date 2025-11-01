@@ -28,27 +28,28 @@ module.exports = {
             .setName('number')
             .setDescription('Максимальное число участников (0 — без лимита)')
             .setRequired(true)
+            .setMinValue(0) // Добавлено минимальное значение для ясности
         )
     )
     .addSubcommand(sub =>
       sub
         .setName('lock')
-        .setDescription('Закрыть комнату для всех')
+        .setDescription('Закрыть комнату (запретить подключение для @everyone)')
     )
     .addSubcommand(sub =>
       sub
         .setName('unlock')
-        .setDescription('Открыть комнату для всех')
+        .setDescription('Открыть комнату (разрешить подключение для @everyone)')
     )
     .addSubcommand(sub =>
       sub
         .setName('private')
-        .setDescription('Сделать комнату приватной (только для роли)')
+        .setDescription('Сделать комнату приватной (видимой только для роли)')
     )
     .addSubcommand(sub =>
       sub
         .setName('public')
-        .setDescription('Сделать комнату публичной')
+        .setDescription('Сделать комнату публичной (видимой для всех)')
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Connect),
 
@@ -67,12 +68,11 @@ module.exports = {
 
     if (channel.parentId !== cfg.voiceCategoryId || channel.id === cfg.mainVoiceChannelId) {
       return await interaction.reply({
-        content: 'Это не динамическая комната.',
+        content: 'Эту команду можно использовать только в созданной вами динамической комнате.',
         flags: MessageFlags.Ephemeral
       });
     }
 
-    // Проверяем, что пользователь — тот, кому бот выдал право ManageChannels при создании
     if (!interaction.member.permissionsIn(channel).has(PermissionFlagsBits.ManageChannels)) {
       return await interaction.reply({
         content: 'Только создатель этой комнаты может управлять её настройками.',
@@ -94,53 +94,65 @@ module.exports = {
           const num = interaction.options.getInteger('number');
           await channel.setUserLimit(num);
           return await interaction.reply({
-            content: `Лимит участников установлен: ${num}.`,
+            content: num === 0 ? 'Лимит участников снят.' : `Лимит участников установлен: ${num}.`,
             flags: MessageFlags.Ephemeral
           });
         }
         case 'lock': {
           await channel.permissionOverwrites.edit(interaction.guild.id, {
-            Connect: false,
-            ViewChannel: false
+            Connect: false
           });
           return await interaction.reply({
-            content: 'Комната закрыта для всех, кроме вас.',
+            content: 'Комната закрыта. Никто (кроме вас) не сможет подключиться.',
             flags: MessageFlags.Ephemeral
           });
         }
         case 'unlock': {
           await channel.permissionOverwrites.edit(interaction.guild.id, {
-            Connect: true,
-            ViewChannel: true
+            Connect: true
           });
           return await interaction.reply({
-            content: 'Комната открыта для всех.',
+            content: 'Комната открыта для подключения.',
             flags: MessageFlags.Ephemeral
           });
         }
         case 'private': {
-          await channel.permissionOverwrites.edit(interaction.guild.id, {
-            Connect: false,
-            ViewChannel: false
-          });
-          if (cfg.allowedRoleId) {
-            await channel.permissionOverwrites.create(cfg.allowedRoleId, {
-              Connect: true,
-              ViewChannel: true
+          if (!cfg.allowedRoleId) {
+            return await interaction.reply({
+              content: 'Ошибка: Приватная роль не настроена в конфигурации бота.',
+              flags: MessageFlags.Ephemeral
             });
           }
+          // Сначала скрываем ото всех
+          await channel.permissionOverwrites.edit(interaction.guild.id, {
+            ViewChannel: false,
+            Connect: false
+          });
+          // Затем даем доступ нужной роли
+          await channel.permissionOverwrites.create(cfg.allowedRoleId, {
+            ViewChannel: true,
+            Connect: true
+          });
           return await interaction.reply({
-            content: 'Комната сделана приватной для указанной роли.',
+            content: 'Комната сделана приватной и видна только избранной роли.',
             flags: MessageFlags.Ephemeral
           });
         }
         case 'public': {
           await channel.permissionOverwrites.edit(interaction.guild.id, {
-            Connect: true,
-            ViewChannel: true
+            ViewChannel: true,
+            Connect: true
           });
+          
+          if (cfg.allowedRoleId) {
+            const roleOverwrite = channel.permissionOverwrites.cache.get(cfg.allowedRoleId);
+            if (roleOverwrite) {
+              await roleOverwrite.delete();
+            }
+          }
+          
           return await interaction.reply({
-            content: 'Комната сделана публичной.',
+            content: 'Комната сделана публичной и видна всем.',
             flags: MessageFlags.Ephemeral
           });
         }
@@ -151,7 +163,13 @@ module.exports = {
           });
       }
     } catch (err) {
-      console.error('[ERROR] room command:', err);
+      console.error('[ERROR] /room command failed:', err);
+      if (interaction.replied || interaction.deferred) {
+        return await interaction.followUp({
+            content: 'Произошла ошибка при выполнении команды.',
+            flags: MessageFlags.Ephemeral
+        });
+      }
       return await interaction.reply({
         content: 'Произошла ошибка при выполнении команды.',
         flags: MessageFlags.Ephemeral

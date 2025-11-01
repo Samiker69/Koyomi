@@ -44,7 +44,7 @@ module.exports = {
       sub.setName('kiss')
         .setDescription('Поцеловать пользователя.')
         .addUserOption(opt =>
-          opt.setName('user').setDescription('Кого поцеловать?').setRequired(true)
+          opt.setName('user').setDescription('Kого поцеловать?').setRequired(true)
         )
     ),
 
@@ -95,7 +95,10 @@ module.exports = {
       embeds: [{
         color: 0x9B59B6,
         image: { url: gifUrl }
-      }]
+      }],
+      allowedMentions: {
+        parse: []
+      }
     });
   }
 };

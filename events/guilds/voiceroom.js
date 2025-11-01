@@ -2,41 +2,47 @@ const { Events, ChannelType, PermissionFlagsBits } = require('discord.js');
 const Settings = require('../../functions/db/settings');
 
 const Sdb = new Settings();
+const creatingChannels = new Set();
 
 module.exports = {
   name: Events.VoiceStateUpdate,
   async execute(oldState, newState) {
-    console.log('[INFO] VoiceStateUpdate', {
-      from: oldState.channelId,
-      to:   newState.channelId
-    });
-
-    const cfg = Sdb.getSettings(newState.guild.id);
-    const mainVoiceChannelId = cfg.mainVoiceChannelId;
-    const categoryId        = cfg.voiceCategoryId;
-
-    if (!mainVoiceChannelId || !categoryId) {
-      console.log('[WARN] mainVoiceChannelId или voiceCategoryId не настроены');
+    if (oldState.channelId === newState.channelId) {
       return;
     }
 
-    // Когда пользователь заходит в «главный» канал — создаём новую комнату
-    if (newState.channelId === mainVoiceChannelId && oldState.channelId !== mainVoiceChannelId) {
-      const member = newState.member;
-      const channelName = `Комната ${member.displayName}`;
+    const cfg = Sdb.getSettings(newState.guild.id);
+    const mainVoiceChannelId = cfg.mainVoiceChannelId;
+    const categoryId = cfg.voiceCategoryId;
+
+    if (!mainVoiceChannelId || !categoryId) {
+      if (!cfg._error) {
+        console.error(`[CONFIG ERROR] Guild ${newState.guild.id}: mainVoiceChannelId или voiceCategoryId не настроены.`);
+      }
+      return;
+    }
+
+    const member = newState.member;
+    const guild = newState.guild;
+
+    if (
+      newState.channelId === mainVoiceChannelId &&
+      !creatingChannels.has(member.id)
+    ) {
+      creatingChannels.add(member.id); 
 
       try {
-        const newChannel = await newState.guild.channels.create({
+        const channelName = `Комната ${member.displayName}`;
+        
+        const newChannel = await guild.channels.create({
           name: channelName,
           type: ChannelType.GuildVoice,
           parent: categoryId,
           permissionOverwrites: [
-            // по умолчанию все видят и подключаются
             {
-              id: newState.guild.id,
-              allow: [ PermissionFlagsBits.Connect, PermissionFlagsBits.ViewChannel ]
+              id: guild.id, 
+              allow: [PermissionFlagsBits.Connect, PermissionFlagsBits.ViewChannel]
             },
-            // А вошедший пользователь получает ещё и право управлять каналом
             {
               id: member.id,
               allow: [
@@ -49,15 +55,18 @@ module.exports = {
           userLimit: cfg.maxUsers || 0
         });
 
-        console.log(`[SUCCESS] Создан канал ${newChannel.name} (${newChannel.id})`);
-        await member.voice.setChannel(newChannel);
-        console.log(`[SUCCESS] Перемещён ${member.user.tag} в ${newChannel.name}`);
+        if (newState.member.voice.channel?.id === mainVoiceChannelId) {
+          await member.voice.setChannel(newChannel);
+        }
+
       } catch (error) {
-        console.error('[ERROR] Не удалось создать или переместить в канал:', error);
+        console.error(`[ERROR] Не удалось создать канал для ${member.user.tag}:`, error);
+      } finally {
+        creatingChannels.delete(member.id);
       }
     }
 
-    // Удаляем пустую динамическую комнату
+    // --- 2. Логика УДАЛЕНИЯ канала ---
     const oldChannel = oldState.channel;
     if (
       oldChannel &&
@@ -65,12 +74,12 @@ module.exports = {
       oldChannel.id !== mainVoiceChannelId &&
       oldChannel.members.size === 0
     ) {
-      console.log(`[INFO] Канал ${oldChannel.name} пуст, удаляем...`);
       try {
-        await oldChannel.delete();
-        console.log(`[SUCCESS] Канал ${oldChannel.name} удалён`);
+        await oldChannel.delete('Динамический канал опустел');
       } catch (error) {
-        console.error('[ERROR] Не удалось удалить канал:', error);
+        if (error.code !== 10003) { 
+          console.error(`[ERROR] Не удалось удалить канал ${oldChannel.name}:`, error);
+        }
       }
     }
   },
