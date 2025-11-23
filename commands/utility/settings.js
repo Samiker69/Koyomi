@@ -1,257 +1,203 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder, ChannelType } = require('discord.js');
-const settings = require('../../functions/db/settings')
-const { bot_log_channel } = require('../../config.json')
+const { 
+    SlashCommandBuilder, 
+    PermissionFlagsBits, 
+    MessageFlags, 
+    EmbedBuilder, 
+    ActionRowBuilder, 
+    StringSelectMenuBuilder, 
+    ChannelSelectMenuBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ChannelType,
+    ComponentType
+} = require('discord.js');
 
-const Sdb = new settings()
+const Settings = require('../../functions/db/settings');
+const { bot_log_channel } = require('../../config.json');
+
+const Sdb = new Settings();
 
 module.exports = {
-	cooldown: 5,
-	data: new SlashCommandBuilder()
-		.setName('settings')
-		.setDescription('Изменить настройки бота')
-        .addSubcommand(subcommand => 
-            subcommand.setName('welcomechannel')
-            .setDescription('Канал для уведомления о новых участниках')
-            .addChannelOption(option => option.setName('channel').setDescription('Канал').setRequired(true)))
-            .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-            
-        .addSubcommand(subcommand => 
-            subcommand.setName('invite-logger-channel')
-            .setDescription('Канал для логирования ссылок приглашений')
-            .addChannelOption(option => option.setName('channel').setDescription('Канал').setRequired(true)))
-            .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+    data: new SlashCommandBuilder()
+        .setName('settings')
+        .setDescription('Открыть панель управления настройками сервера')
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
-        .addSubcommand(subcommand => 
-            subcommand.setName('allowlogging')
-            .setDescription('Отправлять сообщения об использованной ссылке?')
-            .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true)))
-            .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-
-        .addSubcommand(subcommand => 
-            subcommand.setName('allow-membersadd-logging')
-            .setDescription('Отправлять сообщения о новых/ушедших участниках')
-            .addBooleanOption(option => option.setName('bool').setDescription('включить/выключить').setRequired(true)))
-            .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-
-        .addSubcommand(subcommand =>
-            subcommand.setName('set-voice-category')
-            .setDescription('Установить категорию для новых войс-каналов')
-            .addChannelOption(option => option.setName('category').setDescription('Категория').setRequired(true)))
-            .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-
-        .addSubcommand(subcommand =>
-            subcommand.setName('set-main-voice')
-            .setDescription('Установить основной голосовой канал для создания комнат')
-            .addChannelOption(option => option.setName('channel').setDescription('Основной войс').setRequired(true)))
-            .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-
-        .addSubcommand(subcommand =>
-            subcommand.setName("support-channel")
-            .setDescription('Задаёт канал поддержки')
-            .addChannelOption(opt =>
-                opt.setName('channel')
-                .setDescription("Канал/форум поддержки")
-                .setRequired(true)
-            )
-        ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-
-        .addSubcommand(subcommand =>
-            subcommand.setName('to-default')
-            .setDescription('Безвозвратно сбрасывает настройки сервера')
-        ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-
-        .addSubcommand(subcommand =>
-            subcommand.setName('set-reports-channel')
-                .setDescription('Установить канал, куда будут приходить жалобы модераторам.')
-                .addChannelOption(option =>
-                    option.setName('channel')
-                        .setDescription('Канал для получения жалоб.')
-                        .setRequired(true)
-                )
-        ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
-
-	async execute(interaction) {
-        if (!(interaction.memberPermissions.has('ManageGuild') || interaction.memberPermissions.has('Administrator'))) {
-            await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
-            return;
-        }
-        const channel = interaction.options.getChannel('channel');
-        const category = interaction.options.getChannel('category');
-        const bool = interaction.options.getBoolean('bool');
+    async execute(interaction) {
         const guildId = interaction.guild.id;
 
-        switch (interaction.options.getSubcommand()) {
-            case "welcomechannel":
-                try {
-                    Sdb.updateSetting(interaction.guild.id, 'newMemberChannelId', channel.id);
-                    await interaction.reply(`Теперь ${channel} выбран как канал для отслеживания участников`);
-                } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
-                    await interaction.reply('Не удалось изменить параметр.');
-                }
-                break;
+        const generateDashboard = () => {
+            const cfg = Sdb.getSettings(guildId) || {}; 
 
-            case 'invite-logger-channel':
-                try {
-                    Sdb.updateSetting(interaction.guild.id, 'inviteLoggerChannel', channel.id);
-                    await interaction.reply(`Теперь ${channel} выбран как канал для отслеживания приглашений`);
-                } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
-                    await interaction.reply('Не удалось изменить параметр.');
-                }
-                break;
+            const statusInvites = cfg.allowInviteLogging ? 'Включено' : 'Выключено';
+            const statusMembers = cfg.allowLogingMembersAdd ? 'Включено' : 'Выключено';
+            
+            const valWelcome = cfg.newMemberChannelId ? `<#${cfg.newMemberChannelId}>` : 'Не задан';
+            const valInvites = cfg.inviteLoggerChannel ? `<#${cfg.inviteLoggerChannel}>` : 'Не задан';
+            const valVoiceCat = cfg.voiceCategoryId ? `<#${cfg.voiceCategoryId}>` : 'Не задана';
+            const valVoiceMain = cfg.mainVoiceChannelId ? `<#${cfg.mainVoiceChannelId}>` : 'Не задан';
+            const valSupport = cfg.supportChannelId ? `<#${cfg.supportChannelId}>` : 'Не задан';
+            const valReports = cfg.reportsModerationChannelId ? `<#${cfg.reportsModerationChannelId}>` : 'Не задан';
 
-            case 'allowlogging':
-                try {
-                    const data = Sdb.getSettings(interaction.guild.id)
-                    if (data.allowInviteLogging === bool) return await interaction.reply('Этот параметр уже установлен на ' + bool);
-                    let answerLog;
-                    Sdb.updateSetting(interaction.guild.id, 'allowInviteLogging', bool);
-                    if (bool) {answerLog = 'Теперь бот будет уведомлять об использованной ссылке-приглашения';} 
-                    else {answerLog = 'Теперь бот не будет уведомлять об использованной ссылке-приглашения';}
-                    await interaction.reply(answerLog);
-                } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
-                    await interaction.reply('Не удалось изменить параметр.');
-                }
-                break;
+            const settingsEmbed = new EmbedBuilder()
+                .setColor('#2b2d31')
+                .setTitle(`Настройки сервера ${interaction.guild.name}`)
+                .setDescription('Используйте меню и кнопки ниже для изменения параметров.')
+                .addFields(
+                    { 
+                        name: 'Приветствия и Логи', 
+                        value: `> **Канал приветствий:** ${valWelcome}\n> **Лог приглашений:** ${valInvites}\n> **Уведомлять о входе/выходе:** ${statusMembers}\n> **Уведомлять о ссылках:** ${statusInvites}`, 
+                        inline: false 
+                    },
+                    { 
+                        name: 'Приватные комнаты', 
+                        value: `> **Категория:** ${valVoiceCat}\n> **Создать Комнату:** ${valVoiceMain}`, 
+                        inline: false 
+                    },
+                    { 
+                        name: 'Поддержка и Жалобы', 
+                        value: `> **Канал поддержки:** ${valSupport}\n> **Канал жалоб:** ${valReports}`, 
+                        inline: false 
+                    }
+                )
+                .setFooter({ text: 'Настройки обновляются в реальном времени' })
+                .setTimestamp();
 
-            case 'allow-membersadd-logging':
-                try {
-                    const data = Sdb.getSettings(interaction.guild.id)
-                    if (data.allowLogingMembersAdd === bool) return await interaction.reply('Этот параметр уже установлен на ' + bool);
-                    const answerMemberLog = bool ? "Теперь бот будет уведомлять о новых/ушедших участниках" : 'Теперь бот не будет уведомлять о новых/ушедших участниках'
-                    Sdb.updateSetting(interaction.guild.id, 'allowLogingMembersAdd', bool);
-                    await interaction.reply(answerMemberLog);
-                } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
-                    await interaction.reply('Не удалось изменить параметр.');
-                }
-                break;
+            const rowWelcome = new ActionRowBuilder().addComponents(
+                new ChannelSelectMenuBuilder()
+                    .setCustomId('select_welcome')
+                    .setPlaceholder('Выбрать канал приветствий')
+                    .setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+            );
 
-            case 'set-voice-category':
-                try {
-                    if (category.type !== 4) return await interaction.reply('Выберите именно категорию!');
-                    Sdb.updateSetting(interaction.guild.id, 'voiceCategoryId', category.id);
-                    await interaction.reply(`Теперь ${category} выбрана как категория для новых войс-каналов`);
-                } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
-                    await interaction.reply('Не удалось изменить параметр.');
-                }
-                break;
+            const rowVoice = new ActionRowBuilder().addComponents(
+                new ChannelSelectMenuBuilder()
+                    .setCustomId('select_voice_main')
+                    .setPlaceholder('Выбрать канал "Создать комнату"')
+                    .setChannelTypes(ChannelType.GuildVoice)
+            );
+            
+            const rowOtherChannels = new ActionRowBuilder().addComponents(
+                new StringSelectMenuBuilder()
+                    .setCustomId('menu_actions')
+                    .setPlaceholder('Дополнительные настройки каналов...')
+                    .addOptions(
+                        { label: 'Задать категорию войсов', description: 'Где будут создаваться личные комнаты', value: 'act_cat' },
+                        { label: 'Задать канал логов', description: 'Куда писать о приглашениях', value: 'act_log' },
+                        { label: 'Задать канал поддержки', description: 'Куда приходят тикеты', value: 'act_sup' },
+                        { label: 'Задать канал жалоб', description: 'Куда приходят репорты', value: 'act_rep' },
+                        { label: 'СБРОСИТЬ ВСЁ', description: 'Удалить все настройки (Опасно!)', value: 'act_reset' }
+                    )
+            );
 
-            case 'set-main-voice':
-                try {
-                    if (channel.type !== 2) return await interaction.reply('Выберите именно голосовой канал!');
-                    Sdb.updateSetting(interaction.guild.id, 'mainVoiceChannelId', channel.id);
-                    await interaction.reply(`Теперь ${channel} выбран как основной голосовой канал для создания комнат`);
-                } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            console.error(error);
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
-                    await interaction.reply('Не удалось изменить параметр.');
+            const rowToggles = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId('toggle_invites')
+                    .setLabel(`Лог ссылок: ${cfg.allowInviteLogging ? 'ВКЛ' : 'ВЫКЛ'}`)
+                    .setStyle(cfg.allowInviteLogging ? ButtonStyle.Success : ButtonStyle.Secondary),
+                
+                new ButtonBuilder()
+                    .setCustomId('toggle_members')
+                    .setLabel(`Лог входа: ${cfg.allowLogingMembersAdd ? 'ВКЛ' : 'ВЫКЛ'}`)
+                    .setStyle(cfg.allowLogingMembersAdd ? ButtonStyle.Success : ButtonStyle.Secondary)
+            );
+
+            return { embeds: [settingsEmbed], components: [rowWelcome, rowVoice, rowOtherChannels, rowToggles] };
+        };
+
+        const msg = await interaction.reply({ 
+            ...generateDashboard(), 
+            flags: MessageFlags.Ephemeral 
+        });
+
+        const collector = msg.createMessageComponentCollector({ time: 300_000 });
+
+        collector.on('collect', async i => {
+            try {
+                if (i.customId === 'menu_actions') {
+                    const selection = i.values[0];
+                    
+                    if (selection === 'act_reset') {
+                        Sdb.removeServer(guildId);
+                        Sdb.addServer(guildId);
+                        await i.update(generateDashboard());
+                        return;
+                    }
+
+                    let typeFilter = [ChannelType.GuildText];
+                    let promptText = 'Выберите текстовый канал:';
+                    if (selection === 'act_cat') {
+                        typeFilter = [ChannelType.GuildCategory];
+                        promptText = 'Выберите категорию для войсов:';
+                    }
+
+                    const tempSelect = new ActionRowBuilder().addComponents(
+                        new ChannelSelectMenuBuilder()
+                            .setCustomId('temp_select') 
+                            .setPlaceholder(promptText)
+                            .setChannelTypes(...typeFilter)
+                    );
+                    
+                    const tempMsg = await i.reply({ 
+                        content: promptText, 
+                        components: [tempSelect], 
+                        flags: MessageFlags.Ephemeral,
+                        fetchReply: true 
+                    });
+
+                    try {
+                        const selectionInteraction = await tempMsg.awaitMessageComponent({
+                            filter: (subI) => subI.user.id === i.user.id,
+                            time: 60000,
+                            componentType: ComponentType.ChannelSelect
+                        });
+
+                        const selectedId = selectionInteraction.values[0];
+
+                        if (selection === 'act_cat') Sdb.updateSetting(guildId, 'voiceCategoryId', selectedId);
+                        else if (selection === 'act_log') Sdb.updateSetting(guildId, 'inviteLoggerChannel', selectedId);
+                        else if (selection === 'act_sup') Sdb.updateSetting(guildId, 'supportChannelId', selectedId);
+                        else if (selection === 'act_rep') Sdb.updateSetting(guildId, 'reportsModerationChannelId', selectedId);
+
+                        await selectionInteraction.update({ content: 'Сохранено!', components: [] });
+                        await interaction.editReply(generateDashboard());
+
+                    } catch (err) {
+                        await i.editReply({ content: 'Время ожидания выбора истекло.', components: [] });
+                    }
+                    return; 
                 }
-                break;
-            case "to-default": {
-                //todo: должно вылезти подтверждение выполнения действия
-                const Promise = Sdb.removeServer(interaction.guild.id)
-                if (Promise) {
-                    Sdb.addServer(interaction.guild.id)
-                    await interaction.reply('Настройки сервера были сброшены!')
-                } else {
-                    await interaction.reply('Ничего не произошло, возможно, вашего сервера ещё не было в бд.')
+
+                const currentCfg = Sdb.getSettings(guildId) || {};
+                
+                if (i.customId === 'select_welcome') {
+                    Sdb.updateSetting(guildId, 'newMemberChannelId', i.values[0]);
+                } 
+                else if (i.customId === 'select_voice_main') {
+                    Sdb.updateSetting(guildId, 'mainVoiceChannelId', i.values[0]);
                 }
-                break;
+                else if (i.customId === 'toggle_invites') {
+                    Sdb.updateSetting(guildId, 'allowInviteLogging', !currentCfg.allowInviteLogging);
+                }
+                else if (i.customId === 'toggle_members') {
+                    Sdb.updateSetting(guildId, 'allowLogingMembersAdd', !currentCfg.allowLogingMembersAdd);
+                }
+
+                await i.update(generateDashboard());
+
+            } catch (err) {
+                console.error(err);
+                const logChannel = await interaction.client.channels.fetch(bot_log_channel).catch(() => null);
+                if (logChannel) logChannel.send(`Ошибка в Settings Dashboard: ${err.message}`);
+                
+                if (!i.replied && !i.deferred) {
+                    await i.reply({ content: 'Произошла ошибка при сохранении.', flags: MessageFlags.Ephemeral });
+                }
             }
-            case "support-channel": {
-                Sdb.updateSetting(interaction.guild.id, "supportChannelId", channel.id)
-                await interaction.reply(`Канал поддержки изменён на ${channel}`);
-                break;
-            }
+        });
 
-            case 'set-reports-channel': { 
-                try {
-                    Sdb.updateSetting(guildId, 'reportsModerationChannelId', channel.id);
-                    await interaction.reply({ content: `Канал для получения жалоб модераторам установлен на ${channel}.`, flags: MessageFlags.Ephemeral });
-                } catch (error) {
-                    const errorStackShort = String(error.stack).substring(0, 1000) + '...';
-                    const errorEmbed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
-                        .addFields(
-                            { name: `Команда`, value: `${interaction.commandName} set-reports-channel` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${errorStackShort}\`\`\`` }
-                        )
-                        .setTimestamp(new Date());
-                    console.error(error);
-                    const logChannel = await interaction.client.channels.fetch(bot_log_channel);
-                    await logChannel.send({ embeds: [errorEmbed] });
-                    await interaction.reply({ content: 'Не удалось изменить параметр.', flags: MessageFlags.Ephemeral });
-                }
-                break;
-            }
-
-            default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
-                break;
-        }
+        collector.on('end', () => {
+            interaction.editReply({ components: [] }).catch(() => {});
+        });
     }
 };
