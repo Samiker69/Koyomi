@@ -1,0 +1,20 @@
+{
+  "name": "koyomi-ts",
+  "module": "src/bot.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "run": "bun run ."
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.3.1",
+    "path": "^0.12.7"
+  }
+}
