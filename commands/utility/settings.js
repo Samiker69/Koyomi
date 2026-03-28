@@ -1,10 +1,10 @@
-const { 
-    SlashCommandBuilder, 
-    PermissionFlagsBits, 
-    MessageFlags, 
-    EmbedBuilder, 
-    ActionRowBuilder, 
-    StringSelectMenuBuilder, 
+const {
+    SlashCommandBuilder,
+    PermissionFlagsBits,
+    MessageFlags,
+    EmbedBuilder,
+    ActionRowBuilder,
+    StringSelectMenuBuilder,
     ChannelSelectMenuBuilder,
     ButtonBuilder,
     ButtonStyle,
@@ -14,100 +14,112 @@ const {
 
 const Settings = require('../../functions/db/settings');
 const { bot_log_channel } = require('../../config.json');
+const replies = require('../../locales/answers/replies');
+const { utility } = require('../../locales/descriptions/utility');
 
 const Sdb = new Settings();
+
+const getReply = (key, locale, vars = {}) => {
+    let text = replies[key]?.[locale] || replies[key]?.['ru'] || key;
+    for (const [k, v] of Object.entries(vars)) {
+        text = text.replace(`{${k}}`, String(v));
+    }
+    return text;
+};
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('settings')
         .setDescription('Открыть панель управления настройками сервера')
+        .setDescriptionLocalizations(utility.settings.description)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
     async execute(interaction) {
         const guildId = interaction.guild.id;
+        const loc = interaction.locale;
 
         const generateDashboard = () => {
-            const cfg = Sdb.getSettings(guildId) || {}; 
+            const cfg = Sdb.getSettings(guildId) || {};
 
-            const statusInvites = cfg.allowInviteLogging ? 'Включено' : 'Выключено';
-            const statusMembers = cfg.allowLogingMembersAdd ? 'Включено' : 'Выключено';
-            
-            const valWelcome = cfg.newMemberChannelId ? `<#${cfg.newMemberChannelId}>` : 'Не задан';
-            const valInvites = cfg.inviteLoggerChannel ? `<#${cfg.inviteLoggerChannel}>` : 'Не задан';
-            const valVoiceCat = cfg.voiceCategoryId ? `<#${cfg.voiceCategoryId}>` : 'Не задана';
-            const valVoiceMain = cfg.mainVoiceChannelId ? `<#${cfg.mainVoiceChannelId}>` : 'Не задан';
-            const valSupport = cfg.supportChannelId ? `<#${cfg.supportChannelId}>` : 'Не задан';
-            const valReports = cfg.reportsModerationChannelId ? `<#${cfg.reportsModerationChannelId}>` : 'Не задан';
+            const statusInvites = cfg.allowInviteLogging ? getReply('setting_enabled', loc) : getReply('setting_disabled', loc);
+            const statusMembers = cfg.allowLogingMembersAdd ? getReply('setting_enabled', loc) : getReply('setting_disabled', loc);
+
+            const valWelcome = cfg.newMemberChannelId ? `<#${cfg.newMemberChannelId}>` : getReply('setting_not_set', loc);
+            const valInvites = cfg.inviteLoggerChannel ? `<#${cfg.inviteLoggerChannel}>` : getReply('setting_not_set', loc);
+            const valVoiceCat = cfg.voiceCategoryId ? `<#${cfg.voiceCategoryId}>` : getReply('setting_not_set', loc);
+            const valVoiceMain = cfg.mainVoiceChannelId ? `<#${cfg.mainVoiceChannelId}>` : getReply('setting_not_set', loc);
+            const valSupport = cfg.supportChannelId ? `<#${cfg.supportChannelId}>` : getReply('setting_not_set', loc);
+            const valReports = cfg.reportsModerationChannelId ? `<#${cfg.reportsModerationChannelId}>` : getReply('setting_not_set', loc);
 
             const settingsEmbed = new EmbedBuilder()
                 .setColor('#2b2d31')
-                .setTitle(`Настройки сервера ${interaction.guild.name}`)
-                .setDescription('Используйте меню и кнопки ниже для изменения параметров.')
+                .setTitle(getReply('setting_title', loc, { guildName: interaction.guild.name }))
+                .setDescription(getReply('setting_desc', loc))
                 .addFields(
-                    { 
-                        name: 'Приветствия и Логи', 
-                        value: `> **Канал приветствий:** ${valWelcome}\n> **Лог приглашений:** ${valInvites}\n> **Уведомлять о входе/выходе:** ${statusMembers}\n> **Уведомлять о ссылках:** ${statusInvites}`, 
-                        inline: false 
+                    {
+                        name: getReply('setting_welcome_logs', loc),
+                        value: getReply('setting_welcome_logs_val', loc, { valWelcome: valWelcome, valInvites: valInvites, statusMembers: statusMembers, statusInvites: statusInvites }),
+                        inline: false
                     },
-                    { 
-                        name: 'Приватные комнаты', 
-                        value: `> **Категория:** ${valVoiceCat}\n> **Создать Комнату:** ${valVoiceMain}`, 
-                        inline: false 
+                    {
+                        name: getReply('setting_private_voice', loc),
+                        value: getReply('setting_private_voice_val', loc, { valVoiceCat: valVoiceCat, valVoiceMain: valVoiceMain }),
+                        inline: false
                     },
-                    { 
-                        name: 'Поддержка и Жалобы', 
-                        value: `> **Канал поддержки:** ${valSupport}\n> **Канал жалоб:** ${valReports}`, 
-                        inline: false 
+                    {
+                        name: getReply('setting_support_reports', loc),
+                        value: getReply('setting_support_reports_val', loc, { valSupport: valSupport, valReports: valReports }),
+                        inline: false
                     }
                 )
-                .setFooter({ text: 'Настройки обновляются в реальном времени' })
+                .setFooter({ text: getReply('setting_footer', loc) })
                 .setTimestamp();
 
             const rowWelcome = new ActionRowBuilder().addComponents(
                 new ChannelSelectMenuBuilder()
                     .setCustomId('select_welcome')
-                    .setPlaceholder('Выбрать канал приветствий')
+                    .setPlaceholder(getReply('setting_select_welcome', loc))
                     .setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
             );
 
             const rowVoice = new ActionRowBuilder().addComponents(
                 new ChannelSelectMenuBuilder()
                     .setCustomId('select_voice_main')
-                    .setPlaceholder('Выбрать канал "Создать комнату"')
+                    .setPlaceholder(getReply('setting_select_voice', loc))
                     .setChannelTypes(ChannelType.GuildVoice)
             );
-            
+
             const rowOtherChannels = new ActionRowBuilder().addComponents(
                 new StringSelectMenuBuilder()
                     .setCustomId('menu_actions')
-                    .setPlaceholder('Дополнительные настройки каналов...')
+                    .setPlaceholder(getReply('setting_menu_actions', loc))
                     .addOptions(
-                        { label: 'Задать категорию войсов', description: 'Где будут создаваться личные комнаты', value: 'act_cat' },
-                        { label: 'Задать канал логов', description: 'Куда писать о приглашениях', value: 'act_log' },
-                        { label: 'Задать канал поддержки', description: 'Куда приходят тикеты', value: 'act_sup' },
-                        { label: 'Задать канал жалоб', description: 'Куда приходят репорты', value: 'act_rep' },
-                        { label: 'СБРОСИТЬ ВСЁ', description: 'Удалить все настройки (Опасно!)', value: 'act_reset' }
+                        { label: getReply('setting_act_cat_label', loc), description: getReply('setting_act_cat_desc', loc), value: 'act_cat' },
+                        { label: getReply('setting_act_log_label', loc), description: getReply('setting_act_log_desc', loc), value: 'act_log' },
+                        { label: getReply('setting_act_sup_label', loc), description: getReply('setting_act_sup_desc', loc), value: 'act_sup' },
+                        { label: getReply('setting_act_rep_label', loc), description: getReply('setting_act_rep_desc', loc), value: 'act_rep' },
+                        { label: getReply('setting_act_reset_label', loc), description: getReply('setting_act_reset_desc', loc), value: 'act_reset' }
                     )
             );
 
             const rowToggles = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
                     .setCustomId('toggle_invites')
-                    .setLabel(`Лог ссылок: ${cfg.allowInviteLogging ? 'ВКЛ' : 'ВЫКЛ'}`)
+                    .setLabel(`${getReply('setting_toggle_invites', loc)} ${cfg.allowInviteLogging ? getReply('setting_toggle_on', loc) : getReply('setting_toggle_off', loc)}`)
                     .setStyle(cfg.allowInviteLogging ? ButtonStyle.Success : ButtonStyle.Secondary),
-                
+
                 new ButtonBuilder()
                     .setCustomId('toggle_members')
-                    .setLabel(`Лог входа: ${cfg.allowLogingMembersAdd ? 'ВКЛ' : 'ВЫКЛ'}`)
+                    .setLabel(`${getReply('setting_toggle_members', loc)} ${cfg.allowLogingMembersAdd ? getReply('setting_toggle_on', loc) : getReply('setting_toggle_off', loc)}`)
                     .setStyle(cfg.allowLogingMembersAdd ? ButtonStyle.Success : ButtonStyle.Secondary)
             );
 
             return { embeds: [settingsEmbed], components: [rowWelcome, rowVoice, rowOtherChannels, rowToggles] };
         };
 
-        const msg = await interaction.reply({ 
-            ...generateDashboard(), 
-            flags: MessageFlags.Ephemeral 
+        const msg = await interaction.reply({
+            ...generateDashboard(),
+            flags: MessageFlags.Ephemeral
         });
 
         const collector = msg.createMessageComponentCollector({ time: 300_000 });
@@ -116,7 +128,7 @@ module.exports = {
             try {
                 if (i.customId === 'menu_actions') {
                     const selection = i.values[0];
-                    
+
                     if (selection === 'act_reset') {
                         Sdb.removeServer(guildId);
                         Sdb.addServer(guildId);
@@ -125,24 +137,24 @@ module.exports = {
                     }
 
                     let typeFilter = [ChannelType.GuildText];
-                    let promptText = 'Выберите текстовый канал:';
+                    let promptText = getReply('setting_prompt_text', loc);
                     if (selection === 'act_cat') {
                         typeFilter = [ChannelType.GuildCategory];
-                        promptText = 'Выберите категорию для войсов:';
+                        promptText = getReply('setting_prompt_cat', loc);
                     }
 
                     const tempSelect = new ActionRowBuilder().addComponents(
                         new ChannelSelectMenuBuilder()
-                            .setCustomId('temp_select') 
+                            .setCustomId('temp_select')
                             .setPlaceholder(promptText)
                             .setChannelTypes(...typeFilter)
                     );
-                    
-                    const tempMsg = await i.reply({ 
-                        content: promptText, 
-                        components: [tempSelect], 
+
+                    const tempMsg = await i.reply({
+                        content: promptText,
+                        components: [tempSelect],
                         flags: MessageFlags.Ephemeral,
-                        fetchReply: true 
+                        fetchReply: true
                     });
 
                     try {
@@ -159,20 +171,20 @@ module.exports = {
                         else if (selection === 'act_sup') Sdb.updateSetting(guildId, 'supportChannelId', selectedId);
                         else if (selection === 'act_rep') Sdb.updateSetting(guildId, 'reportsModerationChannelId', selectedId);
 
-                        await selectionInteraction.update({ content: 'Сохранено!', components: [] });
+                        await selectionInteraction.update({ content: getReply('setting_saved', loc), components: [] });
                         await interaction.editReply(generateDashboard());
 
                     } catch (err) {
-                        await i.editReply({ content: 'Время ожидания выбора истекло.', components: [] });
+                        await i.editReply({ content: getReply('setting_timeout', loc), components: [] });
                     }
-                    return; 
+                    return;
                 }
 
                 const currentCfg = Sdb.getSettings(guildId) || {};
-                
+
                 if (i.customId === 'select_welcome') {
                     Sdb.updateSetting(guildId, 'newMemberChannelId', i.values[0]);
-                } 
+                }
                 else if (i.customId === 'select_voice_main') {
                     Sdb.updateSetting(guildId, 'mainVoiceChannelId', i.values[0]);
                 }
@@ -189,15 +201,15 @@ module.exports = {
                 console.error(err);
                 const logChannel = await interaction.client.channels.fetch(bot_log_channel).catch(() => null);
                 if (logChannel) logChannel.send(`Ошибка в Settings Dashboard: ${err.message}`);
-                
+
                 if (!i.replied && !i.deferred) {
-                    await i.reply({ content: 'Произошла ошибка при сохранении.', flags: MessageFlags.Ephemeral });
+                    await i.reply({ content: getReply('setting_save_error', loc), flags: MessageFlags.Ephemeral });
                 }
             }
         });
 
         collector.on('end', () => {
-            interaction.editReply({ components: [] }).catch(() => {});
+            interaction.editReply({ components: [] }).catch(() => { });
         });
     }
 };
