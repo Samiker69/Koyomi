@@ -101,6 +101,8 @@ client.servicesCount = 0;
 
 for (const folder of serviceFolders) {
 	const servicesPath = path.join(servicesFolderPath, folder);
+	if (!fs.statSync(servicesPath).isDirectory()) continue;
+	
 	const serviceFiles = fs.readdirSync(servicesPath).filter(file => file.endsWith('.js'));
 	
 	for (const file of serviceFiles) {
