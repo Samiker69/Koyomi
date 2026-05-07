@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const ModerationDB = require('../../functions/db/case');
 const db = new ModerationDB();
+const EmbedService = require('../../services/EmbedService');
 const {moderation} = require('../../locales/descriptions/moderation')
 
 const data = new SlashCommandBuilder()
@@ -115,18 +116,16 @@ const data = new SlashCommandBuilder()
                         break;
                 }
 
-                const embed = new EmbedBuilder()
-                .setColor(0x808080)
-                .setTitle(`Case \`#${caseObj.caseNum}\``)
-                .setThumbnail(interaction.guild.iconURL() || null)
-                .addFields(
-                  { name: 'Модератор', value: `<@${caseObj.moderatorId}>`, inline: true },
-                  { name: 'Пользователь', value: `<@${caseObj.targetId}>`, inline: true },
-                  { name: 'Причина', value: caseObj.reason, inline: false },
-                  { name: 'Время', value: `<t:${Math.floor(caseObj.timestamp / 1000)}:F>`, inline: true }
-                )
-                .setFooter({ text: action+' выполнен', iconURL: moderator.user.displayAvatarURL({ dynamic: true }) })
-                .setTimestamp(caseObj.timestamp);
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: caseObj.caseNum,
+                    targetId: caseObj.targetId,
+                    reason: caseObj.reason,
+                    color: 0x808080,
+                    footerText: action + ' выполнен',
+                    timestamp: caseObj.timestamp,
+                    moderatorUser: moderator.user
+                });
 
                 await interaction.reply({ embeds: [embed] })
                 break;
@@ -135,11 +134,9 @@ const data = new SlashCommandBuilder()
                 const targetUser = interaction.options.getUser('user');
                 const modCases = db.getTargetModCases(interaction.guild.id, targetUser.id);
 
-                const embed = new EmbedBuilder()
-                    .setColor(0x9B59B6)
+                const embed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`История наказаний для ${targetUser.username}`)
-                    .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
-                    .setTimestamp();
+                    .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }));
 
                 if (!modCases || modCases.length === 0) {
                     embed.setDescription(`У **${targetUser.username}** нет зарегистрированных наказаний на этом сервере.`);

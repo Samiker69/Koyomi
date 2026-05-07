@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
+const EmbedService = require('../../services/EmbedService');
 const { privateAccess, bot_log_channel } = require('../../config.json');
 const axios = require('axios');
 const ApikeyManager = require('../../lib/ApikeyManager/ApikeyManager')
@@ -335,8 +336,7 @@ module.exports = {
                         return await interaction.editReply(invisible ? { content: gemini_error, flags: MessageFlags.Ephemeral } : gemini_error);
                     }
                     await interaction.editReply(`\n\`\`\`txt\n${error}\`\`\``)  
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
@@ -356,8 +356,7 @@ module.exports = {
                     db.addUserConfig(user.id)
                     await interaction.reply({ content: `${user} был добавлен в базу данных`, flags: MessageFlags.Ephemeral })
                 } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
@@ -378,8 +377,7 @@ module.exports = {
                     const promise = db.deleteUserConfig(user.id)
                     await interaction.reply({ content: `${user} ${promise ? 'был удалён из базы данных.' : "не был удалён из базы данных. Возможно, его в ней не было"}`, flags: MessageFlags.Ephemeral })
                 } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
@@ -398,9 +396,8 @@ module.exports = {
                 if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
                 const stats = db.getUserStats(userId);
 
-                const embed = new EmbedBuilder()
+                const embed = EmbedService.createBaseEmbed(interaction)
                 .setAuthor({ iconURL: interaction.user.displayAvatarURL({extension: "png"}), name: interaction.user.displayName })
-                .setColor("Random")
                 .setTitle('Ваши настройки gemini')
                 .setDescription(
                     `Системные инструкции (system_instructions): ${config.system_instructions || "Пусто"}\n\n`+
@@ -546,7 +543,7 @@ module.exports = {
 
                 if (info.err) return await interaction.reply({ content: info.text, flags: MessageFlags.Ephemeral });
 
-                const embed = createGeminiModelEmbed(info);
+                const embed = createGeminiModelEmbed(info, interaction);
                 await interaction.reply({embeds: [embed]});
 
                 async function getModelInfo(key) {
@@ -671,7 +668,7 @@ const actionDescriptions = {
  * @param {GeminiModelInfo} info Объект с информацией о модели Gemini.
  * @returns {EmbedBuilder} Объект EmbedBuilder для Discord.js.
  */
-function createGeminiModelEmbed(info) {
+function createGeminiModelEmbed(info, interaction) {
     const supportedActionsText = info.supportedActions
         .map(action => {
             const description = actionDescriptions[action] || `Неизвестное действие: ${action}`;
@@ -679,8 +676,7 @@ function createGeminiModelEmbed(info) {
         })
         .join('\n');
 
-    const embed = new EmbedBuilder()
-        .setColor("DarkButNotBlack") // Или любой другой цвет, например, 0x0099FF
+    const embed = EmbedService.createBaseEmbed(interaction)
         .setTitle(info.displayName || "Неизвестная модель Gemini")
         .setDescription(`**Описание:** ${info.description || "Описание отсутствует."}`)
         .addFields(

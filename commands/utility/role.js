@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 const data = new SlashCommandBuilder()
 		.setName('role')
@@ -112,10 +113,9 @@ const data = new SlashCommandBuilder()
                             const roleper = role.permissions.toArray()
                             .join(', ') || 'Нет прав';
     
-                            const roleinfo = new EmbedBuilder()
+                            const roleinfo = EmbedService.createBaseEmbed(interaction)
                                 .setAuthor({name: `${interaction.client.user.tag}`, iconURL: `${interaction.client.user.avatarURL()}`})
                                 .setThumbnail(interaction.guild.iconURL())
-                                .setColor(0x9B59B6)
                                 .setTitle('О роли')
                                 .addFields(
                                     {name: `Визуальная информация`, value: ` `},

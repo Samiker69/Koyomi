@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 module.exports = {
     cooldown: 10,
@@ -17,8 +18,7 @@ module.exports = {
         try {
             const faqLink = interaction.options.getString('faq_link');
 
-            const reportEmbed = new EmbedBuilder()
-                .setColor('#0099ff')
+            const reportEmbed = EmbedService.createBaseEmbed(interaction)
                 .setTitle('Система Жалоб')
                 .setDescription(
                     'Здесь вы можете сообщить о нарушениях правил сервера. ' +
@@ -42,8 +42,7 @@ module.exports = {
                 .setFooter({
                     text: 'Спасибо за помощь в поддержании порядка.',
                     iconURL: interaction.client.user.displayAvatarURL()
-                })
-                .setTimestamp();
+                });
 
             const reportButtonsRow = new ActionRowBuilder()
                 .addComponents(

@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const SettingsDB = require('../../functions/db/settings');
+const EmbedService = require('../../services/EmbedService');
 
 const Sdb = new SettingsDB();
 
@@ -148,12 +149,10 @@ module.exports = {
                 return await interaction.editReply({ content: 'Вы должны указать текстовый канал!' });
             }
 
-            const embed = new EmbedBuilder()
-                .setColor('Blue')
+            const embed = EmbedService.createBaseEmbed(interaction)
                 .setTitle(title)
                 .setDescription(description + '\n\n**Доступные роли:**\nНет ролей в меню.')
-                .setFooter({ text: 'Используйте меню ниже для выбора ролей.' })
-                .setTimestamp();
+                .setFooter({ text: 'Используйте меню ниже для выбора ролей.', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
             const selectMenu = new StringSelectMenuBuilder()
                 .setCustomId('role_select_menu')
@@ -199,12 +198,10 @@ module.exports = {
                 return await interaction.editReply({ content: 'Вы должны указать текстовый канал!' });
             }
 
-            const embed = new EmbedBuilder()
-                .setColor('Green')
+            const embed = EmbedService.createBaseEmbed(interaction)
                 .setTitle(title)
                 .setDescription(interactionDescription + '\n\n**Доступные роли:**\nНет ролей в меню.')
-                .setFooter({ text: 'Нажмите на кнопку, чтобы управлять ролью.' })
-                .setTimestamp();
+                .setFooter({ text: 'Нажмите на кнопку, чтобы управлять ролью.', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
             try {
                 const targetChannel = interaction.guild.channels.cache.get(channel.id);
@@ -297,10 +294,9 @@ module.exports = {
                 }
 
                 const oldEmbedData = message.embeds[0];
-                const updatedEmbed = new EmbedBuilder()
-                    .setColor(oldEmbedData.color || 'Blue')
+                const updatedEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(oldEmbedData.title)
-                    .setFooter({ text: `Последнее обновление: ${new Date().toLocaleString()}` });
+                    .setFooter({ text: `Последнее обновление: ${new Date().toLocaleString()}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
                 const baseDescriptionMatch = (oldEmbedData.description || '').match(/(.*?)(?:\n\n\*\*Доступные роли:\*\*|$)/s);
                 const baseDescription = baseDescriptionMatch ? baseDescriptionMatch[1].trim() : (oldEmbedData.description || '');

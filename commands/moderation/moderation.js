@@ -2,156 +2,157 @@ const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } =
 const ModerationDB = require('../../functions/db/case');
 const db = new ModerationDB();
 const ModerationService = require('../../services/ModerationService');
+const EmbedService = require('../../services/EmbedService');
 const data = new SlashCommandBuilder()
     .setName('moderation')
     .setDescription('all mod-type command')
     .addSubcommand(sub =>
         sub.setName('ban')
-        .setDescription('Забанить пользователя на сервере')
-        .addUserOption(option =>
-            option.setName('пользователь')
-                .setDescription('Пользователь для бана')
-                .setRequired(true)
-        )
-        .addStringOption(option =>
-            option.setName('причина')
-                .setDescription('Причина бана')
-                .setRequired(false)
-        )
-        .addAttachmentOption(option =>
-            option.setName('доказательства')
-                .setDescription('Прикрепите доказательства (если есть)')
-                .setRequired(false)
-        )
+            .setDescription('Забанить пользователя на сервере')
+            .addUserOption(option =>
+                option.setName('пользователь')
+                    .setDescription('Пользователь для бана')
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('причина')
+                    .setDescription('Причина бана')
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('доказательства')
+                    .setDescription('Прикрепите доказательства (если есть)')
+                    .setRequired(false)
+            )
     )
     .addSubcommand(sub =>
         sub.setName('mute')
-        .setDescription('Замьютить пользователя')
-        .addUserOption(option =>
-          option.setName('пользователь')
-                .setDescription('Пользователь для мута')
-                .setRequired(true)
-        )
-        .addStringOption(option =>
-          option.setName('время')
-                .setDescription('Длительность мута (например, 10m, 1h, 7d, 2w). Макс. 28 дней.')
-                .setRequired(false)
-        )
-        .addStringOption(option =>
-          option.setName('причина')
-                .setDescription('Причина мута')
-                .setRequired(false)
-        )
-        .addAttachmentOption(option =>
-          option.setName('доказательства')
-                .setDescription('Прикрепите доказательства (если есть)')
-                .setRequired(false)
-        )
+            .setDescription('Замьютить пользователя')
+            .addUserOption(option =>
+                option.setName('пользователь')
+                    .setDescription('Пользователь для мута')
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('время')
+                    .setDescription('Длительность мута (например, 10m, 1h, 7d, 2w). Макс. 28 дней.')
+                    .setRequired(false)
+            )
+            .addStringOption(option =>
+                option.setName('причина')
+                    .setDescription('Причина мута')
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('доказательства')
+                    .setDescription('Прикрепите доказательства (если есть)')
+                    .setRequired(false)
+            )
     )
     .addSubcommand(sub =>
         sub.setName('kick')
-        .setDescription('Кикнуть пользователя с сервера')
-        .addUserOption(option =>
-            option.setName('пользователь')
-                .setDescription('Пользователь для кика')
-                .setRequired(true)
-        )
-        .addStringOption(option =>
-            option.setName('причина')
-                .setDescription('Причина кика')
-                .setRequired(false)
-        )
-        .addAttachmentOption(option =>
-            option.setName('доказательства')
-                .setDescription('Прикрепите доказательства (если есть)')
-                .setRequired(false)
-        )
+            .setDescription('Кикнуть пользователя с сервера')
+            .addUserOption(option =>
+                option.setName('пользователь')
+                    .setDescription('Пользователь для кика')
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('причина')
+                    .setDescription('Причина кика')
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('доказательства')
+                    .setDescription('Прикрепите доказательства (если есть)')
+                    .setRequired(false)
+            )
     )
     .addSubcommand(sub =>
         sub.setName('unmute')
-        .setDescription('Снять мут (таймаут) с пользователя')
-        .addUserOption(option =>
-          option.setName('пользователь')
-            .setDescription('Пользователь, у которого снимают мут')
-            .setRequired(true)
-        )
-        .addStringOption(option =>
-          option.setName('причина')
-            .setDescription('Причина снятия мута')
-            .setRequired(false)
-        )
-        .addAttachmentOption(option =>
-          option.setName('доказательства')
-            .setDescription('Прикрепите доказательства (если есть)')
-            .setRequired(false)
-        )
+            .setDescription('Снять мут (таймаут) с пользователя')
+            .addUserOption(option =>
+                option.setName('пользователь')
+                    .setDescription('Пользователь, у которого снимают мут')
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('причина')
+                    .setDescription('Причина снятия мута')
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('доказательства')
+                    .setDescription('Прикрепите доказательства (если есть)')
+                    .setRequired(false)
+            )
     )
     .addSubcommand(sub =>
         sub.setName('unban')
-        .setDescription('Разбанить пользователя по ID')
-        .addUserOption(option =>
-          option.setName('userid')
-            .setDescription('ID пользователя для разбанивания')
-            .setRequired(true)
-        )
-        .addStringOption(option =>
-          option.setName('reason')
-            .setDescription('Причина разбана')
-            .setRequired(false)
-        )
-        .addAttachmentOption(option =>
-          option.setName('evidence')
-            .setDescription('Прикрепите доказательства (если есть)')
-            .setRequired(false)
-        )
+            .setDescription('Разбанить пользователя по ID')
+            .addUserOption(option =>
+                option.setName('userid')
+                    .setDescription('ID пользователя для разбанивания')
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('reason')
+                    .setDescription('Причина разбана')
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('evidence')
+                    .setDescription('Прикрепите доказательства (если есть)')
+                    .setRequired(false)
+            )
     )
-     .addSubcommand(sub =>
-         sub.setName('warn')
-         .setDescription('Выдать предупреждение пользователю')
-         .addUserOption(option =>
-             option.setName('пользователь')
-                 .setDescription('Пользователь для предупреждения')
-                 .setRequired(true)
-         )
-         .addStringOption(option =>
-             option.setName('причина')
-                 .setDescription('Причина предупреждения')
-                 .setRequired(false)
-         )
-         .addAttachmentOption(option =>
-             option.setName('доказательства')
-                 .setDescription('Прикрепите доказательства (если есть)')
-                 .setRequired(false)
-         )
-     )
-     .addSubcommand(sub =>
+    .addSubcommand(sub =>
+        sub.setName('warn')
+            .setDescription('Выдать предупреждение пользователю')
+            .addUserOption(option =>
+                option.setName('пользователь')
+                    .setDescription('Пользователь для предупреждения')
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('причина')
+                    .setDescription('Причина предупреждения')
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('доказательства')
+                    .setDescription('Прикрепите доказательства (если есть)')
+                    .setRequired(false)
+            )
+    )
+    .addSubcommand(sub =>
         sub.setName('unwarn')
-        .setDescription('Снять предупреждение пользователя')
-        .addUserOption(option =>
-            option.setName('пользователь')
-                .setDescription('Пользователь для снятия последнего предупреждения')
-                .setRequired(false)
-        )
-        .addNumberOption(option =>
-            option.setName('кейс')
-                .setDescription('Номер кейса с предупреждением, которое надо снять')
-                .setRequired(false)
-        )
-        .addStringOption(option =>
-            option.setName('причина')
-                .setDescription('Причина снятия предупреждения')
-                .setRequired(false)
-        )
-        .addAttachmentOption(option =>
-            option.setName('доказательства')
-                .setDescription('Прикрепите доказательства (если есть)')
-                .setRequired(false)
-        )
+            .setDescription('Снять предупреждение пользователя')
+            .addUserOption(option =>
+                option.setName('пользователь')
+                    .setDescription('Пользователь для снятия последнего предупреждения')
+                    .setRequired(false)
+            )
+            .addNumberOption(option =>
+                option.setName('кейс')
+                    .setDescription('Номер кейса с предупреждением, которое надо снять')
+                    .setRequired(false)
+            )
+            .addStringOption(option =>
+                option.setName('причина')
+                    .setDescription('Причина снятия предупреждения')
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('доказательства')
+                    .setDescription('Прикрепите доказательства (если есть)')
+                    .setRequired(false)
+            )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
 
 
-    module.exports = {
+module.exports = {
     cooldown: 3,
     data,
     async execute(interaction) {
@@ -176,35 +177,27 @@ const data = new SlashCommandBuilder()
                 const evidence = interaction.options.getAttachment('доказательства');
 
                 const result = await ModerationService.banUser(interaction, targetUser, reason);
-                
+
                 if (!result.success) {
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
                 }
 
-                const embed = new EmbedBuilder()
-                    .setColor(0xff0000)
-                    .setTitle(`Case \`#${result.caseData.caseNum}\``)
-                    .setThumbnail(interaction.guild.iconURL() || '')
-                    .addFields(
-                        { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
-                        { name: 'Пользователь', value: `<@${targetUser.id}>`, inline: true },
-                        { name: 'Причина', value: reason, inline: false },
-                        { name: 'Время', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
-                    )
-                    .setFooter({ text: 'Бан выполнен', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                    .setTimestamp();
-
-                if (evidence) {
-                    embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
-                    embed.setImage(evidence.url);
-                }
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: targetUser.id,
+                    reason,
+                    evidence,
+                    color: 0xff0000,
+                    footerText: 'Бан выполнен'
+                });
 
                 await interaction.reply({ embeds: [embed] });
                 break;
             }
             case "mute": {
                 if (!(interaction.memberPermissions.has('MuteMembers') || interaction.memberPermissions.has(PermissionFlagsBits.ModerateMembers))) {
-                  return await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                    return await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
                 }
                 await interaction.deferReply();
 
@@ -218,24 +211,16 @@ const data = new SlashCommandBuilder()
                     return await interaction.editReply({ content: result.error });
                 }
 
-                const embed = new EmbedBuilder()
-                    .setColor(0x808080)
-                    .setTitle(`Case \`#${result.caseData.caseNum}\``)
-                    .setThumbnail(interaction.guild.iconURL() || '')
-                    .addFields(
-                        { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
-                        { name: 'Пользователь', value: `<@${targetUser.id}>`, inline: true },
-                        { name: 'Причина', value: reason, inline: false },
-                        { name: 'Длительность', value: result.durationString, inline: true },
-                        { name: 'Время', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
-                    )
-                    .setFooter({ text: 'Мут выполнен', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                    .setTimestamp();
-
-                if (evidence) {
-                    embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
-                    embed.setImage(evidence.url);
-                }
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: targetUser.id,
+                    reason,
+                    evidence,
+                    color: 0x808080,
+                    footerText: 'Мут выполнен',
+                    durationString: result.durationString
+                });
 
                 await interaction.editReply({ embeds: [embed] });
                 break;
@@ -253,31 +238,23 @@ const data = new SlashCommandBuilder()
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
                 }
 
-                const embed = new EmbedBuilder()
-                    .setColor(0xffa500)
-                    .setTitle(`Case \`#${result.caseData.caseNum}\``)
-                    .setThumbnail(interaction.guild.iconURL() || '')
-                    .addFields(
-                        { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
-                        { name: 'Пользователь', value: `<@${targetUser.id}>`, inline: true },
-                        { name: 'Причина', value: reason, inline: false },
-                        { name: 'Время', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
-                    )
-                    .setFooter({ text: "Кик выполнен", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                    .setTimestamp();
-
-                if (evidence) {
-                    embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
-                    embed.setImage(evidence.url);
-                }
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: targetUser.id,
+                    reason,
+                    evidence,
+                    color: 0xffa500,
+                    footerText: 'Кик выполнен'
+                });
 
                 await interaction.reply({ embeds: [embed] });
                 break;
             }
             case "unmute": {
-                 if (!interaction.memberPermissions.has('ModerateMembers') && !interaction.memberPermissions.has('MuteMembers')) {
-                   return await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
-                 }
+                if (!interaction.memberPermissions.has('ModerateMembers') && !interaction.memberPermissions.has('MuteMembers')) {
+                    return await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                }
                 const targetUser = interaction.options.getUser('пользователь');
                 const reason = interaction.options.getString('причина') || 'Без причины';
                 const evidence = interaction.options.getAttachment('доказательства');
@@ -287,23 +264,15 @@ const data = new SlashCommandBuilder()
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
                 }
 
-                const embed = new EmbedBuilder()
-                    .setColor(0x00ff00)
-                    .setTitle(`Case \`#${result.caseData.caseNum}\``)
-                    .setThumbnail(interaction.guild.iconURL() || '')
-                    .addFields(
-                        { name: "Модератор", value: `<@${interaction.user.id}>`, inline: true },
-                        { name: "Пользователь", value: `<@${targetUser.id}>`, inline: true },
-                        { name: "Причина", value: reason, inline: false },
-                        { name: "Время", value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
-                    )
-                    .setFooter({ text: "Размут выполнен", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                    .setTimestamp();
-
-                if (evidence) {
-                    embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
-                    embed.setImage(evidence.url);
-                }
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: targetUser.id,
+                    reason,
+                    evidence,
+                    color: 0x00ff00,
+                    footerText: 'Размут выполнен'
+                });
 
                 await interaction.reply({ embeds: [embed] });
                 break;
@@ -321,66 +290,50 @@ const data = new SlashCommandBuilder()
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
                 }
 
-                const embed = new EmbedBuilder()
-                    .setColor(0x00ff00)
-                    .setTitle(`Case \`#${result.caseData.caseNum}\``)
-                    .setThumbnail(interaction.guild.iconURL() || '')
-                    .addFields(
-                        { name: "Модератор", value: `<@${interaction.user.id}>`, inline: true },
-                        { name: "Пользователь", value: `<@${user.id}>`, inline: true },
-                        { name: "Причина", value: reason, inline: false },
-                        { name: "Время", value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
-                    )
-                    .setFooter({ text: "Разбан выполнен", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                    .setTimestamp();
-
-                if (evidence) {
-                    embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
-                    embed.setImage(evidence.url);
-                }
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: user.id,
+                    reason,
+                    evidence,
+                    color: 0x00ff00,
+                    footerText: 'Разбан выполнен'
+                });
 
                 await interaction.reply({ embeds: [embed] });
                 break;
             }
             case "warn": {
-                 if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
-                   return await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
-                 }
-                 await interaction.deferReply();
-
-                 const targetUser = interaction.options.getUser('пользователь');
-                 const reason = interaction.options.getString('причина') || 'Без причины';
-                 const evidence = interaction.options.getAttachment('доказательства');
-
-                 const result = await ModerationService.warnUser(interaction, targetUser, reason);
-                 if (!result.success) {
-                     return await interaction.editReply({ content: result.error });
-                 }
-
-                 const embed = new EmbedBuilder()
-                     .setColor(0xffa500)
-                     .setTitle(`Case \`#${result.caseData.caseNum}\``)
-                     .setThumbnail(interaction.guild.iconURL() || '')
-                     .addFields(
-                         { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
-                         { name: 'Пользователь', value: `<@${targetUser.id}>`, inline: true },
-                         { name: 'Причина', value: reason, inline: false },
-                         { name: 'Время', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
-                     )
-                     .setFooter({ text: "Предупреждение выдано", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                     .setTimestamp();
-
-                 if (evidence) {
-                     embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
-                     embed.setImage(evidence.url);
-                 }
-
-                 await interaction.editReply({ embeds: [embed] });
-                 break;
-             }
-             case "unwarn": {
                 if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
-                  return await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                    return await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+                }
+                await interaction.deferReply();
+
+                const targetUser = interaction.options.getUser('пользователь');
+                const reason = interaction.options.getString('причина') || 'Без причины';
+                const evidence = interaction.options.getAttachment('доказательства');
+
+                const result = await ModerationService.warnUser(interaction, targetUser, reason);
+                if (!result.success) {
+                    return await interaction.editReply({ content: result.error });
+                }
+
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: targetUser.id,
+                    reason,
+                    evidence,
+                    color: 0xffa500,
+                    footerText: 'Предупреждение выдано'
+                });
+
+                await interaction.editReply({ embeds: [embed] });
+                break;
+            }
+            case "unwarn": {
+                if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
+                    return await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
                 }
                 await interaction.deferReply();
 
@@ -394,34 +347,26 @@ const data = new SlashCommandBuilder()
                     return await interaction.editReply({ content: result.error });
                 }
 
-                const embed = new EmbedBuilder()
-                    .setColor(0x00ff00)
-                    .setTitle(`Case \`#${result.caseData.caseNum}\``)
-                    .setThumbnail(interaction.guild.iconURL() || '')
-                    .addFields(
-                        { name: 'Модератор', value: `<@${interaction.user.id}>`, inline: true },
-                        { name: 'Пользователь', value: `<@${result.targetId}>`, inline: true },
-                        { name: 'Причина', value: reason, inline: false },
-                        { name: 'Время', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
-                    )
-                    .setFooter({ text: "Предупреждение снято", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                    .setTimestamp();
-
-                if (evidence) {
-                    embed.addFields({ name: 'Доказательства', value: `[Нажмите для просмотра](${evidence.url})` });
-                    embed.setImage(evidence.url);
-                }
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: result.targetId,
+                    reason,
+                    evidence,
+                    color: 0x00ff00,
+                    footerText: 'Предупреждение снято'
+                });
 
                 await interaction.editReply({ embeds: [embed] });
                 break;
             }
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({ content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral })
                 break;
         }
     }
 }
 
 async function sendPunishmentToUserChannel(userId) {
-    
+
 }

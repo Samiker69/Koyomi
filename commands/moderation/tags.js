@@ -5,6 +5,7 @@ const {
     MessageFlags
 } = require('discord.js');
 const TagsDB = require('../../functions/db/tags');
+const EmbedService = require('../../services/EmbedService');
 
 const tags = new TagsDB()
   
@@ -140,10 +141,9 @@ const tags = new TagsDB()
               });
             }
   
-            const embed = new EmbedBuilder()
+            const embed = EmbedService.createBaseEmbed(interaction)
               .setTitle(`Тег: ${name}`)
-              .setDescription(row.content)
-              .setColor(0x9B59B6);
+              .setDescription(row.content);
   
             return await interaction.reply({ embeds: [embed] });
           }
@@ -169,10 +169,9 @@ const tags = new TagsDB()
               })
               .join('\n');
           
-            const embed = new EmbedBuilder()
+            const embed = EmbedService.createBaseEmbed(interaction)
               .setTitle('Список тегов')
-              .setDescription(description)
-              .setColor(0x9B59B6);
+              .setDescription(description);
           
             return interaction.reply({ embeds: [embed] });
           }          

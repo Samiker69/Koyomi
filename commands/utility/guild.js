@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 const { bot_log_channel } = require('../../config.json')
 
 const data = new SlashCommandBuilder()
@@ -129,17 +130,16 @@ const data = new SlashCommandBuilder()
                             }
                         } catch (error) {
                             await interaction.reply({ content: `Что-то пошло не так. ошибка:\n${error.message}`, flags: MessageFlags.Ephemeral });
-                            const errorEmbed = new EmbedBuilder()
+                            const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
+            );
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+            await logChannel.send({ embeds: [errorEmbed] });
                         }
                         break;
                     }
@@ -154,17 +154,16 @@ const data = new SlashCommandBuilder()
                                 await interaction.reply(`Баннер сервера изменён`);
                             } catch (error) {
                                 await interaction.reply({ content: `Что-то пошло не так. ошибка:\n${error.message}`, flags: MessageFlags.Ephemeral });
-                                const errorEmbed = new EmbedBuilder()
+                                const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
+            );
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+            await logChannel.send({ embeds: [errorEmbed] });
                             }
                         } else {
                             await interaction.reply('Баннер не изменён, потому что сервер не достиг 2 уровня');
@@ -181,17 +180,16 @@ const data = new SlashCommandBuilder()
                             await interaction.reply(`Аватар сервера изменён`);
                         } catch (error) {
                             await interaction.reply({ content: `Что-то пошло не так. ошибка:\n${error.message}`, flags: MessageFlags.Ephemeral });
-                            const errorEmbed = new EmbedBuilder()
+                            const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
+            );
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+            await logChannel.send({ embeds: [errorEmbed] });
                         }
                         break;
                     }
@@ -212,17 +210,16 @@ const data = new SlashCommandBuilder()
                         }
                     } catch (error) {
                         await interaction.reply({ content: `Что-то пошло не так. ошибка:\n${error.message}`, flags: MessageFlags.Ephemeral });
-                        const errorEmbed = new EmbedBuilder()
+                        const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
+            );
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+            await logChannel.send({ embeds: [errorEmbed] });
                     }
                         break;
                     }
@@ -235,17 +232,16 @@ const data = new SlashCommandBuilder()
                             await interaction.reply(`Название сервера изменено на \`${name}\``);
                         } catch (error) {
                             await interaction.reply({ content: `Что-то пошло не так. ошибка:\n${error.message}`, flags: MessageFlags.Ephemeral });
-                            const errorEmbed = new EmbedBuilder()
+                            const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
+            );
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+            await logChannel.send({ embeds: [errorEmbed] });
                         }
                         break;
                     }
@@ -259,17 +255,16 @@ const data = new SlashCommandBuilder()
                             await interaction.reply(`${channel} выбран как канал для правил`);
                         } catch (error) {
                             await interaction.reply({ content: `Что-то пошло не так. ошибка:\n${error.message}`, flags: MessageFlags.Ephemeral });
-                            const errorEmbed = new EmbedBuilder()
+                            const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
+            );
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+            await logChannel.send({ embeds: [errorEmbed] });
                         }
                         break;
                     }
@@ -283,17 +278,16 @@ const data = new SlashCommandBuilder()
                             await interaction.reply(`${channel} выбран как канал для оповещений безопасности`);
                         } catch (error) {
                             await interaction.reply({ content: `Что-то пошло не так. ошибка:\n${error.message}`, flags: MessageFlags.Ephemeral });
-                            const errorEmbed = new EmbedBuilder()
+                            const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
+            );
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+            await logChannel.send({ embeds: [errorEmbed] });
                         }
                         break;
                     }
@@ -308,17 +302,16 @@ const data = new SlashCommandBuilder()
                             await interaction.reply(`Уровень верификации пользователя установлен на ${level}`);
                         } catch (error) {
                             await interaction.reply({ content: `Что-то пошло не так. ошибка:\n${error.message}`, flags: MessageFlags.Ephemeral });
-                            const errorEmbed = new EmbedBuilder()
+                            const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setColor('Red')
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },
                 { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-            )
-            .setTimestamp(new Date())
+            );
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] });;
+            await logChannel.send({ embeds: [errorEmbed] });
                         }
                         break;
                     }

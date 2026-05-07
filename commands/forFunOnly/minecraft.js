@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+const { SlashCommandBuilder } = require('discord.js');
+const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
+const EmbedService = require('../../services/EmbedService');
 
 module.exports = {
   cooldown: 5,
@@ -33,17 +34,15 @@ module.exports = {
       const skinDownloadUrl = `https://mc-heads.net/download/${uuid}`;
       const profileUrl      = `https://namemc.com/profile/${player}`;
 
-      const embed = new EmbedBuilder()
+      const embed = EmbedService.createBaseEmbed(interaction)
         .setTitle(`Информация по игроку ${player}`)
-        .setColor(0x9B59B6)
         .setThumbnail(skinRenderUrl)
         .addFields(
           { name: 'Рендер скина',       value: `[Посмотреть](${skinRenderUrl})`,   inline: true },
           { name: 'Скачать скин',       value: `[Скачать](${skinDownloadUrl})`,    inline: true },
           { name: 'Профиль на NameMC',  value: `[Перейти](${profileUrl})`,         inline: true },
           { name: 'UUID',               value: uuid,                                inline: true }
-        )
-        .setTimestamp();
+        );
 
       await interaction.editReply({ embeds: [embed] });
     } catch (err) {

@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 const axios = require('axios');
 
 const categories = {
@@ -147,11 +148,10 @@ module.exports = {
           return interaction.editReply({ content: 'Не удалось загрузить контент после нескольких попыток. Попробуйте другую категорию или повторите позже.', flags: MessageFlags.Ephemeral });
       }
 
-      const embed = new EmbedBuilder()
+      const embed = EmbedService.createBaseEmbed(interaction)
         .setTitle(content.title || 'Без заголовка')
         .setImage(content.url)
-        .setColor(0xff007f)
-        .setFooter({ text: `r/${content.subreddit}` });
+        .setFooter({ text: `r/${content.subreddit}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
       await interaction.editReply({ embeds: [embed] });
   }

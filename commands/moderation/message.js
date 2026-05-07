@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
-const {moderation} = require('../../locales/descriptions/moderation')
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const {moderation} = require('../../locales/descriptions/moderation');
+const EmbedService = require('../../services/EmbedService');
 
 const data = new SlashCommandBuilder()
     .setName('message')
@@ -140,8 +141,7 @@ const data = new SlashCommandBuilder()
                   
                         await channel.bulkDelete(messagesToDelete, true);
                         
-                        const embed = new EmbedBuilder()
-                          .setColor(0xFF0000)
+                        const embed = EmbedService.createBaseEmbed(interaction)
                           .setTitle("Очистка сообщений")
                           .addFields(
                             { name: "Модератор", value: `<@${interaction.user.id}>`, inline: true },
@@ -149,8 +149,7 @@ const data = new SlashCommandBuilder()
                             { name: "Канал", value: `<#${channel.id}>`, inline: true },
                             { name: "Удалено сообщений", value: `${messagesToDelete.length}`, inline: true }
                           )
-                          .setFooter({ text: "Очистка завершена", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                          .setTimestamp();
+                          .setFooter({ text: "Очистка завершена", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
                   
                         await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
                       } catch (error) {

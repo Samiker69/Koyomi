@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
+const EmbedService = require('../../services/EmbedService');
 const { createCanvas, loadImage } = require('canvas');
 
 function drawHeart(ctx, x, y, size, color) {
@@ -197,8 +198,7 @@ module.exports = {
 
         const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), { name: 'love_meter.png' });
 
-        const embed = new EmbedBuilder()
-            .setColor(0x9B59B6)
+        const embed = EmbedService.createBaseEmbed(interaction)
             .setTitle('💕 Калькулятор Любви 💕')
             .setDescription(`Насколько совместимы ${u1} и ${u2}?`)
             .setImage('attachment://love_meter.png'); 

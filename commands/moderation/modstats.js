@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const ModerationDB = require('../../functions/db/case');
 const db = new ModerationDB();
+const EmbedService = require('../../services/EmbedService');
 
 module.exports = {
     cooldown: 5,
@@ -25,11 +26,9 @@ module.exports = {
         const allModCases = db.getServerModCases(serverId);
 
         if (!allModCases || allModCases.length === 0) {
-            const noCasesEmbed = new EmbedBuilder()
-                .setColor(0x800080)
+            const noCasesEmbed = EmbedService.createBaseEmbed(interaction)
                 .setTitle('Статистика модерации')
                 .setDescription('На этом сервере пока нет зарегистрированных наказаний. Начните модерировать, чтобы увидеть статистику здесь!')
-                .setTimestamp()
                 .setFooter({ text: 'Нет данных для отображения', iconURL: interaction.client.user.displayAvatarURL({ dynamic: true }) });
             return interaction.editReply({ embeds: [noCasesEmbed] });
         }
@@ -49,20 +48,16 @@ module.exports = {
             aggregatedStats[moderatorId].types[action] = (aggregatedStats[moderatorId].types[action] || 0) + 1;
         }
 
-        const embed = new EmbedBuilder()
-            .setColor(0x800080)
-            .setTimestamp(new Date());
+        const embed = EmbedService.createBaseEmbed(interaction);
 
         if (targetUser) {
             const userStats = aggregatedStats[targetUser.id];
 
             if (!userStats) {
-                const notModeratorEmbed = new EmbedBuilder()
-                    .setColor(0x800080)
+                const notModeratorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle('Статистика модератора')
                     .setDescription(`Пользователь **${targetUser.tag}** либо не является модератором, либо ещё не выдавал наказаний на этом сервере.`)
                     .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
-                    .setTimestamp()
                     .setFooter({ text: 'Проверьте другого пользователя или общую статистику', iconURL: interaction.client.user.displayAvatarURL({ dynamic: true }) });
                 return interaction.editReply({ embeds: [notModeratorEmbed] });
             }

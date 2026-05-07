@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
 const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
@@ -117,8 +118,7 @@ module.exports = {
 
             for (let post of result) {
                 if ( (post.rating === 'u' || post.rating === 'e' || post.rating === 'q') && !interaction.channel.nsfw ) {
-                    const banned = new EmbedBuilder()
-                    .setColor('Grey')
+                    const banned = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
                     .setDescription(
                         `Данный пост заблокирован, так как имеет опасный рейтинг для этого канала.`+
@@ -130,8 +130,7 @@ module.exports = {
                 } else {
                     if (lastartlink === post.fileUrl) continue;
                     lastartlink = post.fileUrl;
-                    const ok = new EmbedBuilder()
-                    .setColor('Random')
+                    const ok = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
                     .setDescription(`-# \`${post.tags.join(',')}\``)
                     .setURL(post.postView)
@@ -197,8 +196,7 @@ module.exports = {
             })
             
        } catch (error) {
-            const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
+            const errorEmbed = EmbedService.createBaseEmbed(interaction)
             .setTitle(`Произошла ошибка при обработке команды`)
             .addFields(
                 { name: `Команда`, value: `${interaction.commandName}` },

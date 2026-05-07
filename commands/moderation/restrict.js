@@ -4,6 +4,7 @@ const {
     MessageFlags,
     EmbedBuilder,
 } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 const DisabledCommandsDB = require('../../functions/db/restrictions');
 const db = new DisabledCommandsDB();
@@ -133,10 +134,9 @@ module.exports = {
             }
 
 
-            const embed = new EmbedBuilder()
-                .setColor(0x9B59B6)
+            const embed = EmbedService.createBaseEmbed(interaction)
                 .setTitle(embedTitle)
-                .setFooter({ text: footerText });
+                .setFooter({ text: footerText, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
             if (restrictionsList.length === 0) {
                  if (userId === null) {

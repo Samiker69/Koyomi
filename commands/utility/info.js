@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 const statusMap = {
   online: 'В сети',
@@ -46,8 +47,7 @@ module.exports = {
         .map(r => r.name)
         .join(', ') || '—';
 
-      const embed = new EmbedBuilder()
-        .setColor(0x9B59B6)
+      const embed = EmbedService.createBaseEmbed(interaction)
         .setAuthor({ name: user.tag, iconURL: user.avatarURL({ dynamic: true }) })
         .setThumbnail(user.avatarURL({ dynamic: true }))
         .setTitle('Информация о пользователе')
@@ -66,8 +66,7 @@ module.exports = {
       const guild = interaction.guild;
       const createdTs = Math.floor(guild.createdAt.getTime() / 1000);
 
-      const embed = new EmbedBuilder()
-        .setColor(0x9B59B6)
+      const embed = EmbedService.createBaseEmbed(interaction)
         .setAuthor({ name: guild.name, iconURL: guild.iconURL({ dynamic: true }) })
         .setThumbnail(guild.iconURL({ dynamic: true }))
         .setTitle('Информация о сервере')

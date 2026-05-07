@@ -7,6 +7,7 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 const activeGames = new Set();
 const {minigame} = require('../../locales/descriptions/minigame')
@@ -63,10 +64,9 @@ module.exports = {
                 .setStyle(ButtonStyle.Danger)
         );
 
-        const confirmEmbed = new EmbedBuilder()
+        const confirmEmbed = EmbedService.createBaseEmbed(interaction)
             .setTitle('Вызов на Крестики-нолики')
-            .setDescription(`${playerO}, ${playerX} вызывает вас на игру. Примите или отклоните.`)
-            .setColor(0x3498DB);
+            .setDescription(`${playerO}, ${playerX} вызывает вас на игру. Примите или отклоните.`);
 
         await interaction.reply({
             embeds: [confirmEmbed],
@@ -162,10 +162,9 @@ module.exports = {
                 return rows;
             };
 
-            const embed = new EmbedBuilder()
+            const embed = EmbedService.createBaseEmbed(interaction)
                 .setTitle('Крестики-нолики')
-                .setDescription(`Ходит: ${players[turn]}`)
-                .setColor(0x2ECC71);
+                .setDescription(`Ходит: ${players[turn]}`);
 
             const msg = await interaction.editReply({
                 embeds: [embed],

@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits, ChannelType } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 const data = new SlashCommandBuilder()
     .setName('channel')
@@ -88,14 +89,12 @@ module.exports = {
                     await targetChannel.permissionOverwrites.edit(everyoneRole, {
                         [permissionOverwrite]: false,
                     }, { reason: `Lock by ${interaction.user.username}` });
-                    const embed = new EmbedBuilder()
-                        .setColor('Red')
+                    const embed = EmbedService.createBaseEmbed(interaction)
                         .setDescription(`Канал ${targetChannel} заблокирован.`)
                         .addFields(
                             { name: 'Модератор', value: `${interaction.user}`, inline: true },
                             { name: 'Канал', value: `${targetChannel}`, inline: true }
-                        )
-                        .setTimestamp();
+                        );
 
                     await interaction.reply({ embeds: [embed] });
 
@@ -123,14 +122,12 @@ module.exports = {
                         [permissionOverwrite]: null,
                     }, { reason: `Unlock by ${interaction.user.username}` });
 
-                    const embed = new EmbedBuilder()
-                        .setColor('Green')
+                    const embed = EmbedService.createBaseEmbed(interaction)
                         .setDescription(`Канал ${targetChannel} разблокирован.`)
                         .addFields(
                             { name: 'Модератор', value: `${interaction.user}`, inline: true },
                             { name: 'Канал', value: `${targetChannel}`, inline: true }
-                        )
-                        .setTimestamp();
+                        );
 
                     await interaction.reply({ embeds: [embed] });
 
@@ -155,8 +152,7 @@ module.exports = {
                 try {
                     await targetChannel.setRateLimitPerUser(seconds, `Slowmode by ${interaction.user.username}`);
 
-                    const embed = new EmbedBuilder()
-                        .setColor('Orange')
+                    const embed = EmbedService.createBaseEmbed(interaction)
                         .setDescription(seconds === 0 ?
                             `Слоумод отключен на канале ${targetChannel}.` :
                             `На канале ${targetChannel} установлен слоумод: ${seconds} секунд.`
@@ -169,8 +165,6 @@ module.exports = {
                      if (seconds > 0) {
                           embed.addFields({ name: 'Длительность', value: `${seconds} секунд`, inline: true });
                      }
-
-                     embed.setTimestamp();
 
 
                     await interaction.reply({ embeds: [embed] });

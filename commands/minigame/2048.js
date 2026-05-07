@@ -7,6 +7,7 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 const activeGames = new Set();
 const cooldowns = new Map();
@@ -138,9 +139,8 @@ module.exports = {
             )
         ];
 
-        const embed = new EmbedBuilder()
+        const embed = EmbedService.createBaseEmbed(interaction)
             .setTitle('🎮 2048')
-            .setColor(0xf39c12)
             .setDescription(renderBoard(board))
             .setFooter({ text: 'Стрелки — ход, 🔁 — начать заново, 🏳️ — сдаться.' });
 

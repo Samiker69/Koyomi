@@ -11,6 +11,7 @@ const {
 } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
+const EmbedService = require('../../services/EmbedService');
 
 async function safeReply(interaction, content, isEphemeral = true) {
   const flags = isEphemeral ? MessageFlags.Ephemeral : 0;
@@ -114,10 +115,8 @@ module.exports = {
           const endIndex = startIndex + pageSize;
           const slicedCommands = commandsToShow.slice(startIndex, endIndex);
 
-          const embed = new EmbedBuilder()
-              .setTitle(`Список команд: ${category}`)
-              .setColor(0x9B59B6)
-              .setTimestamp();
+          const embed = EmbedService.createBaseEmbed(interaction)
+              .setTitle(`Список команд: ${category}`);
 
           if (slicedCommands.length === 0) {
               embed.setDescription('В этой категории пока нет команд.');
@@ -168,7 +167,7 @@ module.exports = {
               }
           }
           
-          embed.setFooter({ text: `Страница ${page + 1} из ${totalPages === 0 ? 1 : totalPages}` });
+          embed.setFooter({ text: `Страница ${page + 1} из ${totalPages === 0 ? 1 : totalPages}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
 
           const prevButton = new ButtonBuilder()
@@ -249,7 +248,8 @@ module.exports = {
           );
           
           finalPayload.embeds[0].setFooter({
-              text: `Страница ${pageIndex + 1} из ${Math.ceil((currentCategory === 'Все команды' ? allCommands.length : (categoriesMap.get(currentCategory)?.length || 0)) / pageSize) === 0 ? 1 : Math.ceil((currentCategory === 'Все команды' ? allCommands.length : (categoriesMap.get(currentCategory)?.length || 0)) / pageSize)} (время вышло)`
+              text: `Страница ${pageIndex + 1} из ${Math.ceil((currentCategory === 'Все команды' ? allCommands.length : (categoriesMap.get(currentCategory)?.length || 0)) / pageSize) === 0 ? 1 : Math.ceil((currentCategory === 'Все команды' ? allCommands.length : (categoriesMap.get(currentCategory)?.length || 0)) / pageSize)} (время вышло)`,
+              iconURL: interaction.user.displayAvatarURL({ dynamic: true })
           });
 
           try {

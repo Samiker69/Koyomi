@@ -1,3 +1,4 @@
+const EmbedService = require('../../services/EmbedService');
 const {
     SlashCommandBuilder,
     PermissionFlagsBits,
@@ -33,15 +34,13 @@ async function fetchRuleById(interaction, ruleId) {
          return rule;
      } catch (error) {
          if (error.code === 10048 || (error.rawError && error.rawError.code === 0 && error.status === 404)) {
-              const embed = new EmbedBuilder()
-                 .setColor(0x9B59B6)
+              const embed = EmbedService.createBaseEmbed(interaction)
                  .setTitle('Правило не найдено')
                  .setDescription(`Правило Автомодерации с ID \`${ruleId}\` не найдено.`);
              await interaction.editReply({ embeds: [embed] }).catch(console.error);
          } else {
              console.error(`Ошибка при получении правила Автомода ${ruleId}:`, error);
-             const embed = new EmbedBuilder()
-                .setColor(0x9B59B6)
+             const embed = EmbedService.createBaseEmbed(interaction)
                 .setTitle('Ошибка API')
                 .setDescription(`Произошла ошибка при получении правила: ${error.message}`);
              await interaction.editReply({ embeds: [embed] }).catch(console.error);
@@ -229,8 +228,7 @@ module.exports = {
     data,
     async execute(interaction) {
         if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageGuild)) {
-             const embed = new EmbedBuilder()
-                .setColor(0x9B59B6)
+             const embed = EmbedService.createBaseEmbed(interaction)
                 .setTitle('Недостаточно прав')
                 .setDescription('У вас недостаточно прав (ManageGuild) для выполнения этой команды.');
             await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral }).catch(console.error);
@@ -251,7 +249,7 @@ module.exports = {
                          await handleExemptSubcommands(interaction, subcommandName);
                          break;
                      default:
-                         const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Неизвестная группа').setDescription('Кажется, такой группы подкоманд не существует.');
+                         const embed = EmbedService.createBaseEmbed(interaction).setTitle('Неизвестная группа').setDescription('Кажется, такой группы подкоманд не существует.');
                          await interaction.editReply({ embeds: [embed] }).catch(console.error);
                          break;
                  }
@@ -279,7 +277,7 @@ module.exports = {
                          await handleToggleSubcommand(interaction);
                          break;
                      default:
-                          const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Неизвестная подкоманда').setDescription('Кажется, такой подкоманды не существует.');
+                          const embed = EmbedService.createBaseEmbed(interaction).setTitle('Неизвестная подкоманда').setDescription('Кажется, такой подкоманды не существует.');
                           if (interaction.replied || interaction.deferred) {
                              await interaction.editReply({ embeds: [embed] }).catch(console.error);
                           } else {
@@ -292,14 +290,12 @@ module.exports = {
         } catch (error) {
             console.error('Критическая ошибка при выполнении команды automod-native:', error);
              if (interaction.replied || interaction.deferred) {
-                 const errorEmbed = new EmbedBuilder()
-                     .setColor(0x9B59B6)
+                 const errorEmbed = EmbedService.createBaseEmbed(interaction)
                      .setTitle('Произошла внутренняя ошибка')
                      .setDescription(`Произошла ошибка при выполнении команды: ${error.message}`);
                  await interaction.editReply({ embeds: [errorEmbed] }).catch(console.error);
              } else {
-                  const errorEmbed = new EmbedBuilder()
-                     .setColor(0x9B59B6)
+                  const errorEmbed = EmbedService.createBaseEmbed(interaction)
                      .setTitle('Произошла внутренняя ошибка')
                      .setDescription(`Произошла ошибка при выполнении команды: ${error.message}`);
                   await interaction.reply({ embeds: [errorEmbed], flags: MessageFlags.Ephemeral }).catch(console.error);
@@ -355,7 +351,7 @@ async function handleAddKeywordSubcommand(interaction) {
      const exemptChannels = parseMentionString(exemptChannelsString);
 
      if (keywords.length === 0) {
-          const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Ошибка ввода').setDescription('Укажите хотя бы одно ключевое слово или фразу.');
+          const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка ввода').setDescription('Укажите хотя бы одно ключевое слово или фразу.');
           await interaction.editReply({ embeds: [embed] }).catch(console.error);
           return;
      }
@@ -376,7 +372,7 @@ async function handleAddKeywordSubcommand(interaction) {
      }
 
      if (actionError || !actionConfig) {
-         const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Ошибка настройки действия').setDescription(actionError || 'Не удалось определить действие для правила.');
+         const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка настройки действия').setDescription(actionError || 'Не удалось определить действие для правила.');
          await interaction.editReply({ embeds: [embed] }).catch(console.error);
          return;
      }
@@ -395,8 +391,7 @@ async function handleAddKeywordSubcommand(interaction) {
              exemptChannels: exemptChannels
          });
 
-         const embed = new EmbedBuilder()
-             .setColor(0x9B59B6).setTitle('Правило добавлено')
+         const embed = EmbedService.createBaseEmbed(interaction).setTitle('Правило добавлено')
              .setDescription(`Создано правило Автомодерации "${rule.name}".`)
              .addFields(
                  { name: 'ID Правила', value: `\`${rule.id}\``, inline: false },
@@ -415,7 +410,7 @@ async function handleAddKeywordSubcommand(interaction) {
 
      } catch (error) {
          console.error('Ошибка при создании правила Автомода:', error);
-         const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Ошибка API').setDescription(`Произошла ошибка при создании правила: ${error.message}`);
+         const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка API').setDescription(`Произошла ошибка при создании правила: ${error.message}`);
          await interaction.editReply({ embeds: [embed] }).catch(console.error);
      }
 }
@@ -442,7 +437,7 @@ async function handleEditSubcommand(interaction) {
      if (newKeywordsString !== null) {
          const newKeywords = newKeywordsString.split(',').map(k => k.trim()).filter(k => k.length > 0);
          if (newKeywords.length === 0 && newKeywordsString.length > 0) {
-              const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Предупреждение').setDescription('Вы указали пустой список ключевых слов. Правило может стать неактивным или работать неожиданно.');
+              const embed = EmbedService.createBaseEmbed(interaction).setTitle('Предупреждение').setDescription('Вы указали пустой список ключевых слов. Правило может стать неактивным или работать неожиданно.');
               await interaction.followUp({ embeds: [embed], flags: MessageFlags.Ephemeral }).catch(console.error);
          }
          updateData.triggerMetadata = { ...existingRule.triggerMetadata, keywordFilter: newKeywords };
@@ -461,7 +456,7 @@ async function handleEditSubcommand(interaction) {
          }
 
          if (actionEditError || !newActionConfig) {
-             const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Ошибка настройки нового действия').setDescription(actionEditError || 'Не удалось сконфигурировать новое действие.');
+             const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка настройки нового действия').setDescription(actionEditError || 'Не удалось сконфигурировать новое действие.');
               await interaction.editReply({ embeds: [embed] }).catch(console.error);
              return;
          }
@@ -480,7 +475,7 @@ async function handleEditSubcommand(interaction) {
              }
              if (currentAction.type === AutoModerationActionType.Timeout && newTimeoutDuration !== undefined) {
                   if (newTimeoutDuration !== null && (newTimeoutDuration < 1 || newTimeoutDuration > 2419200)) {
-                       const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Ошибка обновления длительности таймаута').setDescription('Новая длительность таймаута должна быть от 1 до 2419200 секунд.');
+                       const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка обновления длительности таймаута').setDescription('Новая длительность таймаута должна быть от 1 до 2419200 секунд.');
                        await interaction.editReply({ embeds: [embed] }).catch(console.error); return;
                   }
                  metadataUpdate.durationSeconds = newTimeoutDuration;
@@ -499,7 +494,7 @@ async function handleEditSubcommand(interaction) {
      if (newEnabledStatus !== null) { updateData.enabled = newEnabledStatus; }
 
      if (Object.keys(updateData).length === 0) {
-          const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Нет изменений').setDescription('Вы не указали ни одного параметра для изменения правила.');
+          const embed = EmbedService.createBaseEmbed(interaction).setTitle('Нет изменений').setDescription('Вы не указали ни одного параметра для изменения правила.');
           await interaction.editReply({ embeds: [embed] }).catch(console.error);
           return;
      }
@@ -508,8 +503,7 @@ async function handleEditSubcommand(interaction) {
           console.log(`Attempting to edit automod rule ${ruleId} with data:`, JSON.stringify(updateData, null, 2));
           const editedRule = await existingRule.edit(updateData);
 
-          const embed = new EmbedBuilder()
-             .setColor(0x9B59B6).setTitle('Правило отредактировано')
+          const embed = EmbedService.createBaseEmbed(interaction).setTitle('Правило отредактировано')
              .setDescription(`Правило Автомодерации "${editedRule.name}" (ID: \`${editedRule.id}\`) успешно отредактировано.`);
 
           const actionsText = editedRule.actions.map(a => {
@@ -536,7 +530,7 @@ async function handleEditSubcommand(interaction) {
 
      } catch (error) {
          console.error(`Ошибка API при редактировании правила Автомода ${ruleId}:`, error);
-         const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Ошибка редактирования').setDescription(`Произошла ошибка при редактировании правила: ${error.message}`);
+         const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка редактирования').setDescription(`Произошла ошибка при редактировании правила: ${error.message}`);
          await interaction.editReply({ embeds: [embed] }).catch(console.error);
      }
 }
@@ -546,16 +540,14 @@ async function handleRemoveSubcommand(interaction) {
 
     try {
         await interaction.guild.autoModerationRules.delete(ruleId);
-        const embed = new EmbedBuilder()
-            .setColor(0x9B59B6)
+        const embed = EmbedService.createBaseEmbed(interaction)
             .setTitle('Правило удалено')
             .setDescription(`Правило Автомодерации с ID \`${ruleId}\` успешно удалено.`);
         await interaction.editReply({ embeds: [embed] }).catch(console.error);
     } catch (error) {
          console.error(`Ошибка при удалении правила Автомода ${ruleId}:`, error);
 
-         const embed = new EmbedBuilder()
-            .setColor(0x9B59B6)
+         const embed = EmbedService.createBaseEmbed(interaction)
             .setTitle('Ошибка удаления');
 
          if (error.code === 10048 || (error.rawError && error.rawError.code === 0 && error.status === 404)) {
@@ -573,8 +565,7 @@ async function handleListSubcommand(interaction) {
      const rules = await interaction.guild.autoModerationRules.fetch();
 
      if (rules.size === 0) {
-          const embed = new EmbedBuilder()
-             .setColor(0x9B59B6).setTitle('Список правил Автомодерации')
+          const embed = EmbedService.createBaseEmbed(interaction).setTitle('Список правил Автомодерации')
              .setDescription('На этом сервере нет правил Автомодерации.');
          await interaction.editReply({ embeds: [embed] }).catch(console.error);
          return;
@@ -616,8 +607,7 @@ async function handleListSubcommand(interaction) {
          };
      });
 
-     const embed = new EmbedBuilder()
-         .setColor(0x9B59B6).setTitle('Список правил Автомодерации на сервере')
+     const embed = EmbedService.createBaseEmbed(interaction).setTitle('Список правил Автомодерации на сервере')
           .setDescription(ruleFields.length > 0 ? 'Список всех активных правил:' : 'На этом сервере нет правил Автомодерации.')
          .addFields(ruleFields)
          .setFooter({ text: `Всего правил: ${rules.size}` });
@@ -641,8 +631,7 @@ async function handleClearAllSubcommand(interaction) {
                  .setStyle(ButtonStyle.Secondary),
          );
 
-      const confirmEmbed = new EmbedBuilder()
-          .setColor(0x9B59B6).setTitle('Запрос подтверждения')
+      const confirmEmbed = EmbedService.createBaseEmbed(interaction).setTitle('Запрос подтверждения')
           .setDescription('Внимание: Вы уверены, что хотите удалить ВСЕ правила нативного Автомода на этом сервере? Это действие нельзя отменить и затронет все правила, даже созданные вручную.');
 
      const reply = await interaction.reply({
@@ -683,8 +672,7 @@ async function handleClearAllSubcommand(interaction) {
                  }
              }
 
-              const successEmbed = new EmbedBuilder()
-                  .setColor(0x9B59B6).setTitle('Очистка завершена')
+              const successEmbed = EmbedService.createBaseEmbed(interaction).setTitle('Очистка завершена')
                   .setDescription(`Запрос на удаление ${rulesToDelete.size} правил отправлен.\nУспешно удалено ${deletedCount}.`);
 
           if (failedDeletes.length > 0) {
@@ -705,7 +693,7 @@ async function handleClearAllSubcommand(interaction) {
 
          } else {
              try {
-                  const cancelEmbed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Очистка отменена').setDescription('Отмена удаления правил.');
+                  const cancelEmbed = EmbedService.createBaseEmbed(interaction).setTitle('Очистка отменена').setDescription('Отмена удаления правил.');
                   await confirmation.update({ embeds: [cancelEmbed], components: [] });
              } catch (editError) {
                  if (editError.code === 10008) {
@@ -717,7 +705,7 @@ async function handleClearAllSubcommand(interaction) {
          }
      } catch (e) {
           console.error('Ошибка при ожидании или обработке клика подтверждения:', e);
-          const timeoutEmbed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Время истекло или ошибка').setDescription('Время ожидания подтверждения истекло или произошла ошибка.');
+          const timeoutEmbed = EmbedService.createBaseEmbed(interaction).setTitle('Время истекло или ошибка').setDescription('Время ожидания подтверждения истекло или произошла ошибка.');
           if (reply && !reply.deleted) {
               try {
                   await reply.edit({ embeds: [timeoutEmbed], components: [] });
@@ -754,8 +742,7 @@ async function handleViewSubcommand(interaction) {
            (rule.exemptChannels?.length || 0) > 0 ? `Каналы: ${rule.exemptChannels.map(id => `<#${id}>`).join(', ')}` : ''
       ].filter(Boolean).join('; ') || 'Нет';
 
-     const embed = new EmbedBuilder()
-         .setColor(0x9B59B6)
+     const embed = EmbedService.createBaseEmbed(interaction)
          .setTitle(`Правило Автомодерации: ${rule.name}`)
          .setDescription(`**ID:** \`${rule.id}\`\n**Статус:** ${rule.enabled ? 'Включено' : 'Отключено'}`)
          .addFields(
@@ -779,8 +766,7 @@ async function handleToggleSubcommand(interaction) {
      try {
          const updatedRule = await rule.edit({ enabled: newStatus });
 
-         const embed = new EmbedBuilder()
-              .setColor(0x9B59B6)
+         const embed = EmbedService.createBaseEmbed(interaction)
               .setTitle('Статус правила обновлен')
               .setDescription(`Статус правила "${updatedRule.name}" (ID: \`${updatedRule.id}\`) изменен на **${newStatus ? 'Включено' : 'Отключено'}**.`);
 
@@ -788,8 +774,7 @@ async function handleToggleSubcommand(interaction) {
 
      } catch (error) {
          console.error(`Ошибка при переключении статуса правила Автомода ${ruleId}:`, error);
-         const embed = new EmbedBuilder()
-            .setColor(0x9B59B6).setTitle('Ошибка API')
+         const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка API')
             .setDescription(`Произошла ошибка при переключении статуса правила: ${error.message}`);
          await interaction.editReply({ embeds: [embed] }).catch(console.error);
      }
@@ -845,7 +830,7 @@ async function handleExemptSubcommands(interaction, subcommandName) {
      }
 
      if (errorMessage) {
-          const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Ошибка/Предупреждение').setDescription(errorMessage);
+          const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка/Предупреждение').setDescription(errorMessage);
           await interaction.editReply({ embeds: [embed] }).catch(console.error);
           return;
      }
@@ -855,7 +840,7 @@ async function handleExemptSubcommands(interaction, subcommandName) {
 
 
      if (!rolesChanged && !channelsChanged) {
-         const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Нет изменений').setDescription('Списки исключений не изменились.');
+         const embed = EmbedService.createBaseEmbed(interaction).setTitle('Нет изменений').setDescription('Списки исключений не изменились.');
          await interaction.editReply({ embeds: [embed] }).catch(console.error);
          return;
      }
@@ -868,8 +853,7 @@ async function handleExemptSubcommands(interaction, subcommandName) {
 
          const updatedRule = await rule.edit(updateData);
 
-         const embed = new EmbedBuilder()
-             .setColor(0x9B59B6)
+         const embed = EmbedService.createBaseEmbed(interaction)
              .setTitle('Исключения правила обновлены')
              .setDescription(successMessage);
 
@@ -886,8 +870,7 @@ async function handleExemptSubcommands(interaction, subcommandName) {
 
      } catch (error) {
          console.error(`Ошибка API при обновлении исключений правила Автомода ${ruleId}:`, error);
-         const embed = new EmbedBuilder()
-            .setColor(0x9B59B6).setTitle('Ошибка API')
+         const embed = EmbedService.createBaseEmbed(interaction).setTitle('Ошибка API')
             .setDescription(`Произошла ошибка при обновлении исключений правила: ${error.message}`);
          await interaction.editReply({ embeds: [embed] }).catch(console.error);
      }

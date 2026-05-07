@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 const {
     joinVoiceChannel,
     createAudioPlayer,
@@ -134,12 +135,10 @@ module.exports = {
             }
         } else {
             serverQueue.songs.push(song);
-            const queueEmbed = new EmbedBuilder()
-                .setColor('#0099ff')
+            const queueEmbed = EmbedService.createBaseEmbed(interaction)
                 .setTitle('Трек добавлен в очередь')
                 .setDescription(`**${song.title}**`)
-                .addFields({ name: 'Запросил', value: song.requestedBy, inline: true })
-                .setTimestamp();
+                .addFields({ name: 'Запросил', value: song.requestedBy, inline: true });
             if (serverQueue.songs.length > 1) {
                  queueEmbed.addFields({ name: 'Позиция в очереди', value: (serverQueue.songs.length -1).toString() });
             }
@@ -200,14 +199,12 @@ async function playNextSong(guildId, client, interactionForFirstReply = null) {
     serverQueue.player.play(audioResource);
     serverQueue.playing = true;
 
-    const playingEmbed = new EmbedBuilder()
-        .setColor('#00FF00')
+    const playingEmbed = EmbedService.createBaseEmbed(interactionForFirstReply)
         .setTitle('Сейчас играет')
         .setDescription(`**[${songToPlay.title}](${songToPlay.url})**`)
         .addFields(
             { name: 'Запросил', value: songToPlay.requestedBy, inline: true }
-        )
-        .setTimestamp();
+        );
 
     const replyChannel = interactionForFirstReply ? interactionForFirstReply.channel : serverQueue.textChannel;
 

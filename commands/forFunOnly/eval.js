@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType, EmbedBuilder, ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType, ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 const { privateAccess, bot_log_channel } = require('../../config.json');
 const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
 /*const { default: axios } = require('axios');
@@ -85,8 +86,7 @@ module.exports = {
                     await interaction.reply({content: `Cтатус изменён. ${presence}, ${nameactivity}, ${activity}`, flags: MessageFlags.Ephemeral });
                 } catch (error) {
                     await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
@@ -113,8 +113,7 @@ module.exports = {
                     await interaction.editReply({content: `Аватар изменён`, flags: MessageFlags.Ephemeral});
                 } catch (error) {
                     await interaction.editReply({content: `Не удалось изменить аватар`, flags: MessageFlags.Ephemeral});
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
@@ -140,8 +139,7 @@ module.exports = {
                     await interaction.editReply({content: `Баннер изменён`, flags: MessageFlags.Ephemeral});
                 } catch (error) {
                     await interaction.editReply({content: `Не удалось изменить баннер`, flags: MessageFlags.Ephemeral});
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
@@ -167,9 +165,8 @@ module.exports = {
                       .setStyle(ButtonStyle.Link)
                   );
 
-                const embed = new EmbedBuilder()
+                const embed = EmbedService.createBaseEmbed(interaction)
                 .setTitle("Информация о текущем клиенте бота")
-                .setColor('Random')
                 .setDescription(
                     "`Сервера` - на каких серверах находится этот бот\n"+
                     "Здесь могла быть ваша реклама https://samiker.xyz"

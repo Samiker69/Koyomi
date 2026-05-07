@@ -11,6 +11,7 @@ const {
     ChannelType,
     ComponentType
 } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 const Settings = require('../../functions/db/settings');
 const { bot_log_channel } = require('../../config.json');
@@ -39,8 +40,7 @@ module.exports = {
             const valSupport = cfg.supportChannelId ? `<#${cfg.supportChannelId}>` : 'Не задан';
             const valReports = cfg.reportsModerationChannelId ? `<#${cfg.reportsModerationChannelId}>` : 'Не задан';
 
-            const settingsEmbed = new EmbedBuilder()
-                .setColor('#2b2d31')
+            const settingsEmbed = EmbedService.createBaseEmbed(interaction)
                 .setTitle(`Настройки сервера ${interaction.guild.name}`)
                 .setDescription('Используйте меню и кнопки ниже для изменения параметров.')
                 .addFields(
@@ -60,8 +60,7 @@ module.exports = {
                         inline: false 
                     }
                 )
-                .setFooter({ text: 'Настройки обновляются в реальном времени' })
-                .setTimestamp();
+                .setFooter({ text: 'Настройки обновляются в реальном времени' });
 
             const rowWelcome = new ActionRowBuilder().addComponents(
                 new ChannelSelectMenuBuilder()

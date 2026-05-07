@@ -7,6 +7,7 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 
 const activeGames = new Set();
 
@@ -35,10 +36,9 @@ module.exports = {
                 .setStyle(ButtonStyle.Danger)
         );
 
-        const embed = new EmbedBuilder()
+        const embed = EmbedService.createBaseEmbed(interaction)
             .setTitle('Угадай число')
             .setDescription(`Я загадал число от ${low} до ${high}. У вас ${timeLimit / 1000} секунд, чтобы угадать его.`)
-            .setColor(0x9B59B6)
             .setFooter({ text: 'Попыток: 0 | Игроков: 0' });
 
         await interaction.reply({ embeds: [embed], components: [cancelRow] });

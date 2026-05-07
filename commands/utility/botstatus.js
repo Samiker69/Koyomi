@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { version } = require('../../package.json')
+const { SlashCommandBuilder } = require('discord.js');
+const { version } = require('../../package.json');
+const EmbedService = require('../../services/EmbedService');
 
 module.exports = {
   cooldown: 10,
@@ -18,12 +19,11 @@ module.exports = {
     let minutes = Math.floor(uptimeall / 60);
     let seconds = Math.floor(uptimeall % 60);
 
-    const status = new EmbedBuilder()
+    const status = EmbedService.createBaseEmbed(interaction)
       .setAuthor({
         name: `${interaction.client.user.tag}`,
         iconURL: interaction.client.user.displayAvatarURL({ extension: 'png' })
       })
-      .setColor(0x9B59B6)
       .setTitle('Текущий статус бота')
       .setFields(
         { name: "Время обработки команды", value: `${sent.createdTimestamp - interaction.createdTimestamp}ms`, inline: true },
