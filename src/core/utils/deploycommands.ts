@@ -1,5 +1,4 @@
 import { Collection, REST, Routes } from 'discord.js';
-import type { BaseBot } from '../BaseBot';
 import type { ISlashCommand } from '../interfaces/command';
 
 export class CommandDeployer {

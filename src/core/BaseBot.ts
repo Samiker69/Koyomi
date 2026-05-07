@@ -2,7 +2,7 @@ import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import type { ISlashCommand } from './interfaces/command';
 
 export class BaseBot extends Client {
-    public commands: Collection<string, ISlashCommand>;
+    public override commands: Collection<string, ISlashCommand>;
 
     constructor() {
         super({
