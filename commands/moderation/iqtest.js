@@ -5,13 +5,13 @@ const localeManager = require('../../locales/localeManager');
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName(localeManager.get('moderation.iqtest.name', 'en-US'))
-        .setNameLocalizations(localeManager.getLocalizations('moderation.iqtest.name', 'name'))
+        .setName('iqtest')
+        .setNameLocalizations(localeManager.getLocalizations('moderation.iqtest.name'))
         .setDescription(localeManager.get('moderation.iqtest.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.iqtest.description'))
         .addUserOption(option => 
-            option.setName(localeManager.get('moderation.iqtest.options.target.name', 'en-US'))
-                .setNameLocalizations(localeManager.getLocalizations('moderation.iqtest.options.target.name', 'name'))
+            option.setName('target')
+                .setNameLocalizations(localeManager.getLocalizations('moderation.iqtest.options.target.name'))
                 .setDescription(localeManager.get('moderation.iqtest.options.target.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.iqtest.options.target.description'))
                 .setRequired(true)

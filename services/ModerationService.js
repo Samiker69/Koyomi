@@ -266,7 +266,7 @@ ModerationService.sendVerdict = async function(interaction, action, targetUser, 
             lang: interaction.guildLocale
         });
 
-        await channel.send({ embeds: [embed] });
+        await channel.send({ embeds: [embed], allowedMentions: { parse: [] } });
     } catch (err) {
         console.error('[ModerationService] sendVerdict error:', err.message);
     }

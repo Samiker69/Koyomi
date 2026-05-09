@@ -42,22 +42,22 @@ function roundRect(ctx, x, y, width, height, radius) {
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName(localeManager.get('forFunOnly.love.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.name', 'name'))
+        .setName('love')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.name'))
         .setDescription(localeManager.get('forFunOnly.love.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.description'))
         .addUserOption(opt =>
             opt
-            .setName(localeManager.get('forFunOnly.love.options.user1.name'))
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user1.name', 'name'))
+            .setName('user1')
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user1.name'))
             .setDescription(localeManager.get('forFunOnly.love.options.user1.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user1.description'))
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
-            .setName(localeManager.get('forFunOnly.love.options.user2.name'))
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user2.name', 'name'))
+            .setName('user2')
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user2.name'))
             .setDescription(localeManager.get('forFunOnly.love.options.user2.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user2.description'))
             .setRequired(true)

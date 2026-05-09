@@ -15,9 +15,9 @@ const activeGames = new Set();
 module.exports = {
     cooldown: 15,
     data: new SlashCommandBuilder()
-        .setName(localeManager.get('minigame.guessthenumber.name'))
+        .setName('guessthenumber')
         .setNameLocalizations(localeManager.getLocalizations('minigame.guessthenumber.name', 'name'))
-        .setDescription(localeManager.get('minigame.guessthenumber.description'))
+        .setDescription('Guess the number game')
         .setDescriptionLocalizations(localeManager.getLocalizations('minigame.guessthenumber.description')),
 
     async execute(interaction) {

@@ -18,58 +18,58 @@ async function getActionGif(query) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.get('forFunOnly.action.name'))
-    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.name', 'name'))
-    .setDescription(localeManager.get('forFunOnly.action.description'))
+    .setName('action')
+    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.name'))
+    .setDescription(localeManager.get('forFunOnly.action.description', 'en-US'))
     .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.description'))
     .addSubcommand(sub =>
-      sub.setName(localeManager.get('forFunOnly.action.options.hug.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.name', 'name'))
-        .setDescription(localeManager.get('forFunOnly.action.options.hug.description'))
+      sub.setName('hug')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.name'))
+        .setDescription(localeManager.get('forFunOnly.action.options.hug.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.get('forFunOnly.action.options.hug.options.user.name'))
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.options.user.name', 'name'))
-            .setDescription(localeManager.get('forFunOnly.action.options.hug.options.user.description'))
+          opt.setName('user')
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.options.user.name'))
+            .setDescription(localeManager.get('forFunOnly.action.options.hug.options.user.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.options.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.get('forFunOnly.action.options.slap.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.name', 'name'))
-        .setDescription(localeManager.get('forFunOnly.action.options.slap.description'))
+      sub.setName('slap')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.name'))
+        .setDescription(localeManager.get('forFunOnly.action.options.slap.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.get('forFunOnly.action.options.slap.options.user.name'))
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.options.user.name', 'name'))
-            .setDescription(localeManager.get('forFunOnly.action.options.slap.options.user.description'))
+          opt.setName('user')
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.options.user.name'))
+            .setDescription(localeManager.get('forFunOnly.action.options.slap.options.user.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.options.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.get('forFunOnly.action.options.pat.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.name', 'name'))
-        .setDescription(localeManager.get('forFunOnly.action.options.pat.description'))
+      sub.setName('pat')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.name'))
+        .setDescription(localeManager.get('forFunOnly.action.options.pat.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.get('forFunOnly.action.options.pat.options.user.name'))
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.options.user.name', 'name'))
-            .setDescription(localeManager.get('forFunOnly.action.options.pat.options.user.description'))
+          opt.setName('user')
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.options.user.name'))
+            .setDescription(localeManager.get('forFunOnly.action.options.pat.options.user.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.options.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-      sub.setName(localeManager.get('forFunOnly.action.options.kiss.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.name', 'name'))
-        .setDescription(localeManager.get('forFunOnly.action.options.kiss.description'))
+      sub.setName('kiss')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.name'))
+        .setDescription(localeManager.get('forFunOnly.action.options.kiss.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.description'))
         .addUserOption(opt =>
-          opt.setName(localeManager.get('forFunOnly.action.options.kiss.options.user.name'))
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.options.user.name', 'name'))
-            .setDescription(localeManager.get('forFunOnly.action.options.kiss.options.user.description'))
+          opt.setName('user')
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.options.user.name'))
+            .setDescription(localeManager.get('forFunOnly.action.options.kiss.options.user.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.options.user.description'))
             .setRequired(true)
         )
@@ -78,7 +78,7 @@ module.exports = {
   async execute(interaction) {
     const lang = interaction.guildLocale || 'ru';
     const sub = interaction.options.getSubcommand();
-    const target = interaction.options.getUser(localeManager.get('forFunOnly.action.options.hug.options.user.name')); // All users are named same in options
+    const target = interaction.options.getUser('user');
     const author = interaction.user;
 
     if (target.id === author.id) {
@@ -93,22 +93,18 @@ module.exports = {
 
     switch (sub) {
       case 'hug':
-      case localeManager.get('forFunOnly.action.options.hug.name'):
         searchQuery = 'anime+hug';
         text = localeManager.get('forFunOnly.action.messages.hug_msg', lang, { author: author.toString(), target: target.toString() });
         break;
       case 'slap':
-      case localeManager.get('forFunOnly.action.options.slap.name'):
         searchQuery = 'anime+slap';
         text = localeManager.get('forFunOnly.action.messages.slap_msg', lang, { author: author.toString(), target: target.toString() });
         break;
       case 'pat':
-      case localeManager.get('forFunOnly.action.options.pat.name'):
         searchQuery = 'anime+pat';
         text = localeManager.get('forFunOnly.action.messages.pat_msg', lang, { author: author.toString(), target: target.toString() });
         break;
       case 'kiss':
-      case localeManager.get('forFunOnly.action.options.kiss.name'):
         searchQuery = 'anime+kiss';
         text = localeManager.get('forFunOnly.action.messages.kiss_msg', lang, { author: author.toString(), target: target.toString() });
         break;

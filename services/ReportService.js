@@ -166,7 +166,7 @@ class ReportService {
             .setTimestamp();
 
         try {
-            await reporterUser.send({ embeds: [dmEmbed] });
+            await reporterUser.send({ embeds: [dmEmbed], allowedMentions: { parse: [] } });
             return true;
         } catch (dmError) {
             console.error(`[ОШИБКА] Ошибка отправки DM пользователю ${reporterUser.tag}:`, dmError);
@@ -440,7 +440,8 @@ class ReportService {
 
             const sentReportMessage = await moderationChannel.send({
                 embeds: [reportEmbed],
-                components: placeholderComponents
+                components: placeholderComponents,
+                allowedMentions: { parse: [] }
             });
 
             const finalComponents = this._buildButtons(sentReportMessage.id, fetchedTargetUser ? fetchedTargetUser.id : null, false, lang);

@@ -6,24 +6,24 @@ const Sdb = new Settings();
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.get('utility.rolemenu.name'))
-    .setNameLocalizations(localeManager.getLocalizations('utility.rolemenu.name', 'name'))
+    .setName('rolemenu')
+    .setNameLocalizations(localeManager.getLocalizations('utility.rolemenu.name'))
     .setDescription(localeManager.get('utility.rolemenu.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.description'))
     .addSubcommand(sub => 
-      sub.setName(localeManager.get('utility.rolemenu.options.create.name'))
-        .setNameLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.name', 'name'))
+      sub.setName('create')
+        .setNameLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.name'))
         .setDescription(localeManager.get('utility.rolemenu.options.create.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.description'))
         .addStringOption(opt => 
-          opt.setName(localeManager.get('utility.rolemenu.options.create.options.title.name'))
-            .setNameLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.title.name', 'name'))
+          opt.setName('title')
+            .setNameLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.title.name'))
             .setDescription(localeManager.get('utility.rolemenu.options.create.options.title.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.title.description'))
             .setRequired(true))
         .addStringOption(opt => 
-          opt.setName(localeManager.get('utility.rolemenu.options.create.options.description.name'))
-            .setNameLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.description.name', 'name'))
+          opt.setName('description')
+            .setNameLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.description.name'))
             .setDescription(localeManager.get('utility.rolemenu.options.create.options.description.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.description.description'))
             .setRequired(true))

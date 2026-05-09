@@ -33,7 +33,7 @@ module.exports = {
             }))
             .setTimestamp()
             
-            await channel.send({ content: null, embeds: [embed] });
+            await channel.send({ content: null, embeds: [embed], allowedMentions: { parse: [] } });
         }
 
         if (data.allowInviteLogging === true) {
@@ -55,15 +55,21 @@ module.exports = {
             }
 
             if (inviteUsed) {
-                await logChannel.send(localeManager.get('events.member_add.invite_used', lang, {
-                    member: member.toString(),
-                    code: inviteUsed.code,
-                    uses: inviteUsed.uses
-                }));
+                await logChannel.send({
+                    content: localeManager.get('events.member_add.invite_used', lang, {
+                        member: member.toString(),
+                        code: inviteUsed.code,
+                        uses: inviteUsed.uses
+                    }),
+                    allowedMentions: { parse: [] }
+                });
             } else {
-                await logChannel.send(localeManager.get('events.member_add.invite_unknown', lang, {
-                    member: member.toString()
-                }));
+                await logChannel.send({
+                    content: localeManager.get('events.member_add.invite_unknown', lang, {
+                        member: member.toString()
+                    }),
+                    allowedMentions: { parse: [] }
+                });
             }
         }
     },

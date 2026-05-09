@@ -5,15 +5,15 @@ const localeManager = require('../../locales/localeManager');
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
-        .setName(localeManager.get('moderation.report.name'))
-        .setNameLocalizations(localeManager.getLocalizations('moderation.report.name', 'name'))
-        .setDescription(localeManager.get('moderation.report.description'))
+        .setName('report')
+        .setNameLocalizations(localeManager.getLocalizations('moderation.report.name'))
+        .setDescription(localeManager.get('moderation.report.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.report.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addStringOption(option =>
-            option.setName(localeManager.get('moderation.report.options.faq_link.name'))
-                .setNameLocalizations(localeManager.getLocalizations('moderation.report.options.faq_link.name', 'name'))
-                .setDescription(localeManager.get('moderation.report.options.faq_link.description'))
+            option.setName('faq_link')
+                .setNameLocalizations(localeManager.getLocalizations('moderation.report.options.faq_link.name'))
+                .setDescription(localeManager.get('moderation.report.options.faq_link.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.report.options.faq_link.description'))
                 .setRequired(false)),
 

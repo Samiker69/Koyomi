@@ -19,8 +19,8 @@ const Sdb = new Settings();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.get('utility.settings.name'))
-        .setNameLocalizations(localeManager.getLocalizations('utility.settings.name', 'name'))
+        .setName('settings')
+        .setNameLocalizations(localeManager.getLocalizations('utility.settings.name'))
         .setDescription(localeManager.get('utility.settings.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.settings.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),

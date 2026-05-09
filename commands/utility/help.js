@@ -58,7 +58,7 @@ function getCommandsByCategory(client) {
           if (file === 'help.js' && folder === 'utility') continue; 
 
           const commandName = path.basename(file, '.js');
-          let command = client.commands.get(commandName);
+          let command = client.commands.get(commandName) || Array.from(client.commands.values()).find(c => c.data.name === commandName);
 
           if (!command) {
               try {
@@ -87,8 +87,8 @@ function getCommandsByCategory(client) {
 module.exports = {
   cooldown: 10,
   data: new SlashCommandBuilder()
-      .setName(localeManager.get('utility.help.name'))
-      .setNameLocalizations(localeManager.getLocalizations('utility.help.name', 'name'))
+      .setName('help')
+      .setNameLocalizations(localeManager.getLocalizations('utility.help.name'))
       .setDescription(localeManager.get('utility.help.description'))
       .setDescriptionLocalizations(localeManager.getLocalizations('utility.help.description')),
 

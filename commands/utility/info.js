@@ -5,20 +5,20 @@ const localeManager = require('../../locales/localeManager');
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName(localeManager.get('utility.info.name'))
-    .setNameLocalizations(localeManager.getLocalizations('utility.info.name', 'name'))
+    .setName('info')
+    .setNameLocalizations(localeManager.getLocalizations('utility.info.name'))
     .setDescription(localeManager.get('utility.info.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('utility.info.description'))
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.get('utility.info.options.userinfo.name'))
-        .setNameLocalizations(localeManager.getLocalizations('utility.info.options.userinfo.name', 'name'))
+        .setName('userinfo')
+        .setNameLocalizations(localeManager.getLocalizations('utility.info.options.userinfo.name'))
         .setDescription(localeManager.get('utility.info.options.userinfo.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.info.options.userinfo.description'))
         .addUserOption(opt =>
           opt
-            .setName(localeManager.get('utility.info.options.userinfo.options.target.name'))
-            .setNameLocalizations(localeManager.getLocalizations('utility.info.options.userinfo.options.target.name', 'name'))
+            .setName('target')
+            .setNameLocalizations(localeManager.getLocalizations('utility.info.options.userinfo.options.target.name'))
             .setDescription(localeManager.get('utility.info.options.userinfo.options.target.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('utility.info.options.userinfo.options.target.description'))
             .setRequired(false)
@@ -26,8 +26,8 @@ module.exports = {
     )
     .addSubcommand(sub =>
       sub
-        .setName(localeManager.get('utility.info.options.serverinfo.name'))
-        .setNameLocalizations(localeManager.getLocalizations('utility.info.options.serverinfo.name', 'name'))
+        .setName('serverinfo')
+        .setNameLocalizations(localeManager.getLocalizations('utility.info.options.serverinfo.name'))
         .setDescription(localeManager.get('utility.info.options.serverinfo.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.info.options.serverinfo.description'))
     ),

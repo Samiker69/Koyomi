@@ -77,7 +77,7 @@ module.exports = {
             .setTitle(localeManager.get('events.interaction_log.title', lang))
             .addFields(
                 { name: localeManager.get('events.interaction_log.command_label', lang), value: `${interaction.commandName}`},
-                { name: localeManager.get('events.interaction_log.error_label', lang), value: `\`\`\`txt\n${error.message}\n${error.stack || ''}\`\`\`` }
+                { name: localeManager.get('events.interaction_log.error_label', lang), value: `\`\`\`txt\n${(error.stack || error.message).slice(0, 1000)}\n\`\`\`` }
             )
             .setTimestamp(new Date())
             

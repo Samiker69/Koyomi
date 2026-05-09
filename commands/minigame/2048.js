@@ -100,9 +100,9 @@ function isGameOver(board) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.get('minigame.2048.name'))
+        .setName('2048')
         .setNameLocalizations(localeManager.getLocalizations('minigame.2048.name', 'name'))
-        .setDescription(localeManager.get('minigame.2048.description'))
+        .setDescription('Play 2048 game')
         .setDescriptionLocalizations(localeManager.getLocalizations('minigame.2048.description')),
 
     async execute(interaction) {

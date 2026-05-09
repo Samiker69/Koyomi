@@ -5,14 +5,14 @@ const EmbedService = require('../../services/EmbedService');
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName(localeManager.get('forFunOnly.minecraft.name'))
-    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.name', 'name'))
+    .setName('minecraft')
+    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.name'))
     .setDescription(localeManager.get('forFunOnly.minecraft.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.description'))
     .addStringOption(opt =>
       opt
-        .setName(localeManager.get('forFunOnly.minecraft.options.player.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.options.player.name', 'name'))
+        .setName('player')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.options.player.name'))
         .setDescription(localeManager.get('forFunOnly.minecraft.options.player.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.options.player.description'))
         .setRequired(true)

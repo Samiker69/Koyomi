@@ -6,8 +6,8 @@ const localeManager = require('../../locales/localeManager');
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName(localeManager.get('utility.botstatus.name'))
-    .setNameLocalizations(localeManager.getLocalizations('utility.botstatus.name', 'name'))
+    .setName('botstatus')
+    .setNameLocalizations(localeManager.getLocalizations('utility.botstatus.name'))
     .setDescription(localeManager.get('utility.botstatus.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('utility.botstatus.description')),
     

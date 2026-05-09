@@ -32,7 +32,7 @@ const client = new Client({
 	],
 	partials: [Partials.Message, Partials.Reaction],
 	allowedMentions: { 
-		parse: ['users', 'roles'] 
+		parse: [] 
 	}
 });
 

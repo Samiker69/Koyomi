@@ -15,14 +15,14 @@ const activeGames = new Set();
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
-        .setName(localeManager.get('minigame.tictactoe.name'))
+        .setName('tictactoe')
         .setNameLocalizations(localeManager.getLocalizations('minigame.tictactoe.name', 'name'))
-        .setDescription(localeManager.get('minigame.tictactoe.description'))
+        .setDescription('Play Tic Tac Toe with someone')
         .setDescriptionLocalizations(localeManager.getLocalizations('minigame.tictactoe.description'))
         .addUserOption(opt =>
-            opt.setName(localeManager.get('minigame.tictactoe.options.opponent.name'))
+            opt.setName('opponent')
                 .setNameLocalizations(localeManager.getLocalizations('minigame.tictactoe.options.opponent.name', 'name'))
-                .setDescription(localeManager.get('minigame.tictactoe.options.opponent.description'))
+                .setDescription('Select an opponent')
                 .setDescriptionLocalizations(localeManager.getLocalizations('minigame.tictactoe.options.opponent.description'))
                 .setRequired(true)
         ),

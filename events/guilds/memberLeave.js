@@ -34,7 +34,7 @@ module.exports = {
             }))
             .setTimestamp()
             
-            await channel.send({ content: null, embeds: [embed] })
+            await channel.send({ content: null, embeds: [embed], allowedMentions: { parse: [] } })
         }
     },
 };

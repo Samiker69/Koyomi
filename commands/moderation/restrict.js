@@ -12,49 +12,49 @@ const db = new DisabledCommandsDB();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(localeManager.get('moderation.restrict.name'))
-        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.name', 'name'))
-        .setDescription(localeManager.get('moderation.restrict.description'))
+        .setName('restrict')
+        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.name'))
+        .setDescription(localeManager.get('moderation.restrict.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.get('moderation.restrict.options.set.name'))
-                .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.name', 'name'))
-                .setDescription(localeManager.get('moderation.restrict.options.set.description'))
+                .setName('set')
+                .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.name'))
+                .setDescription(localeManager.get('moderation.restrict.options.set.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.description'))
                 .addStringOption(option =>
-                    option.setName(localeManager.get('moderation.restrict.options.set.options.action.name'))
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.action.name', 'name'))
-                        .setDescription(localeManager.get('moderation.restrict.options.set.options.action.description'))
+                    option.setName('action')
+                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.action.name'))
+                        .setDescription(localeManager.get('moderation.restrict.options.set.options.action.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.action.description'))
                         .setRequired(true)
                         .addChoices(
-                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.disable'), value: 'disable' },
-                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.enable'), value: 'enable' },
+                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.disable', 'en-US'), name_localizations: localeManager.getLocalizations('moderation.restrict.options.set.options.action.choices.disable'), value: 'disable' },
+                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.enable', 'en-US'), name_localizations: localeManager.getLocalizations('moderation.restrict.options.set.options.action.choices.enable'), value: 'enable' },
                         ))
                 .addStringOption(option =>
-                    option.setName(localeManager.get('moderation.restrict.options.set.options.command.name'))
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.command.name', 'name'))
-                        .setDescription(localeManager.get('moderation.restrict.options.set.options.command.description'))
+                    option.setName('command')
+                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.command.name'))
+                        .setDescription(localeManager.get('moderation.restrict.options.set.options.command.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.command.description'))
                         .setRequired(true))
                 .addUserOption(option => 
-                    option.setName(localeManager.get('moderation.restrict.options.set.options.user.name'))
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.user.name', 'name'))
-                        .setDescription(localeManager.get('moderation.restrict.options.set.options.user.description'))
+                    option.setName('user')
+                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.user.name'))
+                        .setDescription(localeManager.get('moderation.restrict.options.set.options.user.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.user.description'))
                         .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
-                .setName(localeManager.get('moderation.restrict.options.list.name'))
-                .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.name', 'name'))
-                .setDescription(localeManager.get('moderation.restrict.options.list.description'))
+                .setName('list')
+                .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.name'))
+                .setDescription(localeManager.get('moderation.restrict.options.list.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.description'))
                  .addUserOption(option =>
-                    option.setName(localeManager.get('moderation.restrict.options.list.options.user.name'))
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.options.user.name', 'name'))
-                        .setDescription(localeManager.get('moderation.restrict.options.list.options.user.description'))
+                    option.setName('user')
+                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.options.user.name'))
+                        .setDescription(localeManager.get('moderation.restrict.options.list.options.user.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.options.user.description'))
                         .setRequired(false))),
 

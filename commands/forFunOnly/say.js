@@ -4,30 +4,30 @@ const localeManager = require('../../locales/localeManager');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.get('forFunOnly.say.name'))
-    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.name', 'name'))
+    .setName('say')
+    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.name'))
     .setDescription(localeManager.get('forFunOnly.say.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.say.description'))
     .addStringOption(opt =>
       opt
-        .setName(localeManager.get('forFunOnly.say.options.text.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.text.name', 'name'))
+        .setName('text')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.text.name'))
         .setDescription(localeManager.get('forFunOnly.say.options.text.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.say.options.text.description'))
         .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
-        .setName(localeManager.get('forFunOnly.say.options.image.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.image.name', 'name'))
+        .setName('image')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.image.name'))
         .setDescription(localeManager.get('forFunOnly.say.options.image.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.say.options.image.description'))
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
-        .setName(localeManager.get('forFunOnly.say.options.reply_to.name'))
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.reply_to.name', 'name'))
+        .setName('reply_to')
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.reply_to.name'))
         .setDescription(localeManager.get('forFunOnly.say.options.reply_to.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.say.options.reply_to.description'))
         .setRequired(false)
