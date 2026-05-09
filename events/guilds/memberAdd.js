@@ -8,7 +8,7 @@ module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
         const data = Sdb.getSettings(member.guild.id);
-        const lang = member.guild.preferredLocale || 'ru';
+        const lang = data.language || member.guild.preferredLocale || 'ru';
             
         const clientMe = member.guild.members.me;
         

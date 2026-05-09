@@ -265,7 +265,8 @@ module.exports = {
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.ban_done', lang)
+                    footerText: localeManager.get('moderation.moderation.messages.ban_done', lang),
+                    lang: lang
                 });
 
                 await interaction.reply({ embeds: [embed] });
@@ -298,7 +299,8 @@ module.exports = {
                     evidence,
                     color: EmbedService.BRAND_COLOR,
                     footerText: localeManager.get('moderation.moderation.messages.mute_done', lang),
-                    durationString: result.durationString
+                    durationString: result.durationString,
+                    lang: lang
                 });
 
                 await interaction.editReply({ embeds: [embed] });
@@ -327,7 +329,8 @@ module.exports = {
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.kick_done', lang)
+                    footerText: localeManager.get('moderation.moderation.messages.kick_done', lang),
+                    lang: lang
                 });
 
                 await interaction.reply({ embeds: [embed] });
@@ -356,7 +359,8 @@ module.exports = {
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.unmute_done', lang)
+                    footerText: localeManager.get('moderation.moderation.messages.unmute_done', lang),
+                    lang: lang
                 });
 
                 await interaction.reply({ embeds: [embed] });
@@ -385,7 +389,8 @@ module.exports = {
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.unban_done', lang)
+                    footerText: localeManager.get('moderation.moderation.messages.unban_done', lang),
+                    lang: lang
                 });
 
                 await interaction.reply({ embeds: [embed] });
@@ -416,7 +421,8 @@ module.exports = {
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.warn_done', lang)
+                    footerText: localeManager.get('moderation.moderation.messages.warn_done', lang),
+                    lang: lang
                 });
 
                 await interaction.editReply({ embeds: [embed] });
@@ -448,7 +454,8 @@ module.exports = {
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.unwarn_done', lang)
+                    footerText: localeManager.get('moderation.moderation.messages.unwarn_done', lang),
+                    lang: lang
                 });
 
                 await interaction.editReply({ embeds: [embed] });

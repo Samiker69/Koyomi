@@ -1245,6 +1245,89 @@ const forFunOnly = {
         "uk": "Не вдалося надіслати повідомлення."
       }
     }
+  },
+  "action": {
+    "name": { "en-US": "action", "ru": "действие", "uk": "дія" },
+    "description": { "en-US": "Anime-style actions with users", "ru": "Различные действия с пользователями в аниме стиле.", "uk": "Різні дії з користувачами в аніме стилі." },
+    "options": {
+      "hug": {
+        "name": { "en-US": "hug", "ru": "обнять", "uk": "обійняти" },
+        "description": { "en-US": "Hug a user", "ru": "Обнять пользователя.", "uk": "Обійняти користувача." },
+        "options": {
+          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "Who to hug?", "ru": "Кого обнять?", "uk": "Кого обійняти?" } }
+        }
+      },
+      "slap": {
+        "name": { "en-US": "slap", "ru": "ударить", "uk": "вдарити" },
+        "description": { "en-US": "Slap a user", "ru": "Ударить пользователя пощёчиной.", "uk": "Вдарити користувача ляпасом." },
+        "options": {
+          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "Who to slap?", "ru": "Кого ударить?", "uk": "Кого вдарити?" } }
+        }
+      },
+      "pat": {
+        "name": { "en-US": "pat", "ru": "погладить", "uk": "погладити" },
+        "description": { "en-US": "Pat a user", "ru": "Погладить пользователя.", "uk": "Погладити користувача." },
+        "options": {
+          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "Who to pat?", "ru": "Кого погладить?", "uk": "Кого погладити?" } }
+        }
+      },
+      "kiss": {
+        "name": { "en-US": "kiss", "ru": "поцеловать", "uk": "поцілувати" },
+        "description": { "en-US": "Kiss a user", "ru": "Поцеловать пользователя.", "uk": "Поцілувати користувача." },
+        "options": {
+          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "Who to kiss?", "ru": "Кого поцеловать?", "uk": "Кого поцілувати?" } }
+        }
+      }
+    },
+    "messages": {
+      "self_action_error": { "en-US": "You can't do this to yourself!", "ru": "Ты не можешь сделать это с самим собой!", "uk": "Ти не можеш зробити це з самим собою!" },
+      "hug_msg": { "en-US": "{author} hugs {target}! 🫂", "ru": "{author} обнимает {target}! 🫂", "uk": "{author} обіймає {target}! 🫂" },
+      "slap_msg": { "en-US": "{author} slaps {target}! 👋", "ru": "{author} даёт пощёчину {target}! 👋", "uk": "{author} дає ляпас {target}! 👋" },
+      "pat_msg": { "en-US": "{author} pats {target}! 🐾", "ru": "{author} гладит {target}! 🐾", "uk": "{author} гладить {target}! 🐾" },
+      "kiss_msg": { "en-US": "{author} kisses {target}! 💋", "ru": "{author} целует {target}! 💋", "uk": "{author} цілує {target}! 💋" },
+      "gif_error": { "en-US": "Failed to find a suitable GIF, try again later!", "ru": "Не удалось найти подходящую гифку, попробуй позже!", "uk": "Не вдалося знайти підходящу гіфку, спробуй пізніше!" }
+    }
+  },
+  "captcha": {
+    "name": { "en-US": "captcha", "ru": "капча", "uk": "капча" },
+    "description": { "en-US": "Generate a captcha image", "ru": "Создать капчу", "uk": "Створити капчу" },
+    "messages": {
+      "error": { "en-US": "Failed to generate captcha.", "ru": "Не удалось создать капчу.", "uk": "Не вдалося створити капчу." },
+      "solve_everyone": { "en-US": "Everyone solve the captcha!", "ru": "Всем решать капчу!", "uk": "Всім вирішувати капчу!" }
+    }
+  },
+  "eval": {
+    "name": { "en-US": "eval", "ru": "евал", "uk": "евал" },
+    "description": { "en-US": "Execute JavaScript code (Owner only)", "ru": "Выполнить JavaScript код (Только для владельца)", "uk": "Виконати JavaScript код (Тільки для власника)" },
+    "options": {
+      "code": {
+        "name": { "en-US": "code", "ru": "код", "uk": "код" },
+        "description": { "en-US": "Code to execute", "ru": "Код для выполнения", "uk": "Код для виконання" }
+      },
+      "ephemeral": {
+        "name": { "en-US": "ephemeral", "ru": "эфемерально", "uk": "ефемерально" },
+        "description": { "en-US": "Hide response?", "ru": "Скрыть ответ?", "uk": "Приховати відповідь?" }
+      }
+    },
+    "messages": {
+      "no_perms": { "en-US": "You are not allowed to use this command.", "ru": "Вам не разрешено использовать эту команду.", "uk": "Вам не дозволено використовувати цю команду." },
+      "input": { "en-US": "Input", "ru": "Вход", "uk": "Вхід" },
+      "output": { "en-US": "Output", "ru": "Выход", "uk": "Вихід" },
+      "type": { "en-US": "Type", "ru": "Тип", "uk": "Тип" },
+      "time": { "en-US": "Time", "ru": "Время", "uk": "Час" },
+      "buttons": {
+        "delete": { "en-US": "Delete", "ru": "Удалить", "uk": "Видалити" },
+        "cleanup": { "en-US": "Cleanup", "ru": "Очистить", "uk": "Очистити" },
+        "guilds": { "en-US": "Servers", "ru": "Сервера", "uk": "Сервери" },
+        "back": { "en-US": "Back", "ru": "Назад", "uk": "Назад" }
+      },
+      "botinfo_title": { "en-US": "Current Bot Client Information", "ru": "Информация о текущем клиенте бота", "uk": "Інформація про поточний клієнт бота" },
+      "botinfo_description": { "en-US": "`Servers` - which servers this bot is on\nYour ad could be here: https://samiker.xyz", "ru": "`Сервера` - на каких серверах находится этот бот\nЗдесь могла быть ваша реклама https://samiker.xyz", "uk": "`Сервери` - на яких серверах знаходиться цей бот\nТут могла бути ваша реклама https://samiker.xyz" },
+      "guilds_title": { "en-US": "Servers the bot is on", "ru": "Сервера, на которых находится бот", "uk": "Сервери, на яких знаходиться бот" },
+      "guilds_header": { "en-US": "Name(ID). Is owner: bool", "ru": "Название(айди). Является владельцем: bool", "uk": "Назва(айді). Є власником: bool" },
+      "guild_owner_label": { "en-US": "Bot is owner: ", "ru": "Бот является владельцем: ", "uk": "Бот є власником: " },
+      "unknown_sub": { "en-US": "It seems this sub-command does not exist", "ru": "Кажется, такой саб-команды не существует", "uk": "Здається, такої саб-команди не існує" }
+    }
   }
 }
 

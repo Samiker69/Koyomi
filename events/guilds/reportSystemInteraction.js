@@ -4,6 +4,18 @@ const ReportService = require('../../services/ReportService');
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+        if (interaction.guild) {
+            const Settings = require('../../functions/db/settings');
+            const sdb = new Settings();
+            const guildSettings = sdb.getSettings(interaction.guildId);
+            if (guildSettings && guildSettings.language) {
+                Object.defineProperty(interaction, 'guildLocale', {
+                    get: () => guildSettings.language,
+                    configurable: true
+                });
+            }
+        }
+        
         if (!interaction.isButton() && !interaction.isModalSubmit() && !interaction.isMessageContextMenuCommand()) {
             return;
         }

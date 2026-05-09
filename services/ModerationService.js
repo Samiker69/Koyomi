@@ -16,7 +16,7 @@ class ModerationService {
         const member = check.member;
 
         try {
-            await member.ban({ reason: reason + ` | by ${interaction.user.username}(${interaction.user.id})` });
+            await member.ban({ reason: reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }) });
             
             await db.addModCase({
                 serverId: interaction.guild.id,
@@ -87,7 +87,7 @@ class ModerationService {
         const { durationMs, durationString } = parsedTime;
 
         try {
-            await check.member.timeout(durationMs, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
+            await check.member.timeout(durationMs, reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }));
             await db.addModCase({
                 serverId: interaction.guild.id,
                 targetId: targetUser.id,
@@ -111,7 +111,7 @@ class ModerationService {
         if (!check.allowed) return { success: false, error: localeManager.get(check.reasonKey, interaction.guildLocale) };
 
         try {
-            await check.member.kick(reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
+            await check.member.kick(reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }));
             await db.addModCase({
                 serverId: interaction.guild.id,
                 targetId: targetUser.id,
@@ -134,7 +134,7 @@ class ModerationService {
         if (!check.allowed) return { success: false, error: localeManager.get(check.reasonKey, interaction.guildLocale) };
 
         try {
-            await check.member.timeout(null, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
+            await check.member.timeout(null, reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }));
             await db.addModCase({
                 serverId: interaction.guild.id,
                 targetId: targetUser.id,
@@ -154,7 +154,7 @@ class ModerationService {
 
     static async unbanUser(interaction, userId, reason) {
         try {
-            await interaction.guild.members.unban(userId, reason + ` | by ${interaction.user.username}(${interaction.user.id})`);
+            await interaction.guild.members.unban(userId, reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }));
             await db.addModCase({
                 serverId: interaction.guild.id,
                 targetId: userId,
@@ -262,7 +262,8 @@ ModerationService.sendVerdict = async function(interaction, action, targetUser, 
             moderatorId: interaction.user.id,
             reason,
             durationString,
-            timestamp: caseData?.timestamp
+            timestamp: caseData?.timestamp,
+            lang: interaction.guildLocale
         });
 
         await channel.send({ embeds: [embed] });

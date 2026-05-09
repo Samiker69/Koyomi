@@ -405,6 +405,7 @@ const moderation = {
       "error_kick": { "ru": "Произошла непредвиденная ошибка при попытке кикнуть пользователя.", "en-US": "Unexpected error occurred while trying to kick user.", "uk": "Сталася непередбачена помилка при спробі кикнути користувача." },
       "error_unmute": { "ru": "Произошла непредвиденная ошибка при попытке размутить пользователя.", "en-US": "Unexpected error occurred while trying to unmute user.", "uk": "Сталася непередбачена помилка при спробі розглушити користувача." },
       "not_banned": { "ru": "Участник не забанен", "en-US": "Member is not banned", "uk": "Учасник не забанений" },
+      "by_moderator": { "en-US": " | by {user}", "ru": " | модератор {user}", "uk": " | модератор {user}" },
       "error_unban": { "ru": "Не удалось разбанить участника", "en-US": "Could not unban member", "uk": "Не вдалося разбанити участника" },
       "error_warn": { "ru": "Не удалось выдать предупреждение участнику.", "en-US": "Could not issue warning to member.", "uk": "Не вдалося видати попередження учаснику." },
       "case_not_found": { "ru": "Не удалось найти кейс. Проверьте, что вы указали действительный номер кейса.", "en-US": "Case not found. Check if the case number is valid.", "uk": "Не вдалося знайти кейс. Перевірте, чи ви вказали дійсний номер кейсу." },

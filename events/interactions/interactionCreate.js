@@ -3,7 +3,9 @@ const { bot_log_channel } = require('../../config.json')
 const localeManager = require('../../locales/localeManager');
 
 const DisabledCommandsDB = require('../../functions/db/restrictions');
+const SettingsDB = require('../../functions/db/settings');
 const db = new DisabledCommandsDB();
+const sdb = new SettingsDB();
 
 
 module.exports = {
@@ -13,7 +15,16 @@ module.exports = {
             return;
         }
 
-        const lang = interaction.guildLocale || 'ru';
+        const settings = interaction.guild ? (sdb.getSettings(interaction.guild.id) || {}) : {};
+        const preferredLang = settings.language || interaction.guildLocale || 'ru';
+        
+        // Переопределяем guildLocale, чтобы все команды использовали выбранный язык
+        Object.defineProperty(interaction, 'guildLocale', {
+            get: () => preferredLang,
+            configurable: true
+        });
+
+        const lang = preferredLang;
         const command = interaction.client.commands.get(interaction.commandName);
 
         if (!command) {

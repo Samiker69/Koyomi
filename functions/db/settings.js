@@ -19,7 +19,8 @@ const VALID_SETTINGS = [
     'honeypotLogChannelId',
     'honeypotEnabled',
     // Verdict log
-    'verdictChannelId'
+    'verdictChannelId',
+    'language'
 ];
 const BOOLEAN_SETTINGS = ['allowInviteLogging', 'allowLogingMembersAdd', 'honeypotEnabled'];
 
@@ -63,7 +64,8 @@ class SettingsDatabase {
                 mainVoiceChannelId TEXT DEFAULT '',
                 voiceCategoryId TEXT DEFAULT '',
                 supportChannelId TEXT DEFAULT '',
-                prefix TEXT DEFAULT '..'
+                prefix TEXT DEFAULT '..',
+                language TEXT DEFAULT 'ru'
                 -- reportsModerationChannelId будет добавлен методом _addMissingColumns
             );
         `;
@@ -102,6 +104,9 @@ class SettingsDatabase {
 
         if (!existingColumns.includes('verdictChannelId'))
             this.db.exec("ALTER TABLE guild_settings ADD COLUMN verdictChannelId TEXT DEFAULT '';");
+
+        if (!existingColumns.includes('language'))
+            this.db.exec("ALTER TABLE guild_settings ADD COLUMN language TEXT DEFAULT 'ru';");
     }
 
     /**

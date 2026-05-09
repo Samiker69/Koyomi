@@ -286,7 +286,15 @@ const utility = {
         "name": { "en-US": "contentfilterlevel", "ru": "фильтрконтента", "uk": "фільтрконтенту" },
         "description": { "en-US": "Change Content Filter", "ru": "Сменить уровень фильтрации", "uk": "Змінити рівень фільтрації" },
         "options": {
-          "value": { "name": { "en-US": "value", "ru": "значение", "uk": "значення" }, "description": { "en-US": "Level", "ru": "Уровень", "uk": "Рівень" } }
+          "value": { 
+            "name": { "en-US": "value", "ru": "значение", "uk": "значення" }, 
+            "description": { "en-US": "Level", "ru": "Уровень", "uk": "Рівень" },
+            "choices": {
+              "disabled": { "en-US": "Disabled", "ru": "Отключено", "uk": "Вимкнено" },
+              "members_without_roles": { "en-US": "Members without roles", "ru": "Участники без ролей", "uk": "Учасники без ролей" },
+              "all_members": { "en-US": "All members", "ru": "Все участники", "uk": "Всі учасники" }
+            }
+          }
         }
       },
       "name": {
@@ -378,16 +386,38 @@ const utility = {
       "placeholder_welcome": { "ru": "Выбрать канал приветствий", "en-US": "Select welcome channel", "uk": "Обрати канал привітань" },
       "placeholder_voice": { "ru": "Выбрать канал \"Создать комнату\"", "en-US": "Select \"Create Room\" channel", "uk": "Обрати канал \"Створити кімнату\"" },
       "placeholder_extra": { "ru": "Дополнительные настройки каналов...", "en-US": "Extra channel settings...", "uk": "Додаткові налаштування каналів..." },
-      "act_cat": { "label": "Задать категорию войсов", "description": "Где будут создаваться личные комнаты" },
-      "act_cat_en": { "label": "Set voice category", "description": "Where private rooms will be created" },
-      "act_cat_uk": { "label": "Встановити категорію войсів", "description": "Де будуть створюватися особисті кімнати" },
-      "act_log": { "label": "Задать канал логов", "description": "Куда писать о приглашениях" },
-      "act_sup": { "label": "Задать канал поддержки", "description": "Куда приходят тикеты" },
-      "act_rep": { "label": "Задать канал жалоб", "description": "Куда приходят репорты" },
-      "act_verdict": { "label": "Задать канал наказаний (Verdict)", "description": "Лог банов, мютов, киков и т.д." },
-      "act_honeypot": { "label": "Honeypot: задать канал-ловушку", "description": "Сообщения в этот канал → мгновенный бан" },
-      "act_honeypot_log": { "label": "Honeypot: задать лог-канал", "description": "Куда отправлять уведомления о срабатывании" },
-      "act_reset": { "label": "СБРОСИТЬ ВСЁ", "description": "Удалить все настройки (Опасно!)" },
+      "act_cat": { 
+        "label": { "ru": "Задать категорию войсов", "en-US": "Set voice category", "uk": "Встановити категорію войсів" },
+        "description": { "ru": "Где будут создаваться личные комнаты", "en-US": "Where private rooms will be created", "uk": "Де будуть створюватися особисті кімнати" }
+      },
+      "act_log": { 
+        "label": { "ru": "Задать канал логов", "en-US": "Set log channel", "uk": "Задати канал логів" },
+        "description": { "ru": "Куда писать о приглашениях", "en-US": "Where to log invites", "uk": "Куди писати про запрошення" }
+      },
+      "act_sup": { 
+        "label": { "ru": "Задать канал поддержки", "en-US": "Set support channel", "uk": "Задати канал підтримки" },
+        "description": { "ru": "Куда приходят тикеты", "en-US": "Where tickets arrive", "uk": "Куди приходять тікети" }
+      },
+      "act_rep": { 
+        "label": { "ru": "Задать канал жалоб", "en-US": "Set reports channel", "uk": "Задати канал скарг" },
+        "description": { "ru": "Куда приходят репорты", "en-US": "Where reports arrive", "uk": "Куди приходять репорти" }
+      },
+      "act_verdict": { 
+        "label": { "ru": "Задать канал наказаний (Verdict)", "en-US": "Set verdict channel", "uk": "Задати канал покарань (Verdict)" },
+        "description": { "ru": "Лог банов, мютов, киков и т.д.", "en-US": "Log of bans, mutes, kicks, etc.", "uk": "Лог банів, мютів, кіків і т.д." }
+      },
+      "act_honeypot": { 
+        "label": { "ru": "Honeypot: задать канал-ловушку", "en-US": "Honeypot: set trap channel", "uk": "Honeypot: задати канал-пастку" },
+        "description": { "ru": "Сообщения в этот канал → мгновенный бан", "en-US": "Messages in this channel → instant ban", "uk": "Повідомлення в цей канал → миттєвий бан" }
+      },
+      "act_honeypot_log": { 
+        "label": { "ru": "Honeypot: задать лог-канал", "en-US": "Honeypot: set log channel", "uk": "Honeypot: задати лог-канал" },
+        "description": { "ru": "Куда отправлять уведомления о срабатывании", "en-US": "Where to send trigger notifications", "uk": "Куди надсилати сповіщення про спрацювання" }
+      },
+      "act_reset": { 
+        "label": { "ru": "СБРОСИТЬ ВСЁ", "en-US": "RESET ALL", "uk": "СКИНУТИ ВСЕ" },
+        "description": { "ru": "Удалить все настройки (Опасно!)", "en-US": "Delete all settings (Dangerous!)", "uk": "Видалити всі налаштування (Небезпечно!)" }
+      },
       "toggle_invites": { "ru": "Лог ссылок: {state}", "en-US": "Invite log: {state}", "uk": "Лог посилань: {state}" },
       "toggle_members": { "ru": "Лог входа: {state}", "en-US": "Join log: {state}", "uk": "Лог входу: {state}" },
       "toggle_honeypot": { "ru": "Honeypot: {state}", "en-US": "Honeypot: {state}", "uk": "Honeypot: {state}" },
@@ -451,6 +481,46 @@ const utility = {
           "type": { "name": { "en-US": "type", "ru": "тип", "uk": "тип" }, "description": { "en-US": "Buttons or Select Menu", "ru": "Кнопки или выпадающее меню", "uk": "Кнопки або випадаюче меню" } }
         }
       }
+    }
+  },
+  "log_parse": {
+    "title": { "en-US": "Minecraft Log Information", "ru": "Информация о логе Minecraft", "uk": "Інформація про лог Minecraft" },
+    "system_info": { "en-US": "System Information", "ru": "Информация о системе", "uk": "Інформація про систему" },
+    "crash_desc": { "en-US": "Crash Description", "ru": "Описание краша", "uk": "Опис краша" },
+    "exception": { "en-US": "Exception", "ru": "Исключение", "uk": "Виняток" },
+    "reason": { "en-US": "Reason", "ru": "Причина", "uk": "Причина" },
+    "solutions": { "en-US": "Solutions", "ru": "Решения", "uk": "Рішення" },
+    "install_mod": { "en-US": "{counter}. Install this mod: [{mod}]({link})", "ru": "{counter}. Установите данный мод: [{mod}]({link})", "uk": "{counter}. Встановіть цей мод: [{mod}]({link})" },
+    "link_not_found": { "en-US": "link not found", "ru": "ссылка не найдена", "uk": "посилання не знайдено" },
+    "lwjgl_fix": { "en-US": "{counter}. Solution found: Insert argument `-Dsodium.checks.issue2561=false`", "ru": "{counter}. Найдено решение: Вставьте аргумент `-Dsodium.checks.issue2561=false`", "uk": "{counter}. Знайдено рішення: Вставте аргумент `-Dsodium.checks.issue2561=false`" },
+    "instruction_desc": { "en-US": "Instruction: attach `latestlog.txt`. Below is an image showing where to find it.", "ru": "Инструкция: прикрепите файл `latestlog.txt`. Ниже изображение, где его можно найти.", "uk": "Інструкція: прикріпіть файл `latestlog.txt`. Нижче зображення, де його можна знайти." },
+    "instruction_footer": { "en-US": "Attaching the file will help solve the problem faster.", "ru": "Прикрепление файла поможет быстрее решить проблему.", "uk": "Прикріплення файла допоможе швидше вирішити проблему." },
+    "instruction_content": { "en-US": "Please attach `latestlog.txt` to speed up solving your problem.", "ru": "Пожалуйста, прикрепите файл `latestlog.txt` для ускорения решения вашей проблемы.", "uk": "Будь ласка, прикріпіть файл `latestlog.txt` для прискорення вирішення вашої проблеми." },
+    "read_error": { "en-US": "Failed to read the log file. Please try sending it again.", "ru": "Не удалось прочитать файл лога. Попробуйте отправить его снова.", "uk": "Не вдалося прочитати файл логу. Спробуйте надіслати його знову." },
+    "collector_end": { "en-US": "Collector ended. If you want to send a log file, create a new thread.", "ru": "Коллектор завершил работу. Если хотите отправить лог-файл, создайте новый тред.", "uk": "Колектор завершив роботу. Якщо хочете надіслати лог-файл, створіть новий тред." },
+    "process_error": { "en-US": "An error occurred while analyzing the log. Please try again or contact an admin.", "ru": "Произошла ошибка при анализе лога. Пожалуйста, попробуйте еще раз или свяжитесь с администратором.", "uk": "Сталася помилка при аналізі логу. Будь ласка, спробуйте ще раз або зв'яжіться з адміністратором." },
+    "keys": {
+      "Launcher version": { "en-US": "Launcher version", "ru": "Версия лаунчера", "uk": "Версія лаунчера" },
+      "Architecture": { "en-US": "Architecture", "ru": "Архитектура", "uk": "Архітектура" },
+      "Device model": { "en-US": "Device model", "ru": "Модель устройства", "uk": "Модель пристрою" },
+      "API version": { "en-US": "API version", "ru": "Версия API", "uk": "Версія API" },
+      "Selected Minecraft version": { "en-US": "Minecraft version", "ru": "Версия Minecraft", "uk": "Версія Minecraft" },
+      "Custom Java arguments": { "en-US": "Java arguments", "ru": "Аргументы Java", "uk": "Аргументи Java" },
+      "RAM allocated": { "en-US": "RAM allocated", "ru": "Выделено RAM", "uk": "Виділено RAM" },
+      "Graphics device": { "en-US": "Graphics device", "ru": "Графическое устройство", "uk": "Графічний пристрій" },
+      "MOJO_RENDERER": { "en-US": "MOJO_RENDERER", "ru": "MOJO_RENDERER", "uk": "MOJO_RENDERER" },
+      "JAVA_HOME": { "en-US": "JAVA_HOME", "ru": "JAVA_HOME", "uk": "JAVA_HOME" }
+    },
+    "potential_solutions": {
+      "update_java": { "en-US": "Update Java. Failed to determine exact version.", "ru": "Обновите Java. Не удалось определить точную версию.", "uk": "Оновіть Java. Не вдалося визначити точну версію." },
+      "use_java": { "en-US": "Use Java {v}", "ru": "Используйте Java {v}", "uk": "Використовуйте Java {v}" },
+      "unknown_class_version": { "en-US": "Unknown class file version: {v}", "ru": "Неизвестная версия class file: {v}", "uk": "Невідома версія class file: {v}" },
+      "ely_by_error": { "en-US": "ely.by skin system is temporarily unavailable. Use another account type or wait.", "ru": "Система скинов ely.by временно недоступна. Используйте другой тип аккаунта либо подождите, пока всё не придёт в норму", "uk": "Система скінів ely.by тимчасово недоступна. Використовуйте інший тип акаунту або зачекайте, поки все не прийде в норму" },
+      "framebuffer_error": { "en-US": "Change renderer to LTW", "ru": "Смените визуализатор на LTW", "uk": "Змініть візуалізатор на LTW" },
+      "zink_error": { "en-US": "Change renderer from Zink to another one", "ru": "Смените визуализатор с Zink на другой", "uk": "Змініть візуалізатор з Zink на інший" },
+      "driver_problem": { "en-US": "Driver problem. For Adreno, try toggling Turnip in launcher settings. Otherwise, don't use shaders or change renderer.", "ru": "Не точно: проблема драйвера. В случае Adreno попробуйте включить/выключить использование Turnip в настройках графики лаунчера. В ином случае не используйте шейдеры или попробуйте сменить визуализатор.", "uk": "Не точно: проблема драйвера. У випадку Adreno спробуйте увімкнути/вимкнути використання Turnip у налаштуваннях графіки лаунчера. В іншому випадку не використовуйте шейдери або спробуйте змінити візуалізатор." },
+      "sodium_gl4es": { "en-US": "Change renderer to LTW", "ru": "Смените визуализатор на LTW", "uk": "Змініть візуализатор на LTW" },
+      "shader_compile_error": { "en-US": "Most likely: Shader compilation error. Occurs when resourcepacks/shaders use unsupported features. Also occurs with some mods like Create. No exact solution, don't play on trashy servers.", "ru": "Вероятнее всего: Ошибка компиляции шейдеров. Это может возникать при попытке ресурпака (включая серверного) или шейдера использовать неподдерживаемые функции вашего устройства. Это также может возникать при использовании некоторых модов, например, Create. Точного решения нет, не играйте на хламных серверах.", "uk": "Найімовірніше: Помилка компіляції шейдерів. Це може виникати при спробі ресурспаку (включаючи серверний) або шейдера використовувати непідтримувані функції вашого пристрою. Це також може виникати при використанні деяких модів, наприклад, Create. Точного рішення немає, не грайте на поганих серверах." }
     }
   }
 };

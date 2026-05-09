@@ -126,7 +126,8 @@ const data = new SlashCommandBuilder()
                     color: 0x808080,
                     footerText: localeManager.get('moderation.moderation.messages.action_done_template', lang, { action: actionLabel }) || `${actionLabel} выполнен`,
                     timestamp: caseObj.timestamp,
-                    moderatorUser: moderator?.user
+                    moderatorUser: moderator?.user,
+                    lang: lang
                 });
 
                 await interaction.reply({ embeds: [embed] });

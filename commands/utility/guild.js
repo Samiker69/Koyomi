@@ -61,9 +61,9 @@ const data = new SlashCommandBuilder()
                     .setDescription(localeManager.get('utility.guild.options.contentfilterlevel.options.value.description'))
                     .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.contentfilterlevel.options.value.description'))
                     .addChoices(
-                        { name: 'Disabled', value: '0' },
-                        { name: 'No role user', value: '1' },
-                        { name: 'All member', value: '2' },
+                        { name: localeManager.get('utility.guild.options.contentfilterlevel.options.value.choices.disabled'), value: '0' },
+                        { name: localeManager.get('utility.guild.options.contentfilterlevel.options.value.choices.no_role'), value: '1' },
+                        { name: localeManager.get('utility.guild.options.contentfilterlevel.options.value.choices.all'), value: '2' },
                     )
                     .setRequired(true)
             )

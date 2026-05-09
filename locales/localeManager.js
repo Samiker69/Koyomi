@@ -22,7 +22,6 @@ class LocaleManager {
                 const content = require(filePath);
                 const category = path.basename(file, '.js');
 
-                // ИСПРАВЛЕНИЕ: Проверяем, не обернуты ли данные в ключ с именем категории
                 if (content && typeof content === 'object' && content[category]) {
                     // Если внутри файла есть ключ 'moderation', берем данные из него
                     this.locales[category] = content[category];

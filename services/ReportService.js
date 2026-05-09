@@ -283,7 +283,7 @@ class ReportService {
             switch (actionType) {
                 case 'accept':
                     await interaction.deferUpdate();
-                    currentEmbed.setColor('Green').setFooter({ text: `Accepted by: ${interaction.user.tag}` });
+                    currentEmbed.setColor('Green').setFooter({ text: localeManager.get('services.report.accepted_by', lang, { user: interaction.user.tag }) });
                     this._updateStatus(currentEmbed, fields, localeManager.get('moderation.report.service.status.accepted', lang), lang);
                     replyContentForUser = localeManager.get('moderation.report.service.notifications.accepted_text', lang);
                     actionDescription = `**${timestamp}** | ${localeManager.get('moderation.report.service.actions.accepted', lang, { user: interaction.user.tag })}`;
@@ -303,7 +303,7 @@ class ReportService {
                     return;
                 case 'inProgress':
                     await interaction.deferUpdate();
-                    currentEmbed.setColor('Orange').setFooter({ text: `Under review by: ${interaction.user.tag}` });
+                    currentEmbed.setColor('Orange').setFooter({ text: localeManager.get('services.report.under_review_by', lang, { user: interaction.user.tag }) });
                     this._updateStatus(currentEmbed, fields, localeManager.get('moderation.report.service.status.in_progress', lang), lang);
                     replyContentForUser = localeManager.get('moderation.report.service.notifications.in_progress_text', lang);
                     actionDescription = `**${timestamp}** | ${localeManager.get('moderation.report.service.actions.in_progress', lang, { user: interaction.user.tag })}`;
@@ -323,7 +323,7 @@ class ReportService {
                     return;
                 case 'resolved':
                     await interaction.deferUpdate();
-                    currentEmbed.setColor('#7289DA').setFooter({ text: `Resolved by: ${interaction.user.tag}` });
+                    currentEmbed.setColor('#7289DA').setFooter({ text: localeManager.get('services.report.resolved_by', lang, { user: interaction.user.tag }) });
                     this._updateStatus(currentEmbed, fields, localeManager.get('moderation.report.service.status.resolved', lang), lang);
                     replyContentForUser = localeManager.get('moderation.report.service.notifications.resolved_text', lang);
                     actionDescription = `**${timestamp}** | ${localeManager.get('moderation.report.service.actions.resolved', lang, { user: interaction.user.tag })}`;
@@ -470,7 +470,7 @@ class ReportService {
             const targetId = targetField ? this.extractUserId(targetField.value) : null;
 
             this._updateStatus(currentEmbed, fields, localeManager.get('moderation.report.service.status.replied', lang), lang);
-            currentEmbed.setColor('Blue').setFooter({ text: `Replied by: ${interaction.user.tag}` });
+            currentEmbed.setColor('Blue').setFooter({ text: localeManager.get('services.report.replied_by', lang, { user: interaction.user.tag }) });
 
             const timestamp = `<t:${Math.floor(Date.now() / 1000)}:f>`;
             this._updateHistory(currentEmbed, fields, `**${timestamp}** | ${localeManager.get('moderation.report.service.actions.replied', lang, { user: interaction.user.tag })}`, lang);
@@ -515,7 +515,7 @@ class ReportService {
             const targetId = targetField ? this.extractUserId(targetField.value) : null;
 
             this._updateStatus(currentEmbed, fields, localeManager.get('moderation.report.service.status.declined', lang), lang);
-            currentEmbed.setColor('Red').setFooter({ text: `Declined by: ${interaction.user.tag}` });
+            currentEmbed.setColor('Red').setFooter({ text: localeManager.get('services.report.declined_by', lang, { user: interaction.user.tag }) });
 
             const timestamp = `<t:${Math.floor(Date.now() / 1000)}:f>`;
             this._updateHistory(currentEmbed, fields, `**${timestamp}** | ${localeManager.get('moderation.report.service.actions.declined', lang, { user: interaction.user.tag })}`, lang);

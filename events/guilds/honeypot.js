@@ -42,7 +42,7 @@ module.exports = {
         const logChannel = await guild.channels.fetch(cfg.honeypotLogChannelId).catch(() => null);
         if (!logChannel || !logChannel.isTextBased()) return;
 
-        const lang = guild.preferredLocale || 'ru';
+        const lang = cfg.language || guild.preferredLocale || 'ru';
         const logEmbed = EmbedService.createBaseEmbed()
             .setColor(0xFF4757)
             .setTitle(localeManager.get('events.honeypot.title', lang))

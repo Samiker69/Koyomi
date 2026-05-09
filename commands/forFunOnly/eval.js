@@ -169,7 +169,7 @@ module.exports = {
                 const row = new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
                       .setCustomId(`eval_botinfo_guilds`)
-                      .setLabel('Сервера')
+                      .setLabel(localeManager.get('forFunOnly.eval.messages.buttons.guilds', lang))
                       .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
                       .setLabel('ъ')
@@ -178,11 +178,8 @@ module.exports = {
                   );
 
                 const embed = EmbedService.createBaseEmbed(interaction)
-                .setTitle("Информация о текущем клиенте бота")
-                .setDescription(
-                    "`Сервера` - на каких серверах находится этот бот\n"+
-                    "Здесь могла быть ваша реклама https://samiker.xyz"
-                )
+                .setTitle(localeManager.get('forFunOnly.eval.messages.botinfo_title', lang))
+                .setDescription(localeManager.get('forFunOnly.eval.messages.botinfo_description', lang))
 
                 return await interaction.editReply({
                     embeds: [embed],
@@ -192,7 +189,7 @@ module.exports = {
             }
         
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({content: localeManager.get('forFunOnly.eval.messages.unknown_sub', lang), flags: MessageFlags.Ephemeral})
                 break;
         }
     }

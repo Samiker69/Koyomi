@@ -298,7 +298,7 @@ module.exports = {
                     flags: MessageFlags.Ephemeral 
                 });
                 await interaction.followUp({ 
-                    content: "Всем решать капчу!", 
+                    content: localeManager.get('forFunOnly.captcha.messages.solve_everyone', lang), 
                     files: [{
                         attachment: captcha.data,
                         name: 'captcha.png'

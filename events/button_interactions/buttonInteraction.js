@@ -25,7 +25,15 @@ module.exports = {
             return;
         }
 
-        const lang = interaction.guildLocale || 'ru';
+        const settings = interaction.guild ? (Sdb.getSettings(interaction.guild.id) || {}) : {};
+        const preferredLang = settings.language || interaction.guildLocale || 'ru';
+
+        Object.defineProperty(interaction, 'guildLocale', {
+            get: () => preferredLang,
+            configurable: true
+        });
+
+        const lang = preferredLang;
         const customId = interaction.customId;
         if (!customId.startsWith('role_button_') && customId !== 'no_roles_button' && customId !== 'role_select_menu') {
             return;

@@ -59,6 +59,8 @@ const commandsForRegister = []; // Для глобальной регистра�
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
+	if (!fs.statSync(commandsPath).isDirectory()) continue;
+	
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
@@ -79,6 +81,8 @@ const eventFolders = fs.readdirSync(eventsFolserPath);
 
 for (const folder of eventFolders) {
 	const eventsPath = path.join(eventsFolserPath, folder);
+	if (!fs.statSync(eventsPath).isDirectory()) continue;
+	
 	const eventsFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 	for (const file of eventsFiles) {
 		const filePath = path.join(eventsPath, file);
@@ -101,6 +105,8 @@ client.servicesCount = 0;
 
 for (const folder of serviceFolders) {
 	const servicesPath = path.join(servicesFolderPath, folder);
+	if (!fs.statSync(servicesPath).isDirectory()) continue;
+	
 	const serviceFiles = fs.readdirSync(servicesPath).filter(file => file.endsWith('.js'));
 	
 	for (const file of serviceFiles) {
