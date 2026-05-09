@@ -6,13 +6,11 @@ module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
         .setName('report')
-        .setNameLocalizations(localeManager.getLocalizations('moderation.report.name'))
         .setDescription(localeManager.get('moderation.report.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.report.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addStringOption(option =>
             option.setName('faq_link')
-                .setNameLocalizations(localeManager.getLocalizations('moderation.report.options.faq_link.name'))
                 .setDescription(localeManager.get('moderation.report.options.faq_link.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.report.options.faq_link.description'))
                 .setRequired(false)),

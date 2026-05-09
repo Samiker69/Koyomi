@@ -14,25 +14,21 @@ const tags = new TagsDB()
   module.exports = {
     data: new SlashCommandBuilder()
       .setName('tag')
-      .setNameLocalizations(localeManager.getLocalizations('moderation.tag.name'))
       .setDescription(localeManager.get('moderation.tag.description', 'en-US'))
       .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.description'))
       .addSubcommand(sub =>
         sub
           .setName('add')
-          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.add.name'))
           .setDescription(localeManager.get('moderation.tag.options.add.description', 'en-US'))
           .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.add.description'))
           .addStringOption(o =>
             o.setName('name')
-             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.add.options.name.name'))
              .setDescription(localeManager.get('moderation.tag.options.add.options.name.description', 'en-US'))
              .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.add.options.name.description'))
              .setRequired(true)
           )
           .addStringOption(o =>
             o.setName('content')
-             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.add.options.content.name'))
              .setDescription(localeManager.get('moderation.tag.options.add.options.content.description', 'en-US'))
              .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.add.options.content.description'))
              .setRequired(true)
@@ -41,12 +37,10 @@ const tags = new TagsDB()
       .addSubcommand(sub =>
         sub
           .setName('remove')
-          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.remove.name'))
           .setDescription(localeManager.get('moderation.tag.options.remove.description', 'en-US'))
           .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.remove.description'))
           .addStringOption(o =>
             o.setName('name')
-             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.remove.options.name.name'))
              .setDescription(localeManager.get('moderation.tag.options.remove.options.name.description', 'en-US'))
              .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.remove.options.name.description'))
              .setRequired(true)
@@ -55,19 +49,16 @@ const tags = new TagsDB()
       .addSubcommand(sub =>
         sub
           .setName('edit')
-          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.name'))
           .setDescription(localeManager.get('moderation.tag.options.edit.description', 'en-US'))
           .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.description'))
           .addStringOption(o =>
             o.setName('name')
-             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.options.name.name'))
              .setDescription(localeManager.get('moderation.tag.options.edit.options.name.description', 'en-US'))
              .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.options.name.description'))
              .setRequired(true)
           )
           .addStringOption(o =>
             o.setName('content')
-             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.options.content.name'))
              .setDescription(localeManager.get('moderation.tag.options.edit.options.content.description', 'en-US'))
              .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.options.content.description'))
              .setRequired(true)
@@ -76,12 +67,10 @@ const tags = new TagsDB()
       .addSubcommand(sub =>
         sub
           .setName('get')
-          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.get.name'))
           .setDescription(localeManager.get('moderation.tag.options.get.description', 'en-US'))
           .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.get.description'))
           .addStringOption(o =>
             o.setName('name')
-             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.get.options.name.name'))
              .setDescription(localeManager.get('moderation.tag.options.get.options.name.description', 'en-US'))
              .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.get.options.name.description'))
              .setRequired(true)
@@ -90,7 +79,6 @@ const tags = new TagsDB()
       .addSubcommand(sub =>
         sub
           .setName('list')
-          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.list.name'))
           .setDescription(localeManager.get('moderation.tag.options.list.description', 'en-US'))
           .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.list.description'))
       )

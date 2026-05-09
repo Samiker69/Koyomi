@@ -7,24 +7,20 @@ const Sdb = new Settings();
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('starboard')
-    .setNameLocalizations(localeManager.getLocalizations('utility.starboard.name'))
     .setDescription(localeManager.get('utility.starboard.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.description'))
     .addSubcommand(sub => 
       sub.setName('setup')
-        .setNameLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.name'))
         .setDescription(localeManager.get('utility.starboard.options.setup.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.description'))
         .addChannelOption(opt => 
           opt.setName('channel')
-            .setNameLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.channel.name'))
             .setDescription(localeManager.get('utility.starboard.options.setup.options.channel.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.channel.description'))
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true))
         .addIntegerOption(opt => 
           opt.setName('min')
-            .setNameLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.min.name'))
             .setDescription(localeManager.get('utility.starboard.options.setup.options.min.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.min.description'))
             .setMinValue(1)
@@ -32,7 +28,6 @@ module.exports = {
     )
     .addSubcommand(sub => 
       sub.setName('disable')
-        .setNameLocalizations(localeManager.getLocalizations('utility.starboard.options.disable.name'))
         .setDescription(localeManager.get('utility.starboard.options.disable.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.disable.description'))
     )

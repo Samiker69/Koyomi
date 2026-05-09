@@ -16,7 +16,6 @@ module.exports = {
     cooldown: 15,
     data: new SlashCommandBuilder()
         .setName('guessthenumber')
-        .setNameLocalizations(localeManager.getLocalizations('minigame.guessthenumber.name', 'name'))
         .setDescription('Guess the number game')
         .setDescriptionLocalizations(localeManager.getLocalizations('minigame.guessthenumber.description')),
 

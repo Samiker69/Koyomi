@@ -11,20 +11,19 @@ const sdb = new SettingsDB();
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        if (!interaction.isChatInputCommand()) {
-            return;
-        }
-
         const settings = interaction.guild ? (sdb.getSettings(interaction.guild.id) || {}) : {};
         const preferredLang = settings.language || interaction.guildLocale || 'ru';
         
-        // Переопределяем guildLocale, чтобы все команды использовали выбранный язык
         Object.defineProperty(interaction, 'guildLocale', {
             get: () => preferredLang,
             configurable: true
         });
 
         const lang = preferredLang;
+
+        if (!interaction.isChatInputCommand()) {
+            return;
+        }
         const command = interaction.client.commands.get(interaction.commandName);
 
         if (!command) {

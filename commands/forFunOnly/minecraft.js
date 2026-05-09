@@ -6,13 +6,11 @@ module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('minecraft')
-    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.name'))
     .setDescription(localeManager.get('forFunOnly.minecraft.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.description'))
     .addStringOption(opt =>
       opt
         .setName('player')
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.options.player.name'))
         .setDescription(localeManager.get('forFunOnly.minecraft.options.player.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.minecraft.options.player.description'))
         .setRequired(true)
@@ -27,9 +25,14 @@ module.exports = {
       const res = await fetch(
         `https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(player)}`
       );
-      if (!res.ok) {
+      if (res.status === 204) {
         return interaction.editReply(localeManager.get('forFunOnly.minecraft.messages.player_not_found', interaction.guildLocale || 'ru', { player }));
       }
+
+      if (!res.ok) {
+        return interaction.editReply(localeManager.get('forFunOnly.minecraft.messages.error', interaction.guildLocale || 'ru'));
+      }
+
       const { id: uuid } = await res.json();
 
       const skinRenderUrl   = `https://mc-heads.net/body/${uuid}/left/4`;

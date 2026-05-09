@@ -13,47 +13,41 @@ const db = new DisabledCommandsDB();
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('restrict')
-        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.name'))
         .setDescription(localeManager.get('moderation.restrict.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addSubcommand(subcommand =>
             subcommand
                 .setName('set')
-                .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.name'))
                 .setDescription(localeManager.get('moderation.restrict.options.set.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.description'))
                 .addStringOption(option =>
                     option.setName('action')
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.action.name'))
                         .setDescription(localeManager.get('moderation.restrict.options.set.options.action.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.action.description'))
                         .setRequired(true)
                         .addChoices(
-                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.disable', 'en-US'), name_localizations: localeManager.getLocalizations('moderation.restrict.options.set.options.action.choices.disable'), value: 'disable' },
-                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.enable', 'en-US'), name_localizations: localeManager.getLocalizations('moderation.restrict.options.set.options.action.choices.enable'), value: 'enable' },
+                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.disable', 'en-US'), value: 'disable' },
+                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.enable', 'en-US'), value: 'enable' },
                         ))
                 .addStringOption(option =>
                     option.setName('command')
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.command.name'))
                         .setDescription(localeManager.get('moderation.restrict.options.set.options.command.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.command.description'))
-                        .setRequired(true))
+                        .setRequired(true)
+                        .setAutocomplete(true))
                 .addUserOption(option => 
                     option.setName('user')
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.user.name'))
                         .setDescription(localeManager.get('moderation.restrict.options.set.options.user.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.user.description'))
                         .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
-                .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.name'))
                 .setDescription(localeManager.get('moderation.restrict.options.list.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.description'))
                  .addUserOption(option =>
                     option.setName('user')
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.options.user.name'))
                         .setDescription(localeManager.get('moderation.restrict.options.list.options.user.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.options.user.description'))
                         .setRequired(false))),
@@ -177,4 +171,27 @@ module.exports = {
             });
         }
     },
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused().toLowerCase();
+        const lang = interaction.guildLocale || 'ru';
+        const commands = interaction.client.commands;
+
+        const choices = [];
+        for (const [name, command] of commands) {
+            const cmdData = command.data;
+            const cmdName = name;
+            const cmdDesc = cmdData.description_localizations?.[lang] || cmdData.description || '';
+            const localizedName = cmdName.toLowerCase();
+            
+            if (name.toLowerCase().includes(focusedValue) || localizedName.includes(focusedValue)) {
+                choices.push({
+                    name: `${cmdName} — ${cmdDesc}`.substring(0, 100),
+                    value: name
+                });
+            }
+            if (choices.length >= 25) break;
+        }
+
+        await interaction.respond(choices);
+    }
 };

@@ -6,12 +6,10 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('iqtest')
-        .setNameLocalizations(localeManager.getLocalizations('moderation.iqtest.name'))
         .setDescription(localeManager.get('moderation.iqtest.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.iqtest.description'))
         .addUserOption(option => 
             option.setName('target')
-                .setNameLocalizations(localeManager.getLocalizations('moderation.iqtest.options.target.name'))
                 .setDescription(localeManager.get('moderation.iqtest.options.target.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.iqtest.options.target.description'))
                 .setRequired(true)

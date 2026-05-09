@@ -9,7 +9,7 @@ const utility = {
       "no_description": { "ru": "описание отсутствует", "en-US": "no description available", "uk": "опис відсутній" },
       "no_name": { "ru": "Команда без имени", "en-US": "Command without name", "uk": "Команда без імені" },
       "page_info": { "ru": "Страница {current} из {total}", "en-US": "Page {current} of {total}", "uk": "Сторінка {current} з {total}" },
-      "timeout": { "ru": "(время вышло)", "en-US": "(timeout)", "uk": "(час вийшов)" },
+      "timeout_short": { "ru": "(время вышло)", "en-US": "(timeout)", "uk": "(час вийшов)" },
       "prev": { "ru": "⬅️ Пред.", "en-US": "⬅️ Prev", "uk": "⬅️ Поперед." },
       "next": { "ru": "След. ➡️", "en-US": "Next ➡️", "uk": "Наст. ➡️" },
       "select_category": { "ru": "Выберите категорию команд", "en-US": "Select command category", "uk": "Оберіть категорію команд" },
@@ -424,8 +424,13 @@ const utility = {
       "on": { "ru": "ВКЛ", "en-US": "ON", "uk": "УВІМК" },
       "off": { "ru": "ВЫКЛ", "en-US": "OFF", "uk": "ВИМК" },
       "saved": { "ru": "Сохранено!", "en-US": "Saved!", "uk": "Збережено!" },
-      "timeout": { "ru": "Время ожидания выбора истекло.", "en-US": "Selection timeout expired.", "uk": "Час очікування вибору вичерпано." },
+      "select_timeout": { "ru": "Время ожидания выбора истекло.", "en-US": "Selection timeout expired.", "uk": "Час очікування вибору вичерпано." },
       "honeypot_trap_required": { "ru": "Сначала задайте канал-ловушку через меню выше.", "en-US": "Set trap channel first.", "uk": "Спочатку встановіть канал-пастку." },
+      "placeholder_lang": { "ru": "Выбрать язык", "en-US": "Select language", "uk": "Обрати мову" },
+      "lang_ru": { "ru": "Русский", "en-US": "Russian", "uk": "Російська" },
+      "lang_en": { "ru": "Английский (США)", "en-US": "English (US)", "uk": "Англійська (США)" },
+      "lang_uk": { "ru": "Украинский", "en-US": "Ukrainian", "uk": "Українська" },
+      "lang_title": { "ru": "Выберите язык", "en-US": "Select language", "uk": "Оберіть мову" },
       "error_saving": { "ru": "Произошла ошибка при сохранении.", "en-US": "Error while saving.", "uk": "Сталася помилка при збереженні." }
     }
   },
@@ -478,9 +483,38 @@ const utility = {
         "options": {
           "title": { "name": { "en-US": "title", "ru": "заголовок", "uk": "заголовок" }, "description": { "en-US": "Menu title", "ru": "Заголовок меню", "uk": "Заголовок меню" } },
           "description": { "name": { "en-US": "description", "ru": "описание", "uk": "опис" }, "description": { "en-US": "Menu description", "ru": "Описание меню", "uk": "Опис меню" } },
-          "type": { "name": { "en-US": "type", "ru": "тип", "uk": "тип" }, "description": { "en-US": "Buttons or Select Menu", "ru": "Кнопки или выпадающее меню", "uk": "Кнопки або випадаюче меню" } }
+          "type": { 
+            "name": { "en-US": "type", "ru": "тип", "uk": "тип" }, 
+            "description": { "en-US": "Buttons or Select Menu", "ru": "Кнопки или выпадающее меню", "uk": "Кнопки або випадаюче меню" },
+            "choices": {
+              "buttons": { "en-US": "Buttons", "ru": "Кнопки", "uk": "Кнопки" },
+              "select": { "en-US": "Select Menu", "ru": "Выпадающее меню", "uk": "Випадаюче меню" }
+            }
+          }
+        }
+      },
+      "addrole": {
+        "name": { "en-US": "addrole", "ru": "добавитьроль", "uk": "додатироль" },
+        "description": { "en-US": "Add a role to an existing role menu", "ru": "Добавить роль в существующее меню", "uk": "Додати роль в існуюче меню" },
+        "options": {
+          "message_id": { "name": { "en-US": "message_id", "ru": "айди_сообщения", "uk": "айді_повідомлення" }, "description": { "en-US": "ID of the role menu message", "ru": "ID сообщения с меню ролей", "uk": "ID повідомлення з меню ролей" } },
+          "role": { "name": { "en-US": "role", "ru": "роль", "uk": "роль" }, "description": { "en-US": "Role to add", "ru": "Роль для добавления", "uk": "Роль для додавання" } },
+          "label": { "name": { "en-US": "label", "ru": "название", "uk": "назва" }, "description": { "en-US": "Button label", "ru": "Название кнопки", "uk": "Назва кнопки" } },
+          "emoji": { "name": { "en-US": "emoji", "ru": "эмодзи", "uk": "емодзі" }, "description": { "en-US": "Button emoji (optional)", "ru": "Эмодзи кнопки (необязательно)", "uk": "Емодзі кнопки (необов'язково)" } }
         }
       }
+    },
+    "messages": {
+      "setup_start": { "ru": "Начинаю создание меню ролей...", "en-US": "Starting role menu creation...", "uk": "Починаю створення меню ролей..." },
+      "setup_done": { "ru": "Меню ролей создано! ID сообщения: `{id}`. Теперь вы можете добавить в него роли командой `/rolemenu addrole`.", "en-US": "Role menu created! Message ID: `{id}`. You can now add roles using `/rolemenu addrole`.", "uk": "Меню ролей створено! ID повідомлення: `{id}`. Тепер ви можете додати в нього ролі командою `/rolemenu addrole`." },
+      "footer": { "ru": "Выберите роли ниже", "en-US": "Select roles below", "uk": "Оберіть ролі нижче" },
+      "msg_not_found": { "ru": "Сообщение с ID `{id}` не найдено в этом канале.", "en-US": "Message with ID `{id}` not found in this channel.", "uk": "Повідомлення з ID `{id}` не знайдено в цьому каналі." },
+      "not_role_menu": { "ru": "Это сообщение не является меню ролей или у бота нет прав на его редактирование.", "en-US": "This message is not a role menu or the bot cannot edit it.", "uk": "Це повідомлення не є меню ролей або бот не може його редагувати." },
+      "role_added_to_menu": { "ru": "Роль {role} успешно добавлена в меню!", "en-US": "Role {role} successfully added to the menu!", "uk": "Роль {role} успішно додана в меню!" },
+      "role_removed_from_menu": { "ru": "Роль {role} успешно удалена из меню!", "en-US": "Role {role} successfully removed from the menu!", "uk": "Роль {role} успішно видалена з меню!" },
+      "role_given": { "ru": "Вам выдана роль {role}.", "en-US": "You have been given the role {role}.", "uk": "Вам видано роль {role}." },
+      "role_taken": { "ru": "У вас забрана роль {role}.", "en-US": "The role {role} has been removed from you.", "uk": "У вас забрано роль {role}." },
+      "error_perm": { "ru": "У меня недостаточно прав, чтобы выдать вам эту роль.", "en-US": "I don't have enough permissions to give you this role.", "uk": "У мене недостатньо прав, щоб видати вам цю роль." }
     }
   },
   "log_parse": {

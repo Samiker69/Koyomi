@@ -20,7 +20,6 @@ const Sdb = new Settings();
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('settings')
-        .setNameLocalizations(localeManager.getLocalizations('utility.settings.name'))
         .setDescription(localeManager.get('utility.settings.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.settings.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
@@ -109,7 +108,6 @@ module.exports = {
                         { label: localeManager.get('utility.settings.messages.act_verdict.label', lang), description: localeManager.get('utility.settings.messages.act_verdict.description', lang), value: 'act_verdict' },
                         { label: localeManager.get('utility.settings.messages.act_honeypot.label', lang), description: localeManager.get('utility.settings.messages.act_honeypot.description', lang), value: 'act_honeypot' },
                         { label: localeManager.get('utility.settings.messages.act_honeypot_log.label', lang), description: localeManager.get('utility.settings.messages.act_honeypot_log.description', lang), value: 'act_honeypot_log' },
-                        { label: localeManager.get('utility.settings.messages.act_lang.label', lang), description: localeManager.get('utility.settings.messages.act_lang.description', lang), value: 'act_lang' },
                         { label: localeManager.get('utility.settings.messages.act_reset.label', lang), description: localeManager.get('utility.settings.messages.act_reset.description', lang), value: 'act_reset' }
                     )
             );
@@ -136,9 +134,9 @@ module.exports = {
                     .setCustomId('select_language')
                     .setPlaceholder(localeManager.get('utility.settings.messages.placeholder_lang', lang))
                     .addOptions(
-                        { label: localeManager.get('utility.settings.messages.lang_ru', lang), value: 'ru', default: cfg.language === 'ru' },
-                        { label: localeManager.get('utility.settings.messages.lang_en', lang), value: 'en-US', default: cfg.language === 'en-US' },
-                        { label: localeManager.get('utility.settings.messages.lang_uk', lang), value: 'uk', default: cfg.language === 'uk' }
+                        { label: localeManager.get('utility.settings.messages.lang_ru', 'ru'), value: 'ru', default: cfg.language === 'ru' },
+                        { label: localeManager.get('utility.settings.messages.lang_en', 'en-US'), value: 'en-US', default: cfg.language === 'en-US' },
+                        { label: localeManager.get('utility.settings.messages.lang_uk', 'uk'), value: 'uk', default: cfg.language === 'uk' }
                     )
             );
 
@@ -164,40 +162,6 @@ module.exports = {
                         return;
                     }
 
-                    if (selection === 'act_lang') {
-                        const langSelect = new ActionRowBuilder().addComponents(
-                            new StringSelectMenuBuilder()
-                                .setCustomId('temp_lang_select')
-                                .setPlaceholder(localeManager.get('utility.settings.messages.placeholder_lang', lang))
-                                .addOptions(
-                                    { label: localeManager.get('utility.settings.messages.lang_ru', lang), value: 'ru' },
-                                    { label: localeManager.get('utility.settings.messages.lang_en', lang), value: 'en-US' },
-                                    { label: localeManager.get('utility.settings.messages.lang_uk', lang), value: 'uk' }
-                                )
-                        );
-
-                        const langMsg = await i.reply({
-                            content: localeManager.get('utility.settings.messages.lang_title', lang),
-                            components: [langSelect],
-                            flags: MessageFlags.Ephemeral,
-                            fetchReply: true
-                        });
-
-                        try {
-                            const langInteraction = await langMsg.awaitMessageComponent({
-                                filter: (subI) => subI.user.id === i.user.id,
-                                time: 60000,
-                                componentType: ComponentType.StringSelect
-                            });
-
-                            Sdb.updateSetting(guildId, 'language', langInteraction.values[0]);
-                            await langInteraction.update({ content: localeManager.get('utility.settings.messages.saved', lang), components: [] });
-                            await interaction.editReply(generateDashboard());
-                        } catch (err) {
-                            await i.editReply({ content: localeManager.get('utility.settings.messages.timeout', lang), components: [] });
-                        }
-                        return;
-                    }
 
                     let typeFilter = [ChannelType.GuildText];
                     let promptText = localeManager.get('utility.settings.messages.placeholder_extra', lang);
@@ -243,7 +207,7 @@ module.exports = {
                         await interaction.editReply(generateDashboard());
 
                     } catch (err) {
-                        await i.editReply({ content: localeManager.get('utility.settings.messages.timeout', lang), components: [] });
+                        await i.editReply({ content: localeManager.get('utility.settings.messages.select_timeout', lang), components: [] });
                     }
                     return; 
                 }

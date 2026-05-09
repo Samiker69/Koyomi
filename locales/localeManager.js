@@ -39,18 +39,18 @@ class LocaleManager {
         const value = this._getValueByPath(pathStr);
 
         if (!value) {
-            // Чтобы Discord не падал при ошибке в .setName()
             if (pathStr.endsWith('.name')) {
                 const parts = pathStr.split('.');
                 return parts[parts.length - 2] || 'command';
             }
-            return pathStr; // Возвращает сам путь, если перевода нет
+            return pathStr;
         }
 
+        // Пытаемся найти точное совпадение, затем совпадение по первым 2 буквам (например 'en' для 'en-US')
         let text = '';
         if (typeof value === 'object') {
-            // Выбор языка с фоллбеком
-            text = value[locale] || value[this.defaultLocale] || Object.values(value)[0];
+            const shortLocale = locale.split('-')[0];
+            text = value[locale] || value[this.langs.find(l => l.startsWith(shortLocale))] || value[this.defaultLocale] || Object.values(value)[0];
         } else {
             text = value;
         }

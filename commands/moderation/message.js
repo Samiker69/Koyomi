@@ -4,61 +4,51 @@ const EmbedService = require('../../services/EmbedService');
 
 const data = new SlashCommandBuilder()
     .setName('message')
-    .setNameLocalizations(localeManager.getLocalizations('moderation.message.name', 'name'))
     .setDescription(localeManager.get('moderation.message.description', 'en-US'))
     .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.description'))
 
     .addSubcommand(subcommand =>
         subcommand.setName('clear')
-            .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.clear.name', 'name'))
             .setDescription(localeManager.get('moderation.message.options.clear.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.clear.description'))
             .addIntegerOption(option =>
                 option.setName('amount')
-                    .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.clear.options.amount.name', 'name'))
                     .setDescription(localeManager.get('moderation.message.options.clear.options.amount.description', 'en-US'))
                     .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.clear.options.amount.description'))
                     .setRequired(true)))
 
     .addSubcommand(subcommand =>
         subcommand.setName('pin')
-            .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.pin.name', 'name'))
             .setDescription(localeManager.get('moderation.message.options.pin.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.pin.description'))
             .addStringOption(option =>
                 option.setName('id')
-                    .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.pin.options.id.name', 'name'))
                     .setDescription(localeManager.get('moderation.message.options.pin.options.id.description', 'en-US'))
                     .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.pin.options.id.description'))
                     .setRequired(true)))
 
     .addSubcommand(subcommand =>
         subcommand.setName('unpin')
-            .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.unpin.name', 'name'))
             .setDescription(localeManager.get('moderation.message.options.unpin.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.unpin.description'))
             .addStringOption(option =>
                 option.setName('id')
-                    .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.unpin.options.id.name', 'name'))
                     .setDescription(localeManager.get('moderation.message.options.unpin.options.id.description', 'en-US'))
                     .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.unpin.options.id.description'))
                     .setRequired(true)))
 
     .addSubcommand(subcommand =>
         subcommand.setName('purge')
-            .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.purge.name', 'name'))
             .setDescription(localeManager.get('moderation.message.options.purge.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.purge.description'))
             .addUserOption(option =>
                 option.setName('target')
-                    .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.purge.options.target.name', 'name'))
                     .setDescription(localeManager.get('moderation.message.options.purge.options.target.description', 'en-US'))
                     .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.purge.options.target.description'))
                     .setRequired(true)
             )
             .addIntegerOption(option =>
                 option.setName('amount')
-                    .setNameLocalizations(localeManager.getLocalizations('moderation.message.options.purge.options.amount.name', 'name'))
                     .setDescription(localeManager.get('moderation.message.options.purge.options.amount.description', 'en-US'))
                     .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.purge.options.amount.description'))
                     .setRequired(true)

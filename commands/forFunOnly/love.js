@@ -43,13 +43,11 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('love')
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.name'))
         .setDescription(localeManager.get('forFunOnly.love.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.description'))
         .addUserOption(opt =>
             opt
             .setName('user1')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user1.name'))
             .setDescription(localeManager.get('forFunOnly.love.options.user1.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user1.description'))
             .setRequired(true)
@@ -57,7 +55,6 @@ module.exports = {
         .addUserOption(opt =>
             opt
             .setName('user2')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user2.name'))
             .setDescription(localeManager.get('forFunOnly.love.options.user2.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user2.description'))
             .setRequired(true)

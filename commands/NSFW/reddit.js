@@ -122,14 +122,12 @@ async function getRedditImage(category = 'random', fetchRetries = 3) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(localeManager.get('nsfw.reddit.name'))
-    .setNameLocalizations(localeManager.getLocalizations('nsfw.reddit.name', 'name'))
+    .setName('reddit')
     .setDescription(localeManager.get('nsfw.reddit.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.reddit.description'))
     .setNSFW(true)
     .addStringOption(option =>
-      option.setName(localeManager.get('nsfw.reddit.options.category.name'))
-        .setNameLocalizations(localeManager.getLocalizations('nsfw.reddit.options.category.name', 'name'))
+      option.setName('category')
         .setDescription(localeManager.get('nsfw.reddit.options.category.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.reddit.options.category.description'))
         .setRequired(false)

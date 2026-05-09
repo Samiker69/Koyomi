@@ -7,19 +7,16 @@ module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('room')
-    .setNameLocalizations(localeManager.getLocalizations('utility.room.name'))
     .setDescription(localeManager.get('utility.room.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.description'))
     .addSubcommand(sub =>
       sub
         .setName('rename')
-        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.rename.name'))
         .setDescription(localeManager.get('utility.room.options.rename.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.rename.description'))
         .addStringOption(opt =>
           opt
             .setName('name')
-            .setNameLocalizations(localeManager.getLocalizations('utility.room.options.rename.options.name.name'))
             .setDescription(localeManager.get('utility.room.options.rename.options.name.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.rename.options.name.description'))
             .setRequired(true)
@@ -28,13 +25,11 @@ module.exports = {
     .addSubcommand(sub =>
       sub
         .setName('limit')
-        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.limit.name'))
         .setDescription(localeManager.get('utility.room.options.limit.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.limit.description'))
         .addIntegerOption(opt =>
           opt
             .setName('number')
-            .setNameLocalizations(localeManager.getLocalizations('utility.room.options.limit.options.number.name'))
             .setDescription(localeManager.get('utility.room.options.limit.options.number.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.limit.options.number.description'))
             .setRequired(true)
@@ -44,28 +39,24 @@ module.exports = {
     .addSubcommand(sub =>
       sub
         .setName('lock')
-        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.lock.name'))
         .setDescription(localeManager.get('utility.room.options.lock.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.lock.description'))
     )
     .addSubcommand(sub =>
       sub
         .setName('unlock')
-        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.unlock.name'))
         .setDescription(localeManager.get('utility.room.options.unlock.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.unlock.description'))
     )
     .addSubcommand(sub =>
       sub
         .setName('private')
-        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.private.name'))
         .setDescription(localeManager.get('utility.room.options.private.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.private.description'))
     )
     .addSubcommand(sub =>
       sub
         .setName('public')
-        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.public.name'))
         .setDescription(localeManager.get('utility.room.options.public.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.public.description'))
     )

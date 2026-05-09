@@ -7,20 +7,17 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('captcha')
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.name'))
         .setDescription(localeManager.get('forFunOnly.captcha.description'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.description'))
         .setContexts(0,1,2)
         .addBooleanOption(opt => 
             opt.setName('invisible')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.invisible.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.invisible.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.invisible.description'))
         )
         // Базовые настройки
         .addIntegerOption(opt =>
             opt.setName('length')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.length.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.length.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.length.description'))
             .setMinValue(1)
@@ -28,7 +25,6 @@ module.exports = {
         )
         .addIntegerOption(opt =>
             opt.setName('width')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.width.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.width.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.width.description'))
             .setMinValue(150)
@@ -36,7 +32,6 @@ module.exports = {
         )
         .addIntegerOption(opt =>
             opt.setName('height')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.height.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.height.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.height.description'))
             .setMinValue(50)
@@ -45,7 +40,6 @@ module.exports = {
         // Настройки текста
         .addIntegerOption(opt =>
             opt.setName('min_font_size')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.min_font_size.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.min_font_size.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.min_font_size.description'))
             .setMinValue(10)
@@ -53,7 +47,6 @@ module.exports = {
         )
         .addIntegerOption(opt =>
             opt.setName('max_font_size')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.max_font_size.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.max_font_size.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.max_font_size.description'))
             .setMinValue(15)
@@ -61,7 +54,6 @@ module.exports = {
         )
         .addNumberOption(opt =>
             opt.setName('max_rotation')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.max_rotation.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.max_rotation.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.max_rotation.description'))
             .setMinValue(0.1)
@@ -69,7 +61,6 @@ module.exports = {
         )
         .addNumberOption(opt =>
             opt.setName('max_skew')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.max_skew.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.max_skew.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.max_skew.description'))
             .setMinValue(0.1)
@@ -77,26 +68,22 @@ module.exports = {
         )
         .addBooleanOption(opt =>
             opt.setName('text_outline')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.text_outline.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.text_outline.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.text_outline.description'))
         )
         .addBooleanOption(opt =>
             opt.setName('random_colors')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.random_colors.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.random_colors.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.random_colors.description'))
         )
         // Настройки фона
         .addBooleanOption(opt =>
             opt.setName('gradient_bg')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.gradient_bg.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.gradient_bg.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.gradient_bg.description'))
         )
         .addStringOption(opt =>
             opt.setName('gradient_type')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.gradient_type.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.gradient_type.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.gradient_type.description'))
             .addChoices(
@@ -107,7 +94,6 @@ module.exports = {
         // Настройки шума
         .addIntegerOption(opt =>
             opt.setName('noise_lines')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.noise_lines.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.noise_lines.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.noise_lines.description'))
             .setMinValue(0)
@@ -115,7 +101,6 @@ module.exports = {
         )
         .addIntegerOption(opt =>
             opt.setName('noise_dots')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.noise_dots.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.noise_dots.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.noise_dots.description'))
             .setMinValue(0)
@@ -123,7 +108,6 @@ module.exports = {
         )
         .addIntegerOption(opt =>
             opt.setName('noise_circles')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.noise_circles.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.noise_circles.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.noise_circles.description'))
             .setMinValue(0)
@@ -131,13 +115,11 @@ module.exports = {
         )
         .addBooleanOption(opt =>
             opt.setName('curved_lines')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.curved_lines.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.curved_lines.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.curved_lines.description'))
         )
         .addNumberOption(opt =>
             opt.setName('noise_opacity')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.noise_opacity.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.noise_opacity.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.noise_opacity.description'))
             .setMinValue(0.1)
@@ -146,13 +128,11 @@ module.exports = {
         // Настройки искажений
         .addBooleanOption(opt =>
             opt.setName('wave_distortion')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.wave_distortion.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.wave_distortion.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.wave_distortion.description'))
         )
         .addIntegerOption(opt =>
             opt.setName('wave_amplitude')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.wave_amplitude.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.wave_amplitude.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.wave_amplitude.description'))
             .setMinValue(1)
@@ -160,7 +140,6 @@ module.exports = {
         )
         .addNumberOption(opt =>
             opt.setName('wave_frequency')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.wave_frequency.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.wave_frequency.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.wave_frequency.description'))
             .setMinValue(0.01)
@@ -169,13 +148,11 @@ module.exports = {
         // Настройки помех
         .addBooleanOption(opt =>
             opt.setName('scratches')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.scratches.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.scratches.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.scratches.description'))
         )
         .addIntegerOption(opt =>
             opt.setName('scratch_count')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.scratch_count.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.scratch_count.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.scratch_count.description'))
             .setMinValue(1)
@@ -183,13 +160,11 @@ module.exports = {
         )
         .addBooleanOption(opt =>
             opt.setName('grid_interference')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.grid_interference.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.grid_interference.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.grid_interference.description'))
         )
         .addBooleanOption(opt =>
             opt.setName('overlay_interference')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.overlay_interference.name'))
             .setDescription(localeManager.get('forFunOnly.captcha.options.overlay_interference.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.captcha.options.overlay_interference.description'))
         ),

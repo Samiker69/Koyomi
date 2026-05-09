@@ -8,12 +8,10 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('modstats')
-        .setNameLocalizations(localeManager.getLocalizations('moderation.modstats.name'))
         .setDescription(localeManager.get('moderation.modstats.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.modstats.description'))
         .addUserOption(option =>
             option.setName('moderator')
-                .setNameLocalizations(localeManager.getLocalizations('moderation.modstats.options.moderator.name'))
                 .setDescription(localeManager.get('moderation.modstats.options.moderator.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.modstats.options.moderator.description'))
                 .setRequired(false))

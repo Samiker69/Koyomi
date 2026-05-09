@@ -182,14 +182,14 @@ class ReportService {
 
             const modal = new ModalBuilder()
                 .setCustomId(`submitReportModal_message_${targetMessage.id}`)
-                .setTitle(localeManager.get('moderation.report.service.modals.report_title', lang));
+                .setTitle(localeManager.get('moderation.report.service.modals.report_title', lang).substring(0, 45));
 
             const descriptionInput = new TextInputBuilder()
                 .setCustomId('reportDescription')
-                .setLabel(localeManager.get('moderation.report.service.modals.description_label', lang))
+                .setLabel(localeManager.get('moderation.report.service.modals.description_label', lang).substring(0, 45))
                 .setStyle(TextInputStyle.Paragraph)
                 .setRequired(true)
-                .setPlaceholder(localeManager.get('moderation.report.service.modals.description_placeholder', lang));
+                .setPlaceholder(localeManager.get('moderation.report.service.modals.description_placeholder', lang).substring(0, 100));
 
             const messageAuthorInput = new TextInputBuilder()
                 .setCustomId('messageAuthorInfo')
@@ -223,8 +223,8 @@ class ReportService {
     static async handleReportButton(interaction, reportType) {
         const lang = interaction.guildLocale || 'ru';
         try {
-            const reportTypeKey = `moderation.report.service.modals.report_on_${reportType === 'message' ? 'msg' : reportType === 'user' ? 'user' : reportType === 'moderator' ? 'mod' : 'other'}`;
-            const modalTitle = `${localeManager.get('moderation.report.service.modals.report_title', lang)}: ${localeManager.get(reportTypeKey, lang)}`;
+            const reportTypeKey = `moderation.report.service.modals.report_${reportType === 'message' ? 'msg' : reportType === 'user' ? 'user' : reportType === 'moderator' ? 'mod' : 'other'}`;
+            const modalTitle = `${localeManager.get('moderation.report.service.modals.report_title', lang)}: ${localeManager.get(reportTypeKey, lang)}`.substring(0, 45);
 
             const modal = new ModalBuilder()
                 .setCustomId(`submitReportModal_${reportType}`)
@@ -232,24 +232,24 @@ class ReportService {
 
             const descriptionInput = new TextInputBuilder()
                 .setCustomId('reportDescription')
-                .setLabel(localeManager.get('moderation.report.service.modals.description_label', lang))
+                .setLabel(localeManager.get('moderation.report.service.modals.description_label', lang).substring(0, 45))
                 .setStyle(TextInputStyle.Paragraph)
                 .setRequired(true)
-                .setPlaceholder(localeManager.get('moderation.report.service.modals.description_placeholder', lang));
+                .setPlaceholder(localeManager.get('moderation.report.service.modals.description_placeholder', lang).substring(0, 100));
 
             const targetInput = new TextInputBuilder()
                 .setCustomId('reportTarget')
-                .setLabel(localeManager.get('moderation.report.service.modals.target_label', lang))
+                .setLabel(localeManager.get('moderation.report.service.modals.target_label', lang).substring(0, 45))
                 .setStyle(TextInputStyle.Short)
                 .setRequired(false)
-                .setPlaceholder(localeManager.get('moderation.report.service.modals.target_placeholder', lang));
+                .setPlaceholder(localeManager.get('moderation.report.service.modals.target_placeholder', lang).substring(0, 100));
 
             const linkInput = new TextInputBuilder()
                 .setCustomId('reportLink')
-                .setLabel(localeManager.get('moderation.report.service.modals.link_label', lang))
+                .setLabel(localeManager.get('moderation.report.service.modals.link_label', lang).substring(0, 45))
                 .setStyle(TextInputStyle.Short)
                 .setRequired(false)
-                .setPlaceholder(localeManager.get('moderation.report.service.modals.link_placeholder', lang));
+                .setPlaceholder(localeManager.get('moderation.report.service.modals.link_placeholder', lang).substring(0, 100));
 
             modal.addComponents(
                 new ActionRowBuilder().addComponents(descriptionInput),
@@ -291,13 +291,13 @@ class ReportService {
                 case 'decline':
                     const declineModal = new ModalBuilder()
                         .setCustomId(`declineReportModal_${originalReportMessageId}`)
-                        .setTitle(localeManager.get('moderation.report.service.modals.decline_title', lang));
+                        .setTitle(localeManager.get('moderation.report.service.modals.decline_title', lang).substring(0, 45));
                     const declineReasonInput = new TextInputBuilder()
                         .setCustomId('declineReason')
-                        .setLabel(localeManager.get('moderation.report.service.modals.decline_reason_label', lang))
+                        .setLabel(localeManager.get('moderation.report.service.modals.decline_reason_label', lang).substring(0, 45))
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(true)
-                        .setPlaceholder(localeManager.get('moderation.report.service.modals.decline_reason_placeholder', lang));
+                        .setPlaceholder(localeManager.get('moderation.report.service.modals.decline_reason_placeholder', lang).substring(0, 100));
                     declineModal.addComponents(new ActionRowBuilder().addComponents(declineReasonInput));
                     await interaction.showModal(declineModal);
                     return;
@@ -311,13 +311,13 @@ class ReportService {
                 case 'reply':
                     const replyModal = new ModalBuilder()
                         .setCustomId(`sendReplyToUserModal_${originalReportMessageId}`)
-                        .setTitle(localeManager.get('moderation.report.service.modals.reply_title', lang));
+                        .setTitle(localeManager.get('moderation.report.service.modals.reply_title', lang).substring(0, 45));
                     const replyTextInput = new TextInputBuilder()
                         .setCustomId('moderatorReplyText')
-                        .setLabel(localeManager.get('moderation.report.service.modals.reply_label', lang))
+                        .setLabel(localeManager.get('moderation.report.service.modals.reply_label', lang).substring(0, 45))
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(true)
-                        .setPlaceholder(localeManager.get('moderation.report.service.modals.reply_placeholder', lang));
+                        .setPlaceholder(localeManager.get('moderation.report.service.modals.reply_placeholder', lang).substring(0, 100));
                     replyModal.addComponents(new ActionRowBuilder().addComponents(replyTextInput));
                     await interaction.showModal(replyModal);
                     return;
@@ -331,13 +331,13 @@ class ReportService {
                 case 'addNote':
                     const noteModal = new ModalBuilder()
                         .setCustomId(`addNoteModal_${originalReportMessageId}`)
-                        .setTitle(localeManager.get('moderation.report.service.modals.note_title', lang));
+                        .setTitle(localeManager.get('moderation.report.service.modals.note_title', lang).substring(0, 45));
                     const noteTextInput = new TextInputBuilder()
                         .setCustomId('moderatorNote')
-                        .setLabel(localeManager.get('moderation.report.service.modals.note_label', lang))
+                        .setLabel(localeManager.get('moderation.report.service.modals.note_label', lang).substring(0, 45))
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(true)
-                        .setPlaceholder(localeManager.get('moderation.report.service.modals.note_placeholder', lang));
+                        .setPlaceholder(localeManager.get('moderation.report.service.modals.note_placeholder', lang).substring(0, 100));
                     noteModal.addComponents(new ActionRowBuilder().addComponents(noteTextInput));
                     await interaction.showModal(noteModal);
                     return;

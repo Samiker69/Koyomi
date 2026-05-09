@@ -28,6 +28,8 @@ async function safeReply(interaction, content, isEphemeral = true) {
 }
 
 function getCommandsByCategory(client) {
+  if (client.helpCategoriesMap) return client.helpCategoriesMap;
+
   const categories = new Map();
   const commandsPath = path.join(__dirname, '../../commands'); 
 
@@ -71,6 +73,7 @@ function getCommandsByCategory(client) {
           
           if ('data' in command && 'execute' in command) {
               const categoryName = folder === '.' ? 'General' : folder.charAt(0).toUpperCase() + folder.slice(1);
+              command.category = folder === '.' ? 'general' : folder; // Store original folder name for localization
               if (!categories.has(categoryName)) {
                   categories.set(categoryName, []);
               }
@@ -81,6 +84,7 @@ function getCommandsByCategory(client) {
       }
   }
 
+  client.helpCategoriesMap = categories;
   return categories;
 }
 
@@ -88,7 +92,6 @@ module.exports = {
   cooldown: 10,
   data: new SlashCommandBuilder()
       .setName('help')
-      .setNameLocalizations(localeManager.getLocalizations('utility.help.name'))
       .setDescription(localeManager.get('utility.help.description'))
       .setDescriptionLocalizations(localeManager.getLocalizations('utility.help.description')),
 
@@ -126,17 +129,25 @@ module.exports = {
           } else {
               for (const cmd of slicedCommands) {
                   const meta = cmd.data.toJSON();
+                  const cmdName = meta.name;
+                  const cmdDesc = meta.description_localizations?.[lang] || meta.description || localeManager.get('utility.help.messages.no_description', lang);
                   let details = '';
 
                   if (meta.options && meta.options.length > 0) {
                       for (const opt of meta.options) {
+                          const optName = opt.name;
+                          const optDesc = opt.description_localizations?.[lang] || opt.description || localeManager.get('utility.help.messages.no_description', lang);
+                          
                           if (opt.type === 1) {
-                              details += `\n  \`/${meta.name} ${opt.name}\` — ${opt.description || localeManager.get('utility.help.messages.no_description', lang)}`;
+                              details += `\n  \`/${meta.name} ${optName}\` — ${optDesc}`;
                           } else if (opt.type === 2) { 
-                              details += `\n  \`/${meta.name} ${opt.name}\` ${localeManager.get('utility.help.messages.group_label', lang)}`;
+                              details += `\n  \`/${meta.name} ${optName}\` ${localeManager.get('utility.help.messages.group_label', lang)}`;
                               for (const subOpt of opt.options || []) {
+                                  const subOptName = subOpt.name;
+                                  const subOptDesc = subOpt.description_localizations?.[lang] || subOpt.description || localeManager.get('utility.help.messages.no_description', lang);
+                                  
                                   if (subOpt.type === 1) {
-                                      details += `\n     \`/${meta.name} ${opt.name} ${subOpt.name}\` — ${subOpt.description || localeManager.get('utility.help.messages.no_description', lang)}`;
+                                      details += `\n     \`/${meta.name} ${optName} ${subOptName}\` — ${subOptDesc}`;
                                   }
                               }
                           }
@@ -144,7 +155,7 @@ module.exports = {
                   }
 
                   let fieldName = `\`/${meta.name}\``;
-                  let fieldValue = meta.description || localeManager.get('utility.help.messages.no_description', lang);
+                  let fieldValue = cmdDesc;
                   let finalValue = fieldValue + (details ? `\n${details}` : '');
 
                   if (fieldName.length > 256) fieldName = fieldName.substring(0, 253) + '...';

@@ -498,8 +498,8 @@ const moderation = {
       "btn_other": { "ru": "Другое", "en-US": "Other", "uk": "Інше" },
       "btn_faq": { "ru": "Ознакомиться с правилами / FAQ", "en-US": "Check Rules / FAQ", "uk": "Ознайомитися з правилами / FAQ" },
       "success": { "ru": "Панель жалоб успешно размещена в канале <#{id}>.", "en-US": "Report panel successfully deployed in <#{id}>.", "uk": "Панель скарг успішно розміщена в каналі <#{id}>." },
-      "error": { "ru": "Произошла ошибка при размещении панели жалоб. Проверьте права бота.", "en-US": "An error occurred while deploying the report panel. Check bot permissions.", "uk": "Сталася помилка при розміщенні панелі скарг. Перевірте права бота." },
-      "service": {
+    },
+    "service": {
         "errors": {
           "no_permissions": { "ru": "У вас нет прав для выполнения этого действия.", "en-US": "You don't have permissions to perform this action.", "uk": "У вас немає прав для виконання цієї дії." },
           "channel_not_set": { "ru": "Канал для модерации жалоб не настроен для этого сервера. Обратитесь к администратору.", "en-US": "Moderation channel for reports is not configured. Contact admin.", "uk": "Канал для модерації скарг не налаштований. Зверніться до адміністратора." },
@@ -590,8 +590,7 @@ const moderation = {
           "unknown_user": { "ru": "Неизвестный пользователь: `{target}` (ID не найден)", "en-US": "Unknown user: `{target}` (ID not found)", "uk": "Невідомий користувач: `{target}` (ID не знайдено)" },
           "not_found_user": { "ru": "Не удалось найти: `{target}`", "en-US": "Could not find: `{target}`", "uk": "Не вдалося знайти: `{target}`" }
         }
-      }
-    }
+    },
   },
   "restrict": {
     "name": { "en-US": "restrict", "ru": "ограничить", "uk": "обмежити" },

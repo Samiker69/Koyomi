@@ -16,12 +16,10 @@ module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
         .setName('tictactoe')
-        .setNameLocalizations(localeManager.getLocalizations('minigame.tictactoe.name', 'name'))
         .setDescription('Play Tic Tac Toe with someone')
         .setDescriptionLocalizations(localeManager.getLocalizations('minigame.tictactoe.description'))
         .addUserOption(opt =>
             opt.setName('opponent')
-                .setNameLocalizations(localeManager.getLocalizations('minigame.tictactoe.options.opponent.name', 'name'))
                 .setDescription('Select an opponent')
                 .setDescriptionLocalizations(localeManager.getLocalizations('minigame.tictactoe.options.opponent.description'))
                 .setRequired(true)

@@ -5,23 +5,19 @@ const localeManager = require('../../locales/localeManager');
 
 const data = new SlashCommandBuilder()
     .setName('eval')
-    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.name'))
     .setDescription(localeManager.get('forFunOnly.eval.description'))
     .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.description'))
         .addSubcommand(subcommand =>
             subcommand.setName('presence')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.name'))
             .setDescription(localeManager.get('forFunOnly.eval.options.presence.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.description'))
             .addStringOption(option => 
                 option.setName('name-activity')
-                .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.name-activity.name'))
                 .setDescription(localeManager.get('forFunOnly.eval.options.presence.options.name-activity.description'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.name-activity.description'))
             )
             .addStringOption(option => 
                 option.setName('status')
-                .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.status.name'))
                 .setDescription(localeManager.get('forFunOnly.eval.options.presence.options.status.description'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.status.description'))
                 .addChoices(
@@ -33,7 +29,6 @@ const data = new SlashCommandBuilder()
             )
             .addIntegerOption(option =>
                 option.setName('activity')
-                .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.activity.name'))
                 .setDescription(localeManager.get('forFunOnly.eval.options.presence.options.activity.description'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.activity.description'))
                 .addChoices(
@@ -48,12 +43,10 @@ const data = new SlashCommandBuilder()
         )
         .addSubcommand(subcommand =>
             subcommand.setName('avatar')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.avatar.name'))
             .setDescription(localeManager.get('forFunOnly.eval.options.avatar.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.avatar.description'))
             .addAttachmentOption(option =>
                 option.setName('file')
-                .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.avatar.options.file.name'))
                 .setDescription(localeManager.get('forFunOnly.eval.options.avatar.options.file.description'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.avatar.options.file.description'))
                 .setRequired(true)
@@ -61,12 +54,10 @@ const data = new SlashCommandBuilder()
         )
         .addSubcommand(subcommand =>
             subcommand.setName('banner')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.banner.name'))
             .setDescription(localeManager.get('forFunOnly.eval.options.banner.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.banner.description'))
             .addAttachmentOption(option =>
                 option.setName('file')
-                .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.banner.options.file.name'))
                 .setDescription(localeManager.get('forFunOnly.eval.options.banner.options.file.description'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.banner.options.file.description'))
                 .setRequired(true)
@@ -74,7 +65,6 @@ const data = new SlashCommandBuilder()
         )
         .addSubcommand(subcommand =>
             subcommand.setName('botinfo')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.botinfo.name'))
             .setDescription(localeManager.get('forFunOnly.eval.options.botinfo.description'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.botinfo.description'))
         )

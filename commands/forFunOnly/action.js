@@ -19,17 +19,14 @@ async function getActionGif(query) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('action')
-    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.name'))
     .setDescription(localeManager.get('forFunOnly.action.description', 'en-US'))
     .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.description'))
     .addSubcommand(sub =>
       sub.setName('hug')
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.name'))
         .setDescription(localeManager.get('forFunOnly.action.options.hug.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.description'))
         .addUserOption(opt =>
           opt.setName('user')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.options.user.name'))
             .setDescription(localeManager.get('forFunOnly.action.options.hug.options.user.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.options.user.description'))
             .setRequired(true)
@@ -37,12 +34,10 @@ module.exports = {
     )
     .addSubcommand(sub =>
       sub.setName('slap')
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.name'))
         .setDescription(localeManager.get('forFunOnly.action.options.slap.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.description'))
         .addUserOption(opt =>
           opt.setName('user')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.options.user.name'))
             .setDescription(localeManager.get('forFunOnly.action.options.slap.options.user.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.options.user.description'))
             .setRequired(true)
@@ -50,12 +45,10 @@ module.exports = {
     )
     .addSubcommand(sub =>
       sub.setName('pat')
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.name'))
         .setDescription(localeManager.get('forFunOnly.action.options.pat.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.description'))
         .addUserOption(opt =>
           opt.setName('user')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.options.user.name'))
             .setDescription(localeManager.get('forFunOnly.action.options.pat.options.user.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.options.user.description'))
             .setRequired(true)
@@ -63,12 +56,10 @@ module.exports = {
     )
     .addSubcommand(sub =>
       sub.setName('kiss')
-        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.name'))
         .setDescription(localeManager.get('forFunOnly.action.options.kiss.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.description'))
         .addUserOption(opt =>
           opt.setName('user')
-            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.options.user.name'))
             .setDescription(localeManager.get('forFunOnly.action.options.kiss.options.user.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.options.user.description'))
             .setRequired(true)

@@ -6,7 +6,6 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('channel')
-        .setNameLocalizations(localeManager.getLocalizations('moderation.channel.name'))
         .setDescription(localeManager.get('moderation.channel.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.channel.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
@@ -14,12 +13,10 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('lock')
-                .setNameLocalizations(localeManager.getLocalizations('moderation.channel.options.lock.name'))
                 .setDescription(localeManager.get('moderation.channel.options.lock.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.channel.options.lock.description'))
                 .addChannelOption(option =>
                     option.setName('channel')
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.channel.options.lock.options.channel.name'))
                         .setDescription(localeManager.get('moderation.channel.options.lock.options.channel.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.channel.options.lock.options.channel.description'))
                         .addChannelTypes(ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildAnnouncement)
@@ -29,12 +26,10 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('unlock')
-                .setNameLocalizations(localeManager.getLocalizations('moderation.channel.options.unlock.name'))
                 .setDescription(localeManager.get('moderation.channel.options.unlock.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.channel.options.unlock.description'))
                 .addChannelOption(option =>
                     option.setName('channel')
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.channel.options.unlock.options.channel.name'))
                         .setDescription(localeManager.get('moderation.channel.options.unlock.options.channel.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.channel.options.unlock.options.channel.description'))
                          .addChannelTypes(ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildAnnouncement)
@@ -44,12 +39,10 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('slowmode')
-                .setNameLocalizations(localeManager.getLocalizations('moderation.channel.options.slowmode.name'))
                 .setDescription(localeManager.get('moderation.channel.options.slowmode.description', 'en-US'))
                 .setDescriptionLocalizations(localeManager.getLocalizations('moderation.channel.options.slowmode.description'))
                 .addIntegerOption(option =>
                     option.setName('seconds')
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.channel.options.slowmode.options.seconds.name'))
                         .setDescription(localeManager.get('moderation.channel.options.slowmode.options.seconds.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.channel.options.slowmode.options.seconds.description'))
                         .setMinValue(0)
@@ -58,7 +51,6 @@ module.exports = {
                 )
                 .addChannelOption(option =>
                     option.setName('channel')
-                        .setNameLocalizations(localeManager.getLocalizations('moderation.channel.options.slowmode.options.channel.name'))
                         .setDescription(localeManager.get('moderation.channel.options.slowmode.options.channel.description', 'en-US'))
                         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.channel.options.slowmode.options.channel.description'))
                         .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildForum, ChannelType.GuildMedia)

@@ -32,7 +32,7 @@ const forFunOnly = {
         "description": {
           "en-US": "Number of characters",
           "ru": "Количество символов",
-          "uk": "Кількість символів"
+          "uk": "Кількість символов"
         }
       },
       "width": {
@@ -317,7 +317,9 @@ const forFunOnly = {
         "en-US": "Captcha generated! The code is: \`{code}\`",
         "ru": "Капча сгенерирована! Код: \`{code}\`",
         "uk": "Капча згенерована! Код: \`{code}\`"
-      }
+      },
+      "error": { "en-US": "Failed to generate captcha.", "ru": "Не удалось создать капчу.", "uk": "Не вдалося створити капчу." },
+      "solve_everyone": { "en-US": "Everyone solve the captcha!", "ru": "Всем решать капчу!", "uk": "Всім вирішувати капчу!" }
     }
   },
   "ai": {
@@ -739,6 +741,24 @@ const forFunOnly = {
          "ru": "У вас нет ни одного апи ключа для использования этой команды.",
          "uk": "У вас немає жодного апі ключа для використання цієї команди."
        },
+       "label_history_limit_limit": { "en-US": "History Limit (history_limit)", "ru": "Лимит истории (history_limit)", "uk": "Ліміт історії (history_limit)" },
+       "label_si": { "en-US": "System Instructions (system_instructions)", "ru": "Системные инструкции (system_instructions)", "uk": "Системні інструкції (system_instructions)" },
+       "label_safety": { "en-US": "Safety Settings", "ru": "Настройки безопасности", "uk": "Налаштування безпеки" },
+       "label_temperature": { "en-US": "Temperature", "ru": "Температура", "uk": "Температура" },
+       "label_total_tokens": { "en-US": "Total Tokens Used", "ru": "Всего токенов использовано", "uk": "Всього токенів використано" },
+       "label_token_uses": { "en-US": "Token Uses", "ru": "Использований токенов", "uk": "Використання токенів" },
+       "settings_updated": { "en-US": "Settings updated successfully!", "ru": "Настройки успешно обновлены!", "uk": "Налаштування успішно оновлені!" },
+       "settings_not_changed": { "en-US": "Nothing was changed.", "ru": "Ничего не было изменено.", "uk": "Нічого не було змінено." },
+       "safety_category_changed": { "en-US": "Safety category {category} set to {value}.", "ru": "Категория безопасности {category} установлена на {value}.", "uk": "Категорія безпеки {category} встановлена на {value}." },
+       "unknown_category": { "en-US": "Unknown safety category.", "ru": "Неизвестная категория безопасности.", "uk": "Невідома категорія безпеки." },
+       "apikey_added": { "en-US": "API key added successfully!", "ru": "API ключ успешно добавлен!", "uk": "API ключ успішно доданий!" },
+       "apikey_required_non_all": { "en-US": "API key is required unless deleting all.", "ru": "API ключ обязателен, если вы не удаляете все.", "uk": "API ключ обов'язковий, якщо ви не видаляєте всі." },
+       "keys_deleted_count": { "en-US": "{count} keys deleted.", "ru": "Удалено ключей: {count}.", "uk": "Видалено ключів: {count}." },
+       "apikey_deleted": { "en-US": "API key deleted.", "ru": "API ключ удален.", "uk": "API ключ видалений." },
+       "model_info_no_keys": { "en-US": "No API keys found to fetch model info.", "ru": "Не найдено API ключей для получения информации о модели.", "uk": "Не знайдено API ключів для отримання інформації про модель." },
+       "user_added": { "en-US": "User {user} added to AI database.", "ru": "Пользователь {user} добавлен в базу AI.", "uk": "Користувач {user} доданий до бази ШІ." },
+       "user_removed": { "en-US": "User {user} removed from AI database.", "ru": "Пользователь {user} удален из базы AI.", "uk": "Користувач {user} видалений з бази ШІ." },
+       "unknown_subcommand": { "en-US": "Unknown subcommand.", "ru": "Неизвестная подкоманда.", "uk": "Невідома підкоманда." },
        "not_image": {
          "en-US": "This is not an image! Attachment will be ignored.\nExecuting request to AI...",
          "ru": "Это не изображение! Вложение будет проигнорировано.\nВыполняем запрос к ai...",
@@ -799,96 +819,9 @@ const forFunOnly = {
          "ru": "Максимум токенов на ответ (max_output_tokens)",
          "uk": "Максимум токенів на відповідь (max_output_tokens)"
        },
-       "label_temperature": {
-         "en-US": "Temperature (temperature)",
-         "ru": "Температура ответов (temperature)",
-         "uk": "Температура відповідей (temperature)"
-       },
-       "label_history_limit": {
-         "en-US": "History Limit (history_limit)",
-         "ru": "Лимит сохранения истории (history_limit)",
-         "uk": "Ліміт збереження історії (history_limit)"
-       },
-       "label_total_tokens": {
-         "en-US": "Total Tokens",
-         "ru": "Всего токенов",
-         "uk": "Всього токенів"
-       },
-       "label_token_uses": {
-         "en-US": "Key usage count",
-         "ru": "Сколько раз ваш токен был использован нами",
-         "uk": "Скільки разів ваш токен був використаний нами"
-       },
-       "settings_updated": {
-         "en-US": "Settings have been updated.",
-         "ru": "Настройки были обновлены.",
-         "uk": "Налаштування були оновлені."
-       },
-       "settings_not_changed": {
-         "en-US": "Settings have not changed.",
-         "ru": "Настройки не изменились.",
-         "uk": "Налаштування не змінилися."
-       },
-       "safety_category_changed": {
-         "en-US": "Category \`{category}\` value changed to \`{value}\`.",
-         "ru": "Значение категории \`{category}\` было изменено на \`{value}\`.",
-         "uk": "Значення категорії \`{category}\` було змінено на \`{value}\`."
-       },
-       "unknown_category": {
-         "en-US": "Unknown category!",
-         "ru": "Неизвестная категория!",
-         "uk": "Невідома категорія!"
-       },
-       "apikey_added": {
-         "en-US": "Your key has been successfully added! You can now use AI features.",
-         "ru": "Ваш ключ успешно добавлен! Можете пользоваться функционалом AI.",
-         "uk": "Ваш ключ успішно додано! Можете користуватися функціоналом ШІ."
-       },
-       "apikey_deleted": {
-         "en-US": "\`{apikey}\` has been deleted.",
-         "ru": "\`{apikey}\` был удалён.",
-         "uk": "\`{apikey}\` було видалено."
-       },
-       "keys_deleted_count": {
-         "en-US": "\`{count}\` keys have been deleted.",
-         "ru": "\`{count}\` ключей было удалено.",
-         "uk": "\`{count}\` ключів було видалено."
-       },
-       "apikey_required_non_all": {
-         "en-US": "\`apikey\` cannot be empty unless you are deleting all tokens!",
-         "ru": "\`apikey\` не может быть пустым, если вы не удаляете все токены!",
-         "uk": "\`apikey\` не може бути порожнім, якщо ви не видаляєте всі токени!"
-       },
-       "model_info_no_keys": {
-         "en-US": "You don't have any API keys to use this command.",
-         "ru": "У вас нет ни одного апи ключа для использования этой команды.",
-         "uk": "У вас немає жодного апі ключа для використання цієї команди."
-       },
-       "unknown_subcommand": {
-         "en-US": "It seems this subcommand does not exist.",
-         "ru": "Кажется, такой саб-команды не существует",
-         "uk": "Здається, такої саб-команди не існує"
-       },
-       "thinking": {
-         "en-US": "Thinking...",
-         "ru": "Думаю...",
-         "uk": "Думаю..."
-       },
-       "error": {
-         "en-US": "An error occurred: {error}",
-         "ru": "Произошла ошибка: {error}",
-         "uk": "Сталася помилка: {error}"
-       },
-       "user_added": {
-         "en-US": "User {user} has been added to the database.",
-         "ru": "Пользователь {user} был добавлен в базу данных.",
-         "uk": "Користувач {user} був доданий до бази даних."
-       },
-       "user_removed": {
-         "en-US": "User {user} has been removed from the database.",
-         "ru": "Пользователь {user} был удален из базы данных.",
-         "uk": "Користувач {user} був видалений з бази даних."
-       }
+       "label_history_limit": { "en-US": "History Limit (history_limit)", "ru": "Лимит истории (history_limit)", "uk": "Ліміт історії (history_limit)" },
+       "label_si": { "en-US": "System Instructions (system_instructions)", "ru": "Системные инструкции (system_instructions)", "uk": "Системні інструкції (system_instructions)" },
+       "label_safety": { "en-US": "Safety Settings", "ru": "Настройки безопасности", "uk": "Налаштування безпеки" }
     }
   },
   "eval": {
@@ -898,9 +831,9 @@ const forFunOnly = {
       "uk": "евал"
     },
     "description": {
-      "en-US": "(developer only)",
-      "ru": "(Только для разработчиков)",
-      "uk": "(тільки для розробника)"
+      "en-US": "Execute JavaScript code (Owner only)",
+      "ru": "Выполнить JavaScript код (Только для владельца)",
+      "uk": "Виконати JavaScript код (Тільки для власника)"
     },
     "options": {
       "presence": {
@@ -954,352 +887,23 @@ const forFunOnly = {
         }
       },
       "avatar": {
-        "name": {
-          "en-US": "avatar",
-          "ru": "аватар",
-          "uk": "аватар"
-        },
-        "description": {
-          "en-US": "Change bot avatar",
-          "ru": "Сменить аватар бота",
-          "uk": "Змінити аватар бота"
-        },
+        "name": { "en-US": "avatar", "ru": "аватар", "uk": "аватар" },
+        "description": { "en-US": "Set bot avatar", "ru": "Установить аватар бота", "uk": "Встановити аватар бота" },
         "options": {
-          "file": {
-            "name": {
-              "en-US": "file",
-              "ru": "файл",
-              "uk": "файл"
-            },
-            "description": {
-              "en-US": "Select file",
-              "ru": "Выберите файл",
-              "uk": "Виберіть файл"
-            }
-          }
+          "file": { "name": { "en-US": "file", "ru": "файл", "uk": "файл" }, "description": { "en-US": "Image file", "ru": "Файл изображения", "uk": "Файл зображення" } }
         }
       },
       "banner": {
-        "name": {
-          "en-US": "banner",
-          "ru": "баннер",
-          "uk": "банер"
-        },
-        "description": {
-          "en-US": "Change bot banner",
-          "ru": "Сменить баннер бота",
-          "uk": "Змінити банер бота"
-        },
+        "name": { "en-US": "banner", "ru": "баннер", "uk": "баннер" },
+        "description": { "en-US": "Set bot banner", "ru": "Установить баннер бота", "uk": "Встановити банер бота" },
         "options": {
-          "file": {
-            "name": {
-              "en-US": "file",
-              "ru": "файл",
-              "uk": "файл"
-            },
-            "description": {
-              "en-US": "Select file",
-              "ru": "Выберите файл",
-              "uk": "Виберіть файл"
-            }
-          }
+          "file": { "name": { "en-US": "file", "ru": "файл", "uk": "файл" }, "description": { "en-US": "Image file", "ru": "Файл изображения", "uk": "Файл зображення" } }
         }
       },
       "botinfo": {
-        "name": {
-          "en-US": "botinfo",
-          "ru": "ботинфо",
-          "uk": "ботінфо"
-        },
-        "description": {
-          "en-US": "Shows detailed information about the bot",
-          "ru": "Показывает подробную информацию о боте",
-          "uk": "Показує детальну інформацію про бота"
-        }
-      }
-    },
-    "messages": {
-      "no_access": {
-        "en-US": "You do not have access to this command.",
-        "ru": "Вы не можете использовать эту команду",
-        "uk": "Ви не можете використовувати цю команду"
+        "name": { "en-US": "botinfo", "ru": "ботинфо", "uk": "ботінфо" },
+        "description": { "en-US": "Bot client information", "ru": "Информация о клиенте бота", "uk": "Інформація про клієнта бота" }
       },
-      "presence_updated": {
-        "en-US": "Presence updated: {presence}, {name}, {type}",
-        "ru": "Статус изменён. {presence}, {name}, {type}",
-        "uk": "Статус змінено. {presence}, {name}, {type}"
-      },
-      "presence_error": {
-        "en-US": "Failed to update presence.",
-        "ru": "Не удалось изменить статус",
-        "uk": "Не вдалося змінити статус"
-      },
-      "avatar_updated": {
-        "en-US": "Avatar updated.",
-        "ru": "Аватар изменён.",
-        "uk": "Аватар змінено."
-      },
-      "avatar_error": {
-        "en-US": "Failed to update avatar.",
-        "ru": "Не удалось изменить аватар",
-        "uk": "Не вдалося змінити аватар"
-      },
-      "banner_updated": {
-        "en-US": "Banner updated.",
-        "ru": "Баннер изменён.",
-        "uk": "Банер змінено."
-      },
-      "banner_error": {
-        "en-US": "Failed to update banner.",
-        "ru": "Не удалось изменить баннер",
-        "uk": "Не вдалося змінити банер"
-      }
-    }
-  },
-  "love": {
-    "name": {
-      "en-US": "love",
-      "ru": "любовь",
-      "uk": "любов"
-    },
-    "description": {
-      "en-US": "Calculates the love percentage between two users",
-      "ru": "Подсчитывает процент любви между двумя участниками",
-      "uk": "Підраховує відсоток любові між двома учасниками"
-    },
-    "options": {
-      "user1": {
-        "name": {
-          "en-US": "user1",
-          "ru": "участник1",
-          "uk": "учасник1"
-        },
-        "description": {
-          "en-US": "First user",
-          "ru": "Первый участник",
-          "uk": "Перший учасник"
-        }
-      },
-      "user2": {
-        "name": {
-          "en-US": "user2",
-          "ru": "участник2",
-          "uk": "учасник2"
-        },
-        "description": {
-          "en-US": "Second user",
-          "ru": "Второй участник",
-          "uk": "Другий учасник"
-        }
-      }
-    },
-    "messages": {
-      "title": {
-        "en-US": "💕 Love Calculator 💕",
-        "ru": "💕 Калькулятор Любви 💕",
-        "uk": "💕 Калькулятор Любові 💕"
-      },
-      "description": {
-        "en-US": "How compatible are {user1} and {user2}?",
-        "ru": "Насколько совместимы {user1} и {user2}?",
-        "uk": "Наскільки сумісні {user1} та {user2}?"
-      }
-    }
-  },
-  "minecraft": {
-    "name": {
-      "en-US": "minecraft",
-      "ru": "майнкрафт",
-      "uk": "майнкрафт"
-    },
-    "description": {
-      "en-US": "Provides information about a Minecraft player",
-      "ru": "Предоставляет информацию о игроке Minecraft",
-      "uk": "Надає інформацію про гравця Minecraft"
-    },
-    "options": {
-      "player": {
-        "name": {
-          "en-US": "player",
-          "ru": "игрок",
-          "uk": "гравець"
-        },
-        "description": {
-          "en-US": "Minecraft player's name",
-          "ru": "Имя игрока Minecraft",
-          "uk": "Ім'я гравця Minecraft"
-        }
-      }
-    },
-    "messages": {
-      "player_not_found": {
-        "en-US": "Player \`{player}\` not found.",
-        "ru": "Игрок \`{player}\` не найден.",
-        "uk": "Гравця \`{player}\` не знайдено."
-      },
-      "info_title": {
-        "en-US": "Minecraft Player Info: {player}",
-        "ru": "Информация по игроку {player}",
-        "uk": "Інформація про гравця {player}"
-      },
-      "label_skin_render": {
-        "en-US": "Skin Render",
-        "ru": "Рендер скина",
-        "uk": "Рендер скіна"
-      },
-      "label_skin_download": {
-        "en-US": "Download Skin",
-        "ru": "Скачать скин",
-        "uk": "Завантажити скін"
-      },
-      "label_namemc": {
-        "en-US": "NameMC Profile",
-        "ru": "Профиль на NameMC",
-        "uk": "Профіль на NameMC"
-      },
-      "link_view": {
-        "en-US": "View",
-        "ru": "Посмотреть",
-        "uk": "Переглянути"
-      },
-      "link_download": {
-        "en-US": "Download",
-        "ru": "Скачать",
-        "uk": "Завантажити"
-      },
-      "link_go": {
-        "en-US": "Visit",
-        "ru": "Перейти",
-        "uk": "Перейти"
-      }
-    }
-  },
-  "say": {
-    "name": {
-      "en-US": "say",
-      "ru": "сказать",
-      "uk": "сказати"
-    },
-    "description": {
-      "en-US": "Makes the bot send your message to the channel as itself",
-      "ru": "Позволяет боту переслать ваше сообщение в канал от своего имени",
-      "uk": "Дозволяє боту надіслати ваше повідомлення в канал від свого імені"
-    },
-    "options": {
-      "text": {
-        "name": {
-          "en-US": "text",
-          "ru": "текст",
-          "uk": "текст"
-        },
-        "description": {
-          "en-US": "Text of the message to send",
-          "ru": "Текст сообщения для отправки",
-          "uk": "Текст повідомлення для надсилання"
-        }
-      },
-      "image": {
-        "name": {
-          "en-US": "image",
-          "ru": "изображение",
-          "uk": "зображення"
-        },
-        "description": {
-          "en-US": "Attach an image to the message",
-          "ru": "Прикрепить изображение к сообщению",
-          "uk": "Прикріпити зображення до повідомлення"
-        }
-      },
-      "reply_to": {
-        "name": {
-          "en-US": "reply_to",
-          "ru": "ответить_на",
-          "uk": "відповісти_на"
-        },
-        "description": {
-          "en-US": "ID or link to a message to reply to",
-          "ru": "ID или ссылка на сообщение для ответа",
-          "uk": "ID або посилання на повідомлення для відповіді"
-        }
-      }
-    },
-    "messages": {
-      "no_access": {
-        "en-US": "You do not have access to this command.",
-        "ru": "У вас нет доступа к этой команде.",
-        "uk": "У вас немає доступу до цієї команди."
-      },
-      "text_or_image_required": {
-        "en-US": "\`text\` or \`image\` must be filled!",
-        "ru": "\`text\` или \`image\` должны быть заполнены!",
-        "uk": "\`text\` або \`image\` повинні бути заповнені!"
-      },
-      "success": {
-        "en-US": "Message sent successfully.",
-        "ru": "Сообщение успешно отправлено.",
-        "uk": "Повідомлення успішно надіслано."
-      },
-      "error": {
-        "en-US": "Failed to send message.",
-        "ru": "Не удалось отправить сообщение.",
-        "uk": "Не вдалося надіслати повідомлення."
-      }
-    }
-  },
-  "action": {
-    "name": { "en-US": "action", "ru": "действие", "uk": "дія" },
-    "description": { "en-US": "Anime-style actions with users", "ru": "Различные действия с пользователями в аниме стиле.", "uk": "Різні дії з користувачами в аніме стилі." },
-    "options": {
-      "hug": {
-        "name": { "en-US": "hug", "ru": "обнять", "uk": "обійняти" },
-        "description": { "en-US": "Hug a user", "ru": "Обнять пользователя.", "uk": "Обійняти користувача." },
-        "options": {
-          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "Who to hug?", "ru": "Кого обнять?", "uk": "Кого обійняти?" } }
-        }
-      },
-      "slap": {
-        "name": { "en-US": "slap", "ru": "ударить", "uk": "вдарити" },
-        "description": { "en-US": "Slap a user", "ru": "Ударить пользователя пощёчиной.", "uk": "Вдарити користувача ляпасом." },
-        "options": {
-          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "Who to slap?", "ru": "Кого ударить?", "uk": "Кого вдарити?" } }
-        }
-      },
-      "pat": {
-        "name": { "en-US": "pat", "ru": "погладить", "uk": "погладити" },
-        "description": { "en-US": "Pat a user", "ru": "Погладить пользователя.", "uk": "Погладити користувача." },
-        "options": {
-          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "Who to pat?", "ru": "Кого погладить?", "uk": "Кого погладити?" } }
-        }
-      },
-      "kiss": {
-        "name": { "en-US": "kiss", "ru": "поцеловать", "uk": "поцілувати" },
-        "description": { "en-US": "Kiss a user", "ru": "Поцеловать пользователя.", "uk": "Поцілувати користувача." },
-        "options": {
-          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "Who to kiss?", "ru": "Кого поцеловать?", "uk": "Кого поцілувати?" } }
-        }
-      }
-    },
-    "messages": {
-      "self_action_error": { "en-US": "You can't do this to yourself!", "ru": "Ты не можешь сделать это с самим собой!", "uk": "Ти не можеш зробити це з самим собою!" },
-      "hug_msg": { "en-US": "{author} hugs {target}! 🫂", "ru": "{author} обнимает {target}! 🫂", "uk": "{author} обіймає {target}! 🫂" },
-      "slap_msg": { "en-US": "{author} slaps {target}! 👋", "ru": "{author} даёт пощёчину {target}! 👋", "uk": "{author} дає ляпас {target}! 👋" },
-      "pat_msg": { "en-US": "{author} pats {target}! 🐾", "ru": "{author} гладит {target}! 🐾", "uk": "{author} гладить {target}! 🐾" },
-      "kiss_msg": { "en-US": "{author} kisses {target}! 💋", "ru": "{author} целует {target}! 💋", "uk": "{author} цілує {target}! 💋" },
-      "gif_error": { "en-US": "Failed to find a suitable GIF, try again later!", "ru": "Не удалось найти подходящую гифку, попробуй позже!", "uk": "Не вдалося знайти підходящу гіфку, спробуй пізніше!" }
-    }
-  },
-  "captcha": {
-    "name": { "en-US": "captcha", "ru": "капча", "uk": "капча" },
-    "description": { "en-US": "Generate a captcha image", "ru": "Создать капчу", "uk": "Створити капчу" },
-    "messages": {
-      "error": { "en-US": "Failed to generate captcha.", "ru": "Не удалось создать капчу.", "uk": "Не вдалося створити капчу." },
-      "solve_everyone": { "en-US": "Everyone solve the captcha!", "ru": "Всем решать капчу!", "uk": "Всім вирішувати капчу!" }
-    }
-  },
-  "eval": {
-    "name": { "en-US": "eval", "ru": "евал", "uk": "евал" },
-    "description": { "en-US": "Execute JavaScript code (Owner only)", "ru": "Выполнить JavaScript код (Только для владельца)", "uk": "Виконати JavaScript код (Тільки для власника)" },
-    "options": {
       "code": {
         "name": { "en-US": "code", "ru": "код", "uk": "код" },
         "description": { "en-US": "Code to execute", "ru": "Код для выполнения", "uk": "Код для виконання" }
@@ -1310,27 +914,104 @@ const forFunOnly = {
       }
     },
     "messages": {
-      "no_perms": { "en-US": "You are not allowed to use this command.", "ru": "Вам не разрешено использовать эту команду.", "uk": "Вам не дозволено використовувати цю команду." },
-      "input": { "en-US": "Input", "ru": "Вход", "uk": "Вхід" },
-      "output": { "en-US": "Output", "ru": "Выход", "uk": "Вихід" },
-      "type": { "en-US": "Type", "ru": "Тип", "uk": "Тип" },
-      "time": { "en-US": "Time", "ru": "Время", "uk": "Час" },
-      "buttons": {
-        "delete": { "en-US": "Delete", "ru": "Удалить", "uk": "Видалити" },
-        "cleanup": { "en-US": "Cleanup", "ru": "Очистить", "uk": "Очистити" },
-        "guilds": { "en-US": "Servers", "ru": "Сервера", "uk": "Сервери" },
-        "back": { "en-US": "Back", "ru": "Назад", "uk": "Назад" }
-      },
+      "no_access": { "en-US": "You do not have access to this command.", "ru": "У вас нет доступа к этой команде.", "uk": "У вас немає доступу до цієї команди." },
+      "presence_updated": { "ru": "Статус обновлен на {presence}, активность: {type} {name}", "en-US": "Status updated to {presence}, activity: {type} {name}", "uk": "Статус оновлено на {presence}, активність: {type} {name}" },
+      "presence_error": { "ru": "Ошибка при обновлении статуса", "en-US": "Error updating status", "uk": "Помилка при оновленні статусу" },
+      "avatar_updated": { "ru": "Аватар успешно обновлен!", "en-US": "Avatar updated successfully!", "uk": "Аватар успішно оновлено!" },
+      "avatar_error": { "ru": "Ошибка при обновлении аватара", "en-US": "Error updating avatar", "uk": "Помилка при оновленні аватара" },
+      "banner_updated": { "ru": "Баннер успешно обновлен!", "en-US": "Banner updated successfully!", "uk": "Банер успішно оновлено!" },
+      "banner_error": { "ru": "Ошибка при обновлении баннера", "en-US": "Error updating banner", "uk": "Помилка при оновленні банера" },
+      "unknown_sub": { "en-US": "It seems this sub-command does not exist", "ru": "Кажется, такой саб-команды не существует", "uk": "Здається, такої саб-команди не існує" },
       "botinfo_title": { "en-US": "Current Bot Client Information", "ru": "Информация о текущем клиенте бота", "uk": "Інформація про поточний клієнт бота" },
       "botinfo_description": { "en-US": "`Servers` - which servers this bot is on\nYour ad could be here: https://samiker.xyz", "ru": "`Сервера` - на каких серверах находится этот бот\nЗдесь могла быть ваша реклама https://samiker.xyz", "uk": "`Сервери` - на яких серверах знаходиться цей бот\nТут могла бути ваша реклама https://samiker.xyz" },
       "guilds_title": { "en-US": "Servers the bot is on", "ru": "Сервера, на которых находится бот", "uk": "Сервери, на яких знаходиться бот" },
       "guilds_header": { "en-US": "Name(ID). Is owner: bool", "ru": "Название(айди). Является владельцем: bool", "uk": "Назва(айді). Є власником: bool" },
       "guild_owner_label": { "en-US": "Bot is owner: ", "ru": "Бот является владельцем: ", "uk": "Бот є власником: " },
-      "unknown_sub": { "en-US": "It seems this sub-command does not exist", "ru": "Кажется, такой саб-команды не существует", "uk": "Здається, такої саб-команди не існує" }
+      "buttons": {
+        "guilds": { "en-US": "Servers", "ru": "Сервера", "uk": "Сервери" },
+        "back": { "en-US": "Back", "ru": "Назад", "uk": "Назад" }
+      }
+    }
+  },
+  "love": {
+    "name": { "en-US": "love", "ru": "любовь", "uk": "любов" },
+    "description": { "en-US": "Check love compatibility", "ru": "Проверить совместимость в любви", "uk": "Перевірити сумісність у коханні" },
+    "options": {
+      "user1": { "name": { "en-US": "user1", "ru": "пользователь1", "uk": "користувач1" }, "description": { "en-US": "First user", "ru": "Первый пользователь", "uk": "Перший користувач" } },
+      "user2": { "name": { "en-US": "user2", "ru": "пользователь2", "uk": "користувач2" }, "description": { "en-US": "Second user", "ru": "Второй пользователь", "uk": "Другий користувач" } }
+    },
+    "messages": {
+      "title": { "en-US": "Love Meter", "ru": "Измеритель любви", "uk": "Вимірювач кохання" },
+      "description": { "en-US": "Love compatibility between {user1} and {user2}", "ru": "Совместимость в любви между {user1} и {user2}", "uk": "Сумісність у коханні між {user1} та {user2}" }
+    }
+  },
+  "minecraft": {
+    "name": { "en-US": "minecraft", "ru": "майнкрафт", "uk": "майнкрафт" },
+    "description": { "en-US": "Get Minecraft player information", "ru": "Получить информацию о игроке Minecraft", "uk": "Отримати інформацію про гравця Minecraft" },
+    "options": {
+      "player": { "name": { "en-US": "player", "ru": "игрок", "uk": "гравець" }, "description": { "en-US": "Minecraft player nickname", "ru": "Никнейм игрока Minecraft", "uk": "Нікнейм гравця Minecraft" } }
+    },
+    "messages": {
+      "player_not_found": { "en-US": "Player {player} not found.", "ru": "Игрок {player} не найден.", "uk": "Гравця {player} не знайдено." },
+      "info_title": { "en-US": "Minecraft Info: {player}", "ru": "Информация Minecraft: {player}", "uk": "Інформація Minecraft: {player}" },
+      "label_skin_render": { "en-US": "Skin Render", "ru": "Рендер скина", "uk": "Рендер скіна" },
+      "label_skin_download": { "en-US": "Skin Download", "ru": "Скачать скин", "uk": "Завантажити скін" },
+      "label_namemc": { "en-US": "NameMC Profile", "ru": "Профиль NameMC", "uk": "Профіль NameMC" },
+      "link_view": { "en-US": "View", "ru": "Посмотреть", "uk": "Переглянути" },
+      "link_download": { "en-US": "Download", "ru": "Скачать", "uk": "Завантажити" },
+      "link_go": { "en-US": "Go", "ru": "Перейти", "uk": "Перейти" },
+      "error": { "en-US": "An error occurred while fetching player info.", "ru": "Произошла ошибка при получении информации о игроке.", "uk": "Сталася помилка при отриманні інформації про гравця." }
+    }
+  },
+  "say": {
+    "name": { "en-US": "say", "ru": "сказать", "uk": "сказати" },
+    "description": { "en-US": "Make bot say something", "ru": "Заставить бота что-то сказать", "uk": "Змусити бота щось сказати" },
+    "options": {
+      "text": { "name": { "en-US": "text", "ru": "текст", "uk": "текст" }, "description": { "en-US": "Text to say", "ru": "Текст который скажет бот", "uk": "Текст який скаже бот" } },
+      "image": { "name": { "en-US": "image", "ru": "изображение", "uk": "зображення" }, "description": { "en-US": "Image to send", "ru": "Изображение для отправки", "uk": "Зображення для надсилання" } },
+      "reply_to": { "name": { "en-US": "reply_to", "ru": "ответ_на", "uk": "відповідь_на" }, "description": { "en-US": "Message ID or link to reply to", "ru": "ID сообщения или ссылка для ответа", "uk": "ID повідомлення або посилання для відповіді" } }
+    },
+    "messages": {
+      "no_access": { "en-US": "You don't have access to this command.", "ru": "У вас нет доступа к этой команде.", "uk": "У вас немає доступу до цієї команди." },
+      "text_or_image_required": { "en-US": "You must provide text or an image.", "ru": "Вы должны указать текст или изображение.", "uk": "Ви повинні вказати текст або зображення." },
+      "success": { "en-US": "Message sent!", "ru": "Сообщение отправлено!", "uk": "Повідомлення надіслано!" },
+      "error": { "en-US": "Could not send message.", "ru": "Не удалось отправить сообщение.", "uk": "Не вдалося надіслати повідомлення." }
+    }
+  },
+  "action": {
+    "name": { "en-US": "action", "ru": "действие", "uk": "дія" },
+    "description": { "en-US": "Perform an action", "ru": "Выполнить действие", "uk": "Виконати дію" },
+    "options": {
+      "hug": {
+        "name": { "en-US": "hug", "ru": "обнять", "uk": "обійняти" },
+        "description": { "en-US": "Hug someone", "ru": "Обнять кого-то", "uk": "Обійняти когось" },
+        "options": { "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "User to hug", "ru": "Пользователь, которого хотите обнять", "uk": "Користувач, якого хочете обійняти" } } }
+      },
+      "slap": {
+        "name": { "en-US": "slap", "ru": "ударить", "uk": "вдарити" },
+        "description": { "en-US": "Slap someone", "ru": "Ударить кого-то", "uk": "Вдарити когось" },
+        "options": { "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "User to slap", "ru": "Пользователь, которого хотите ударить", "uk": "Користувач, якого хочете вдарити" } } }
+      },
+      "pat": {
+        "name": { "en-US": "pat", "ru": "погладить", "uk": "погладити" },
+        "description": { "en-US": "Pat someone", "ru": "Погладить кого-то", "uk": "Погладити когось" },
+        "options": { "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "User to pat", "ru": "Пользователь, которого хотите погладить", "uk": "Користувач, якого хочете погладити" } } }
+      },
+      "kiss": {
+        "name": { "en-US": "kiss", "ru": "поцеловать", "uk": "поцілувати" },
+        "description": { "en-US": "Kiss someone", "ru": "Поцеловать кого-то", "uk": "Поцілувати когось" },
+        "options": { "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "User to kiss", "ru": "Пользователь, которого хотите поцеловать", "uk": "Користувач, якого хочете поцілувати" } } }
+      }
+    },
+    "messages": {
+      "hug_msg": { "ru": "{author} обнимает {target}!", "en-US": "{author} hugs {target}!", "uk": "{author} обіймає {target}!" },
+      "slap_msg": { "ru": "{author} дает пощечину {target}!", "en-US": "{author} slaps {target}!", "uk": "{author} дає ляпаса {target}!" },
+      "pat_msg": { "ru": "{author} гладит {target} по голове!", "en-US": "{author} pats {target} on the head!", "uk": "{author} гладить {target} по голові!" },
+      "kiss_msg": { "ru": "{author} целует {target}!", "en-US": "{author} kisses {target}!", "uk": "{author} цілує {target}!" },
+      "self_action_error": { "ru": "Вы не можете сделать это с самим собой!", "en-US": "You cannot do this to yourself!", "uk": "Ви не можете зробити це з самим собою!" },
+      "gif_error": { "ru": "Не удалось найти подходящую гифку.", "en-US": "Could not find a suitable GIF.", "uk": "Не вдалося знайти відповідну гіфку." }
     }
   }
-}
+};
 
-module.exports = {
-  forFunOnly
-}
+module.exports = { forFunOnly };

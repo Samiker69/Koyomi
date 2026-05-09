@@ -11,8 +11,7 @@ const {
   module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-      .setName(localeManager.get('nsfw.nhentai.name'))
-      .setNameLocalizations(localeManager.getLocalizations('nsfw.nhentai.name', 'name'))
+      .setName('nhentai')
       .setDescription(localeManager.get('nsfw.nhentai.description'))
       .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.nhentai.description')),
   
