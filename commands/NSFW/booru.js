@@ -1,71 +1,85 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 const booru = require('booru');
 const { changePage, activeTime } = require('../../functions/changePage');
 const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
-const { nsfw } = require('../../locales/descriptions/nsfw')
+const localeManager = require('../../locales/localeManager');
 const { bot_log_channel } = require('../../config.json')
 
 module.exports = {
     cooldown: 5,
 	data: new SlashCommandBuilder()
-		.setName('booru')
-		.setDescription(nsfw.booru.description.ru)
-        .setDescriptionLocalizations(nsfw.booru.description)
+		.setName(localeManager.get('nsfw.booru.name'))
+		.setNameLocalizations(localeManager.getLocalizations('nsfw.booru.name', 'name'))
+		.setDescription(localeManager.get('nsfw.booru.description'))
+		.setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.description'))
         .setContexts(0,1,2)
         .addSubcommand(sub =>
-            sub.setName('search')
-            .setDescription(nsfw.booru.search.description.ru)
-            .setDescriptionLocalizations(nsfw.booru.search.description)
+            sub.setName(localeManager.get('nsfw.booru.options.search.name'))
+            .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.name', 'name'))
+            .setDescription(localeManager.get('nsfw.booru.options.search.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.description'))
             .addStringOption(o =>
-                o.setName('site')
-                .setDescription(nsfw.booru.options.site.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.site.description)
+                o.setName(localeManager.get('nsfw.booru.options.search.options.site.name'))
+                .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.site.name', 'name'))
+                .setDescription(localeManager.get('nsfw.booru.options.search.options.site.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.site.description'))
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName('tags')
-                .setDescription(nsfw.booru.options.tags.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.tags.description)
+                o.setName(localeManager.get('nsfw.booru.options.search.options.tags.name'))
+                .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.tags.name', 'name'))
+                .setDescription(localeManager.get('nsfw.booru.options.search.options.tags.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.tags.description'))
                 .setRequired(true)
             )
             .addNumberOption(o => 
-                o.setName('limit')
-                .setDescription(nsfw.booru.options.limit.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.limit.description)
+                o.setName(localeManager.get('nsfw.booru.options.search.options.limit.name'))
+                .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.limit.name', 'name'))
+                .setDescription(localeManager.get('nsfw.booru.options.search.options.limit.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.limit.description'))
                 .setMaxValue(100)
                 .setMinValue(1)
             )
             .addNumberOption(o => 
-                o.setName('page')
-                .setDescription(nsfw.booru.options.page.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.page.description)
+                o.setName(localeManager.get('nsfw.booru.options.search.options.page.name'))
+                .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.page.name', 'name'))
+                .setDescription(localeManager.get('nsfw.booru.options.search.options.page.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.page.description'))
                 .setMinValue(0)
             )
             .addBooleanOption(o =>
-                o.setName('no_ai')
-                .setDescription(nsfw.booru.options.no_ai.description.ru)
+                o.setName(localeManager.get('nsfw.booru.options.search.options.no_ai.name'))
+                .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.no_ai.name', 'name'))
+                .setDescription(localeManager.get('nsfw.booru.options.search.options.no_ai.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.no_ai.description'))
             )
         )
         .addSubcommand(sub =>
-            sub.setName('random')
-            .setDescription(nsfw.booru.random.description.ru)
-            .setDescriptionLocalizations(nsfw.booru.random.description)
+            sub.setName(localeManager.get('nsfw.booru.options.random.name'))
+            .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.random.name', 'name'))
+            .setDescription(localeManager.get('nsfw.booru.options.random.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.random.description'))
             .addStringOption(o =>
-                o.setName('site')
-                .setDescription(nsfw.booru.options.site.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.site.description)
+                o.setName(localeManager.get('nsfw.booru.options.search.options.site.name')) // Using search site name since they are same
+                .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.site.name', 'name'))
+                .setDescription(localeManager.get('nsfw.booru.options.search.options.site.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.site.description'))
                 .setAutocomplete(true)
                 .setRequired(true)
             )
             .addStringOption(o =>
-                o.setName('tags')
-                .setDescription(nsfw.booru.options.tags.description.ru)
-                .setDescriptionLocalizations(nsfw.booru.options.tags.description)
+                o.setName(localeManager.get('nsfw.booru.options.search.options.tags.name'))
+                .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.tags.name', 'name'))
+                .setDescription(localeManager.get('nsfw.booru.options.search.options.tags.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.tags.description'))
             )
             .addBooleanOption(o =>
-                o.setName('no_ai')
-                .setDescription(nsfw.booru.options.no_ai.description.ru)
+                o.setName(localeManager.get('nsfw.booru.options.search.options.no_ai.name'))
+                .setNameLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.no_ai.name', 'name'))
+                .setDescription(localeManager.get('nsfw.booru.options.search.options.no_ai.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.booru.options.search.options.no_ai.description'))
             )
         )
 ,
@@ -83,12 +97,13 @@ module.exports = {
     },
 
 	async execute(interaction) {
+        const lang = interaction.guildLocale || 'ru';
         let pages = [], page = 0, nsfw = false;
         const filter = (i) => {
             // Проверяем customId и пользователя
              if (i.customId === 'booru_previous_page' || i.customId === 'booru_next_page') {
                  if (i.user.id !== interaction.user.id) {
-                    i.reply({ content: `Только ${interaction.user.username} может взаимодействовать`, flags: MessageFlags.Ephemeral });
+                    i.reply({ content: localeManager.get('nsfw.booru.messages.only_author', lang, { user: interaction.user.username }), flags: MessageFlags.Ephemeral });
                     return false; // Игнорируем нажатие от другого пользователя
                  }
                  return true; // Обрабатываем нажатие от автора команды
@@ -103,9 +118,9 @@ module.exports = {
             const pageOfBooru = await interaction.options.getNumber('page') | null;
             const no_ai = await interaction.options.getBoolean('no_ai') | false;
 
-            if (!siteOfbooru) return await interaction.reply({ content: "Неверно введёт сайт. Используйте всплывающий список сайтов, чтобы больше не получать эту ошибку. " })
+            if (!siteOfbooru) return await interaction.reply({ content: localeManager.get('nsfw.booru.messages.invalid_site', lang) });
             const canonicalSite = siteLookup.get(siteOfbooru.toLowerCase());
-            if (!canonicalSite) return await interaction.reply({content: `Не удалось найти ${canonicalSite}. Убедитесь, что вы ввели верное название`, flags: MessageFlags.Ephemeral});
+            if (!canonicalSite) return await interaction.reply({ content: localeManager.get('nsfw.booru.messages.site_not_found', lang, { site: siteOfbooru }), flags: MessageFlags.Ephemeral });
             const site = booru.forSite(canonicalSite);
             let result, lastartlink; 
             if (no_ai) tags += ' -ai_generated -thick -lactation -fart -futanari -peeing -big_belly -breast_bigger_than_head -pregnant -gigantic_breasts -huge_breasts -thick_thighs -thick_ass -gigantic_ass -huge_ass'
@@ -113,26 +128,24 @@ module.exports = {
             if (interaction.options.getSubcommand() === "search") result = await site.search(tags.split(' '), { limit: limit, page: pageOfBooru });
             else if (interaction.options.getSubcommand() === "random") result = await site.search(tags, { random: true });
             await interaction.deferReply();
-            if (result.posts.length < 1) return await interaction.editReply(`Кажется, ничего не удалось найти. Проверьте правильность написания тегов ${no_ai ? "также попробуйте не использовать no_ai" : ''}`);
+            if (result.posts.length < 1) {
+                const noAiTip = no_ai ? localeManager.get('nsfw.booru.messages.no_ai_tip', lang) : '';
+                return await interaction.editReply(localeManager.get('nsfw.booru.messages.nothing_found', lang, { no_ai_tip: noAiTip }));
+            }
 
             for (let post of result) {
                 if ( (post.rating === 'u' || post.rating === 'e' || post.rating === 'q') && !interaction.channel.nsfw ) {
-                    const banned = new EmbedBuilder()
-                    .setColor('Grey')
-                    .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
-                    .setDescription(
-                        `Данный пост заблокирован, так как имеет опасный рейтинг для этого канала.`+
-                        `\nИнформация о посте: \`id ${post.id}\``
-                    )
+                    const banned = EmbedService.createBaseEmbed(interaction)
+                    .setTitle(localeManager.get('nsfw.booru.messages.post_blocked_title', lang, { rating: post.rating, domain: post.booru.domain }))
+                    .setDescription(localeManager.get('nsfw.booru.messages.post_blocked_desc', lang, { id: post.id }))
                     .setTimestamp(post.createdAt)
                     
                     pages.push(banned)
                 } else {
                     if (lastartlink === post.fileUrl) continue;
                     lastartlink = post.fileUrl;
-                    const ok = new EmbedBuilder()
-                    .setColor('Random')
-                    .setTitle(`Rating ${post.rating} | from ${post.booru.domain}`)
+                    const ok = EmbedService.createBaseEmbed(interaction)
+                    .setTitle(localeManager.get('nsfw.booru.messages.post_blocked_title', lang, { rating: post.rating, domain: post.booru.domain }))
                     .setDescription(`-# \`${post.tags.join(',')}\``)
                     .setURL(post.postView)
                     .setTimestamp(post.createdAt)
@@ -172,7 +185,14 @@ module.exports = {
             });
 
             collector.on('end', async (collected, reason) => {
-                const disabledEmbed = pages[page].setFooter({ text: `page ${page + 1} of ${pages.length} (timeOut)` });
+                const timeoutStr = localeManager.get('nsfw.booru.messages.timeout', lang);
+                const disabledEmbed = pages[page].setFooter({ 
+                    text: localeManager.get('nsfw.booru.messages.page_info', lang, { 
+                        current: page + 1, 
+                        total: pages.length, 
+                        timeout: timeoutStr 
+                    }) 
+                });
     
                 const leftB = new ButtonBuilder()
                     .setCustomId('previous_page_disabled')
@@ -197,18 +217,17 @@ module.exports = {
             })
             
        } catch (error) {
-            const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
+            const errorEmbed = EmbedService.createBaseEmbed(interaction)
+            .setTitle(localeManager.get('nsfw.booru.messages.error_title', lang))
             .addFields(
-                { name: `Команда`, value: `${interaction.commandName}` },
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                { name: localeManager.get('nsfw.booru.messages.command_label', lang), value: `${interaction.commandName}` },
+                { name: localeManager.get('nsfw.booru.messages.error_label', lang), value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
             )
             .setTimestamp(new Date())
             console.error(error);
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
             await logChannel.send({ embeds: [errorEmbed] });
-            await interaction.editReply('Произошла ошибка при работе команды');
+            await interaction.editReply(localeManager.get('nsfw.booru.messages.generic_error', lang));
        }
    },
 };

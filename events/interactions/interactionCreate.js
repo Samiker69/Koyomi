@@ -1,5 +1,6 @@
 const { Events, MessageFlags, Collection, EmbedBuilder } = require('discord.js');
 const { bot_log_channel } = require('../../config.json')
+const localeManager = require('../../locales/localeManager');
 
 const DisabledCommandsDB = require('../../functions/db/restrictions');
 const db = new DisabledCommandsDB();
@@ -12,6 +13,7 @@ module.exports = {
             return;
         }
 
+        const lang = interaction.guildLocale || 'ru';
         const command = interaction.client.commands.get(interaction.commandName);
 
         if (!command) {
@@ -21,7 +23,7 @@ module.exports = {
 
         if (interaction.guild && db.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
             await interaction.reply({
-                content: `Команда \`${interaction.commandName}\` запрещена для вас на этом сервере.`,
+                content: localeManager.get('events.errors.command_disabled', lang, { commandName: interaction.commandName }),
                 flags: MessageFlags.Ephemeral
             });
             return;
@@ -44,7 +46,10 @@ module.exports = {
             if (now < expirationTime) {
                 const expiredTimestamp = Math.round(expirationTime / 1000);
                 return await interaction.reply({
-                    content: `Не так быстро! Вы слишком часто использовали \`${command.data.name}\`. Ты снова сможешь использовать её <t:${expiredTimestamp}:R>.`,
+                    content: localeManager.get('events.errors.cooldown', lang, {
+                        commandName: command.data.name,
+                        timestamp: expiredTimestamp
+                    }),
                     flags: MessageFlags.Ephemeral
                 });
             }
@@ -58,19 +63,21 @@ module.exports = {
             console.error(error);
             const errorEmbed = new EmbedBuilder()
             .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
+            .setTitle(localeManager.get('events.interaction_log.title', lang))
             .addFields(
-                { name: `Команда`, value: `${interaction.commandName}`},
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack || ''}\`\`\`` }
+                { name: localeManager.get('events.interaction_log.command_label', lang), value: `${interaction.commandName}`},
+                { name: localeManager.get('events.interaction_log.error_label', lang), value: `\`\`\`txt\n${error.message}\n${error.stack || ''}\`\`\`` }
             )
             .setTimestamp(new Date())
             
             const logChannel = await interaction.client.channels.fetch(bot_log_channel)
             await logChannel.send({ embeds: [errorEmbed] })
+            
+            const errorMessage = localeManager.get('events.errors.command_error', lang);
             if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({ content: 'Произошла ошибка при обработке команды!', flags: MessageFlags.Ephemeral });
+                await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
             } else {
-                await interaction.reply({ content: 'Произошла ошибка при обработке команды!', flags: MessageFlags.Ephemeral });
+                await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
             }
         }
     },

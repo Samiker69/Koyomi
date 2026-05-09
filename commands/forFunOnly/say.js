@@ -1,38 +1,42 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const config = require('../../config.json');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+const localeManager = require('../../locales/localeManager');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('say')
-    .setDescription(forFunOnly.say.description.ru)
-    .setDescriptionLocalizations(forFunOnly.say.description)
+    .setName(localeManager.get('forFunOnly.say.name'))
+    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.name', 'name'))
+    .setDescription(localeManager.get('forFunOnly.say.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.say.description'))
     .addStringOption(opt =>
       opt
-        .setName('text')
-        .setDescription(forFunOnly.say.options.text.description.ru)
-        .setDescriptionLocalizations(forFunOnly.say.options.text.description)
+        .setName(localeManager.get('forFunOnly.say.options.text.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.text.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.say.options.text.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.say.options.text.description'))
         .setRequired(false)
     )
     .addAttachmentOption(opt =>
       opt
-        .setName('image')
-        .setDescription(forFunOnly.say.options.image.description.ru)
-        .setDescriptionLocalizations(forFunOnly.say.options.image.description)
+        .setName(localeManager.get('forFunOnly.say.options.image.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.image.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.say.options.image.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.say.options.image.description'))
         .setRequired(false)
     )
     .addStringOption(opt =>
       opt
-        .setName('reply_to')
-        .setDescription(forFunOnly.say.options.reply_to.description.ru)
-        .setDescriptionLocalizations(forFunOnly.say.options.reply_to.description)
+        .setName(localeManager.get('forFunOnly.say.options.reply_to.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.say.options.reply_to.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.say.options.reply_to.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.say.options.reply_to.description'))
         .setRequired(false)
     ),
 
   async execute(interaction) {
     if (!config.privateAccess.includes(interaction.user.id)) {
       return await interaction.reply({
-        content: 'У вас нет доступа к этой команде.',
+        content: localeManager.get('forFunOnly.say.messages.no_access', interaction.guildLocale || 'ru'),
         flags: MessageFlags.Ephemeral
       });
     }
@@ -42,7 +46,7 @@ module.exports = {
     const text = interaction.options.getString('text', false);
     const image = interaction.options.getAttachment('image');
     const replyToRaw = interaction.options.getString('reply_to');
-    if (!text && !image) return await interaction.editReply({ content: "`text` или `image` должны быть заполнены!", flags: MessageFlags.Ephemeral });
+    if (!text && !image) return await interaction.editReply({ content: localeManager.get('forFunOnly.say.messages.text_or_image_required', interaction.guildLocale || 'ru'), flags: MessageFlags.Ephemeral });
     let messageReference;
 
     if (replyToRaw) {
@@ -57,13 +61,13 @@ module.exports = {
     try {
       await interaction.channel.send(sendOptions);
       await interaction.editReply({
-        content: 'Сообщение успешно отправлено.',
+        content: localeManager.get('forFunOnly.say.messages.success', interaction.guildLocale || 'ru'),
         flags: MessageFlags.Ephemeral
       });
     } catch (err) {
       console.error('Error in /say:', err);
       await interaction.editReply({
-        content: 'Не удалось отправить сообщение.',
+        content: localeManager.get('forFunOnly.say.messages.error', interaction.guildLocale || 'ru'),
         flags: MessageFlags.Ephemeral
       });
     }

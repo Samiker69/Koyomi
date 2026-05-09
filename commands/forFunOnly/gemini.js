@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly')
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const localeManager = require('../../locales/localeManager');
+const EmbedService = require('../../services/EmbedService');
 const { privateAccess, bot_log_channel } = require('../../config.json');
 const axios = require('axios');
 const ApikeyManager = require('../../lib/ApikeyManager/ApikeyManager')
@@ -13,96 +14,136 @@ const db = new GeminiDB()
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-    .setName('ai')
-    .setDescription('Действия с ai')
+    .setName(localeManager.get('forFunOnly.ai.name'))
+    .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.name', 'name'))
+    .setDescription(localeManager.get('forFunOnly.ai.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.description'))
     .setContexts(0,1,2)
     .addSubcommand(sub => 
-        sub.setName('ask')
-        .setDescription('Спросить gemini о чём-либо')
+        sub.setName(localeManager.get('forFunOnly.ai.options.ask.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.ask.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.ask.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.ask.description'))
         .addStringOption(opt => 
-            opt.setName('text')
-            .setDescription('Запрос к gemini')
+            opt.setName(localeManager.get('forFunOnly.ai.options.ask.options.text.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.ask.options.text.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.ask.options.text.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.ask.options.text.description'))
             .setRequired(true)
         )
         .addAttachmentOption(opt => 
-            opt.setName('image') 
-                .setDescription('Изображение для отправки.')
+            opt.setName(localeManager.get('forFunOnly.ai.options.ask.options.image.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.ask.options.image.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.ask.options.image.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.ask.options.image.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName("invisible")
-            .setDescription("Делает ответ ai невидимым")
+            opt.setName(localeManager.get('forFunOnly.ai.options.ask.options.invisible.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.ask.options.invisible.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.ask.options.invisible.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.ask.options.invisible.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName('add-user')
-        .setDescription('Добавляет пользователя в бд, позволяя ему пользоваться командой /ai')
+        sub.setName(localeManager.get('forFunOnly.ai.options.add-user.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-user.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.add-user.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-user.description'))
         .addUserOption(opt =>
-            opt.setName('user')
-            .setDescription('Пользователь')
+            opt.setName(localeManager.get('forFunOnly.ai.options.add-user.options.user.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-user.options.user.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.add-user.options.user.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-user.options.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName('remove-user')
-        .setDescription('Удаляет пользователя из бд.')
+        sub.setName(localeManager.get('forFunOnly.ai.options.remove-user.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.remove-user.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.remove-user.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.remove-user.description'))
         .addUserOption(opt =>
-            opt.setName('user')
-            .setDescription('Пользователь')
+            opt.setName(localeManager.get('forFunOnly.ai.options.remove-user.options.user.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.remove-user.options.user.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.remove-user.options.user.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.remove-user.options.user.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
-        sub.setName("settings")
-        .setDescription("Показывает ваши текущие настройки AI")
+        sub.setName(localeManager.get('forFunOnly.ai.options.settings.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.settings.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.settings.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.settings.description'))
     )
     .addSubcommand(sub =>
-        sub.setName('edit')
-        .setDescription('Сменить настройки ai')
+        sub.setName(localeManager.get('forFunOnly.ai.options.edit.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.edit.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.description'))
         .addStringOption(opt =>
-            opt.setName('model')
-            .setDescription('Модель для генерации')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit.options.model.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.model.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit.options.model.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.model.description'))
         )
         .addStringOption(opt =>
-            opt.setName('system_instructions')
-            .setDescription('Системные инструкции.')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit.options.system_instructions.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.system_instructions.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit.options.system_instructions.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.system_instructions.description'))
         )
         .addIntegerOption(opt =>
-            opt.setName('max_output_tokens')
-            .setDescription('Максимум токенов, которыми AI ответит. Если максимум меньше, чем ответила AI, то ответ обрежется!')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit.options.max_output_tokens.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.max_output_tokens.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit.options.max_output_tokens.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.max_output_tokens.description'))
             .setMaxValue(65536)
             .setMinValue(1)
         )
         .addNumberOption(opt =>
-            opt.setName('temperature')
-            .setDescription('Регулирует случайность(креатичность ответа). 0.1 - предсказуемые, 1-2 - очень хаотичные')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit.options.temperature.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.temperature.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit.options.temperature.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.temperature.description'))
             .setMaxValue(2)
             .setMinValue(0.1)
         )
         .addNumberOption(opt =>
-            opt.setName('top_p')
-            .setDescription('Вероятность использования токена. 0.0 - ожидаемый токен, 1 - использует все токены')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit.options.top_p.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.top_p.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit.options.top_p.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.top_p.description'))
             .setMaxValue(1)
             .setMinValue(-1)
         )
         .addIntegerOption(opt =>
-            opt.setName('top_k')
-            .setDescription('"Словарный запас" при генерации токена. 1-5 - маленький, 50+ - разнообразный')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit.options.top_k.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.top_k.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit.options.top_k.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.top_k.description'))
             .setMaxValue(100)
             .setMinValue(-1)
         )
         .addIntegerOption(opt =>
-            opt.setName('history_limit')
-            .setDescription('Лимит сохранения истории. 0 - без сохранения')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit.options.history_limit.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.history_limit.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit.options.history_limit.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit.options.history_limit.description'))
             .setMaxValue(500)
             .setMinValue(0)
         )
     )
     .addSubcommand(sub =>
-        sub.setName('edit_safety')
-        .setDescription('Изменение настроек безопасности модели')
+        sub.setName(localeManager.get('forFunOnly.ai.options.edit_safety.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit_safety.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.edit_safety.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit_safety.description'))
         .addStringOption(opt => 
-            opt.setName('s_category')
-            .setDescription("Название опции")
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit_safety.options.s_category.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit_safety.options.s_category.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit_safety.options.s_category.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit_safety.options.s_category.description'))
             .setChoices(
                 { name: 'Травля', value: 'HARASSMENT' },
                 { name: 'HateSpeech', value: 'HATE_SPEECH' },
@@ -112,8 +153,10 @@ module.exports = {
             .setRequired(true)
         )
         .addStringOption(opt => 
-            opt.setName('s_value')
-            .setDescription("Режимы безопастности")
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit_safety.options.s_value.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit_safety.options.s_value.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit_safety.options.s_value.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit_safety.options.s_value.description'))
             .setChoices(
                 { name: 'Игнорировать', value: 'BLOCK_NONE' },
                 { name: 'Мягкий', value: 'BLOCK_HIGH_AND_ABOVE' },
@@ -125,61 +168,85 @@ module.exports = {
         )
     )
     .addSubcommand(sub =>
-        sub.setName('add-apikey')
-        .setDescription('Добавить апи ключ. Позволяет получить доступ к функционалу AI')
+        sub.setName(localeManager.get('forFunOnly.ai.options.add-apikey.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-apikey.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.add-apikey.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-apikey.description'))
         .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+            opt.setName(localeManager.get('forFunOnly.ai.options.add-apikey.options.apikey.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-apikey.options.apikey.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.add-apikey.options.apikey.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-apikey.options.apikey.description'))
             .setRequired(true)
         )
         .addBooleanOption(opt =>
-            opt.setName('for-public-use')
-            .setDescription('Позволить нам использовать ваш ключ?')
+            opt.setName(localeManager.get('forFunOnly.ai.options.add-apikey.options.for-public-use.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-apikey.options.for-public-use.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.add-apikey.options.for-public-use.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.add-apikey.options.for-public-use.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName('delete-apikey')
-        .setDescription('Удалить апи-ключ из бота')
+        sub.setName(localeManager.get('forFunOnly.ai.options.delete-apikey.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.delete-apikey.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.delete-apikey.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.delete-apikey.description'))
         .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+            opt.setName(localeManager.get('forFunOnly.ai.options.delete-apikey.options.apikey.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.delete-apikey.options.apikey.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.delete-apikey.options.apikey.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.delete-apikey.options.apikey.description'))
         )
         .addBooleanOption(opt =>
-            opt.setName('delete-all')
-            .setDescription('Удалить все ваши ключи?')
+            opt.setName(localeManager.get('forFunOnly.ai.options.delete-apikey.options.delete-all.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.delete-apikey.options.delete-all.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.delete-apikey.options.delete-all.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.delete-apikey.options.delete-all.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName('edit-apikey')
-        .setDescription('Изменить настройки для текущего ключа')
+        sub.setName(localeManager.get('forFunOnly.ai.options.edit-apikey.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit-apikey.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.edit-apikey.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit-apikey.description'))
         .addStringOption(opt =>
-            opt.setName('apikey')
-            .setDescription('Апи ключ. найти можно в https://aistudio.google.com/apikey')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit-apikey.options.apikey.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit-apikey.options.apikey.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit-apikey.options.apikey.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit-apikey.options.apikey.description'))
             .setRequired(true)
         )
         .addBooleanOption(opt =>
-            opt.setName('for-public-use')
-            .setDescription('Позволить нам использовать ваш ключ?')
+            opt.setName(localeManager.get('forFunOnly.ai.options.edit-apikey.options.for-public-use.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit-apikey.options.for-public-use.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.edit-apikey.options.for-public-use.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.edit-apikey.options.for-public-use.description'))
         )
     )
     .addSubcommand(sub =>
-        sub.setName("model-info")
-        .setDescription("Получает информацию о модели")
+        sub.setName(localeManager.get('forFunOnly.ai.options.model-info.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.model-info.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.ai.options.model-info.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.model-info.description'))
         .addStringOption(opt => 
-            opt.setName("model")
-            .setDescription("Модель gemini. Оставьте пустым, чтобы применить модель из настроек")
+            opt.setName(localeManager.get('forFunOnly.ai.options.model-info.options.model.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.model-info.options.model.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.ai.options.model-info.options.model.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.ai.options.model-info.options.model.description'))
         )
     )
 ,
     async execute(interaction) {
+        const lang = interaction.guildLocale || 'ru';
         const userId = interaction.user.id;
 
         const config = db.getUserConfig(userId);
         const SS = db.getSafetySettings(userId);
 
         switch (interaction.options.getSubcommand()) {
+            case localeManager.get('forFunOnly.ai.options.ask.name'):
             case "ask": {
-                if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
+                if (!config) return await interaction.reply({ content: localeManager.get('forFunOnly.ai.messages.not_in_db', lang), flags: MessageFlags.Ephemeral });
                 const invisible = interaction.options.getBoolean('invisible');
                 await interaction.deferReply(invisible ? { flags: MessageFlags.Ephemeral } : {});
 
@@ -187,7 +254,7 @@ module.exports = {
                     const keys = [];
                     const allKeys =  db.getAllUserTokens(userId);
                     if (!allKeys[0] && !privateAccess.includes(userId)) {
-                        return await interaction.editReply("У вас нет ни одного апи ключа для использования этой команды.")
+                        return await interaction.editReply(localeManager.get('forFunOnly.ai.messages.no_api_keys', lang))
                     } else if (allKeys[0] && !privateAccess.includes(userId)){
                         allKeys[0].forEach(key => {
                             keys.push({key, timeoutDuration: 60_000});
@@ -201,13 +268,13 @@ module.exports = {
 
                     if (attachment) {
                         if (!attachment.contentType.startsWith('image/')) {
-                            const text = 'Это не изображение! Вложение будет проигнорировано.\nВыполняем запрос к ai...';
+                            const text = localeManager.get('forFunOnly.ai.messages.not_image', lang);
                             await interaction.editReply(invisible === true ? {
                                 content: text,
                                 flags: MessageFlags.Ephemeral 
                             } : text);
                         } else if (attachment.size >= 20971500) {
-                            const text = "Размер изображения больше или примерно равен 20мб. Вложение будет проигнорировано.\nВыполняем запрос к ai...";
+                            const text = localeManager.get('forFunOnly.ai.messages.image_too_large', lang);
                             await interaction.editReply(invisible === true ? {
                                 content: text,
                                 flags: MessageFlags.Ephemeral 
@@ -253,7 +320,7 @@ module.exports = {
                     } else {
                         if (!interaction.client.keyManager) {
                             return await interaction.editReply({
-                                content: 'Функционал ИИ недоступен, так как client.keyManager пуст.',
+                                content: localeManager.get('forFunOnly.ai.messages.ai_unavailable', lang),
                                 flags: MessageFlags.Ephemeral
                             });
                         }
@@ -261,14 +328,14 @@ module.exports = {
                     }
 
                     if (!response) return await interaction.editReply(invisible === true ? {
-                        content: "AI совсем ничего не ответила. Возможно, с стороны сервиса какая-то ошибка...",
+                        content: localeManager.get('forFunOnly.ai.messages.ai_no_reply', lang),
                         flags: MessageFlags.Ephemeral
-                    } : "AI совсем ничего не ответила. Возможно, с стороны сервиса какая-то ошибка...");
+                    } : localeManager.get('forFunOnly.ai.messages.ai_no_reply', lang));
 
                     const _end = Date.now()
-                    const reply = response?.text || response?.candidates?.[0]?.content || `Кажется... ai не ответила. Причина: [${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)`;
+                    const reply = response?.text || response?.candidates?.[0]?.content || localeManager.get('forFunOnly.ai.messages.ai_no_reply_reason', lang, { reason: `[${response.candidates[0].finishReason}](<https://google.com/search?q=gemini+returned+a+${response.candidates[0].finishReason}+response.+what+to+do>)` });
                     const stringReply = String(reply);
-                    const timeText = `Время ожидания ${Math.floor((_end - interaction.createdTimestamp) / 1000 )} секунд, длина ${String(reply).length}`
+                    const timeText = localeManager.get('forFunOnly.ai.messages.wait_time', lang, { sec: Math.floor((_end - interaction.createdTimestamp) / 1000 ), length: String(reply).length });
                 
                     if (stringReply.length >= 1990 && stringReply.length < 9900) {
                         await interaction.editReply(invisible ? { content: timeText, flags: MessageFlags.Ephemeral } : timeText);
@@ -280,7 +347,7 @@ module.exports = {
                     } else if (stringReply.length >= 9900) {
                         const textBuffer = Buffer.from(reply, 'utf-8');
                         await interaction.followUp({
-                            content: 'AI ответила слишком длинным текстом, поэтому её ответ находится в файле.',
+                            content: localeManager.get('forFunOnly.ai.messages.reply_too_long', lang),
                             files: [{
                                 attachment: textBuffer,
                                 name: 'ai_reply.md'
@@ -299,7 +366,7 @@ module.exports = {
                                 db.deleteToken(userId, key);
                                 const stats = db.getUserStats(userId);
                                 if (stats.tokens < 1) db.deleteUserConfig(userId);
-                                return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                                return { text: localeManager.get('forFunOnly.ai.messages.invalid_apikey', lang) };
                             }
                             const response = await ai.models.generateContent(ai_request_options);
                             return response;
@@ -319,7 +386,7 @@ module.exports = {
                             db.deleteToken(userId, key);
                             const stats = db.getUserStats(userId);
                             if (stats.tokens < 1) db.deleteUserConfig(userId);
-                            return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                            return { text: localeManager.get('forFunOnly.ai.messages.invalid_apikey', lang) };
                         }
                         try {
                             const info = await ai.models.get({model: config.model});
@@ -335,8 +402,7 @@ module.exports = {
                         return await interaction.editReply(invisible ? { content: gemini_error, flags: MessageFlags.Ephemeral } : gemini_error);
                     }
                     await interaction.editReply(`\n\`\`\`txt\n${error}\`\`\``)  
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
@@ -350,15 +416,15 @@ module.exports = {
                 break;
             }
 
+            case localeManager.get('forFunOnly.ai.options.add-user.name'):
             case "add-user": {
                 const user = interaction.options.getUser('user')
                 try {
                     db.addUserConfig(user.id)
-                    await interaction.reply({ content: `${user} был добавлен в базу данных`, flags: MessageFlags.Ephemeral })
+                    await interaction.reply({ content: localeManager.get('forFunOnly.ai.messages.user_added', lang, { user: user.toString() }), flags: MessageFlags.Ephemeral })
                 } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
-                    .setTitle(`Произошла ошибка при обработке команды`)
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
+                    .setTitle(localeManager.get('events.errors.command_error', lang))
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
                         { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
@@ -372,15 +438,15 @@ module.exports = {
                 break;
             }
 
+            case localeManager.get('forFunOnly.ai.options.remove-user.name'):
             case "remove-user": {
                 const user = interaction.options.getMember('user');
                 try {
                     const promise = db.deleteUserConfig(user.id)
-                    await interaction.reply({ content: `${user} ${promise ? 'был удалён из базы данных.' : "не был удалён из базы данных. Возможно, его в ней не было"}`, flags: MessageFlags.Ephemeral })
+                    await interaction.reply({ content: promise ? localeManager.get('forFunOnly.ai.messages.user_removed', lang, { user: user.toString() }) : localeManager.get('forFunOnly.ai.messages.not_in_db', lang), flags: MessageFlags.Ephemeral })
                 } catch (error) {
-                    const errorEmbed = new EmbedBuilder()
-                    .setColor('Red')
-                    .setTitle(`Произошла ошибка при обработке команды`)
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
+                    .setTitle(localeManager.get('events.errors.command_error', lang))
                     .addFields(
                         { name: `Команда`, value: `${interaction.commandName}` },
                         { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
@@ -394,35 +460,36 @@ module.exports = {
                 break;
             }
 
+            case localeManager.get('forFunOnly.ai.options.settings.name'):
             case "settings": {
-                if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
+                if (!config) return await interaction.reply({ content: localeManager.get('forFunOnly.ai.messages.not_in_db', lang), flags: MessageFlags.Ephemeral });
                 const stats = db.getUserStats(userId);
 
-                const embed = new EmbedBuilder()
+                const embed = EmbedService.createBaseEmbed(interaction)
                 .setAuthor({ iconURL: interaction.user.displayAvatarURL({extension: "png"}), name: interaction.user.displayName })
-                .setColor("Random")
-                .setTitle('Ваши настройки gemini')
+                .setTitle(localeManager.get('forFunOnly.ai.messages.settings_title', lang))
                 .setDescription(
-                    `Системные инструкции (system_instructions): ${config.system_instructions || "Пусто"}\n\n`+
-                    `Настройки безопасности:\n\`\`\`json\n${JSON.stringify(SS, null, 2)}\`\`\`\n\n`+
-                    'Совет: чтобы сбросить настройки `top_k` и `top_p`, укажите им отрицательное значение: `/ai edit top_k:-1`.\n'+
-                    'Чтобы сбросить настройки `system_instructions`, используйте команду `/ai edit system_instructions:{NULL}`'
+                    localeManager.get('forFunOnly.ai.messages.settings_description', lang, {
+                        si: config.system_instructions || (lang === 'ru' ? "Пусто" : (lang === 'uk' ? "Порожньо" : "Empty")),
+                        ss: JSON.stringify(SS, null, 2)
+                    })
                 )
                 .setFields(
-                    { name: "Модель (model)", value: config.model, inline: true },
-                    { name: "Максимум токенов на ответ (max_output_tokens)", value: `${config.max_output_tokens}`, inline: true },
-                    { name: "Температура ответов (temperature)", value: `${config.temperature}`, inline: true },
+                    { name: localeManager.get('forFunOnly.ai.messages.label_model', lang), value: config.model, inline: true },
+                    { name: localeManager.get('forFunOnly.ai.messages.label_max_tokens', lang), value: `${config.max_output_tokens}`, inline: true },
+                    { name: localeManager.get('forFunOnly.ai.messages.label_temperature', lang), value: `${config.temperature}`, inline: true },
                     { name: "top_k", value: `${config.top_k}`, inline: true },
                     { name: "top_p", value: `${config.top_p}`, inline: true },
-                    { name: "Лимит сохранения истории (history_limit)", value: `${config.history_limit}`, inline: true },
-                    { name: "Всего токенов", value: `${stats.tokens}`, inline: true },
-                    { name: "Сколько раз ваш токен был использован нами", value: `${stats.uses}`, inline: true },
+                    { name: localeManager.get('forFunOnly.ai.messages.label_history_limit', lang), value: `${config.history_limit}`, inline: true },
+                    { name: localeManager.get('forFunOnly.ai.messages.label_total_tokens', lang), value: `${stats.tokens}`, inline: true },
+                    { name: localeManager.get('forFunOnly.ai.messages.label_token_uses', lang), value: `${stats.uses}`, inline: true },
                 )
                 await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral })
                 break;
             }
+            case localeManager.get('forFunOnly.ai.options.edit.name'):
             case "edit": {
-                if (!config) return await interaction.reply({ content: "Кажется, вас ещё нет в базе данных.", flags: MessageFlags.Ephemeral });
+                if (!config) return await interaction.reply({ content: localeManager.get('forFunOnly.ai.messages.not_in_db', lang), flags: MessageFlags.Ephemeral });
 
                 let top_k = interaction.options.getInteger('top_k') || config.top_k,
                 top_p = interaction.options.getNumber('top_p') || config.top_p,
@@ -443,16 +510,17 @@ module.exports = {
                 }
 
                 const result = db.updateUserConfig(userId, changes);
-                const reply = result.changes > 0 ? "Настройки были обновленны." : "Настройки не изменились"
+                const reply = result.changes > 0 ? localeManager.get('forFunOnly.ai.messages.settings_updated', lang) : localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang);
                 await interaction.reply({ content: reply, flags: MessageFlags.Ephemeral })
                 break;
             }
+            case localeManager.get('forFunOnly.ai.options.edit_safety.name'):
             case "edit_safety": {
                 let result = 0,
                 s_value = interaction.options.getString('s_value'),
                 s_category = interaction.options.getString('s_category'),
-                nothingСhanged = 'Ничего не изменилось. Вероятно, эта опция уже была установлена на это значение',
-                change = `Значение категории \`${s_category}\` было изменено на \`${s_value}\``;
+                nothingСhanged = localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang),
+                change = localeManager.get('forFunOnly.ai.messages.safety_category_changed', lang, { category: s_category, value: s_value });
 
                 switch (s_category) {
                     case "HARASSMENT":
@@ -476,51 +544,55 @@ module.exports = {
                         break;   
                     
                     default:
-                        await interaction.reply({content: 'Незвестная категория!', flags: MessageFlags.Ephemeral});
+                        await interaction.reply({content: localeManager.get('forFunOnly.ai.messages.unknown_category', lang), flags: MessageFlags.Ephemeral});
                         break;
                 }
                 break;
             }
 
+            case localeManager.get('forFunOnly.ai.options.add-apikey.name'):
             case 'add-apikey': {
                 const apikey = interaction.options.getString('apikey');
                 const public = interaction.options.getBoolean('for-public-use') || false;
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-                if (!await checkApiKey(apikey)) return await interaction.editReply({ content: "Неверный `apikey`! Скопируйте ключ из https://aistudio.google.com/apikey и вставьте его сюда", flags: MessageFlags.Ephemeral });
+                if (!await checkApiKey(apikey)) return await interaction.editReply({ content: localeManager.get('forFunOnly.ai.messages.invalid_apikey', lang), flags: MessageFlags.Ephemeral });
                 const result = db.addToken(userId, apikey, public);
                 db.addUserConfig(userId);
-                await interaction.editReply({ content: result.changes > 0 ? `Ваш ключ успешно добавлен! Можете пользоваться функционалом AI.`: result.message || 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                await interaction.editReply({ content: result.changes > 0 ? localeManager.get('forFunOnly.ai.messages.apikey_added', lang): result.message || localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang), flags: MessageFlags.Ephemeral });
                 break;
             }
+            case localeManager.get('forFunOnly.ai.options.delete-apikey.name'):
             case 'delete-apikey': {
                 const apikey = interaction.options.getString('apikey');
                 const all = interaction.options.getBoolean('delete-all') || false;
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-                if (!apikey && !all) return await interaction.editReply({ content: "`apikey` не может быть пустым, если вы не удаляете все токены!", flags: MessageFlags.Ephemeral });
+                if (!apikey && !all) return await interaction.editReply({ content: localeManager.get('forFunOnly.ai.messages.apikey_required_non_all', lang), flags: MessageFlags.Ephemeral });
 
                 if (all) {
                     const result = db.deleteAllByUser(userId);
                     db.deleteUserConfig(userId);
-                    await interaction.editReply({ content: `\`${result.changes}\` ключей было удалено.`, flags: MessageFlags.Ephemeral });
+                    await interaction.editReply({ content: localeManager.get('forFunOnly.ai.messages.keys_deleted_count', lang, { count: result.changes }), flags: MessageFlags.Ephemeral });
                 } else {
                     const result = db.deleteToken(userId, apikey);
                     const stats = db.getUserStats(userId);
                     if (stats.tokens < 1) db.deleteUserConfig(userId);
-                    await interaction.editReply({ content: result.changes > 0 ? `\`${apikey}\` был удалён.` : result.message || 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                    await interaction.editReply({ content: result.changes > 0 ? localeManager.get('forFunOnly.ai.messages.apikey_deleted', lang, { apikey: apikey }) : result.message || localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
+            case localeManager.get('forFunOnly.ai.options.edit-apikey.name'):
             case 'edit-apikey': {
                 const apikey = interaction.options.getString('apikey');
                 const public = interaction.options.getBoolean('for-public-use') || false;
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
                 const result = db.updateTokenSettings(userId, apikey, { public_use: public });
-                await interaction.editReply({ content: result.changes > 0 ? `Настройки были обновлены.` : 'Ничего не изменилось.', flags: MessageFlags.Ephemeral });
+                await interaction.editReply({ content: result.changes > 0 ? localeManager.get('forFunOnly.ai.messages.settings_updated', lang) : localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang), flags: MessageFlags.Ephemeral });
                 break;
             }
+            case localeManager.get('forFunOnly.ai.options.model-info.name'):
             case "model-info": {
                 const model = interaction.options.getString('model') || config.model;
 
@@ -528,7 +600,7 @@ module.exports = {
                 if (!privateAccess.includes(userId)) {
                     const keys = [];
                     const allKeys =  db.getAllUserTokens(userId);
-                    if (!allKeys[0]) return await interaction.editReply("У вас нет ни одного апи ключа для использования этой команды.")
+                    if (!allKeys[0]) return await interaction.editReply(localeManager.get('forFunOnly.ai.messages.model_info_no_keys', lang))
                     allKeys[0].forEach(key => {
                         keys.push({key, timeoutDuration: 60_000});
                     })
@@ -537,7 +609,7 @@ module.exports = {
                 } else {
                     if (!interaction.client.keyManager) {
                         return await interaction.editReply({
-                            content: 'Функционал ИИ недоступен, так как client.keyManager пуст.',
+                            content: localeManager.get('forFunOnly.ai.messages.ai_unavailable', lang),
                             flags: MessageFlags.Ephemeral
                         });
                     }
@@ -546,7 +618,7 @@ module.exports = {
 
                 if (info.err) return await interaction.reply({ content: info.text, flags: MessageFlags.Ephemeral });
 
-                const embed = createGeminiModelEmbed(info);
+                const embed = createGeminiModelEmbed(info, interaction);
                 await interaction.reply({embeds: [embed]});
 
                 async function getModelInfo(key) {
@@ -555,7 +627,7 @@ module.exports = {
                         db.deleteToken(userId, key);
                         const stats = db.getUserStats(userId);
                         if (stats.tokens < 1) db.deleteUserConfig(userId);
-                        return { text: "Неверный апи ключ. Удаление ключа из бд..." };
+                        return { text: localeManager.get('forFunOnly.ai.messages.invalid_apikey', lang) };
                     }
                     try {
                         return await ai.models.get({model: model});
@@ -567,7 +639,7 @@ module.exports = {
             }
 
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({content: localeManager.get('forFunOnly.ai.messages.unknown_subcommand', lang), flags: MessageFlags.Ephemeral})
                 break;
         }
     }  
@@ -671,7 +743,7 @@ const actionDescriptions = {
  * @param {GeminiModelInfo} info Объект с информацией о модели Gemini.
  * @returns {EmbedBuilder} Объект EmbedBuilder для Discord.js.
  */
-function createGeminiModelEmbed(info) {
+function createGeminiModelEmbed(info, interaction) {
     const supportedActionsText = info.supportedActions
         .map(action => {
             const description = actionDescriptions[action] || `Неизвестное действие: ${action}`;
@@ -679,8 +751,7 @@ function createGeminiModelEmbed(info) {
         })
         .join('\n');
 
-    const embed = new EmbedBuilder()
-        .setColor("DarkButNotBlack") // Или любой другой цвет, например, 0x0099FF
+    const embed = EmbedService.createBaseEmbed(interaction)
         .setTitle(info.displayName || "Неизвестная модель Gemini")
         .setDescription(`**Описание:** ${info.description || "Описание отсутствует."}`)
         .addFields(

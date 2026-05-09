@@ -5,73 +5,101 @@ const {
     MessageFlags
 } = require('discord.js');
 const TagsDB = require('../../functions/db/tags');
+const EmbedService = require('../../services/EmbedService');
+
+const localeManager = require('../../locales/localeManager');
 
 const tags = new TagsDB()
   
   module.exports = {
     data: new SlashCommandBuilder()
-      .setName('tag')
-      .setDescription('Управление тегами (мини-справочник)')
+      .setName(localeManager.get('moderation.tag.name'))
+      .setNameLocalizations(localeManager.getLocalizations('moderation.tag.name', 'name'))
+      .setDescription(localeManager.get('moderation.tag.description'))
+      .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.description'))
       .addSubcommand(sub =>
         sub
-          .setName('add')
-          .setDescription('Создать новый тег')
+          .setName(localeManager.get('moderation.tag.options.add.name'))
+          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.add.name', 'name'))
+          .setDescription(localeManager.get('moderation.tag.options.add.description'))
+          .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.add.description'))
           .addStringOption(o =>
-            o.setName('name')
-             .setDescription('Уникальное имя тега')
+            o.setName(localeManager.get('moderation.tag.options.add.options.name.name'))
+             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.add.options.name.name', 'name'))
+             .setDescription(localeManager.get('moderation.tag.options.add.options.name.description'))
+             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.add.options.name.description'))
              .setRequired(true)
           )
           .addStringOption(o =>
-            o.setName('content')
-             .setDescription('Содержимое тега')
+            o.setName(localeManager.get('moderation.tag.options.add.options.content.name'))
+             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.add.options.content.name', 'name'))
+             .setDescription(localeManager.get('moderation.tag.options.add.options.content.description'))
+             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.add.options.content.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName('remove')
-          .setDescription('Удалить существующий тег')
+          .setName(localeManager.get('moderation.tag.options.remove.name'))
+          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.remove.name', 'name'))
+          .setDescription(localeManager.get('moderation.tag.options.remove.description'))
+          .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.remove.description'))
           .addStringOption(o =>
-            o.setName('name')
-             .setDescription('Имя тега для удаления')
+            o.setName(localeManager.get('moderation.tag.options.remove.options.name.name'))
+             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.remove.options.name.name', 'name'))
+             .setDescription(localeManager.get('moderation.tag.options.remove.options.name.description'))
+             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.remove.options.name.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName('edit')
-          .setDescription('Изменить содержимое тега')
+          .setName(localeManager.get('moderation.tag.options.edit.name'))
+          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.name', 'name'))
+          .setDescription(localeManager.get('moderation.tag.options.edit.description'))
+          .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.description'))
           .addStringOption(o =>
-            o.setName('name')
-             .setDescription('Имя тега для редактирования')
+            o.setName(localeManager.get('moderation.tag.options.edit.options.name.name'))
+             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.options.name.name', 'name'))
+             .setDescription(localeManager.get('moderation.tag.options.edit.options.name.description'))
+             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.options.name.description'))
              .setRequired(true)
           )
           .addStringOption(o =>
-            o.setName('content')
-             .setDescription('Новое содержимое тега')
-             .setRequired(true)
-          )
-      )
-      .addSubcommand(sub =>
-        sub
-          .setName('get')
-          .setDescription('Показать содержимое тега')
-          .addStringOption(o =>
-            o.setName('name')
-             .setDescription('Имя тега')
+            o.setName(localeManager.get('moderation.tag.options.edit.options.content.name'))
+             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.options.content.name', 'name'))
+             .setDescription(localeManager.get('moderation.tag.options.edit.options.content.description'))
+             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.edit.options.content.description'))
              .setRequired(true)
           )
       )
       .addSubcommand(sub =>
         sub
-          .setName('list')
-          .setDescription('Показать все теги сервера')
+          .setName(localeManager.get('moderation.tag.options.get.name'))
+          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.get.name', 'name'))
+          .setDescription(localeManager.get('moderation.tag.options.get.description'))
+          .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.get.description'))
+          .addStringOption(o =>
+            o.setName(localeManager.get('moderation.tag.options.get.options.name.name'))
+             .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.get.options.name.name', 'name'))
+             .setDescription(localeManager.get('moderation.tag.options.get.options.name.description'))
+             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.get.options.name.description'))
+             .setRequired(true)
+          )
+      )
+      .addSubcommand(sub =>
+        sub
+          .setName(localeManager.get('moderation.tag.options.list.name'))
+          .setNameLocalizations(localeManager.getLocalizations('moderation.tag.options.list.name', 'name'))
+          .setDescription(localeManager.get('moderation.tag.options.list.description'))
+          .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.list.description'))
       )
       .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
   
     async execute(interaction) {
       const sub = interaction.options.getSubcommand();
       const guildId = interaction.guild.id;
+      const lang = interaction.guildLocale || 'ru';
   
       try {
         switch (sub) {
@@ -83,13 +111,13 @@ const tags = new TagsDB()
   
             if (!exists) {
               return await interaction.reply({
-                content: `Тег \`${name}\` уже существует.`,
+                content: localeManager.get('moderation.tag.messages.already_exists', lang, { name }),
                 flags: MessageFlags.Ephemeral
               });
             }
   
             return await interaction.reply({
-              content: `Тег \`${name}\` создан.`,
+              content: localeManager.get('moderation.tag.messages.created', lang, { name }),
               flags: MessageFlags.Ephemeral
             });
           }
@@ -100,13 +128,13 @@ const tags = new TagsDB()
   
             if (!result) {
               return await interaction.reply({
-                content: `Тег \`${name}\` не найден.`,
+                content: localeManager.get('moderation.tag.messages.not_found_name', lang, { name }),
                 flags: MessageFlags.Ephemeral
               });
             }
   
             return await interaction.reply({
-              content: `Тег \`${name}\` удалён.`,
+              content: localeManager.get('moderation.tag.messages.removed', lang, { name }),
               flags: MessageFlags.Ephemeral
             });
           }
@@ -118,13 +146,13 @@ const tags = new TagsDB()
   
             if (!result) {
               return await interaction.reply({
-                content: `Тег \`${name}\` не найден или ничего не изменено.`,
+                content: localeManager.get('moderation.tag.messages.edit_error', lang, { name }),
                 flags: MessageFlags.Ephemeral
               });
             }
   
             return await interaction.reply({
-              content: `Содержимое тега \`${name}\` обновлено.`,
+              content: localeManager.get('moderation.tag.messages.updated', lang, { name }),
               flags: MessageFlags.Ephemeral
             });
           }
@@ -135,15 +163,14 @@ const tags = new TagsDB()
   
             if (!row) {
               return await interaction.reply({
-                content: `Тег \`${name}\` не найден.`,
+                content: localeManager.get('moderation.tag.messages.not_found_name', lang, { name }),
                 flags: MessageFlags.Ephemeral
               });
             }
   
-            const embed = new EmbedBuilder()
-              .setTitle(`Тег: ${name}`)
-              .setDescription(row.content)
-              .setColor(0x9B59B6);
+            const embed = EmbedService.createBaseEmbed(interaction)
+              .setTitle(localeManager.get('moderation.tag.messages.tag_label', lang, { name }))
+              .setDescription(row.content);
   
             return await interaction.reply({ embeds: [embed] });
           }
@@ -155,7 +182,7 @@ const tags = new TagsDB()
           
             if (rows.length === 0) {
               return interaction.reply({
-                content: 'На этом сервере нет тегов.',
+                content: localeManager.get('moderation.tag.messages.list_empty', lang),
                 flags: MessageFlags.Ephemeral
               });
             }
@@ -169,24 +196,23 @@ const tags = new TagsDB()
               })
               .join('\n');
           
-            const embed = new EmbedBuilder()
-              .setTitle('Список тегов')
-              .setDescription(description)
-              .setColor(0x9B59B6);
+            const embed = EmbedService.createBaseEmbed(interaction)
+              .setTitle(localeManager.get('moderation.tag.messages.list_title', lang))
+              .setDescription(description);
           
             return interaction.reply({ embeds: [embed] });
           }          
   
           default:
             return await interaction.reply({
-              content: 'Неизвестная подкоманда.',
+              content: localeManager.get('moderation.tag.messages.unknown_sub', lang),
               flags: MessageFlags.Ephemeral
             });
         }
       } catch (err) {
         console.error('[ERROR] /tag:', err);
         return interaction.reply({
-          content: 'Произошла ошибка при выполнении команды.',
+          content: localeManager.get('moderation.tag.messages.error', lang),
           flags: MessageFlags.Ephemeral
         });
       }

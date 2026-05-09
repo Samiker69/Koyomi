@@ -1,145 +1,68 @@
-const {
-    SlashCommandBuilder,
-    PermissionFlagsBits,
-    MessageFlags,
-    EmbedBuilder,
-    ActionRowBuilder,
-    ChannelSelectMenuBuilder,
-    StringSelectMenuBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    ChannelType
-} = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, MessageFlags } = require('discord.js');
+const Settings = require('../../functions/db/settings');
+const localeManager = require('../../locales/localeManager');
 
-const StarboardDB = require('../../functions/db/starboard');
-const db = new StarboardDB();
-
-const { utility } = require('../../locales/descriptions/utility');
-const replies = require('../../locales/answers/replies');
-
-// Вспомогательная функция (даже лучше вынести потом, но согласно плану всё делаем "как есть")
-const getReply = (key, locale, vars = {}) => {
-    let text = replies[key]?.[locale] || replies[key]?.['ru'] || key;
-    for (const [k, v] of Object.entries(vars)) {
-        text = text.replace(`{${k}}`, v);
-    }
-    return text;
-};
+const Sdb = new Settings();
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('starboard')
-        .setDescription('Открыть панель управления доской звёзд (Starboard)')
-        .setDescriptionLocalizations(utility.starboard.description)
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
+  data: new SlashCommandBuilder()
+    .setName(localeManager.get('utility.starboard.name'))
+    .setNameLocalizations(localeManager.getLocalizations('utility.starboard.name', 'name'))
+    .setDescription(localeManager.get('utility.starboard.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.description'))
+    .addSubcommand(sub => 
+      sub.setName(localeManager.get('utility.starboard.options.setup.name'))
+        .setNameLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.name', 'name'))
+        .setDescription(localeManager.get('utility.starboard.options.setup.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.description'))
+        .addChannelOption(opt => 
+          opt.setName(localeManager.get('utility.starboard.options.setup.options.channel.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.channel.name', 'name'))
+            .setDescription(localeManager.get('utility.starboard.options.setup.options.channel.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.channel.description'))
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true))
+        .addIntegerOption(opt => 
+          opt.setName(localeManager.get('utility.starboard.options.setup.options.min.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.min.name', 'name'))
+            .setDescription(localeManager.get('utility.starboard.options.setup.options.min.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.min.description'))
+            .setMinValue(1)
+            .setMaxValue(50))
+    )
+    .addSubcommand(sub => 
+      sub.setName(localeManager.get('utility.starboard.options.disable.name'))
+        .setNameLocalizations(localeManager.getLocalizations('utility.starboard.options.disable.name', 'name'))
+        .setDescription(localeManager.get('utility.starboard.options.disable.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.disable.description'))
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
-    async execute(interaction) {
-        const guildId = interaction.guild.id;
+   async execute(interaction) {
+    const lang = interaction.guildLocale || 'ru';
+    const guildId = interaction.guild.id;
+    const sub = interaction.options.getSubcommand();
 
-        const generateDashboard = () => {
-            const settings = db.getSettings(guildId) || {};
+    if (sub === 'setup') {
+      const channel = interaction.options.getChannel('channel');
+      const min = interaction.options.getInteger('min') || 3;
 
-            const isEnabled = settings.enabled || false;
-            const channelId = settings.starboardChannelId;
-            const minReactions = settings.minReactions || 3;
+      Sdb.updateSetting(guildId, 'starboardChannelId', channel.id);
+      Sdb.updateSetting(guildId, 'starboardMinStars', min);
+      Sdb.updateSetting(guildId, 'starboardEnabled', true);
 
-            const loc = interaction.locale;
-
-            const statusText = isEnabled ? getReply('starboard_enabled', loc) : getReply('starboard_disabled', loc);
-            const channelText = channelId ? `<#${channelId}>` : getReply('starboard_notset', loc);
-
-            const dashboardEmbed = new EmbedBuilder()
-                .setColor(isEnabled ? '#FFAC33' : '#2b2d31')
-                .setTitle(getReply('starboard_title', loc, { guildName: interaction.guild.name }))
-                .setDescription(getReply('starboard_desc', loc))
-                .addFields(
-                    {
-                        name: getReply('starboard_status', loc),
-                        value: `> **${statusText}**`,
-                        inline: true
-                    },
-                    {
-                        name: getReply('starboard_min', loc),
-                        value: `> **${minReactions}**`,
-                        inline: true
-                    },
-                    {
-                        name: getReply('starboard_channel', loc),
-                        value: `> ${channelText}`,
-                        inline: false
-                    }
-                )
-                .setFooter({ text: getReply('starboard_inst', loc) })
-                .setTimestamp();
-
-            const rowChannel = new ActionRowBuilder().addComponents(
-                new ChannelSelectMenuBuilder()
-                    .setCustomId('sb_select_channel')
-                    .setPlaceholder(getReply('starboard_ph1', loc))
-                    .setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
-            );
-
-            const rowCount = new ActionRowBuilder().addComponents(
-                new StringSelectMenuBuilder()
-                    .setCustomId('sb_select_count')
-                    .setPlaceholder(getReply('starboard_ph2', loc))
-                    .addOptions([
-                        { label: '1', value: '1' },
-                        { label: '3', value: '3' },
-                        { label: '5', value: '5' },
-                        { label: '10', value: '10' },
-                        { label: '15', value: '15' },
-                        { label: '20', value: '20' },
-                    ])
-            );
-
-            const rowToggle = new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                    .setCustomId('sb_toggle')
-                    .setLabel(isEnabled ? getReply('starboard_btn_off', loc) : getReply('starboard_btn_on', loc))
-                    .setStyle(isEnabled ? ButtonStyle.Danger : ButtonStyle.Success)
-            );
-
-            return { embeds: [dashboardEmbed], components: [rowChannel, rowCount, rowToggle] };
-        };
-
-        const msg = await interaction.reply({
-            ...generateDashboard(),
-            flags: MessageFlags.Ephemeral
-        });
-
-        const collector = msg.createMessageComponentCollector({ time: 300_000 });
-
-        collector.on('collect', async i => {
-            const currentSettings = db.getSettings(guildId) || {};
-
-            try {
-                if (i.customId === 'sb_select_channel') {
-                    const selectedChannel = i.values[0];
-                    db.updateSettings(guildId, { starboardChannelId: selectedChannel });
-                }
-                else if (i.customId === 'sb_select_count') {
-                    const count = parseInt(i.values[0]);
-                    db.updateSettings(guildId, { minReactions: count });
-                }
-                else if (i.customId === 'sb_toggle') {
-                    const newState = !currentSettings.enabled;
-                    db.updateSettings(guildId, { enabled: newState });
-                }
-
-                await i.update(generateDashboard());
-
-            } catch (err) {
-                console.error(err);
-                if (!i.replied && !i.deferred) {
-                    const errorText = getReply('starboard_err', interaction.locale);
-                    await i.reply({ content: errorText, flags: MessageFlags.Ephemeral });
-                }
-            }
-        });
-
-        collector.on('end', () => {
-            interaction.editReply({ components: [] }).catch(() => { });
-        });
+      return await interaction.reply({
+        content: localeManager.get('utility.starboard.messages.setup_done', lang, { channel: channel.toString(), min }),
+        flags: MessageFlags.Ephemeral
+      });
     }
+
+    if (sub === 'disable') {
+      Sdb.updateSetting(guildId, 'starboardEnabled', false);
+      return await interaction.reply({
+        content: localeManager.get('utility.starboard.messages.disabled_done', lang),
+        flags: MessageFlags.Ephemeral
+      });
+    }
+  }
 };

@@ -1,5 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
 const axios = require('axios');
+const localeManager = require('../../locales/localeManager');
 
 const categories = {
   boobs: ['Boobies', 'BustyPetite', 'Stacked'],
@@ -120,12 +122,16 @@ async function getRedditImage(category = 'random', fetchRetries = 3) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('reddit')
-    .setDescription('Получить случайные NSFW изображения с Reddit по категориям.')
+    .setName(localeManager.get('nsfw.reddit.name'))
+    .setNameLocalizations(localeManager.getLocalizations('nsfw.reddit.name', 'name'))
+    .setDescription(localeManager.get('nsfw.reddit.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.reddit.description'))
     .setNSFW(true)
     .addStringOption(option =>
-      option.setName('category')
-        .setDescription('Категория контента для поиска.')
+      option.setName(localeManager.get('nsfw.reddit.options.category.name'))
+        .setNameLocalizations(localeManager.getLocalizations('nsfw.reddit.options.category.name', 'name'))
+        .setDescription(localeManager.get('nsfw.reddit.options.category.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('nsfw.reddit.options.category.description'))
         .setRequired(false)
         .addChoices(...Object.keys(categories).map(cat => ({
           name: cat,
@@ -134,8 +140,9 @@ module.exports = {
     ),
 
   async execute(interaction) {
+      const lang = interaction.guildLocale || 'ru';
       if (!interaction.channel.nsfw) {
-          return await interaction.reply({content: 'Эта команда работает только в NSFW-каналах, чертов дрочун малолетний', flags: MessageFlags.Ephemeral});
+          return await interaction.reply({ content: localeManager.get('nsfw.reddit.messages.not_nsfw', lang), flags: MessageFlags.Ephemeral });
       }
 
       await interaction.deferReply();
@@ -144,14 +151,13 @@ module.exports = {
       const content = await getRedditImage(category);
 
       if (!content) {
-          return interaction.editReply({ content: 'Не удалось загрузить контент после нескольких попыток. Попробуйте другую категорию или повторите позже.', flags: MessageFlags.Ephemeral });
+          return interaction.editReply({ content: localeManager.get('nsfw.reddit.messages.load_error', lang), flags: MessageFlags.Ephemeral });
       }
 
-      const embed = new EmbedBuilder()
-        .setTitle(content.title || 'Без заголовка')
+      const embed = EmbedService.createBaseEmbed(interaction)
+        .setTitle(content.title || localeManager.get('nsfw.common.messages.untitled', lang))
         .setImage(content.url)
-        .setColor(0xff007f)
-        .setFooter({ text: `r/${content.subreddit}` });
+        .setFooter({ text: `r/${content.subreddit}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
       await interaction.editReply({ embeds: [embed] });
   }

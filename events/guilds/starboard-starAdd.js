@@ -1,5 +1,6 @@
 const { Events, EmbedBuilder, ChannelType } = require('discord.js');
 const starDB = require('../../functions/db/starboard');
+const localeManager = require('../../locales/localeManager');
 const db = new starDB();
 
 const STAR_EMOJI_NAME = '⭐';
@@ -10,6 +11,7 @@ module.exports = {
     async execute(reaction, user) {
         const { message } = reaction;
         const guild = message.guild;
+        const lang = guild?.preferredLocale || 'ru';
 
         if (reaction.partial) {
             try {
@@ -101,7 +103,7 @@ module.exports = {
                     iconURL: message.author.displayAvatarURL({ dynamic: true, size: 64 })
                 })
                 .setColor(EMBED_COLOR)
-                .setTitle("Source")
+                .setTitle(localeManager.get('events.starboard.source_title', lang))
                 .setDescription(message.content)
                 .setImage(image)
                 .setURL(message.url)

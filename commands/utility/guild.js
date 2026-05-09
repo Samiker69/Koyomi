@@ -1,67 +1,65 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
-const { bot_log_channel } = require('../../config.json')
-const replies = require('../../locales/answers/replies');
-const { utility } = require('../../locales/descriptions/utility');
-
-const getReply = (key, locale, vars = {}) => {
-    let text = replies[key]?.[locale] || replies[key]?.['ru'] || key;
-    for (const [k, v] of Object.entries(vars)) {
-        text = text.replace(`{${k}}`, String(v));
-    }
-    return text;
-};
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
+const { bot_log_channel } = require('../../config.json');
+const localeManager = require('../../locales/localeManager');
 
 const data = new SlashCommandBuilder()
-    .setName('guild')
-    .setDescription('guild admin command')
-    .setDescriptionLocalizations(utility.guild.description)
+    .setName(localeManager.get('utility.guild.name'))
+    .setNameLocalizations(localeManager.getLocalizations('utility.guild.name', 'name'))
+    .setDescription(localeManager.get('utility.guild.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.description'))
     .addSubcommand(subcommand =>
-        subcommand.setName('invites')
-            .setDescription('Disable or enable invites for the guild')
-            .setDescriptionLocalizations(utility.guild.subcommands.invites.description)
+        subcommand.setName(localeManager.get('utility.guild.options.invites.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.invites.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.invites.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.invites.description'))
             .addBooleanOption(option =>
-                option.setName('value')
-                    .setDescription('true - disable, false - enable')
-                    .setDescriptionLocalizations(utility.guild.options.value_invites.description)
+                option.setName(localeManager.get('utility.guild.options.invites.options.value.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.invites.options.value.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.invites.options.value.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.invites.options.value.description'))
                     .setRequired(true)
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-
     .addSubcommand(subcommand =>
-        subcommand.setName('banner')
-            .setDescription('Change the server banner')
-            .setDescriptionLocalizations(utility.guild.subcommands.banner.description)
+        subcommand.setName(localeManager.get('utility.guild.options.banner.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.banner.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.banner.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.banner.description'))
             .addAttachmentOption(option =>
-                option.setName('image')
-                    .setDescription('Image for server banner (server must be level 2)')
-                    .setDescriptionLocalizations(utility.guild.options.image.description)
+                option.setName(localeManager.get('utility.guild.options.banner.options.image.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.banner.options.image.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.banner.options.image.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.banner.options.image.description'))
                     .setRequired(true)
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-
     .addSubcommand(subcommand =>
-        subcommand.setName('icon')
-            .setDescription('Change the server icon')
-            .setDescriptionLocalizations(utility.guild.subcommands.icon.description)
+        subcommand.setName(localeManager.get('utility.guild.options.icon.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.icon.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.icon.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.icon.description'))
             .addAttachmentOption(option =>
-                option.setName('image')
-                    .setDescription('Image for server icon')
-                    .setDescriptionLocalizations(utility.guild.options.image.description)
+                option.setName(localeManager.get('utility.guild.options.icon.options.image.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.icon.options.image.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.icon.options.image.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.icon.options.image.description'))
                     .setRequired(true)
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-
     .addSubcommand(subcommand =>
-        subcommand.setName('contentfilterlevel')
-            .setDescription('Change the server Content Filter Level')
-            .setDescriptionLocalizations(utility.guild.subcommands.contentfilterlevel.description)
+        subcommand.setName(localeManager.get('utility.guild.options.contentfilterlevel.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.contentfilterlevel.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.contentfilterlevel.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.contentfilterlevel.description'))
             .addStringOption(option =>
-                option.setName('value')
-                    .setDescription('Content Filter Level')
-                    .setDescriptionLocalizations(utility.guild.options.value_cfl.description)
+                option.setName(localeManager.get('utility.guild.options.contentfilterlevel.options.value.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.contentfilterlevel.options.value.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.contentfilterlevel.options.value.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.contentfilterlevel.options.value.description'))
                     .addChoices(
                         { name: 'Disabled', value: '0' },
                         { name: 'No role user', value: '1' },
@@ -71,67 +69,72 @@ const data = new SlashCommandBuilder()
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-
     .addSubcommand(subcommand =>
-        subcommand.setName('name')
-            .setDescription('Change the server name')
-            .setDescriptionLocalizations(utility.guild.subcommands.name.description)
+        subcommand.setName(localeManager.get('utility.guild.options.name.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.name.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.name.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.name.description'))
             .addStringOption(option =>
-                option.setName('text')
-                    .setDescription('Name for the server')
-                    .setDescriptionLocalizations(utility.guild.options.text.description)
+                option.setName(localeManager.get('utility.guild.options.name.options.text.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.name.options.text.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.name.options.text.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.name.options.text.description'))
                     .setRequired(true)
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-
     .addSubcommand(subcommand =>
-        subcommand.setName('rulechannel')
-            .setDescription('Change the server rule channel')
-            .setDescriptionLocalizations(utility.guild.subcommands.rulechannel.description)
+        subcommand.setName(localeManager.get('utility.guild.options.rulechannel.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.rulechannel.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.rulechannel.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.rulechannel.description'))
             .addChannelOption(option =>
-                option.setName('input')
-                    .setDescription('Channel for rules')
-                    .setDescriptionLocalizations(utility.guild.options.input_channel.description)
+                option.setName(localeManager.get('utility.guild.options.rulechannel.options.input.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.rulechannel.options.input.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.rulechannel.options.input.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.rulechannel.options.input.description'))
                     .setRequired(true)
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-
     .addSubcommand(subcommand =>
-        subcommand.setName('safetyalerts')
-            .setDescription('Change the server safety alerts channel')
-            .setDescriptionLocalizations(utility.guild.subcommands.safetyalerts.description)
+        subcommand.setName(localeManager.get('utility.guild.options.safetyalerts.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.safetyalerts.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.safetyalerts.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.safetyalerts.description'))
             .addChannelOption(option =>
-                option.setName('input')
-                    .setDescription('Channel for safety alerts')
-                    .setDescriptionLocalizations(utility.guild.options.input_channel.description)
+                option.setName(localeManager.get('utility.guild.options.safetyalerts.options.input.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.safetyalerts.options.input.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.safetyalerts.options.input.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.safetyalerts.options.input.description'))
                     .setRequired(true)
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-
     .addSubcommand(subcommand =>
-        subcommand.setName('systemchannel')
-            .setDescription('Change the server system channel')
-            .setDescriptionLocalizations(utility.guild.subcommands.systemchannel.description)
+        subcommand.setName(localeManager.get('utility.guild.options.systemchannel.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.systemchannel.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.systemchannel.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.systemchannel.description'))
             .addChannelOption(option =>
-                option.setName('input')
-                    .setDescription('Channel for system messages')
-                    .setDescriptionLocalizations(utility.guild.options.input_channel.description)
+                option.setName(localeManager.get('utility.guild.options.systemchannel.options.input.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.systemchannel.options.input.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.systemchannel.options.input.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.systemchannel.options.input.description'))
                     .setRequired(true)
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-
     .addSubcommand(subcommand =>
-        subcommand.setName('verificationlevel')
-            .setDescription('Change the server verification level')
-            .setDescriptionLocalizations(utility.guild.subcommands.verificationlevel.description)
+        subcommand.setName(localeManager.get('utility.guild.options.verificationlevel.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.verificationlevel.name', 'name'))
+            .setDescription(localeManager.get('utility.guild.options.verificationlevel.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.verificationlevel.description'))
             .addNumberOption(option =>
-                option.setName('input')
-                    .setDescription('Level from 0 to 4')
-                    .setDescriptionLocalizations(utility.guild.options.input_level.description)
+                option.setName(localeManager.get('utility.guild.options.verificationlevel.options.input.name'))
+                    .setNameLocalizations(localeManager.getLocalizations('utility.guild.options.verificationlevel.options.input.name', 'name'))
+                    .setDescription(localeManager.get('utility.guild.options.verificationlevel.options.input.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('utility.guild.options.verificationlevel.options.input.description'))
                     .setMaxValue(4)
                     .setMinValue(0)
                     .setRequired(true)
@@ -143,242 +146,162 @@ module.exports = {
     cooldown: 5,
     data,
     async execute(interaction) {
-        const loc = interaction.locale;
-        if (!await interaction.guild.members.me.permissions.has('ManageGuild', true)) return await interaction.reply({ content: getReply('bot_no_permission', loc), flags: MessageFlags.Ephemeral });
+        const lang = interaction.guildLocale || 'ru';
+        if (!await interaction.guild.members.me.permissions.has('ManageGuild', true)) {
+            return await interaction.reply({ content: localeManager.get('utility.guild.messages.me_no_perms', lang), flags: MessageFlags.Ephemeral });
+        }
         switch (interaction.options.getSubcommand()) {
             case "invites": {
-                if (!await interaction.member.permissions.has('ManageGuild', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
+                if (!await interaction.member.permissions.has('ManageGuild', true)) {
+                    return await interaction.reply({ content: localeManager.get('utility.guild.messages.no_perms', lang), flags: MessageFlags.Ephemeral });
+                }
                 const invite = interaction.options.getBoolean('value');
 
                 try {
                     await interaction.guild.disableInvites(invite);
-                    if (invite) {
-                        await interaction.reply(getReply('guild_invites_paused', loc));
-                    } else if (!invite) {
-                        await interaction.reply(getReply('guild_invites_resumed', loc));
-                    }
+                    const msg = invite 
+                        ? localeManager.get('utility.guild.messages.invites_paused', lang) 
+                        : localeManager.get('utility.guild.messages.invites_resumed', lang);
+                    await interaction.reply(msg);
                 } catch (error) {
-                    await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
+                    await interaction.reply({ content: localeManager.get('utility.guild.messages.error_occurred', lang, { error: error.message }), flags: MessageFlags.Ephemeral });
+                    const errorEmbed = EmbedService.createBaseEmbed(interaction)
                         .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
+                        .setTitle(localeManager.get('utility.room.messages.error', lang)) // Using room error title as generic
                         .addFields(
-                            { name: `Команда`, value: `${interaction.commandName}` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                        )
-                        .setTimestamp(new Date())
+                            { name: localeManager.get('utility.help.messages.no_name', lang).split(' ')[0], value: `${interaction.commandName}` }, // Hacky command label
+                            { name: localeManager.get('utility.guild.messages.error_occurred', lang, { error: '' }).split(' ')[0], value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
+                        );
                     console.error(error);
                     const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                    await logChannel.send({ embeds: [errorEmbed] });;
+                    if (logChannel) await logChannel.send({ embeds: [errorEmbed] });
                 }
                 break;
             }
             case "banner": {
-                if (!await interaction.member.permissions.has('Administrator', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
+                if (!await interaction.member.permissions.has('Administrator', true)) {
+                    return await interaction.reply({ content: localeManager.get('utility.guild.messages.no_perms', lang), flags: MessageFlags.Ephemeral });
+                }
                 if (interaction.guild.premiumTier >= 2) {
                     const attachment = interaction.options.getAttachment('image');
-                    const image = await attachment.url;
+                    const image = attachment.url;
 
                     try {
                         await interaction.guild.setBanner(image);
-                        await interaction.reply(getReply('guild_banner_changed', loc));
+                        await interaction.reply(localeManager.get('utility.guild.messages.banner_changed', lang));
                     } catch (error) {
-                        await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                        const errorEmbed = new EmbedBuilder()
-                            .setColor('Red')
-                            .setTitle(`Произошла ошибка при обработке команды`)
-                            .addFields(
-                                { name: `Команда`, value: `${interaction.commandName}` },
-                                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                            )
-                            .setTimestamp(new Date())
-                        console.error(error);
-                        const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                        await logChannel.send({ embeds: [errorEmbed] });;
+                        await interaction.reply({ content: localeManager.get('utility.guild.messages.error_occurred', lang, { error: error.message }), flags: MessageFlags.Ephemeral });
                     }
                 } else {
-                    await interaction.reply(getReply('guild_banner_level_fail', loc));
+                    await interaction.reply(localeManager.get('utility.guild.messages.banner_low_level', lang));
                 }
                 break;
             }
             case "icon": {
-                if (!await interaction.member.permissions.has('Administrator', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
+                if (!await interaction.member.permissions.has('Administrator', true)) {
+                    return await interaction.reply({ content: localeManager.get('utility.guild.messages.no_perms', lang), flags: MessageFlags.Ephemeral });
+                }
                 const attachment = interaction.options.getAttachment('image');
-                const image = await attachment.url;
+                const image = attachment.url;
 
                 try {
                     await interaction.guild.setIcon(image);
-                    await interaction.reply(getReply('guild_icon_changed', loc));
+                    await interaction.reply(localeManager.get('utility.guild.messages.icon_changed', lang));
                 } catch (error) {
-                    await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
-                        .addFields(
-                            { name: `Команда`, value: `${interaction.commandName}` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                        )
-                        .setTimestamp(new Date())
-                    console.error(error);
-                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                    await logChannel.send({ embeds: [errorEmbed] });;
+                    await interaction.reply({ content: localeManager.get('utility.guild.messages.error_occurred', lang, { error: error.message }), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
             case "contentfilterlevel": {
-                if (!await interaction.member.permissions.has('ManageGuild', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
+                if (!await interaction.member.permissions.has('ManageGuild', true)) {
+                    return await interaction.reply({ content: localeManager.get('utility.guild.messages.no_perms', lang), flags: MessageFlags.Ephemeral });
+                }
                 const contentfilterlevel = interaction.options.getString('value');
                 try {
-                    if (interaction.guild.features.includes("COMMUNITY") && contentfilterlevel < "2") return await interaction.reply(getReply('guild_cfl_comm_fail', loc))
-                    if (contentfilterlevel === '0') {
-                        await interaction.guild.setExplicitContentFilter(contentfilterlevel);
-                        await interaction.reply(getReply('guild_cfl_disabled', loc));
-                    } else if (contentfilterlevel === '1') {
-                        await interaction.guild.setExplicitContentFilter(contentfilterlevel);
-                        await interaction.reply(getReply('guild_cfl_no_role', loc));
-                    } else if (contentfilterlevel === '2') {
-                        await interaction.guild.setExplicitContentFilter(contentfilterlevel);
-                        await interaction.reply(getReply('guild_cfl_all_members', loc));
+                    if (interaction.guild.features.includes("COMMUNITY") && contentfilterlevel < "2") {
+                        return await interaction.reply(localeManager.get('utility.guild.messages.community_filter_error', lang));
                     }
+                    await interaction.guild.setExplicitContentFilter(contentfilterlevel);
+                    let msg = '';
+                    if (contentfilterlevel === '0') msg = localeManager.get('utility.guild.messages.filter_disabled', lang);
+                    else if (contentfilterlevel === '1') msg = localeManager.get('utility.guild.messages.filter_no_role', lang);
+                    else if (contentfilterlevel === '2') msg = localeManager.get('utility.guild.messages.filter_all', lang);
+                    await interaction.reply(msg);
                 } catch (error) {
-                    await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
-                        .addFields(
-                            { name: `Команда`, value: `${interaction.commandName}` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                        )
-                        .setTimestamp(new Date())
-                    console.error(error);
-                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                    await logChannel.send({ embeds: [errorEmbed] });;
+                    await interaction.reply({ content: localeManager.get('utility.guild.messages.error_occurred', lang, { error: error.message }), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
             case "name": {
-                if (!await interaction.member.permissions.has('Administrator', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
+                if (!await interaction.member.permissions.has('Administrator', true)) {
+                    return await interaction.reply({ content: localeManager.get('utility.guild.messages.no_perms', lang), flags: MessageFlags.Ephemeral });
+                }
                 const name = interaction.options.getString('text');
 
                 try {
                     await interaction.guild.setName(name);
-                    await interaction.reply(getReply('guild_name_changed', loc, { name }));
+                    await interaction.reply(localeManager.get('utility.guild.messages.name_changed', lang, { name }));
                 } catch (error) {
-                    await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
-                        .addFields(
-                            { name: `Команда`, value: `${interaction.commandName}` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                        )
-                        .setTimestamp(new Date())
-                    console.error(error);
-                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                    await logChannel.send({ embeds: [errorEmbed] });;
+                    await interaction.reply({ content: localeManager.get('utility.guild.messages.error_occurred', lang, { error: error.message }), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
             case "rulechannel": {
-                if (!await interaction.member.permissions.has('Administrator', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
-                if (!interaction.guild.features.includes("COMMUNITY")) return await interaction.reply(getReply('guild_rule_comm_fail', loc))
+                if (!await interaction.member.permissions.has('Administrator', true)) {
+                    return await interaction.reply({ content: localeManager.get('utility.guild.messages.no_perms', lang), flags: MessageFlags.Ephemeral });
+                }
+                if (!interaction.guild.features.includes("COMMUNITY")) {
+                    return await interaction.reply(localeManager.get('utility.guild.messages.rule_channel_error', lang));
+                }
                 const channel = interaction.options.getChannel('input');
 
                 try {
                     await interaction.guild.setRulesChannel(channel);
-                    await interaction.reply(getReply('guild_rule_changed', loc, { channel }));
+                    await interaction.reply(localeManager.get('utility.guild.messages.rule_channel_set', lang, { channel: channel.toString() }));
                 } catch (error) {
-                    await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
-                        .addFields(
-                            { name: `Команда`, value: `${interaction.commandName}` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                        )
-                        .setTimestamp(new Date())
-                    console.error(error);
-                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                    await logChannel.send({ embeds: [errorEmbed] });;
+                    await interaction.reply({ content: localeManager.get('utility.guild.messages.error_occurred', lang, { error: error.message }), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
             case "safetyalerts": {
-                if (!await interaction.member.permissions.has('Administrator', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
-                if (!interaction.guild.features.includes("COMMUNITY")) return await interaction.reply(getReply('guild_safety_comm_fail', loc));
+                if (!await interaction.member.permissions.has('Administrator', true)) {
+                    return await interaction.reply({ content: localeManager.get('utility.guild.messages.no_perms', lang), flags: MessageFlags.Ephemeral });
+                }
+                if (!interaction.guild.features.includes("COMMUNITY")) {
+                    return await interaction.reply(localeManager.get('utility.guild.messages.safety_alerts_error', lang));
+                }
                 const channel = interaction.options.getChannel('input');
 
                 try {
                     await interaction.guild.setSafetyAlertsChannel(channel);
-                    await interaction.reply(getReply('guild_safety_changed', loc, { channel }));
+                    await interaction.reply(localeManager.get('utility.guild.messages.safety_alerts_set', lang, { channel: channel.toString() }));
                 } catch (error) {
-                    await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
-                        .addFields(
-                            { name: `Команда`, value: `${interaction.commandName}` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                        )
-                        .setTimestamp(new Date())
-                    console.error(error);
-                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                    await logChannel.send({ embeds: [errorEmbed] });;
-                }
-                break;
-            }
-            case "systemchannel": {
-                if (!await interaction.member.permissions.has('Administrator', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
-                const channel = interaction.options.getChannel('input');
-
-                try {
-                    await interaction.guild.setSystemChannel(channel);
-                    await interaction.reply(getReply('guild_system_changed', loc, { channel }));
-                } catch (error) {
-                    await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
-                        .addFields(
-                            { name: `Команда`, value: `${interaction.commandName}` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                        )
-                        .setTimestamp(new Date())
-                    console.error(error);
-                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                    await logChannel.send({ embeds: [errorEmbed] });;
+                    await interaction.reply({ content: localeManager.get('utility.guild.messages.error_occurred', lang, { error: error.message }), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
             case "verificationlevel": {
-                if (!await interaction.member.permissions.has('Administrator', true)) return await interaction.reply({ content: getReply('no_permission', loc), flags: MessageFlags.Ephemeral });
+                if (!await interaction.member.permissions.has('Administrator', true)) {
+                    return await interaction.reply({ content: localeManager.get('utility.guild.messages.no_perms', lang), flags: MessageFlags.Ephemeral });
+                }
                 const level = interaction.options.getNumber('input');
 
-                if (level < '0' || level > '4') return await interaction.reply(getReply('guild_verification_level_fail', loc))
+                if (level < 0 || level > 4) {
+                    return await interaction.reply(localeManager.get('utility.guild.messages.verification_level_error', lang));
+                }
 
                 try {
                     await interaction.guild.setVerificationLevel(level);
-                    await interaction.reply(getReply('guild_verification_changed', loc, { level }));
+                    await interaction.reply(localeManager.get('utility.guild.messages.verification_level_set', lang, { level: level.toString() }));
                 } catch (error) {
-                    await interaction.reply({ content: getReply('something_went_wrong', loc, { error: error.message }), flags: MessageFlags.Ephemeral });
-                    const errorEmbed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setTitle(`Произошла ошибка при обработке команды`)
-                        .addFields(
-                            { name: `Команда`, value: `${interaction.commandName}` },
-                            { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack}\`\`\`` }
-                        )
-                        .setTimestamp(new Date())
-                    console.error(error);
-                    const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-                    await logChannel.send({ embeds: [errorEmbed] });;
+                    await interaction.reply({ content: localeManager.get('utility.guild.messages.error_occurred', lang, { error: error.message }), flags: MessageFlags.Ephemeral });
                 }
                 break;
             }
 
             default:
-                await interaction.reply({ content: getReply('unknown_subcommand', loc), flags: MessageFlags.Ephemeral })
+                await interaction.reply({ content: localeManager.get('utility.guild.messages.unknown_sub', lang), flags: MessageFlags.Ephemeral });
                 break;
         }
     }
-}
+};

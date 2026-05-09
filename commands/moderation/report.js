@@ -1,67 +1,65 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
+const localeManager = require('../../locales/localeManager');
 
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
-        .setName('report')
-        .setDescription('Разместить интерактивную панель для подачи жалоб.')
+        .setName(localeManager.get('moderation.report.name'))
+        .setNameLocalizations(localeManager.getLocalizations('moderation.report.name', 'name'))
+        .setDescription(localeManager.get('moderation.report.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.report.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addStringOption(option =>
-            option.setName('faq_link')
-                .setDescription('Ссылка на FAQ или правила сервера (необязательно).')
+            option.setName(localeManager.get('moderation.report.options.faq_link.name'))
+                .setNameLocalizations(localeManager.getLocalizations('moderation.report.options.faq_link.name', 'name'))
+                .setDescription(localeManager.get('moderation.report.options.faq_link.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('moderation.report.options.faq_link.description'))
                 .setRequired(false)),
 
     async execute(interaction) {
+        const lang = interaction.guildLocale || 'ru';
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         try {
             const faqLink = interaction.options.getString('faq_link');
 
-            const reportEmbed = new EmbedBuilder()
-                .setColor('#0099ff')
-                .setTitle('Система Жалоб')
-                .setDescription(
-                    'Здесь вы можете сообщить о нарушениях правил сервера. ' +
-                    'Ваши жалобы помогают поддерживать порядок.'
-                )
+            const reportEmbed = EmbedService.createBaseEmbed(interaction)
+                .setTitle(localeManager.get('moderation.report.messages.panel_title', lang))
+                .setDescription(localeManager.get('moderation.report.messages.panel_desc', lang))
                 .addFields(
                     {
-                        name: 'Как подать жалобу:',
-                        value:
-                            '1. **Выберите тип** нарушения, нажав кнопку ниже.\n' +
-                            '2. Заполните **форму**, подробно описав проблему.\n' +
-                            '3. **Укажите нарушителя** (если есть) и **добавьте ссылки/доказательства**.\n' +
-                            '4. Модераторы рассмотрят вашу жалобу. Вы получите уведомление о статусе в личные сообщения.'
+                        name: localeManager.get('moderation.report.messages.how_to_title', lang),
+                        value: localeManager.get('moderation.report.messages.how_to_desc', lang)
                     },
                     {
-                        name: 'Важно:',
-                        value: 'Пожалуйста, используйте систему жалоб ответственно. Ложные жалобы могут привести к последствиям.'
+                        name: localeManager.get('moderation.report.messages.important_title', lang),
+                        value: localeManager.get('moderation.report.messages.important_desc', lang)
                     }
                 )
                 .setThumbnail(interaction.guild.iconURL() || interaction.client.user.displayAvatarURL())
                 .setFooter({
-                    text: 'Спасибо за помощь в поддержании порядка.',
+                    text: localeManager.get('moderation.report.messages.footer', lang),
                     iconURL: interaction.client.user.displayAvatarURL()
-                })
-                .setTimestamp();
+                });
 
             const reportButtonsRow = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId('report_user')
-                        .setLabel('На пользователя')
+                        .setLabel(localeManager.get('moderation.report.messages.btn_user', lang))
                         .setStyle(ButtonStyle.Danger),
                     new ButtonBuilder()
                         .setCustomId('report_message')
-                        .setLabel('На сообщение')
+                        .setLabel(localeManager.get('moderation.report.messages.btn_message', lang))
                         .setStyle(ButtonStyle.Danger),
                     new ButtonBuilder()
                         .setCustomId('report_moderator')
-                        .setLabel('На модератора')
+                        .setLabel(localeManager.get('moderation.report.messages.btn_moderator', lang))
                         .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
                         .setCustomId('report_other')
-                        .setLabel('Другое')
+                        .setLabel(localeManager.get('moderation.report.messages.btn_other', lang))
                         .setStyle(ButtonStyle.Secondary)
                 );
             
@@ -71,7 +69,7 @@ module.exports = {
                 const faqButtonRow = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
-                            .setLabel('Ознакомиться с правилами / FAQ')
+                            .setLabel(localeManager.get('moderation.report.messages.btn_faq', lang))
                             .setStyle(ButtonStyle.Link)
                             .setURL(faqLink)
                     );
@@ -84,14 +82,14 @@ module.exports = {
             });
 
             await interaction.editReply({
-                content: `Панель жалоб успешно размещена в канале <#${interaction.channel.id}>.`,
+                content: localeManager.get('moderation.report.messages.success', lang, { id: interaction.channel.id }),
                 flags: MessageFlags.Ephemeral
             });
 
         } catch (error) {
             console.error('Ошибка при размещении панели жалоб:', error);
             await interaction.editReply({
-                content: 'Произошла ошибка при размещении панели жалоб. Проверьте права бота.',
+                content: localeManager.get('moderation.report.messages.error', lang),
                 flags: MessageFlags.Ephemeral
             });
         }

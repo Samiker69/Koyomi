@@ -1,5 +1,6 @@
 const { Events, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { fetchDoujin } = require('../../functions/fetchDoujin');
+const localeManager = require('../../locales/localeManager');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -9,8 +10,9 @@ module.exports = {
             if (command_name !== "nhentai") return;
             const page = parseInt(pageStr, 10);
 
+            const lang = interaction.guildLocale || 'ru';
             if (interaction.user.id !== ownerId) {
-                return await interaction.reply({ content: 'Это не ваша галерея!', flags: MessageFlags.Ephemeral });
+                return await interaction.reply({ content: localeManager.get('nsfw.nhentai.messages.not_author', lang), flags: MessageFlags.Ephemeral });
             }
 
             let newPage = page;
@@ -22,7 +24,7 @@ module.exports = {
 
             const result = await fetchDoujin(galleryId, newPage);
             if (!result) {
-                return await interaction.followUp({ content: 'Не удалось загрузить страницу.', flags: MessageFlags.Ephemeral });
+                return await interaction.followUp({ content: localeManager.get('nsfw.nhentai.messages.page_load_error', lang), flags: MessageFlags.Ephemeral });
             }
 
             const row = new ActionRowBuilder().addComponents(

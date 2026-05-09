@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
+const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
+const localeManager = require('../../locales/localeManager');
+const EmbedService = require('../../services/EmbedService');
 const { createCanvas, loadImage } = require('canvas');
 
 function drawHeart(ctx, x, y, size, color) {
@@ -41,21 +42,24 @@ function roundRect(ctx, x, y, width, height, radius) {
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
-        .setName('love')
-        .setDescription(forFunOnly.love.description.ru)
-        .setDescriptionLocalizations(forFunOnly.love.description)
+        .setName(localeManager.get('forFunOnly.love.name'))
+        .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.name', 'name'))
+        .setDescription(localeManager.get('forFunOnly.love.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.description'))
         .addUserOption(opt =>
             opt
-            .setName('user1')
-            .setDescription(forFunOnly.love.options.user1.description.ru)
-            .setDescriptionLocalizations(forFunOnly.love.options.user1.description)
+            .setName(localeManager.get('forFunOnly.love.options.user1.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user1.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.love.options.user1.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user1.description'))
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
-            .setName('user2')
-            .setDescription(forFunOnly.love.options.user2.description.ru)
-            .setDescriptionLocalizations(forFunOnly.love.options.user2.description)
+            .setName(localeManager.get('forFunOnly.love.options.user2.name'))
+            .setNameLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user2.name', 'name'))
+            .setDescription(localeManager.get('forFunOnly.love.options.user2.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user2.description'))
             .setRequired(true)
         ),
 
@@ -197,10 +201,9 @@ module.exports = {
 
         const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), { name: 'love_meter.png' });
 
-        const embed = new EmbedBuilder()
-            .setColor(0x9B59B6)
-            .setTitle('💕 Калькулятор Любви 💕')
-            .setDescription(`Насколько совместимы ${u1} и ${u2}?`)
+        const embed = EmbedService.createBaseEmbed(interaction)
+            .setTitle(localeManager.get('forFunOnly.love.messages.title', interaction.guildLocale || 'ru'))
+            .setDescription(localeManager.get('forFunOnly.love.messages.description', interaction.guildLocale || 'ru', { user1: u1.toString(), user2: u2.toString() }))
             .setImage('attachment://love_meter.png'); 
 
         await interaction.reply({ 

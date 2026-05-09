@@ -1,101 +1,100 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const Settings = require('../../functions/db/settings');
-const replies = require('../../locales/answers/replies');
-const { utility } = require('../../locales/descriptions/utility');
-
+const localeManager = require('../../locales/localeManager');
 const Sdb = new Settings();
-
-const getReply = (key, locale, vars = {}) => {
-  let text = replies[key]?.[locale] || replies[key]?.['ru'] || key;
-  for (const [k, v] of Object.entries(vars)) {
-    text = text.replace(`{${k}}`, String(v));
-  }
-  return text;
-};
 
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
-    .setName('room')
-    .setDescription('Управление вашей динамической голосовой комнатой')
-    .setDescriptionLocalizations(utility.room.description)
+    .setName(localeManager.get('utility.room.name'))
+    .setNameLocalizations(localeManager.getLocalizations('utility.room.name', 'name'))
+    .setDescription(localeManager.get('utility.room.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.description'))
     .addSubcommand(sub =>
       sub
-        .setName('rename')
-        .setDescription('Переименовать комнату')
-        .setDescriptionLocalizations(utility.room.subcommands.rename.description)
+        .setName(localeManager.get('utility.room.options.rename.name'))
+        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.rename.name', 'name'))
+        .setDescription(localeManager.get('utility.room.options.rename.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.rename.description'))
         .addStringOption(opt =>
           opt
-            .setName('name')
-            .setDescription('Новое название')
-            .setDescriptionLocalizations(utility.room.options.name.description)
+            .setName(localeManager.get('utility.room.options.rename.options.name.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.room.options.rename.options.name.name', 'name'))
+            .setDescription(localeManager.get('utility.room.options.rename.options.name.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.rename.options.name.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName('limit')
-        .setDescription('Установить лимит участников')
-        .setDescriptionLocalizations(utility.room.subcommands.limit.description)
+        .setName(localeManager.get('utility.room.options.limit.name'))
+        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.limit.name', 'name'))
+        .setDescription(localeManager.get('utility.room.options.limit.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.limit.description'))
         .addIntegerOption(opt =>
           opt
-            .setName('number')
-            .setDescription('Максимальное число участников (0 — без лимита)')
-            .setDescriptionLocalizations(utility.room.options.number.description)
+            .setName(localeManager.get('utility.room.options.limit.options.number.name'))
+            .setNameLocalizations(localeManager.getLocalizations('utility.room.options.limit.options.number.name', 'name'))
+            .setDescription(localeManager.get('utility.room.options.limit.options.number.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.limit.options.number.description'))
             .setRequired(true)
-            .setMinValue(0) // Добавлено минимальное значение для ясности
+            .setMinValue(0)
         )
     )
     .addSubcommand(sub =>
       sub
-        .setName('lock')
-        .setDescription('Закрыть комнату (запретить подключение для @everyone)')
-        .setDescriptionLocalizations(utility.room.subcommands.lock.description)
+        .setName(localeManager.get('utility.room.options.lock.name'))
+        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.lock.name', 'name'))
+        .setDescription(localeManager.get('utility.room.options.lock.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.lock.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName('unlock')
-        .setDescription('Открыть комнату (разрешить подключение для @everyone)')
-        .setDescriptionLocalizations(utility.room.subcommands.unlock.description)
+        .setName(localeManager.get('utility.room.options.unlock.name'))
+        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.unlock.name', 'name'))
+        .setDescription(localeManager.get('utility.room.options.unlock.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.unlock.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName('private')
-        .setDescription('Сделать комнату приватной (видимой только для роли)')
-        .setDescriptionLocalizations(utility.room.subcommands.private.description)
+        .setName(localeManager.get('utility.room.options.private.name'))
+        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.private.name', 'name'))
+        .setDescription(localeManager.get('utility.room.options.private.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.private.description'))
     )
     .addSubcommand(sub =>
       sub
-        .setName('public')
-        .setDescription('Сделать комнату публичной (видимой для всех)')
-        .setDescriptionLocalizations(utility.room.subcommands.public.description)
+        .setName(localeManager.get('utility.room.options.public.name'))
+        .setNameLocalizations(localeManager.getLocalizations('utility.room.options.public.name', 'name'))
+        .setDescription(localeManager.get('utility.room.options.public.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.public.description'))
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Connect),
 
   async execute(interaction) {
+    const lang = interaction.guildLocale || 'ru';
     const sub = interaction.options.getSubcommand();
     const guildId = interaction.guild.id;
     const cfg = Sdb.getSettings(guildId);
     const channel = interaction.member.voice.channel;
-    const loc = interaction.locale;
 
     if (!channel) {
       return await interaction.reply({
-        content: getReply('room_not_in_voice', loc),
+        content: localeManager.get('utility.room.messages.not_in_voice', lang),
         flags: MessageFlags.Ephemeral
       });
     }
 
     if (channel.parentId !== cfg.voiceCategoryId || channel.id === cfg.mainVoiceChannelId) {
       return await interaction.reply({
-        content: getReply('room_not_yours', loc),
+        content: localeManager.get('utility.room.messages.not_dynamic', lang),
         flags: MessageFlags.Ephemeral
       });
     }
 
     if (!interaction.member.permissionsIn(channel).has(PermissionFlagsBits.ManageChannels)) {
       return await interaction.reply({
-        content: getReply('room_not_creator', loc),
+        content: localeManager.get('utility.room.messages.not_creator', lang),
         flags: MessageFlags.Ephemeral
       });
     }
@@ -106,15 +105,18 @@ module.exports = {
           const newName = interaction.options.getString('name');
           await channel.setName(newName);
           return await interaction.reply({
-            content: getReply('room_renamed', loc, { newName: newName }),
+            content: localeManager.get('utility.room.messages.renamed', lang, { newName }),
             flags: MessageFlags.Ephemeral
           });
         }
         case 'limit': {
           const num = interaction.options.getInteger('number');
           await channel.setUserLimit(num);
+          const content = num === 0 
+            ? localeManager.get('utility.room.messages.limit_reset', lang)
+            : localeManager.get('utility.room.messages.limit_set', lang, { num });
           return await interaction.reply({
-            content: num === 0 ? getReply('room_limit_removed', loc) : getReply('room_limit_set', loc, { num: num }),
+            content: content,
             flags: MessageFlags.Ephemeral
           });
         }
@@ -123,7 +125,7 @@ module.exports = {
             Connect: false
           });
           return await interaction.reply({
-            content: getReply('room_locked', loc),
+            content: localeManager.get('utility.room.messages.locked', lang),
             flags: MessageFlags.Ephemeral
           });
         }
@@ -132,14 +134,14 @@ module.exports = {
             Connect: true
           });
           return await interaction.reply({
-            content: getReply('room_unlocked', loc),
+            content: localeManager.get('utility.room.messages.unlocked', lang),
             flags: MessageFlags.Ephemeral
           });
         }
         case 'private': {
           if (!cfg.allowedRoleId) {
             return await interaction.reply({
-              content: getReply('room_no_private_role', loc),
+              content: localeManager.get('utility.room.messages.private_role_not_set', lang),
               flags: MessageFlags.Ephemeral
             });
           }
@@ -154,7 +156,7 @@ module.exports = {
             Connect: true
           });
           return await interaction.reply({
-            content: getReply('room_made_private', loc),
+            content: localeManager.get('utility.room.messages.made_private', lang),
             flags: MessageFlags.Ephemeral
           });
         }
@@ -163,35 +165,36 @@ module.exports = {
             ViewChannel: true,
             Connect: true
           });
-
+          
           if (cfg.allowedRoleId) {
             const roleOverwrite = channel.permissionOverwrites.cache.get(cfg.allowedRoleId);
             if (roleOverwrite) {
               await roleOverwrite.delete();
             }
           }
-
+          
           return await interaction.reply({
-            content: getReply('room_made_public', loc),
+            content: localeManager.get('utility.room.messages.made_public', lang),
             flags: MessageFlags.Ephemeral
           });
         }
         default:
           return await interaction.reply({
-            content: getReply('unknown_subcommand', loc),
+            content: localeManager.get('utility.room.messages.unknown_sub', lang),
             flags: MessageFlags.Ephemeral
           });
       }
     } catch (err) {
       console.error('[ERROR] /room command failed:', err);
+      const errorMsg = localeManager.get('utility.room.messages.error', lang);
       if (interaction.replied || interaction.deferred) {
         return await interaction.followUp({
-          content: 'Произошла ошибка при выполнении команды.',
-          flags: MessageFlags.Ephemeral
+            content: errorMsg,
+            flags: MessageFlags.Ephemeral
         });
       }
       return await interaction.reply({
-        content: 'Произошла ошибка при выполнении команды.',
+        content: errorMsg,
         flags: MessageFlags.Ephemeral
       });
     }
