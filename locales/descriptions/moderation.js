@@ -413,6 +413,7 @@ const moderation = {
       "case_not_warn": { "ru": "Этот кейс не относится к предупреждениям! Это {action}", "en-US": "This case is not a warning! It is {action}", "uk": "Цей кейс не відноситься до попереджень! Це {action}" },
       "no_active_punishments": { "ru": "У этого пользователя нет действующих наказаний!", "en-US": "User has no active punishments!", "uk": "У цього користувача немає діючих покарань!" },
       "error_unwarn": { "ru": "Не удалось снять предупреждение.", "en-US": "Could not remove warning.", "uk": "Не вдалося зняти попередження." },
+      "invalid_user_id": { "ru": "Указан неверный ID пользователя. ID должен состоять из 17-20 цифр.", "en-US": "Invalid User ID provided. ID must be 17-20 digits.", "uk": "Вказано невірний ID користувача. ID має складатися з 17-20 цифр." },
       "action_done_template": { "ru": "{action} выполнен", "en-US": "{action} executed", "uk": "{action} виконано" },
       "labels": {
         "ban": { "ru": "Бан", "en-US": "Ban", "uk": "Бан" },

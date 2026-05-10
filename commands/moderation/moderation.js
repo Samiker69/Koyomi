@@ -111,7 +111,7 @@ const data = new SlashCommandBuilder()
         sub.setName('unban')
             .setDescription(localeManager.get('moderation.moderation.options.unban.description', 'en-US'))
             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.unban.description'))
-            .addUserOption(option =>
+            .addStringOption(option =>
                 option.setName('userid')
                     .setDescription(localeManager.get('moderation.moderation.options.unban.options.userid.description', 'en-US'))
                     .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.unban.options.userid.description'))
@@ -342,11 +342,16 @@ module.exports = {
                         flags: MessageFlags.Ephemeral 
                     });
                 }
-                const userId = interaction.options.getUser('userid');
+                const userId = interaction.options.getString('userid');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.unbanUser(interaction, userId.id, reason);
+                // Validate if it's a snowflake
+                if (!/^\d{17,20}$/.test(userId)) {
+                    return await interaction.reply({ content: localeManager.get('moderation.moderation.messages.invalid_user_id', lang), flags: MessageFlags.Ephemeral });
+                }
+
+                const result = await ModerationService.unbanUser(interaction, userId, reason);
                 if (!result.success) {
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
                 }
@@ -354,7 +359,7 @@ module.exports = {
                 const embed = EmbedService.createModerationEmbed({
                     interaction,
                     caseNum: result.caseData.caseNum,
-                    targetId: userId.id,
+                    targetId: userId,
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,

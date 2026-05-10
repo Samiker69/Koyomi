@@ -14,9 +14,14 @@ class ModerationService {
         }
 
         const member = check.member;
+        const banReason = reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` });
 
         try {
-            await member.ban({ reason: reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }) });
+            if (member) {
+                await member.ban({ reason: banReason });
+            } else {
+                await interaction.guild.members.ban(targetUser.id, { reason: banReason });
+            }
             
             await db.addModCase({
                 serverId: interaction.guild.id,

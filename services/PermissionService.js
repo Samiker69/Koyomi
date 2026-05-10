@@ -16,7 +16,12 @@ class PermissionService {
         }
 
         const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
+        
         if (!member) {
+            // For ban, we allow it even if they aren't in the guild (hackban)
+            if (action === 'ban') {
+                return { allowed: true, member: null };
+            }
             return { allowed: false, reasonKey: 'moderation.moderation.messages.user_not_found' };
         }
 
