@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
 const EmbedService = require('../../services/EmbedService');
 const { createCanvas, loadImage } = require('canvas');
@@ -63,6 +63,13 @@ module.exports = {
     async execute(interaction) {
         const u1 = interaction.options.getUser('user1');
         const u2 = interaction.options.getUser('user2');
+
+        if (u1.id === u2.id) {
+            return interaction.reply({
+                content: localeManager.get('forFunOnly.love.messages.self_love_error', interaction.guildLocale || 'ru'),
+                flags: [MessageFlags.Ephemeral]
+            });
+        }
 
         const [a, b] = [u1.id, u2.id].sort();
         const seed = BigInt(a) ^ BigInt(b);

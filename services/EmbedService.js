@@ -62,7 +62,7 @@ class EmbedService {
      * @param {object} opts
      * @returns {EmbedBuilder}
      */
-    static createVerdictEmbed({ action, label, color, caseNum, targetId, moderatorId, reason, durationString, timestamp, lang = 'ru' }) {
+    static createVerdictEmbed({ action, label, color, caseNum, targetId, moderatorId, reason, evidence, durationString, timestamp, lang = 'ru' }) {
         const embed = new EmbedBuilder()
             .setColor(color)
             .setTitle(`${label} — ${localeManager.get('services.embed.case', lang)} #${caseNum}`)
@@ -76,6 +76,11 @@ class EmbedService {
         }
 
         embed.addFields({ name: localeManager.get('services.embed.reason', lang), value: reason, inline: false });
+
+        if (evidence) {
+            embed.addFields({ name: localeManager.get('services.embed.evidence', lang), value: `[${localeManager.get('services.embed.click_to_view', lang)}](${evidence.url})` });
+            embed.setImage(evidence.url);
+        }
 
         const timeValue = timestamp
             ? `<t:${Math.floor(new Date(timestamp).getTime() / 1000)}:F>`

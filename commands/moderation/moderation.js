@@ -221,7 +221,7 @@ module.exports = {
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.banUser(interaction, targetUser, reason);
+                const result = await ModerationService.banUser(interaction, targetUser, reason, evidence);
 
                 if (!result.success) {
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
@@ -255,7 +255,7 @@ module.exports = {
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.muteUser(interaction, targetUser, timeInput, reason);
+                const result = await ModerationService.muteUser(interaction, targetUser, timeInput, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
@@ -286,7 +286,7 @@ module.exports = {
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.kickUser(interaction, targetUser, reason);
+                const result = await ModerationService.kickUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
                 }
@@ -316,7 +316,7 @@ module.exports = {
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.unmuteUser(interaction, targetUser, reason);
+                const result = await ModerationService.unmuteUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
                 }
@@ -351,7 +351,7 @@ module.exports = {
                     return await interaction.reply({ content: localeManager.get('moderation.moderation.messages.invalid_user_id', lang), flags: MessageFlags.Ephemeral });
                 }
 
-                const result = await ModerationService.unbanUser(interaction, userId, reason);
+                const result = await ModerationService.unbanUser(interaction, userId, reason, evidence);
                 if (!result.success) {
                     return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
                 }
@@ -383,7 +383,7 @@ module.exports = {
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.warnUser(interaction, targetUser, reason);
+                const result = await ModerationService.warnUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
@@ -416,7 +416,7 @@ module.exports = {
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.unwarnUser(interaction, targetUser, caseNum, reason);
+                const result = await ModerationService.unwarnUser(interaction, targetUser, caseNum, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }

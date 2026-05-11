@@ -166,6 +166,11 @@ const events = {
         "en-US": "Failed to ban",
         "ru": "Не удалось забанить",
         "uk": "Не вдалося забанити"
+      },
+      "dm_message": {
+        "en-US": "You have been softbanned from **{guildName}** for writing in the trap channel #{channelName}. All your messages from the last 10 minutes have been deleted. You can rejoin using an invite link.",
+        "ru": "Вы были исключены (softban) с сервера **{guildName}** за сообщение в канале-ловушке #{channelName}. Ваши сообщения за последние 10 минут были удалены. Вы можете зайти обратно по ссылке-приглашению.",
+        "uk": "Ви були виключені (softban) з сервера **{guildName}** за повідомлення в каналі-пастці #{channelName}. Ваші повідомлення за останні 10 хвилин були видалені. Ви можете зайти назад за посиланням-запрошенням."
       }
     }
   },

@@ -415,6 +415,43 @@ const moderation = {
       "error_unwarn": { "ru": "Не удалось снять предупреждение.", "en-US": "Could not remove warning.", "uk": "Не вдалося зняти попередження." },
       "invalid_user_id": { "ru": "Указан неверный ID пользователя. ID должен состоять из 17-20 цифр.", "en-US": "Invalid User ID provided. ID must be 17-20 digits.", "uk": "Вказано невірний ID користувача. ID має складатися з 17-20 цифр." },
       "action_done_template": { "ru": "{action} выполнен", "en-US": "{action} executed", "uk": "{action} виконано" },
+      "dm_templates": {
+        "ban": {
+          "ru": "Вы были забанены на сервере **{guildName}**.\n**Причина:** {reason}",
+          "en-US": "You have been banned from **{guildName}**.\n**Reason:** {reason}",
+          "uk": "Ви були забанені на сервері **{guildName}**.\n**Причина:** {reason}"
+        },
+        "kick": {
+          "ru": "Вы были исключены (кик) с сервера **{guildName}**.\n**Причина:** {reason}",
+          "en-US": "You have been kicked from **{guildName}**.\n**Reason:** {reason}",
+          "uk": "Ви були виключені (кік) з сервера **{guildName}**.\n**Причина:** {reason}"
+        },
+        "mute": {
+          "ru": "Вам ограничили общение (мут) на сервере **{guildName}** на {duration}.\n**Причина:** {reason}",
+          "en-US": "You have been muted in **{guildName}** for {duration}.\n**Reason:** {reason}",
+          "uk": "Вам обмежили спілкування (мут) на сервері **{guildName}** на {duration}.\n**Причина:** {reason}"
+        },
+        "warn": {
+          "ru": "Вы получили предупреждение на сервере **{guildName}**.\n**Причина:** {reason}",
+          "en-US": "You have received a warning in **{guildName}**.\n**Reason:** {reason}",
+          "uk": "Ви отримали попередження на сервері **{guildName}**.\n**Причина:** {reason}"
+        },
+        "unban": {
+          "ru": "Вы были разбанены на сервере **{guildName}**.\n**Причина:** {reason}",
+          "en-US": "You have been unbanned from **{guildName}**.\n**Reason:** {reason}",
+          "uk": "Ви були розбанені на сервері **{guildName}**.\n**Причина:** {reason}"
+        },
+        "unmute": {
+          "ru": "С вас сняли ограничения (размут) на сервере **{guildName}**.\n**Причина:** {reason}",
+          "en-US": "You have been unmuted in **{guildName}**.\n**Reason:** {reason}",
+          "uk": "З вас зняли обмеження (розмют) на сервері **{guildName}**.\n**Причина:** {reason}"
+        },
+        "unwarn": {
+          "ru": "С вас сняли предупреждение на сервере **{guildName}**.\n**Причина:** {reason}",
+          "en-US": "Your warning has been removed in **{guildName}**.\n**Reason:** {reason}",
+          "uk": "З вас зняли попередження на сервері **{guildName}**.\n**Причина:** {reason}"
+        }
+      },
       "labels": {
         "ban": { "ru": "Бан", "en-US": "Ban", "uk": "Бан" },
         "kick": { "ru": "Кик", "en-US": "Kick", "uk": "Кік" },

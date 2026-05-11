@@ -726,102 +726,102 @@ const forFunOnly = {
       }
     },
     "messages": {
-       "no_access": {
-         "en-US": "You do not have access to this command.",
-         "ru": "У вас нет доступа к этой команде.",
-         "uk": "У вас немає доступу до цієї команди."
-       },
-       "not_in_db": {
-         "en-US": "It seems you are not in the database yet.",
-         "ru": "Кажется, вас ещё нет в базе данных.",
-         "uk": "Здається, вас ще немає в базі даних."
-       },
-       "no_api_keys": {
-         "en-US": "You don't have any API keys to use this command.",
-         "ru": "У вас нет ни одного апи ключа для использования этой команды.",
-         "uk": "У вас немає жодного апі ключа для використання цієї команди."
-       },
-       "label_history_limit_limit": { "en-US": "History Limit (history_limit)", "ru": "Лимит истории (history_limit)", "uk": "Ліміт історії (history_limit)" },
-       "label_si": { "en-US": "System Instructions (system_instructions)", "ru": "Системные инструкции (system_instructions)", "uk": "Системні інструкції (system_instructions)" },
-       "label_safety": { "en-US": "Safety Settings", "ru": "Настройки безопасности", "uk": "Налаштування безпеки" },
-       "label_temperature": { "en-US": "Temperature", "ru": "Температура", "uk": "Температура" },
-       "label_total_tokens": { "en-US": "Total Tokens Used", "ru": "Всего токенов использовано", "uk": "Всього токенів використано" },
-       "label_token_uses": { "en-US": "Token Uses", "ru": "Использований токенов", "uk": "Використання токенів" },
-       "settings_updated": { "en-US": "Settings updated successfully!", "ru": "Настройки успешно обновлены!", "uk": "Налаштування успішно оновлені!" },
-       "settings_not_changed": { "en-US": "Nothing was changed.", "ru": "Ничего не было изменено.", "uk": "Нічого не було змінено." },
-       "safety_category_changed": { "en-US": "Safety category {category} set to {value}.", "ru": "Категория безопасности {category} установлена на {value}.", "uk": "Категорія безпеки {category} встановлена на {value}." },
-       "unknown_category": { "en-US": "Unknown safety category.", "ru": "Неизвестная категория безопасности.", "uk": "Невідома категорія безпеки." },
-       "apikey_added": { "en-US": "API key added successfully!", "ru": "API ключ успешно добавлен!", "uk": "API ключ успішно доданий!" },
-       "apikey_required_non_all": { "en-US": "API key is required unless deleting all.", "ru": "API ключ обязателен, если вы не удаляете все.", "uk": "API ключ обов'язковий, якщо ви не видаляєте всі." },
-       "keys_deleted_count": { "en-US": "{count} keys deleted.", "ru": "Удалено ключей: {count}.", "uk": "Видалено ключів: {count}." },
-       "apikey_deleted": { "en-US": "API key deleted.", "ru": "API ключ удален.", "uk": "API ключ видалений." },
-       "model_info_no_keys": { "en-US": "No API keys found to fetch model info.", "ru": "Не найдено API ключей для получения информации о модели.", "uk": "Не знайдено API ключів для отримання інформації про модель." },
-       "user_added": { "en-US": "User {user} added to AI database.", "ru": "Пользователь {user} добавлен в базу AI.", "uk": "Користувач {user} доданий до бази ШІ." },
-       "user_removed": { "en-US": "User {user} removed from AI database.", "ru": "Пользователь {user} удален из базы AI.", "uk": "Користувач {user} видалений з бази ШІ." },
-       "unknown_subcommand": { "en-US": "Unknown subcommand.", "ru": "Неизвестная подкоманда.", "uk": "Невідома підкоманда." },
-       "not_image": {
-         "en-US": "This is not an image! Attachment will be ignored.\nExecuting request to AI...",
-         "ru": "Это не изображение! Вложение будет проигнорировано.\nВыполняем запрос к ai...",
-         "uk": "Це не зображення! Вкладення буде проігноровано.\nВиконуємо запит до ші..."
-       },
-       "image_too_large": {
-         "en-US": "Image size is too large (max 20MB). Attachment will be ignored.\nExecuting request to AI...",
-         "ru": "Размер изображения слишком большой (макс. 20мб). Вложение будет проигнорировано.\nВыполняем запрос к ai...",
-         "uk": "Розмір зображення занадто великий (макс. 20мб). Вкладення буде проігноровано.\nВиконуємо запит до ші..."
-       },
-       "ai_unavailable": {
-         "en-US": "AI functionality is unavailable as client.keyManager is empty.",
-         "ru": "Функционал ИИ недоступен, так как client.keyManager пуст.",
-         "uk": "Функціонал ШІ недоступний, оскільки client.keyManager порожній."
-       },
-       "ai_no_reply": {
-         "en-US": "AI did not respond at all. There might be a service error...",
-         "ru": "AI совсем ничего не ответила. Возможно, со стороны сервиса какая-то ошибка...",
-         "uk": "ШІ зовсім нічого не відповів. Можливо, з боку сервісу якась помилка..."
-       },
-       "ai_no_reply_reason": {
-         "en-US": "It seems... AI did not respond. Reason: {reason}",
-         "ru": "Кажется... ai не ответила. Причина: {reason}",
-         "uk": "Здається... ші не відповів. Причина: {reason}"
-       },
-       "wait_time": {
-         "en-US": "Wait time: {sec} seconds, length: {length}",
-         "ru": "Время ожидания {sec} секунд, длина {length}",
-         "uk": "Час очікування {sec} секунд, довжина {length}"
-       },
-       "reply_too_long": {
-         "en-US": "AI responded with text that is too long, so the response is in a file.",
-         "ru": "AI ответила слишком длинным текстом, поэтому её ответ находится в файле.",
-         "uk": "ШІ відповів занадто довгим текстом, тому його відповідь знаходиться у файлі."
-       },
-       "invalid_apikey": {
-         "en-US": "Invalid API key. Removing key from database...",
-         "ru": "Неверный апи ключ. Удаление ключа из бд...",
-         "uk": "Невірний апі ключ. Видалення ключа з БД..."
-       },
-       "settings_title": {
-         "en-US": "Your Gemini Settings",
-         "ru": "Ваши настройки gemini",
-         "uk": "Ваші налаштування gemini"
-       },
-       "settings_description": {
-         "en-US": "System Instructions: {si}\n\nSafety Settings:\n\`\`\`json\n{ss}\`\`\`\n\nTip: to reset `top_k` and `top_p`, set them to a negative value: `/ai edit top_k:-1`.\nTo reset `system_instructions`, use `/ai edit system_instructions:{NULL}`",
-         "ru": "Системные инструкции (system_instructions): {si}\n\nНастройки безопасности:\n\`\`\`json\n{ss}\`\`\`\n\nСовет: чтобы сбросить настройки `top_k` и `top_p`, укажите им отрицательное значение: `/ai edit top_k:-1`.\nЧтобы сбросить настройки `system_instructions`, используйте команду `/ai edit system_instructions:{NULL}`",
-         "uk": "Системні інструкції (system_instructions): {si}\n\nНалаштування безпеки:\n\`\`\`json\n{ss}\`\`\`\n\nПорада: щоб скинути налаштування `top_k` і `top_p`, вкажіть їм від'ємне значення: `/ai edit top_k:-1`.\nЩоб скинути налаштування `system_instructions`, використовуйте команду `/ai edit system_instructions:{NULL}`"
-       },
-       "label_model": {
-         "en-US": "Model (model)",
-         "ru": "Модель (model)",
-         "uk": "Модель (model)"
-       },
-       "label_max_tokens": {
-         "en-US": "Max Output Tokens (max_output_tokens)",
-         "ru": "Максимум токенов на ответ (max_output_tokens)",
-         "uk": "Максимум токенів на відповідь (max_output_tokens)"
-       },
-       "label_history_limit": { "en-US": "History Limit (history_limit)", "ru": "Лимит истории (history_limit)", "uk": "Ліміт історії (history_limit)" },
-       "label_si": { "en-US": "System Instructions (system_instructions)", "ru": "Системные инструкции (system_instructions)", "uk": "Системні інструкції (system_instructions)" },
-       "label_safety": { "en-US": "Safety Settings", "ru": "Настройки безопасности", "uk": "Налаштування безпеки" }
+      "no_access": {
+        "en-US": "You do not have access to this command.",
+        "ru": "У вас нет доступа к этой команде.",
+        "uk": "У вас немає доступу до цієї команди."
+      },
+      "not_in_db": {
+        "en-US": "It seems you are not in the database yet.",
+        "ru": "Кажется, вас ещё нет в базе данных.",
+        "uk": "Здається, вас ще немає в базі даних."
+      },
+      "no_api_keys": {
+        "en-US": "You don't have any API keys to use this command.",
+        "ru": "У вас нет ни одного апи ключа для использования этой команды.",
+        "uk": "У вас немає жодного апі ключа для використання цієї команди."
+      },
+      "label_history_limit_limit": { "en-US": "History Limit (history_limit)", "ru": "Лимит истории (history_limit)", "uk": "Ліміт історії (history_limit)" },
+      "label_si": { "en-US": "System Instructions (system_instructions)", "ru": "Системные инструкции (system_instructions)", "uk": "Системні інструкції (system_instructions)" },
+      "label_safety": { "en-US": "Safety Settings", "ru": "Настройки безопасности", "uk": "Налаштування безпеки" },
+      "label_temperature": { "en-US": "Temperature", "ru": "Температура", "uk": "Температура" },
+      "label_total_tokens": { "en-US": "Total Tokens Used", "ru": "Всего токенов использовано", "uk": "Всього токенів використано" },
+      "label_token_uses": { "en-US": "Token Uses", "ru": "Использований токенов", "uk": "Використання токенів" },
+      "settings_updated": { "en-US": "Settings updated successfully!", "ru": "Настройки успешно обновлены!", "uk": "Налаштування успішно оновлені!" },
+      "settings_not_changed": { "en-US": "Nothing was changed.", "ru": "Ничего не было изменено.", "uk": "Нічого не було змінено." },
+      "safety_category_changed": { "en-US": "Safety category {category} set to {value}.", "ru": "Категория безопасности {category} установлена на {value}.", "uk": "Категорія безпеки {category} встановлена на {value}." },
+      "unknown_category": { "en-US": "Unknown safety category.", "ru": "Неизвестная категория безопасности.", "uk": "Невідома категорія безпеки." },
+      "apikey_added": { "en-US": "API key added successfully!", "ru": "API ключ успешно добавлен!", "uk": "API ключ успішно доданий!" },
+      "apikey_required_non_all": { "en-US": "API key is required unless deleting all.", "ru": "API ключ обязателен, если вы не удаляете все.", "uk": "API ключ обов'язковий, якщо ви не видаляєте всі." },
+      "keys_deleted_count": { "en-US": "{count} keys deleted.", "ru": "Удалено ключей: {count}.", "uk": "Видалено ключів: {count}." },
+      "apikey_deleted": { "en-US": "API key deleted.", "ru": "API ключ удален.", "uk": "API ключ видалений." },
+      "model_info_no_keys": { "en-US": "No API keys found to fetch model info.", "ru": "Не найдено API ключей для получения информации о модели.", "uk": "Не знайдено API ключів для отримання інформації про модель." },
+      "user_added": { "en-US": "User {user} added to AI database.", "ru": "Пользователь {user} добавлен в базу AI.", "uk": "Користувач {user} доданий до бази ШІ." },
+      "user_removed": { "en-US": "User {user} removed from AI database.", "ru": "Пользователь {user} удален из базы AI.", "uk": "Користувач {user} видалений з бази ШІ." },
+      "unknown_subcommand": { "en-US": "Unknown subcommand.", "ru": "Неизвестная подкоманда.", "uk": "Невідома підкоманда." },
+      "not_image": {
+        "en-US": "This is not an image! Attachment will be ignored.\nExecuting request to AI...",
+        "ru": "Это не изображение! Вложение будет проигнорировано.\nВыполняем запрос к ai...",
+        "uk": "Це не зображення! Вкладення буде проігноровано.\nВиконуємо запит до ші..."
+      },
+      "image_too_large": {
+        "en-US": "Image size is too large (max 20MB). Attachment will be ignored.\nExecuting request to AI...",
+        "ru": "Размер изображения слишком большой (макс. 20мб). Вложение будет проигнорировано.\nВыполняем запрос к ai...",
+        "uk": "Розмір зображення занадто великий (макс. 20мб). Вкладення буде проігноровано.\nВиконуємо запит до ші..."
+      },
+      "ai_unavailable": {
+        "en-US": "AI functionality is unavailable as client.keyManager is empty.",
+        "ru": "Функционал ИИ недоступен, так как client.keyManager пуст.",
+        "uk": "Функціонал ШІ недоступний, оскільки client.keyManager порожній."
+      },
+      "ai_no_reply": {
+        "en-US": "AI did not respond at all. There might be a service error...",
+        "ru": "AI совсем ничего не ответила. Возможно, со стороны сервиса какая-то ошибка...",
+        "uk": "ШІ зовсім нічого не відповів. Можливо, з боку сервісу якась помилка..."
+      },
+      "ai_no_reply_reason": {
+        "en-US": "It seems... AI did not respond. Reason: {reason}",
+        "ru": "Кажется... ai не ответила. Причина: {reason}",
+        "uk": "Здається... ші не відповів. Причина: {reason}"
+      },
+      "wait_time": {
+        "en-US": "Wait time: {sec} seconds, length: {length}",
+        "ru": "Время ожидания {sec} секунд, длина {length}",
+        "uk": "Час очікування {sec} секунд, довжина {length}"
+      },
+      "reply_too_long": {
+        "en-US": "AI responded with text that is too long, so the response is in a file.",
+        "ru": "AI ответила слишком длинным текстом, поэтому её ответ находится в файле.",
+        "uk": "ШІ відповів занадто довгим текстом, тому його відповідь знаходиться у файлі."
+      },
+      "invalid_apikey": {
+        "en-US": "Invalid API key. Removing key from database...",
+        "ru": "Неверный апи ключ. Удаление ключа из бд...",
+        "uk": "Невірний апі ключ. Видалення ключа з БД..."
+      },
+      "settings_title": {
+        "en-US": "Your Gemini Settings",
+        "ru": "Ваши настройки gemini",
+        "uk": "Ваші налаштування gemini"
+      },
+      "settings_description": {
+        "en-US": "System Instructions: {si}\n\nSafety Settings:\n\`\`\`json\n{ss}\`\`\`\n\nTip: to reset `top_k` and `top_p`, set them to a negative value: `/ai edit top_k:-1`.\nTo reset `system_instructions`, use `/ai edit system_instructions:{NULL}`",
+        "ru": "Системные инструкции (system_instructions): {si}\n\nНастройки безопасности:\n\`\`\`json\n{ss}\`\`\`\n\nСовет: чтобы сбросить настройки `top_k` и `top_p`, укажите им отрицательное значение: `/ai edit top_k:-1`.\nЧтобы сбросить настройки `system_instructions`, используйте команду `/ai edit system_instructions:{NULL}`",
+        "uk": "Системні інструкції (system_instructions): {si}\n\nНалаштування безпеки:\n\`\`\`json\n{ss}\`\`\`\n\nПорада: щоб скинути налаштування `top_k` і `top_p`, вкажіть їм від'ємне значення: `/ai edit top_k:-1`.\nЩоб скинути налаштування `system_instructions`, використовуйте команду `/ai edit system_instructions:{NULL}`"
+      },
+      "label_model": {
+        "en-US": "Model (model)",
+        "ru": "Модель (model)",
+        "uk": "Модель (model)"
+      },
+      "label_max_tokens": {
+        "en-US": "Max Output Tokens (max_output_tokens)",
+        "ru": "Максимум токенов на ответ (max_output_tokens)",
+        "uk": "Максимум токенів на відповідь (max_output_tokens)"
+      },
+      "label_history_limit": { "en-US": "History Limit (history_limit)", "ru": "Лимит истории (history_limit)", "uk": "Ліміт історії (history_limit)" },
+      "label_si": { "en-US": "System Instructions (system_instructions)", "ru": "Системные инструкции (system_instructions)", "uk": "Системні інструкції (system_instructions)" },
+      "label_safety": { "en-US": "Safety Settings", "ru": "Настройки безопасности", "uk": "Налаштування безпеки" }
     }
   },
   "eval": {
@@ -942,7 +942,8 @@ const forFunOnly = {
     },
     "messages": {
       "title": { "en-US": "Love Meter", "ru": "Измеритель любви", "uk": "Вимірювач кохання" },
-      "description": { "en-US": "Love compatibility between {user1} and {user2}", "ru": "Совместимость в любви между {user1} и {user2}", "uk": "Сумісність у коханні між {user1} та {user2}" }
+      "description": { "en-US": "Love compatibility between {user1} and {user2}", "ru": "Совместимость в любви между {user1} и {user2}", "uk": "Сумісність у коханні між {user1} та {user2}" },
+      "self_love_error": { "en-US": "Self-love is important, but this command is for two different people!", "ru": "Любить себя - это важно, но эта команда для двух разных людей!", "uk": "Любити себе - це важливо, але ця команда для двох разных людей!" }
     }
   },
   "minecraft": {
