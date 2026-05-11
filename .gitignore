@@ -8,4 +8,4 @@ ClientApi/
 
 pnpm-lock.yaml
 pnpm-workspace.yaml
-commands\utility\countLines.js
+tests/
