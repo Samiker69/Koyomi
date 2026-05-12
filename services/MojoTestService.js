@@ -107,7 +107,18 @@ class MojoTestService {
             };
         };
 
-        const initialMsg = await interaction.editReply(getQuestionData());
+        let initialMsg;
+        try {
+            initialMsg = await interaction.editReply(getQuestionData());
+        } catch (error) {
+            console.error('[MojoTest] Failed to send initial test message:', error);
+            this.activeTests.delete(targetUser.id);
+            // Если мы уже сняли роли, возвращаем их
+            if (rolesRemoved) {
+                await targetMember.roles.add(rolesToSave).catch(() => {});
+            }
+            return;
+        }
 
         const collector = initialMsg.createMessageComponentCollector({
             filter: i => i.user.id === targetUser.id,

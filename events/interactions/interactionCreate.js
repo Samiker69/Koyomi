@@ -80,8 +80,14 @@ module.exports = {
             )
             .setTimestamp(new Date())
             
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] })
+            try {
+                const logChannel = await interaction.client.channels.fetch(bot_log_channel).catch(() => null);
+                if (logChannel && logChannel.isTextBased()) {
+                    await logChannel.send({ embeds: [errorEmbed] });
+                }
+            } catch (logErr) {
+                console.error('[Logger Error] Could not send to log channel:', logErr.message);
+            }
             
             const errorMessage = localeManager.get('events.errors.command_error', lang);
             if (interaction.replied || interaction.deferred) {

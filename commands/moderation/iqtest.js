@@ -18,7 +18,7 @@ module.exports = {
 
     async execute(interaction) {
         const lang = interaction.guildLocale;
-        await interaction.deferReply({ fetchReply: true });
+        await interaction.deferReply({ withResponse: true });
 
         const targetUser = interaction.options.getUser('target');
         const targetMember = await interaction.guild.members.fetch(targetUser.id).catch(() => null);

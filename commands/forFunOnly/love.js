@@ -61,11 +61,12 @@ module.exports = {
         ),
 
     async execute(interaction) {
+        await interaction.deferReply();
         const u1 = interaction.options.getUser('user1');
         const u2 = interaction.options.getUser('user2');
 
         if (u1.id === u2.id) {
-            return interaction.reply({
+            return interaction.editReply({
                 content: localeManager.get('forFunOnly.love.messages.self_love_error', interaction.guildLocale || 'ru'),
                 flags: [MessageFlags.Ephemeral]
             });
@@ -210,7 +211,7 @@ module.exports = {
             .setDescription(localeManager.get('forFunOnly.love.messages.description', interaction.guildLocale || 'ru', { user1: u1.toString(), user2: u2.toString() }))
             .setImage('attachment://love_meter.png'); 
 
-        await interaction.reply({ 
+        await interaction.editReply({ 
             embeds: [embed], 
             files: [attachment],
             allowedMentions: { parse: [] } 
