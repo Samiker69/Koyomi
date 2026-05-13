@@ -123,7 +123,7 @@ module.exports = {
                         return;
                     }
 
-                    let typeFilter = [ChannelType.GuildText];
+                    let typeFilter = [ChannelType.GuildText, ChannelType.GuildForum];
                     let promptText = 'Выберите текстовый канал:';
                     if (selection === 'act_cat') {
                         typeFilter = [ChannelType.GuildCategory];
