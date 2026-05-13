@@ -1,36 +1,35 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
-
-const statusMap = {
-  online: 'В сети',
-  idle: 'Не активен',
-  dnd: 'Не беспокоить',
-  offline: 'Не в сети'
-};
+const localeManager = require('../../locales/localeManager');
 
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('info')
-    .setDescription('Команды для получения информации')
+    .setDescription(localeManager.get('utility.info.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('utility.info.description'))
     .addSubcommand(sub =>
       sub
         .setName('userinfo')
-        .setDescription('Информация о пользователе')
+        .setDescription(localeManager.get('utility.info.options.userinfo.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.info.options.userinfo.description'))
         .addUserOption(opt =>
           opt
             .setName('target')
-            .setDescription('Пользователь (необязательно)')
+            .setDescription(localeManager.get('utility.info.options.userinfo.options.target.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.info.options.userinfo.options.target.description'))
             .setRequired(false)
         )
     )
     .addSubcommand(sub =>
       sub
         .setName('serverinfo')
-        .setDescription('Информация о сервере')
+        .setDescription(localeManager.get('utility.info.options.serverinfo.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.info.options.serverinfo.description'))
     ),
 
   async execute(interaction) {
+    const lang = interaction.guildLocale || 'ru';
     const sub = interaction.options.getSubcommand();
 
     if (sub === 'userinfo') {
@@ -40,7 +39,7 @@ module.exports = {
       const createdTs = Math.floor(user.createdAt.getTime() / 1000);
       const joinedTs  = Math.floor(member.joinedAt.getTime() / 1000);
       const rawStatus = member.presence?.status || 'offline';
-      const statusText = statusMap[rawStatus] || rawStatus;
+      const statusText = localeManager.get(`utility.info.messages.status.${rawStatus}`, lang);
 
       const roles = member.roles.cache
         .filter(r => r.id !== interaction.guild.id)
@@ -50,13 +49,13 @@ module.exports = {
       const embed = EmbedService.createBaseEmbed(interaction)
         .setAuthor({ name: user.tag, iconURL: user.avatarURL({ dynamic: true }) })
         .setThumbnail(user.avatarURL({ dynamic: true }))
-        .setTitle('Информация о пользователе')
+        .setTitle(localeManager.get('utility.info.messages.user_title', lang))
         .addFields(
-          { name: 'ID',                 value: user.id,                              inline: true },
-          { name: 'Аккаунт создан',     value: `<t:${createdTs}:F> (<t:${createdTs}:R>)`, inline: true },
-          { name: 'Вступил на сервер',  value: `<t:${joinedTs}:F> (<t:${joinedTs}:R>)`,  inline: true },
-          { name: 'Статус',             value: statusText,                            inline: true },
-          { name: 'Роли',               value: roles,                                 inline: false }
+          { name: localeManager.get('utility.info.messages.id', lang),         value: user.id,                              inline: true },
+          { name: localeManager.get('utility.info.messages.created_at', lang), value: `<t:${createdTs}:F> (<t:${createdTs}:R>)`, inline: true },
+          { name: localeManager.get('utility.info.messages.joined_at', lang),  value: `<t:${joinedTs}:F> (<t:${joinedTs}:R>)`,  inline: true },
+          { name: localeManager.get('utility.info.messages.status_label', lang), value: statusText,           inline: true },
+          { name: localeManager.get('utility.info.messages.roles', lang),       value: roles,                                 inline: false }
         );
 
       return await interaction.reply({ embeds: [embed] });
@@ -69,20 +68,20 @@ module.exports = {
       const embed = EmbedService.createBaseEmbed(interaction)
         .setAuthor({ name: guild.name, iconURL: guild.iconURL({ dynamic: true }) })
         .setThumbnail(guild.iconURL({ dynamic: true }))
-        .setTitle('Информация о сервере')
+        .setTitle(localeManager.get('utility.info.messages.server_title', lang))
         .addFields(
-          { name: 'ID',           value: guild.id,                             inline: true },
-          { name: 'Создан',      value: `<t:${createdTs}:F> (<t:${createdTs}:R>)`, inline: true },
-          { name: 'Владелец',    value: `<@${guild.ownerId}>`,                 inline: true },
-          { name: 'Участников',  value: `${guild.memberCount}`,                 inline: true },
-          { name: 'Ролей',       value: `${guild.roles.cache.size}`,            inline: true },
-          { name: 'Каналов',     value: `${guild.channels.cache.size}`,         inline: true },
-          { name: 'Локаль',      value: guild.preferredLocale,                 inline: true }
+          { name: localeManager.get('utility.info.messages.id', lang),           value: guild.id,                             inline: true },
+          { name: localeManager.get('utility.info.messages.server_created', lang), value: `<t:${createdTs}:F> (<t:${createdTs}:R>)`, inline: true },
+          { name: localeManager.get('utility.info.messages.owner', lang),      value: `<@${guild.ownerId}>`,                 inline: true },
+          { name: localeManager.get('utility.info.messages.members', lang),    value: `${guild.memberCount}`,                 inline: true },
+          { name: localeManager.get('utility.info.messages.roles', lang),      value: `${guild.roles.cache.size}`,            inline: true },
+          { name: localeManager.get('utility.info.messages.channels', lang),   value: `${guild.channels.cache.size}`,         inline: true },
+          { name: localeManager.get('utility.info.messages.locale', lang),     value: guild.preferredLocale,                 inline: true }
         );
 
       return await interaction.reply({ embeds: [embed] });
     }
 
-    return await interaction.reply({ content: 'Неизвестная подкоманда.', flags: MessageFlags.Ephemeral });
+    return await interaction.reply({ content: localeManager.get('utility.info.messages.unknown_sub', lang), flags: MessageFlags.Ephemeral });
   }
 };

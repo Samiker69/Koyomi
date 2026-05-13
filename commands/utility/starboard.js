@@ -1,51 +1,63 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const starboardDB = require('../../functions/db/starboard');
+const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, MessageFlags } = require('discord.js');
+const Settings = require('../../functions/db/settings');
+const localeManager = require('../../locales/localeManager');
 
-const db = new starboardDB();
+const Sdb = new Settings();
 
 module.exports = {
-	cooldown: 5,
-	data: new SlashCommandBuilder()
-		.setName('starboard')
-		.setDescription('Изменить настройки бота')
-        .addSubcommand(sub => 
-            sub.setName('settings')
-            .setDescription('Настройки для доски звёзд')
-            .addChannelOption(opt =>
-                opt.setName('starboard-channel')
-                .setDescription("Канал для доски звёзд")
-            )
-            .addBooleanOption(opt =>
-                opt.setName('enabled')
-                .setDescription("Использовать доску звёзд?")
-            )
-            .addIntegerOption(opt =>
-                opt.setName('min-reactions')
-                .setDescription("Минимальное кол-во звёзд для доски звёзд")
-                .setMinValue(1)
-            )
-        ).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-,
+  data: new SlashCommandBuilder()
+    .setName('starboard')
+    .setDescription(localeManager.get('utility.starboard.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.description'))
+    .addSubcommand(sub => 
+      sub.setName('setup')
+        .setDescription(localeManager.get('utility.starboard.options.setup.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.description'))
+        .addChannelOption(opt => 
+          opt.setName('channel')
+            .setDescription(localeManager.get('utility.starboard.options.setup.options.channel.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.channel.description'))
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true))
+        .addIntegerOption(opt => 
+          opt.setName('min')
+            .setDescription(localeManager.get('utility.starboard.options.setup.options.min.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.setup.options.min.description'))
+            .setMinValue(1)
+            .setMaxValue(50))
+    )
+    .addSubcommand(sub => 
+      sub.setName('disable')
+        .setDescription(localeManager.get('utility.starboard.options.disable.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.starboard.options.disable.description'))
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
-    async execute(interaction) {
-        switch (interaction.options.getSubcommand()) {
-            case "settings": {
-                const channel = interaction.options.getChannel("starboard-channel") || undefined;
-                const changes = {
-                    starboardChannelId: channel ? channel.id : channel,
-                    enabled: interaction.options.getBoolean("enabled"),
-                    minReactions: interaction.options.getInteger("min-reactions") || undefined,
-                }
-                if (changes.enabled === undefined && changes.starboardChannelId === undefined && changes.minReactions === undefined) return await interaction.reply({content: "Все поля пустые!", flags: MessageFlags.Ephemeral})
+   async execute(interaction) {
+    const lang = interaction.guildLocale || 'ru';
+    const guildId = interaction.guild.id;
+    const sub = interaction.options.getSubcommand();
 
-                db.updateSettings(interaction.guild.id, changes);
-                await interaction.reply("Настройки доски звёзд обновлены")
-                break;
-            }
-            
-            default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
-                break;
-        }
+    if (sub === 'setup') {
+      const channel = interaction.options.getChannel('channel');
+      const min = interaction.options.getInteger('min') || 3;
+
+      Sdb.updateSetting(guildId, 'starboardChannelId', channel.id);
+      Sdb.updateSetting(guildId, 'starboardMinStars', min);
+      Sdb.updateSetting(guildId, 'starboardEnabled', true);
+
+      return await interaction.reply({
+        content: localeManager.get('utility.starboard.messages.setup_done', lang, { channel: channel.toString(), min }),
+        flags: MessageFlags.Ephemeral
+      });
     }
-}
+
+    if (sub === 'disable') {
+      Sdb.updateSetting(guildId, 'starboardEnabled', false);
+      return await interaction.reply({
+        content: localeManager.get('utility.starboard.messages.disabled_done', lang),
+        flags: MessageFlags.Ephemeral
+      });
+    }
+  }
+};

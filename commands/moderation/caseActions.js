@@ -2,57 +2,62 @@ const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } =
 const ModerationDB = require('../../functions/db/case');
 const db = new ModerationDB();
 const EmbedService = require('../../services/EmbedService');
-const {moderation} = require('../../locales/descriptions/moderation')
+const localeManager = require('../../locales/localeManager');
 
 const data = new SlashCommandBuilder()
     .setName('case')
-    .setDescription(moderation.case.description.ru)
+    .setDescription(localeManager.get('moderation.case.description', 'en-US'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.description'))
     .addSubcommand(sub =>
         sub.setName('remove')
-        .setDescription(moderation.case.options.description || "Удаляет кейс")
+        .setDescription(localeManager.get('moderation.case.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.remove.description'))
         .addIntegerOption(opt => 
             opt.setName('num')
-            .setDescription(moderation.case.options.num.description.ru)
-            .setDescriptionLocalizations(moderation.case.options.num.description)
+            .setDescription(localeManager.get('moderation.case.options.remove.options.num.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.remove.options.num.description'))
             .setMinValue(0)
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
         sub.setName('reason')
-        .setDescription("Сменить причину кейса")
+        .setDescription(localeManager.get('moderation.case.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.reason.description'))
         .addIntegerOption(opt => 
             opt.setName('num')
-            .setDescription(moderation.case.options.num.description.ru)
-            .setDescriptionLocalizations(moderation.case.options.num.description)
+            .setDescription(localeManager.get('moderation.case.options.reason.options.num.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.reason.options.num.description'))
             .setMinValue(0)
             .setRequired(true)
         )
         .addStringOption(opt =>
             opt.setName('reason')
-            .setDescription(moderation.case.options.reason.description.ru)
-            .setDescriptionLocalizations(moderation.case.options.reason.description)
+            .setDescription(localeManager.get('moderation.case.options.reason.options.reason.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.reason.options.reason.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
         sub.setName('view')
-        .setDescription("Показывает указанный кейс")
+        .setDescription(localeManager.get('moderation.case.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.view.description'))
         .addIntegerOption(opt => 
             opt.setName('num')
-            .setDescription(moderation.case.options.num.description.ru)
-            .setDescriptionLocalizations(moderation.case.options.num.description)
+            .setDescription(localeManager.get('moderation.case.options.view.options.num.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.view.options.num.description'))
             .setMinValue(0)
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
         sub.setName('user_punishments')
-        .setDescription('Проверить историю наказаний пользователя')
+        .setDescription(localeManager.get('moderation.case.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.user_punishments.description'))
         .addUserOption(option =>
             option.setName('user')
-                .setDescription(moderation.case.options.user.description.ru)
-                .setDescriptionLocalizations(moderation.case.options.user.description)
+                .setDescription(localeManager.get('moderation.case.options.user_punishments.options.user.description', 'en-US'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.user_punishments.options.user.description'))
                 .setRequired(true)
         )
     ).setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
@@ -62,59 +67,46 @@ const data = new SlashCommandBuilder()
     cooldown: 3,
     data,
     async execute(interaction) {
+        const lang = interaction.guildLocale;
         if (!(interaction.memberPermissions.has('BanMembers') || interaction.memberPermissions.has('Administrator'))) {
-            await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
+            await interaction.reply({ 
+                content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
+                flags: MessageFlags.Ephemeral 
+            });
             return;
         }
 
-        const caseNum = interaction.options.getInteger('num');
-        const reason = interaction.options.getString('reason');
+        const subcommand = interaction.options.getSubcommand();
 
-        switch (interaction.options.getSubcommand()) {
+        switch (subcommand) {
             case "remove": {
-                const Promise = db.deleteModCase(interaction.guild.id, caseNum)
-                if (Promise) {
-                    await interaction.reply(`Кейс \`#${caseNum}\` удалён`)
+                const caseNum = interaction.options.getInteger('num');
+                const success = db.deleteModCase(interaction.guild.id, caseNum);
+                if (success) {
+                    await interaction.reply(localeManager.get('moderation.case.messages.case_removed', lang, { num: caseNum }));
                 } else {
-                    await interaction.reply(`Кейс \`#${caseNum}\` не был удалён. Возможно, вы указали неверный номер кейса`)
+                    await interaction.reply(localeManager.get('moderation.case.messages.case_remove_error', lang, { num: caseNum }));
                 }
                 break;
             }
             case "reason": {
-                const Promise = db.updateModCaseReason(interaction.guild.id, caseNum, reason);
-                if (Promise) {
-                    await interaction.reply(`Причина кейса \`#${caseNum}\` обновлена`)
+                const caseNum = interaction.options.getInteger('num');
+                const reason = interaction.options.getString('reason');
+                const success = db.updateModCaseReason(interaction.guild.id, caseNum, reason);
+                if (success) {
+                    await interaction.reply(localeManager.get('moderation.case.messages.reason_updated', lang, { num: caseNum }));
                 } else {
-                    await interaction.reply(`Причина кейса \`#${caseNum}\` не обновлена. Возможно, вы указали неверный номер кейса`)
+                    await interaction.reply(localeManager.get('moderation.case.messages.reason_update_error', lang, { num: caseNum }));
                 }
                 break;
             }
             case "view": {
+                const caseNum = interaction.options.getInteger('num');
                 const caseObj = db.getModCase(interaction.guild.id, caseNum);
-                if (!caseObj) return await interaction.reply({ content: "Кейс не найден!", flags: MessageFlags.Ephemeral })
+                if (!caseObj) return await interaction.reply({ content: localeManager.get('moderation.case.messages.case_not_found', lang), flags: MessageFlags.Ephemeral });
 
-                const moderator = await interaction.guild.members.fetch(caseObj.moderatorId)
-                let action;
-                switch (caseObj.action) {
-                    case "ban":
-                        action = "Бан"
-                        break;
-                    case "mute":
-                        action = "Мут"
-                        break;
-                    case "kick":
-                        action = "Кик"
-                        break;
-                    case "unban":
-                        action = "Разбан"
-                        break;
-                    case "unmute":
-                        action = "Размут"
-                        break;
-                    default:
-                        action = "?"
-                        break;
-                }
+                const moderator = await interaction.guild.members.fetch(caseObj.moderatorId).catch(() => null);
+                const actionLabel = localeManager.get(`moderation.moderation.messages.labels.${caseObj.action}`, lang) || caseObj.action;
 
                 const embed = EmbedService.createModerationEmbed({
                     interaction,
@@ -122,12 +114,13 @@ const data = new SlashCommandBuilder()
                     targetId: caseObj.targetId,
                     reason: caseObj.reason,
                     color: 0x808080,
-                    footerText: action + ' выполнен',
+                    footerText: localeManager.get('moderation.moderation.messages.action_done_template', lang, { action: actionLabel }) || `${actionLabel} выполнен`,
                     timestamp: caseObj.timestamp,
-                    moderatorUser: moderator.user
+                    moderatorUser: moderator?.user,
+                    lang: lang
                 });
 
-                await interaction.reply({ embeds: [embed] })
+                await interaction.reply({ embeds: [embed] });
                 break;
             }
             case "user_punishments": {
@@ -135,12 +128,12 @@ const data = new SlashCommandBuilder()
                 const modCases = db.getTargetModCases(interaction.guild.id, targetUser.id);
 
                 const embed = EmbedService.createBaseEmbed(interaction)
-                    .setTitle(`История наказаний для ${targetUser.username}`)
+                    .setTitle(localeManager.get('moderation.case.messages.history_title', lang, { user: targetUser.username }))
                     .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }));
 
                 if (!modCases || modCases.length === 0) {
-                    embed.setDescription(`У **${targetUser.username}** нет зарегистрированных наказаний на этом сервере.`);
-                    embed.setFooter({ text: `Пользователь не имеет наказаний` });
+                    embed.setDescription(localeManager.get('moderation.case.messages.history_empty', lang, { user: targetUser.username }));
+                    embed.setFooter({ text: localeManager.get('moderation.case.messages.history_footer_empty', lang) });
                     await interaction.reply({ embeds: [embed] });
                     return;
                 }
@@ -152,7 +145,10 @@ const data = new SlashCommandBuilder()
                 }
 
                 const statsLines = Object.entries(counts)
-                    .map(([action, count]) => `• **${action.charAt(0).toUpperCase() + action.slice(1)}**: ${count} раз(а)`)
+                    .map(([action, count]) => {
+                        const label = localeManager.get(`moderation.moderation.messages.labels.${action}`, lang) || action;
+                        return `• **${label}**: ${count} ${localeManager.get('moderation.case.messages.history_times', lang)}`;
+                    })
                     .join('\n');
 
                 const sortedCases = modCases.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -160,27 +156,31 @@ const data = new SlashCommandBuilder()
                 const displayCases = sortedCases.slice(0, maxDisplay);
 
                 const punishmentsText = displayCases
-                    .map((modCase, index) => {
-                        return `**#${modCase.caseNum}** — **${modCase.action.toUpperCase()}**: ${modCase.reason} (<t:${Math.floor(new Date(modCase.timestamp).getTime()/1000)}:R>)`;
+                    .map((modCase) => {
+                        const actionLabel = localeManager.get(`moderation.moderation.messages.labels.${modCase.action}`, lang) || modCase.action;
+                        return `**#${modCase.caseNum}** — **${actionLabel.toUpperCase()}**: ${modCase.reason} (<t:${Math.floor(new Date(modCase.timestamp).getTime()/1000)}:R>)`;
                     })
                     .join('\n');
 
                 const additionalText = sortedCases.length > maxDisplay
-                    ? `\n\nПоказаны последние ${maxDisplay} наказаний из ${sortedCases.length}.`
+                    ? `\n\n${localeManager.get('moderation.case.messages.history_more', lang, { max: maxDisplay, total: sortedCases.length })}`
                     : '';
 
                 embed.setDescription(
-                    `**Общая статистика наказаний:**\n${statsLines}\n\n` +
-                    `**Последние ${displayCases.length} наказаний:**\n${punishmentsText}${additionalText}`
+                    `**${localeManager.get('moderation.case.messages.history_stats_title', lang)}**\n${statsLines}\n\n` +
+                    `**${localeManager.get('moderation.case.messages.history_last_title', lang, { count: displayCases.length })}**\n${punishmentsText}${additionalText}`
                 );
-                embed.setFooter({ text: `Всего зарегистрированных наказаний: ${modCases.length}` });
+                embed.setFooter({ text: localeManager.get('moderation.case.messages.history_footer_total', lang, { count: modCases.length }) });
 
                 await interaction.reply({ embeds: [embed] });
                 break;
             }
 
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({ 
+                    content: localeManager.get('moderation.moderation.messages.unknown_sub', lang), 
+                    flags: MessageFlags.Ephemeral 
+                });
                 break;
         }
     }

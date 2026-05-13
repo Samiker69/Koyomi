@@ -1,5 +1,8 @@
 const { Events, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { fetchDoujin } = require('../../functions/fetchDoujin');
+const localeManager = require('../../locales/localeManager');
+const SettingsDB = require('../../functions/db/settings');
+const sdb = new SettingsDB();
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -9,8 +12,17 @@ module.exports = {
             if (command_name !== "nhentai") return;
             const page = parseInt(pageStr, 10);
 
+            const settings = interaction.guild ? (sdb.getSettings(interaction.guild.id) || {}) : {};
+            const preferredLang = settings.language || interaction.guildLocale || 'ru';
+
+            Object.defineProperty(interaction, 'guildLocale', {
+                get: () => preferredLang,
+                configurable: true
+            });
+
+            const lang = preferredLang;
             if (interaction.user.id !== ownerId) {
-                return await interaction.reply({ content: 'Это не ваша галерея!', flags: MessageFlags.Ephemeral });
+                return await interaction.reply({ content: localeManager.get('nsfw.nhentai.messages.not_author', lang), flags: MessageFlags.Ephemeral });
             }
 
             let newPage = page;
@@ -22,7 +34,7 @@ module.exports = {
 
             const result = await fetchDoujin(galleryId, newPage);
             if (!result) {
-                return await interaction.followUp({ content: 'Не удалось загрузить страницу.', flags: MessageFlags.Ephemeral });
+                return await interaction.followUp({ content: localeManager.get('nsfw.nhentai.messages.page_load_error', lang), flags: MessageFlags.Ephemeral });
             }
 
             const row = new ActionRowBuilder().addComponents(

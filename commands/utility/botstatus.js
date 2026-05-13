@@ -1,47 +1,57 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { version } = require('../../package.json');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
+const { version } = require('../../package.json');
+const localeManager = require('../../locales/localeManager');
 
 module.exports = {
-  cooldown: 10,
+  cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('botstatus')
-    .setDescription('Показывает статус бота'),
+    .setDescription(localeManager.get('utility.botstatus.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('utility.botstatus.description')),
+    
   async execute(interaction) {
-    await interaction.reply({ content: 'Подождите...' });
+    const lang = interaction.guildLocale || 'ru';
+    const sent = await interaction.reply({ 
+      content: localeManager.get('utility.botstatus.messages.wait', lang), 
+      fetchReply: true, 
+      flags: MessageFlags.Ephemeral 
+    });
+    
+    const timeToExec = sent.createdTimestamp - interaction.createdTimestamp;
+    const uptimeSeconds = Math.floor(interaction.client.uptime / 1000);
+    const d = Math.floor(uptimeSeconds / (3600 * 24));
+    const h = Math.floor((uptimeSeconds % (3600 * 24)) / 3600);
+    const m = Math.floor((uptimeSeconds % 3600) / 60);
+    const s = Math.floor(uptimeSeconds % 60);
 
-    const sent = await interaction.fetchReply();
-    let uptimeall = process.uptime();
-    let days = Math.floor(uptimeall / 86400);
-    uptimeall %= 86400;
-    let hours = Math.floor(uptimeall / 3600);
-    uptimeall %= 3600;
-    let minutes = Math.floor(uptimeall / 60);
-    let seconds = Math.floor(uptimeall % 60);
+    const uptimeStr = localeManager.get('utility.botstatus.messages.uptime_format', lang, { d, h, m, s });
 
-    const status = EmbedService.createBaseEmbed(interaction)
-      .setAuthor({
-        name: `${interaction.client.user.tag}`,
-        iconURL: interaction.client.user.displayAvatarURL({ extension: 'png' })
-      })
-      .setTitle('Текущий статус бота')
-      .setFields(
-        { name: "Время обработки команды", value: `${sent.createdTimestamp - interaction.createdTimestamp}ms`, inline: true },
-        { name: "Средний пинг", value: `${interaction.client.ws.ping}ms`, inline: true },
-        { name: "Время в сети", value: `${days}д ${hours}ч ${minutes}мин ${seconds}сек`, inline: true },
-        { name: 'О процессе', value: ' ', inline: false },
-        { name: 'RAM', value: `Занято процессом всего ${(process.memoryUsage().rss / 1024 / 1024).toFixed(2)}MB`, inline: true },
-        { name: 'RAM', value: `Используется сейчас ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`, inline: true },
-        { name: '', value: ' ', inline: false },
-        { name: 'arch', value: process.arch, inline: true },
-        { name: 'OS', value: process.platform, inline: true },
-        { name: 'Дополнительно', value: '', inline: false },
-        { name: 'Кол-во загруженных ивентов', value: `${interaction.client.eventscount}`, inline: true },
-        { name: 'Кол-во загруженных команд', value: `${interaction.client.commandscount}`, inline: true },
-        { name: '', value: ' ', inline: false }
+    const memoryUsage = process.memoryUsage();
+    const totalRSS = (memoryUsage.rss / 1024 / 1024).toFixed(2);
+    const heapUsed = (memoryUsage.heapUsed / 1024 / 1024).toFixed(2);
+
+    const embed = EmbedService.createBaseEmbed(interaction)
+      .setTitle(localeManager.get('utility.botstatus.messages.title', lang))
+      .addFields(
+        { name: `⚡ ${localeManager.get('utility.botstatus.messages.process_time', lang)}`, value: `\`${timeToExec}ms\``, inline: true },
+        { name: `📡 ${localeManager.get('utility.botstatus.messages.ping', lang)}`, value: `\`${interaction.client.ws.ping}ms\``, inline: true },
+        { name: `🕒 ${localeManager.get('utility.botstatus.messages.uptime', lang)}`, value: `\`${uptimeStr}\``, inline: true },
+        { 
+          name: `💻 ${localeManager.get('utility.botstatus.messages.about_process', lang)}`, 
+          value: `> ${localeManager.get('utility.botstatus.messages.ram_total', lang, { mb: totalRSS })}\n` +
+                 `> ${localeManager.get('utility.botstatus.messages.ram_heap', lang, { mb: heapUsed })}`, 
+          inline: false 
+        },
+        { 
+          name: `📂 ${localeManager.get('utility.botstatus.messages.additional', lang)}`, 
+          value: `> ${localeManager.get('utility.botstatus.messages.events_count', lang)}: \`${interaction.client.eventNames().length}\`\n` +
+                 `> ${localeManager.get('utility.botstatus.messages.commands_count', lang)}: \`${interaction.client.commands.size}\``, 
+          inline: false 
+        }
       )
-      .setFooter({ text: `Версия бота ${version}`})
+      .setFooter({ text: localeManager.get('utility.botstatus.messages.version', lang, { v: version }) });
 
-    await interaction.editReply({ content: null, embeds: [status] });
-  },
+    await interaction.editReply({ content: null, embeds: [embed] });
+  }
 };

@@ -1,10 +1,12 @@
 const { Events, MessageFlags } = require('discord.js');
 const SettingsDB = require('../../functions/db/settings'); 
+const localeManager = require('../../locales/localeManager');
 
 const Sdb = new SettingsDB();
 
-async function safeReply(interaction, content) { 
+async function safeReply(interaction, key, lang, variables = {}) { 
     const flags = MessageFlags.Ephemeral; 
+    const content = localeManager.get(key, lang, variables);
     try {
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ content, flags });
@@ -12,7 +14,7 @@ async function safeReply(interaction, content) {
             await interaction.reply({ content, flags });
         }
     } catch (e) {
-        console.error(`[SafeReply Error] Не удалось ответить/продолжить взаимодействие. Содержимое: "${content}". Ошибка:`, e);
+        console.error(`[SafeReply Error] Не удалось ответить/продолжить взаимодействие. Ключ: "${key}". Ошибка:`, e);
     }
 }
 
@@ -23,6 +25,15 @@ module.exports = {
             return;
         }
 
+        const settings = interaction.guild ? (Sdb.getSettings(interaction.guild.id) || {}) : {};
+        const preferredLang = settings.language || interaction.guildLocale || 'ru';
+
+        Object.defineProperty(interaction, 'guildLocale', {
+            get: () => preferredLang,
+            configurable: true
+        });
+
+        const lang = preferredLang;
         const customId = interaction.customId;
         if (!customId.startsWith('role_button_') && customId !== 'no_roles_button' && customId !== 'role_select_menu') {
             return;
@@ -48,45 +59,45 @@ module.exports = {
                         const menuData = Sdb.getRoleMenu(interaction.message.id); 
 
                         if (!menuData || menuData.guildId !== guildId || menuData.type !== 'buttons') {
-                            return await safeReply(interaction, 'Ошибка: Не удалось найти данные для этого меню кнопок или оно не является меню ролей.');
+                            return await safeReply(interaction, 'events.role_menu.error_not_found', lang);
                         }
 
                         const roleInMenu = menuData.roles.find(r => r.id === roleId);
                         if (!roleInMenu) {
-                            return await safeReply(interaction, 'Эта роль больше не доступна в этом меню.');
+                            return await safeReply(interaction, 'events.role_menu.role_not_available', lang);
                         }
 
                         const role = interaction.guild.roles.cache.get(roleId);
 
                         if (!role) {
-                            return await safeReply(interaction, 'Ошибка: Роль не найдена на сервере.');
+                            return await safeReply(interaction, 'events.role_menu.role_not_found', lang);
                         }
                         if (role.position >= interaction.guild.members.me.roles.highest.position) {
-                            return await safeReply(interaction, 'Ошибка: Я не могу управлять этой ролью, так как она находится на той же или более высокой позиции, чем моя высшая роль.');
+                            return await safeReply(interaction, 'events.role_menu.role_too_high', lang);
                         }
                         if (role.managed) {
-                            return await safeReply(interaction, 'Ошибка: Я не могу управлять этой ролью, так как она является управляемой (например, роль бота).');
+                            return await safeReply(interaction, 'events.role_menu.role_managed', lang);
                         }
 
                         if (member.roles.cache.has(roleId)) {
                             await member.roles.remove(role, 'RoleMenu: User clicked button to remove role');
-                            await safeReply(interaction, `Роль **${role.name}** убрана.`);
+                            await safeReply(interaction, 'events.role_menu.role_removed', lang, { roleName: role.name });
                         } else {
                             await member.roles.add(role, 'RoleMenu: User clicked button to add role');
-                            await safeReply(interaction, `Роль **${role.name}** выдана!`);
+                            await safeReply(interaction, 'events.role_menu.role_added', lang, { roleName: role.name });
                         }
                     } catch (error) {
                         console.error(`[RoleButton] Ошибка при изменении роли для ${member.user.tag} (ID: ${roleId}):`, error);
-                        let errorMessage = 'Произошла непредвиденная ошибка при обновлении ваших ролей. Пожалуйста, попробуйте снова.';
+                        let errorKey = 'events.errors.unexpected';
                         if (error.code === 50013) {
-                             errorMessage = 'У меня нет достаточных прав для выдачи/снятия этой роли. Убедитесь, что моя роль находится выше роли, которую вы пытаетесь выдать/снять.';
+                             errorKey = 'events.role_menu.insufficient_permissions_hierarchy';
                         }
-                        await safeReply(interaction, errorMessage);
+                        await safeReply(interaction, errorKey, lang);
                     }
                     break;
                 }
                 case 'no_roles_button': {
-                    await safeReply(interaction, 'Пока нет ролей для выбора.');
+                    await safeReply(interaction, 'events.role_menu.no_roles', lang);
                     break;
                 }
                 default:
@@ -100,14 +111,14 @@ module.exports = {
                 case 'role_select_menu': {
                     try {
                         if (selectedValues.includes('no_roles_yet')) {
-                            await safeReply(interaction, 'Пока нет ролей для выбора.');
+                            await safeReply(interaction, 'events.role_menu.no_roles', lang);
                             return;
                         }
 
                         const menuData = Sdb.getRoleMenu(interaction.message.id); 
 
                         if (!menuData || menuData.guildId !== guildId || menuData.type !== 'select') {
-                            return await safeReply(interaction, 'Ошибка: Не удалось найти данные для этого Select Menu или оно не является меню ролей.');
+                            return await safeReply(interaction, 'events.role_menu.error_not_found', lang);
                         }
 
                         const availableRoleIds = menuData.roles.map(r => r.id);
@@ -133,9 +144,10 @@ module.exports = {
                             const role = interaction.guild.roles.cache.get(roleId);
                             if (role && role.position < interaction.guild.members.me.roles.highest.position && !role.managed) {
                                 await member.roles.add(role, 'RoleMenu: User added role via Select Menu');
-                                messages.push(`Выдана: **${role.name}**`);
+                                messages.push(localeManager.get('events.role_menu.role_add_success', lang, { roleName: role.name }));
                             } else {
-                                messages.push(`Ошибка при выдаче: **${menuData.roles.find(r => r.id === roleId)?.label || roleId}** (проверьте права бота/роль).`);
+                                const roleLabel = menuData.roles.find(r => r.id === roleId)?.label || roleId;
+                                messages.push(localeManager.get('events.role_menu.role_add_error', lang, { roleName: roleLabel }));
                                 console.error(`[RoleSelectMenu] Не удалось выдать роль ${roleId} пользователю ${member.user.tag}.`);
                             }
                         }
@@ -144,29 +156,30 @@ module.exports = {
                             const role = interaction.guild.roles.cache.get(roleId);
                             if (role && role.position < interaction.guild.members.me.roles.highest.position && !role.managed) {
                                 await member.roles.remove(role, 'RoleMenu: User removed role via Select Menu');
-                                messages.push(`Убрана: **${role.name}**`);
+                                messages.push(localeManager.get('events.role_menu.role_remove_success', lang, { roleName: role.name }));
                             } else {
-                                messages.push(`Ошибка при убирании: **${menuData.roles.find(r => r.id === roleId)?.label || roleId}** (проверьте права бота/роль).`);
+                                const roleLabel = menuData.roles.find(r => r.id === roleId)?.label || roleId;
+                                messages.push(localeManager.get('events.role_menu.role_remove_error', lang, { roleName: roleLabel }));
                                 console.error(`[RoleSelectMenu] Не удалось убрать роль ${roleId} у пользователя ${member.user.tag}.`);
                             }
                         }
 
-                        let responseContent = 'Ваши роли обновлены.';
+                        let responseContent = localeManager.get('events.role_menu.roles_updated', lang);
                         if (messages.length > 0) {
                             responseContent += '\n' + messages.join('\n');
                         } else if (rolesToAdd.length === 0 && rolesToRemove.length === 0) {
-                            responseContent = 'Ваши роли не изменились.';
+                            responseContent = localeManager.get('events.role_menu.roles_no_change', lang);
                         }
 
                         await safeReply(interaction, responseContent);
 
                     } catch (error) {
                         console.error(`[RoleSelectMenu] Ошибка при обработке Select Menu для ${member.user.tag} (Custom ID: ${customId}):`, error);
-                        let errorMessage = 'Произошла непредвиденная ошибка при обработке вашего выбора роли. Пожалуйста, попробуйте снова.';
+                        let errorKey = 'events.errors.unexpected';
                         if (error.code === 50013) {
-                             errorMessage = 'У меня нет достаточных прав для выдачи/снятия этой роли. Убедитесь, что моя роль находится выше роли, которую вы пытаетесь выдать/снять.';
+                             errorKey = 'events.role_menu.insufficient_permissions_hierarchy';
                         }
-                        await safeReply(interaction, errorMessage);
+                        await safeReply(interaction, errorKey, lang);
                     }
                     break;
                 }

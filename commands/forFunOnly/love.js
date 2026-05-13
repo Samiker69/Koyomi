@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
+const { SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
+const localeManager = require('../../locales/localeManager');
 const EmbedService = require('../../services/EmbedService');
 const { createCanvas, loadImage } = require('canvas');
 
@@ -43,26 +43,34 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('love')
-        .setDescription(forFunOnly.love.description.ru)
-        .setDescriptionLocalizations(forFunOnly.love.description)
+        .setDescription(localeManager.get('forFunOnly.love.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.description'))
         .addUserOption(opt =>
             opt
             .setName('user1')
-            .setDescription(forFunOnly.love.options.user1.description.ru)
-            .setDescriptionLocalizations(forFunOnly.love.options.user1.description)
+            .setDescription(localeManager.get('forFunOnly.love.options.user1.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user1.description'))
             .setRequired(true)
         )
         .addUserOption(opt =>
             opt
             .setName('user2')
-            .setDescription(forFunOnly.love.options.user2.description.ru)
-            .setDescriptionLocalizations(forFunOnly.love.options.user2.description)
+            .setDescription(localeManager.get('forFunOnly.love.options.user2.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.love.options.user2.description'))
             .setRequired(true)
         ),
 
     async execute(interaction) {
+        await interaction.deferReply();
         const u1 = interaction.options.getUser('user1');
         const u2 = interaction.options.getUser('user2');
+
+        if (u1.id === u2.id) {
+            return interaction.editReply({
+                content: localeManager.get('forFunOnly.love.messages.self_love_error', interaction.guildLocale || 'ru'),
+                flags: [MessageFlags.Ephemeral]
+            });
+        }
 
         const [a, b] = [u1.id, u2.id].sort();
         const seed = BigInt(a) ^ BigInt(b);
@@ -199,11 +207,11 @@ module.exports = {
         const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), { name: 'love_meter.png' });
 
         const embed = EmbedService.createBaseEmbed(interaction)
-            .setTitle('💕 Калькулятор Любви 💕')
-            .setDescription(`Насколько совместимы ${u1} и ${u2}?`)
+            .setTitle(localeManager.get('forFunOnly.love.messages.title', interaction.guildLocale || 'ru'))
+            .setDescription(localeManager.get('forFunOnly.love.messages.description', interaction.guildLocale || 'ru', { user1: u1.toString(), user2: u2.toString() }))
             .setImage('attachment://love_meter.png'); 
 
-        await interaction.reply({ 
+        await interaction.editReply({ 
             embeds: [embed], 
             files: [attachment],
             allowedMentions: { parse: [] } 

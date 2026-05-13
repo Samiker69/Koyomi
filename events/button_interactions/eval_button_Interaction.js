@@ -1,8 +1,21 @@
 const { Events, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const localeManager = require('../../locales/localeManager');
+const SettingsDB = require('../../functions/db/settings');
+const db = new SettingsDB();
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+        if (!interaction.guildLocale) {
+            const cfg = db.getSettings(interaction.guild?.id);
+            Object.defineProperty(interaction, 'guildLocale', {
+                value: cfg?.language || 'ru',
+                writable: false,
+                configurable: true
+            });
+        }
+        const lang = interaction.guildLocale;
+
         if (interaction.isButton()) {
             switch (interaction.customId) {
                 case "eval_botinfo_guilds": {
@@ -10,18 +23,18 @@ module.exports = {
                     await interaction.deferUpdate();
                     const guildsEmbed = new EmbedBuilder()
                     .setColor('Random')
-                    .setTitle("Сервера, на которых находится бот")
-                    .setDescription("Название(айди). Является владельцем: bool")
+                    .setTitle(localeManager.get('forFunOnly.eval.messages.guilds_title', lang))
+                    .setDescription(localeManager.get('forFunOnly.eval.messages.guilds_header', lang))
 
                     const row = new ActionRowBuilder().addComponents(
                         new ButtonBuilder()
                           .setCustomId(`eval_botinfo_back`)
-                          .setLabel('Назад')
+                          .setLabel(localeManager.get('forFunOnly.eval.messages.buttons.back', lang))
                           .setStyle(ButtonStyle.Primary)
                       );
 
                     guilds.each(guild => {
-                        guildsEmbed.setDescription(guildsEmbed.data.description += `\n\`${guild.name}\`(${guild.id}). Бот является владельцем: ${guild.owner}`)
+                        guildsEmbed.setDescription(guildsEmbed.data.description += `\n\`${guild.name}\`(${guild.id}). ${localeManager.get('forFunOnly.eval.messages.guild_owner_label', lang)}${guild.owner}`)
                     })
                     return await interaction.editReply({
                         embeds: [guildsEmbed],
@@ -33,7 +46,7 @@ module.exports = {
                     const row = new ActionRowBuilder().addComponents(
                         new ButtonBuilder()
                           .setCustomId(`eval_botinfo_guilds`)
-                          .setLabel('Сервера')
+                          .setLabel(localeManager.get('forFunOnly.eval.messages.buttons.guilds', lang))
                           .setStyle(ButtonStyle.Primary),
                         new ButtonBuilder()
                           .setLabel('ъ')
@@ -42,13 +55,10 @@ module.exports = {
                       );
     
                     const embed = new EmbedBuilder()
-                    .setTitle("Информация о текущем клиенте бота")
+                    .setTitle(localeManager.get('forFunOnly.eval.messages.botinfo_title', lang))
                     .setColor('Random')
-                    .setDescription(
-                        "`Сервера` - на каких серверах находится этот бот\n"+
-                        "Здесь могла быть ваша реклама https://samiker.xyz"
-                    )
-
+                    .setDescription(localeManager.get('forFunOnly.eval.messages.botinfo_description', lang))
+ 
                     return await interaction.editReply({
                         embeds: [embed],
                         flags: MessageFlags.Ephemeral,

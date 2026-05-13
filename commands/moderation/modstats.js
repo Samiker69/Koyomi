@@ -1,21 +1,29 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const ModerationDB = require('../../functions/db/case');
 const db = new ModerationDB();
 const EmbedService = require('../../services/EmbedService');
+const localeManager = require('../../locales/localeManager');
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('modstats')
-        .setDescription('Статистика наказаний модераторов.')
+        .setDescription(localeManager.get('moderation.modstats.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.modstats.description'))
         .addUserOption(option =>
             option.setName('moderator')
-                .setDescription('Выберите модератора для статистики.')
-                .setRequired(false)),
+                .setDescription(localeManager.get('moderation.modstats.options.moderator.description', 'en-US'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('moderation.modstats.options.moderator.description'))
+                .setRequired(false))
+        .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
 
     async execute(interaction) {
+        const lang = interaction.guildLocale;
         if (!interaction.memberPermissions.has(PermissionFlagsBits.KickMembers) && !interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-            return interaction.reply({ content: "У вас нет прав для использования этой команды.", flags: MessageFlags.Ephemeral });
+            return interaction.reply({ 
+                content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
+                flags: MessageFlags.Ephemeral 
+            });
         }
 
         await interaction.deferReply();
@@ -27,9 +35,12 @@ module.exports = {
 
         if (!allModCases || allModCases.length === 0) {
             const noCasesEmbed = EmbedService.createBaseEmbed(interaction)
-                .setTitle('Статистика модерации')
-                .setDescription('На этом сервере пока нет зарегистрированных наказаний. Начните модерировать, чтобы увидеть статистику здесь!')
-                .setFooter({ text: 'Нет данных для отображения', iconURL: interaction.client.user.displayAvatarURL({ dynamic: true }) });
+                .setTitle(localeManager.get('moderation.modstats.messages.no_stats_title', lang))
+                .setDescription(localeManager.get('moderation.modstats.messages.no_stats_desc', lang))
+                .setFooter({ 
+                    text: localeManager.get('moderation.modstats.messages.no_data_footer', lang), 
+                    iconURL: interaction.client.user.displayAvatarURL({ dynamic: true }) 
+                });
             return interaction.editReply({ embeds: [noCasesEmbed] });
         }
 
@@ -55,40 +66,43 @@ module.exports = {
 
             if (!userStats) {
                 const notModeratorEmbed = EmbedService.createBaseEmbed(interaction)
-                    .setTitle('Статистика модератора')
-                    .setDescription(`Пользователь **${targetUser.tag}** либо не является модератором, либо ещё не выдавал наказаний на этом сервере.`)
+                    .setTitle(localeManager.get('moderation.modstats.messages.user_not_mod_title', lang))
+                    .setDescription(localeManager.get('moderation.modstats.messages.user_not_mod_desc', lang, { user: targetUser.tag }))
                     .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
-                    .setFooter({ text: 'Проверьте другого пользователя или общую статистику', iconURL: interaction.client.user.displayAvatarURL({ dynamic: true }) });
+                    .setFooter({ 
+                        text: localeManager.get('moderation.modstats.messages.user_not_mod_footer', lang), 
+                        iconURL: interaction.client.user.displayAvatarURL({ dynamic: true }) 
+                    });
                 return interaction.editReply({ embeds: [notModeratorEmbed] });
             }
 
-            embed.setTitle(`Статистика: ${targetUser.username}`)
+            embed.setTitle(localeManager.get('moderation.modstats.messages.stats_user_title', lang, { user: targetUser.username }))
                  .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
-                 .setDescription(`Здесь представлена активность **${targetUser}** по выдаче наказаний.`);
+                 .setDescription(localeManager.get('moderation.modstats.messages.stats_user_desc', lang, { user: targetUser.toString() }));
 
             embed.addFields(
-                { name: 'Модератор', value: `<@${targetUser.id}>`, inline: true },
-                { name: 'Всего наказаний', value: `\`${userStats.total}\``, inline: true }
+                { name: localeManager.get('moderation.modstats.messages.mod_label', lang), value: `<@${targetUser.id}>`, inline: true },
+                { name: localeManager.get('moderation.modstats.messages.total_label', lang), value: `\`${userStats.total}\``, inline: true }
             );
 
             const types = Object.keys(userStats.types);
             if (types.length > 0) {
-                embed.addFields({ name: 'Типы наказаний:', value: '\u200B', inline: false });
+                embed.addFields({ name: localeManager.get('moderation.modstats.messages.types_label', lang), value: '\u200B', inline: false });
 
                 types.sort().forEach(type => {
-                    const formattedType = type.charAt(0).toUpperCase() + type.slice(1);
+                    const label = localeManager.get(`moderation.moderation.messages.labels.${type}`, lang) || type;
                     embed.addFields({
-                        name: `  • ${formattedType}`,
-                        value: `\`${userStats.types[type]}\` раз`,
+                        name: `  • ${label}`,
+                        value: `\`${userStats.types[type]}\` ${localeManager.get('moderation.case.messages.history_times', lang)}`,
                         inline: true
                     });
                 });
             } else {
-                embed.addFields({ name: 'Типы наказаний:', value: 'Нет данных.', inline: false });
+                embed.addFields({ name: localeManager.get('moderation.modstats.messages.types_label', lang), value: localeManager.get('moderation.modstats.messages.no_data_label', lang), inline: false });
             }
 
             embed.setFooter({
-                text: `Статистика модератора ${targetUser.username}`,
+                text: localeManager.get('moderation.modstats.messages.user_footer', lang, { user: targetUser.username }),
                 iconURL: interaction.user.displayAvatarURL({ dynamic: true })
             });
 
@@ -105,15 +119,15 @@ module.exports = {
             for (const modId of moderatorIds) {
                 const modStats = aggregatedStats[modId];
                 const member = members.get(modId);
-                const tag = member ? `<@${member.user.id}>` : `Неизвестный (${modId})`;
+                const tag = member ? `<@${member.user.id}>` : localeManager.get('moderation.modstats.messages.unknown_mod', lang, { id: modId });
                 displayData.push({ id: modId, tag: tag, ...modStats });
             }
 
             displayData.sort((a, b) => b.total - a.total);
 
-            embed.setTitle('Общая статистика модераторов')
+            embed.setTitle(localeManager.get('moderation.modstats.messages.server_title', lang))
                  .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
-                 .setDescription('Активность модераторов на сервере:\n\u200B');
+                 .setDescription(localeManager.get('moderation.modstats.messages.server_desc', lang));
 
             const maxFields = 25;
             let currentFieldsCount = 0;
@@ -122,24 +136,25 @@ module.exports = {
             for (const mod of displayData) {
                 if (currentFieldsCount >= maxFields) {
                     embed.addFields({
-                        name: 'Продолжение статистики',
-                        value: `Показана статистика по ${currentFieldsCount} модераторам. Для полной информации обратитесь к администратору.`,
+                        name: localeManager.get('moderation.modstats.messages.stats_continue', lang),
+                        value: localeManager.get('moderation.modstats.messages.stats_continue_desc', lang, { count: currentFieldsCount }),
                         inline: false
                     });
                     break;
                 }
 
-                let statsString = `**Всего:** \`${mod.total}\``;
+                let statsString = `**${localeManager.get('moderation.modstats.messages.total_label', lang)}:** \`${mod.total}\``;
                 totalPunishmentsOverall += mod.total;
 
                 const types = Object.keys(mod.types);
                 if (types.length > 0) {
-                    statsString += '\n**Типы:** ';
-                    statsString += types.sort().map(type =>
-                        `${type.charAt(0).toUpperCase() + type.slice(1)}: \`${mod.types[type]}\``
-                    ).join(', ');
+                    statsString += `\n**${localeManager.get('moderation.modstats.messages.types_label', lang).replace(':', '')}:** `;
+                    statsString += types.sort().map(type => {
+                        const label = localeManager.get(`moderation.moderation.messages.labels.${type}`, lang) || type;
+                        return `${label}: \`${mod.types[type]}\``;
+                    }).join(', ');
                 } else {
-                    statsString += '\n*Без детализации по типам.*';
+                    statsString += `\n${localeManager.get('moderation.modstats.messages.no_type_details', lang)}`;
                 }
 
                 embed.addFields({
@@ -151,13 +166,13 @@ module.exports = {
             }
 
             if (embed.data.description) {
-                 embed.setDescription(embed.data.description + `\n**Общее количество наказаний на сервере: \`${totalPunishmentsOverall}\`**`);
+                 embed.setDescription(embed.data.description + localeManager.get('moderation.modstats.messages.total_overall_desc', lang, { total: totalPunishmentsOverall }));
             } else {
-                 embed.addFields({ name: 'Всего наказаний на сервере', value: `\`${totalPunishmentsOverall}\``, inline: false });
+                 embed.addFields({ name: localeManager.get('moderation.modstats.messages.total_label', lang), value: `\`${totalPunishmentsOverall}\``, inline: false });
             }
 
             embed.setFooter({
-                text: 'Общая статистика модерации сервера',
+                text: localeManager.get('moderation.modstats.messages.server_footer', lang),
                 iconURL: interaction.client.user.displayAvatarURL({ dynamic: true })
             });
         }

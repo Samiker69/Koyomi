@@ -1,5 +1,6 @@
 const Database = require('better-sqlite3');
 const path = require('path'); // Для удобства работы с путями
+const localeManager = require('../../locales/localeManager');
 
 // Определим константы для имен настроек и настроек типа boolean
 const VALID_SETTINGS = [
@@ -12,9 +13,16 @@ const VALID_SETTINGS = [
     'voiceCategoryId',
     'supportChannelId',
     'prefix',
-    'reportsModerationChannelId'
+    'reportsModerationChannelId',
+    // Honeypot
+    'honeypotChannelId',
+    'honeypotLogChannelId',
+    'honeypotEnabled',
+    // Verdict log
+    'verdictChannelId',
+    'language'
 ];
-const BOOLEAN_SETTINGS = ['allowInviteLogging', 'allowLogingMembersAdd'];
+const BOOLEAN_SETTINGS = ['allowInviteLogging', 'allowLogingMembersAdd', 'honeypotEnabled'];
 
 class SettingsDatabase {
     /**
@@ -22,6 +30,8 @@ class SettingsDatabase {
      * @param {string} [dbPath='settings.db'] Путь к файлу базы данных SQLite.
      */
     constructor(dbPath = './database/main.db') {
+        this.locale = localeManager.defaultLocale;
+
         try {
             this.db = new Database(dbPath);
             this._initTable();
@@ -29,9 +39,13 @@ class SettingsDatabase {
             this._prepareStatements();
 
         } catch (err) {
-            console.error("Ошибка инициализации базы данных:", err);
+            console.error(this._t('errors.init'), err);
             throw err; // Пробрасываем ошибку дальше, чтобы приложение знало о проблеме
         }
+    }
+
+    _t(key, variables = {}) {
+        return localeManager.get(`database.settings.${key}`, this.locale, variables);
     }
 
     /**
@@ -50,7 +64,8 @@ class SettingsDatabase {
                 mainVoiceChannelId TEXT DEFAULT '',
                 voiceCategoryId TEXT DEFAULT '',
                 supportChannelId TEXT DEFAULT '',
-                prefix TEXT DEFAULT '..'
+                prefix TEXT DEFAULT '..',
+                language TEXT DEFAULT 'ru'
                 -- reportsModerationChannelId будет добавлен методом _addMissingColumns
             );
         `;
@@ -75,12 +90,23 @@ class SettingsDatabase {
     _addMissingColumns() {
         const existingColumns = this.db.prepare("PRAGMA table_info(guild_settings);").all().map(col => col.name);
 
-        // Проверяем и добавляем reportsModerationChannelId
-        if (!existingColumns.includes('reportsModerationChannelId')) {
+        if (!existingColumns.includes('reportsModerationChannelId'))
             this.db.exec("ALTER TABLE guild_settings ADD COLUMN reportsModerationChannelId TEXT DEFAULT '';");
-            console.log("Добавлена колонка 'reportsModerationChannelId' в guild_settings.");
-        }
-        // Здесь можно добавлять проверки и для других новых колонок в будущем
+
+        if (!existingColumns.includes('honeypotChannelId'))
+            this.db.exec("ALTER TABLE guild_settings ADD COLUMN honeypotChannelId TEXT DEFAULT '';");
+
+        if (!existingColumns.includes('honeypotLogChannelId'))
+            this.db.exec("ALTER TABLE guild_settings ADD COLUMN honeypotLogChannelId TEXT DEFAULT '';");
+
+        if (!existingColumns.includes('honeypotEnabled'))
+            this.db.exec("ALTER TABLE guild_settings ADD COLUMN honeypotEnabled INTEGER DEFAULT 0;");
+
+        if (!existingColumns.includes('verdictChannelId'))
+            this.db.exec("ALTER TABLE guild_settings ADD COLUMN verdictChannelId TEXT DEFAULT '';");
+
+        if (!existingColumns.includes('language'))
+            this.db.exec("ALTER TABLE guild_settings ADD COLUMN language TEXT DEFAULT 'ru';");
     }
 
     /**
@@ -149,14 +175,14 @@ class SettingsDatabase {
      */
     getSettings(guildId) {
          if (!guildId || typeof guildId !== 'string') {
-            console.error("getSettings: Предоставлен неверный guildId:", guildId);
+            console.error(this._t('errors.invalid_guild_id', { method: 'getSettings' }), guildId);
             return undefined;
         }
         try {
             const row = this.statements.getSettings.get(guildId);
             return this._formatSettings(row);
         } catch (err) {
-            console.error(`Ошибка получения настроек для сервера ${guildId}:`, err);
+            console.error(this._t('errors.get_settings', { guildId }), err);
             return undefined; // В случае ошибки возвращаем undefined
         }
     }
@@ -171,20 +197,13 @@ class SettingsDatabase {
      */
     addServer(guildId) {
         if (!guildId || typeof guildId !== 'string') {
-            throw new Error("addServer: guildId должен быть непустой строкой.");
+            throw new Error(this._t('errors.guild_id_required', { method: 'addServer' }));
         }
         try {
-            // Выполняем INSERT OR IGNORE. Значения по умолчанию будут установлены схемой таблицы.
-            const result = this.statements.addServer.run(guildId);
-            if (result.changes > 0) {
-                console.log(`Сервер ${guildId} добавлен в БД с настройками по умолчанию.`);
-            } else {
-                console.log(`Сервер ${guildId} уже существует в БД.`);
-            }
-            return result;
+            return this.statements.addServer.run(guildId);
         } catch (err) {
-            console.error(`Ошибка добавления сервера ${guildId}:`, err);
-            throw err; // Пробрасываем ошибку для обработки выше
+            console.error(this._t('errors.add_server', { guildId }), err);
+            throw err;
         }
     }
 
@@ -196,21 +215,15 @@ class SettingsDatabase {
      * @throws {Error} Если guildId не предоставлен или не является строкой.
      */
     removeServer(guildId) {
-         if (!guildId || typeof guildId !== 'string') {
-            throw new Error("removeServer: guildId должен быть непустой строкой.");
+        if (!guildId || typeof guildId !== 'string') {
+            throw new Error(this._t('errors.guild_id_required', { method: 'removeServer' }));
         }
         try {
             const result = this.statements.removeServer.run(guildId);
-             if (result.changes > 0) {
-                console.log(`Настройки для сервера ${guildId} удалены из БД.`);
-            } else {
-                console.log(`Сервер ${guildId} не найден в БД для удаления.`);
-                return false
-            }
-            return result;
+            return result.changes > 0 ? result : false;
         } catch (err) {
-             console.error(`Ошибка удаления сервера ${guildId}:`, err);
-             throw err;
+            console.error(this._t('errors.remove_server', { guildId }), err);
+            throw err;
         }
     }
 
@@ -224,10 +237,10 @@ class SettingsDatabase {
      */
     updateSetting(guildId, settingName, value) {
         if (!guildId || typeof guildId !== 'string') {
-            throw new Error("updateSetting: guildId должен быть непустой строкой.");
+            throw new Error(this._t('errors.guild_id_required', { method: 'updateSetting' }));
         }
         if (!VALID_SETTINGS.includes(settingName)) {
-            throw new Error(`Недопустимое имя настройки: ${settingName}. Допустимые: ${VALID_SETTINGS.join(', ')}`);
+            throw new Error(this._t('errors.invalid_setting', { settingName, allowed: VALID_SETTINGS.join(', ') }));
         }
 
         let dbValue = value;
@@ -243,27 +256,13 @@ class SettingsDatabase {
 
 
         try {
-            // Получаем подготовленный запрос для нужной настройки
             const statement = this.statements.update[settingName];
             if (!statement) {
-                 // Эта ошибка не должна возникать при правильной инициализации
-                 throw new Error(`Внутренняя ошибка: Подготовленный запрос для '${settingName}' не найден.`);
+                throw new Error(this._t('errors.statement_not_found', { settingName }));
             }
-            // Выполняем UPDATE. Важен порядок аргументов: [value, guildId]
-            const result = statement.run(dbValue, guildId);
-
-            if (result.changes === 0) {
-                 console.warn(`Настройка '${settingName}' для сервера ${guildId} не была обновлена (возможно, сервер не найден или значение не изменилось).`);
-                 // Можно добавить проверку, существует ли сервер вообще перед обновлением
-                 // const exists = this.db.prepare('SELECT 1 FROM guild_settings WHERE guildId = ?').get(guildId);
-                 // if (!exists) throw new Error(`Сервер ${guildId} не найден в базе данных.`);
-            } else {
-                 console.log(`Настройка '${settingName}' для сервера ${guildId} обновлена на '${value}'.`);
-            }
-
-            return result;
+            return statement.run(dbValue, guildId);
         } catch (err) {
-            console.error(`Ошибка обновления настройки '${settingName}' для сервера ${guildId}:`, err);
+            console.error(this._t('errors.update_setting', { settingName, guildId }), err);
             throw err;
         }
     }
@@ -302,7 +301,6 @@ class SettingsDatabase {
     close() {
         if (this.db && this.db.open) {
             this.db.close();
-            console.log("Соединение с базой данных закрыто.");
         }
     }
 }

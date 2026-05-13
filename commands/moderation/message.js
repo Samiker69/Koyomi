@@ -1,167 +1,209 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const {moderation} = require('../../locales/descriptions/moderation');
+const localeManager = require('../../locales/localeManager');
 const EmbedService = require('../../services/EmbedService');
 
 const data = new SlashCommandBuilder()
     .setName('message')
-    .setDescription(moderation.message.description.ru)
+    .setDescription(localeManager.get('moderation.message.description', 'en-US'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.description'))
 
     .addSubcommand(subcommand =>
         subcommand.setName('clear')
-        .setDescription('Удаляет указанное количество сообщений от пользователей')
-        .addIntegerOption(option => 
-            option.setName('amount')
-                .setDescription(moderation.message.options.amount.description.ru)
-                .setDescriptionLocalizations(moderation.message.options.amount.description)
-                .setRequired(true)))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
+            .setDescription(localeManager.get('moderation.message.options.clear.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.clear.description'))
+            .addIntegerOption(option =>
+                option.setName('amount')
+                    .setDescription(localeManager.get('moderation.message.options.clear.options.amount.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.clear.options.amount.description'))
+                    .setRequired(true)))
 
     .addSubcommand(subcommand =>
         subcommand.setName('pin')
-        .setDescription('Закрепить сообщение')
-        .addStringOption(option => 
-            option.setName('id')
-            .setDescription(moderation.message.options.id.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.id.description)
-            .setRequired(true)))
+            .setDescription(localeManager.get('moderation.message.options.pin.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.pin.description'))
+            .addStringOption(option =>
+                option.setName('id')
+                    .setDescription(localeManager.get('moderation.message.options.pin.options.id.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.pin.options.id.description'))
+                    .setRequired(true)))
 
     .addSubcommand(subcommand =>
         subcommand.setName('unpin')
-        .setDescription('Открепить сообщение')
-        .addStringOption(option =>
-            option.setName('id')
-            .setDescription(moderation.message.options.id.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.id.description)
-            .setRequired(true)))
+            .setDescription(localeManager.get('moderation.message.options.unpin.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.unpin.description'))
+            .addStringOption(option =>
+                option.setName('id')
+                    .setDescription(localeManager.get('moderation.message.options.unpin.options.id.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.unpin.options.id.description'))
+                    .setRequired(true)))
 
-    .addSubcommand(subcommand => 
+    .addSubcommand(subcommand =>
         subcommand.setName('purge')
-        .setDescription('Удаляет указанное количество сообщений от конкретного пользователя')
-        .addUserOption(option =>
-          option.setName('target')
-            .setDescription(moderation.message.options.target.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.target.description)
-            .setRequired(true)
-        )
-        .addIntegerOption(option =>
-          option.setName('amount')
-            .setDescription(moderation.message.options.amount.description.ru)
-            .setDescriptionLocalizations(moderation.message.options.amount.description)
-            .setRequired(true)
-            .setMinValue(1)
-            .setMaxValue(100)
-        )
+            .setDescription(localeManager.get('moderation.message.options.purge.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.purge.description'))
+            .addUserOption(option =>
+                option.setName('target')
+                    .setDescription(localeManager.get('moderation.message.options.purge.options.target.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.purge.options.target.description'))
+                    .setRequired(true)
+            )
+            .addIntegerOption(option =>
+                option.setName('amount')
+                    .setDescription(localeManager.get('moderation.message.options.purge.options.amount.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.message.options.purge.options.amount.description'))
+                    .setRequired(true)
+                    .setMinValue(1)
+                    .setMaxValue(100)
+            )
     ).setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
-    module.exports = {
-        cooldown: 3,
-        data,
-        async execute(interaction) {
-            if (!(interaction.memberPermissions.has('ManageMessages') || interaction.memberPermissions.has('Administrator'))) {
-                await interaction.reply({ content: "У вас недостаточно прав для выполнения действия", flags: MessageFlags.Ephemeral });
-                return;
-            }
-            switch (interaction.options.getSubcommand()) {
-                case "clear": {
-                    const amount = interaction.options.getInteger('amount');
+module.exports = {
+    cooldown: 3,
+    data,
+    async execute(interaction) {
+        const lang = interaction.guildLocale;
+        if (!(interaction.memberPermissions.has('ManageMessages') || interaction.memberPermissions.has('Administrator'))) {
+            await interaction.reply({
+                content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                flags: MessageFlags.Ephemeral
+            });
+            return;
+        }
 
-                    if (amount < 1 || amount > 100) {
-                        return await interaction.reply({ content: 'Укажи количество сообщений от 1 до 100.', flags: MessageFlags.Ephemeral });
-                    }
-            
-                    const channel = interaction.channel;
-            
-                    try {
-                        const messages = await channel.messages.fetch({ limit: amount });
-                        const userMessages = messages.filter(msg => !msg.author.bot);
-            
-                        if (userMessages.size === 0) {
-                            return await interaction.reply({ content: 'Нет сообщений для удаления.', flags: MessageFlags.Ephemeral });
-                        }
-            
-                        await channel.bulkDelete(userMessages, true);
-            
-                        const reply = await interaction.reply({ content: `Удалено ${userMessages.size} сообщений.`, flags: MessageFlags.Ephemeral });
-            
-                        setTimeout(async () => {
-                            await reply.delete().catch(() => {});
-                        }, 5000);
-                    } catch (error) {
-                        console.error(`[ERROR] Clear command: ${error}`);
-                        await interaction.reply({ content: 'Произошла ошибка при удалении сообщений.', flags: MessageFlags.Ephemeral });
-                    }
-                    break;
+        const subcommand = interaction.options.getSubcommand();
+
+        switch (subcommand) {
+            case "clear": {
+                const amount = interaction.options.getInteger('amount');
+
+                if (amount < 1 || amount > 100) {
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.message.messages.invalid_amount', lang),
+                        flags: MessageFlags.Ephemeral
+                    });
                 }
 
-                case "pin": {
-                    if(!interaction.member.permissions.has("ManageMessages", true)) return await interaction.reply({content: 'Недостаточно прав для действия', flags: MessageFlags.Ephemeral});
-                    const message = interaction.options.getString('id');
-                    if (isNaN(Number(message))) return await interaction.reply({content: '\`id\` не является числом!', flags: MessageFlags.Ephemeral});
+                const channel = interaction.channel;
 
-                    //надо это поправить
-                    //if (!await interaction.channel.messages.fetch(message)) return await interaction.reply({content: 'Сообщение не найдено!', flags: MessageFlags.Ephemeral});
-                    await interaction.channel.messages.pin(message);
-                    await interaction.reply(`Сообщение было закрепленно ||вы потратили ~3 секунды просто так!!1||`);
-                    break;
-                }
+                try {
+                    const messages = await channel.messages.fetch({ limit: amount });
+                    const userMessages = messages.filter(msg => !msg.author.bot);
 
-                case "unpin": {
-                    if(!await interaction.member.permissions.has("ManageMessages", true)) return await interaction.reply({content: 'Недостаточно прав для действия', flags: MessageFlags.Ephemeral});
-                    const message = interaction.options.getString('id');
-                    if (isNaN(Number(message))) return await interaction.reply({content: '\`id\` не является числом!', flags: MessageFlags.Ephemeral});
-
-                    //надо это поправить
-                    //if (!await interaction.channel.messages.fetch(message)) return await interaction.reply({content: 'Сообщение не найдено!', flags: MessageFlags.Ephemeral});
-                    await interaction.channel.messages.unpin(message);
-                    await interaction.reply(`Сообщение было открепленно ||вы потратили ~3 секунды просто так!!1||`);
-                    break;
-                }
-
-                case "purge": {
-                    if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageMessages)) return await interaction.reply({content: 'Недостаточно прав для действия', flags: MessageFlags.Ephemeral});
-                  
-                      const target = interaction.options.getUser('target', true);
-                      const amount = interaction.options.getInteger('amount', true);
-                      const channel = interaction.channel;
-                  
-                      try {
-                        // Получаем последние 100 сообщений в канале
-                        const fetchedMessages = await channel.messages.fetch({ limit: 100 });
-                        // Фильтруем сообщения, оставляем только от указанного пользователя
-                        const targetMessages = fetchedMessages.filter(msg => msg.author.id === target.id);
-                        const messagesToDelete = targetMessages.first(amount);
-                  
-                        if (!messagesToDelete || messagesToDelete.length === 0) {
-                          await interaction.reply({
-                            content: `Не найдено сообщений от ${target} среди последних 100 сообщений.`,
+                    if (userMessages.size === 0) {
+                        return await interaction.reply({
+                            content: localeManager.get('moderation.message.messages.no_messages', lang),
                             flags: MessageFlags.Ephemeral
-                          });
-                          return;
-                        }
-                  
-                        await channel.bulkDelete(messagesToDelete, true);
-                        
-                        const embed = EmbedService.createBaseEmbed(interaction)
-                          .setTitle("Очистка сообщений")
-                          .addFields(
-                            { name: "Модератор", value: `<@${interaction.user.id}>`, inline: true },
-                            { name: "Пользователь", value: `<@${target.id}>`, inline: true },
-                            { name: "Канал", value: `<#${channel.id}>`, inline: true },
-                            { name: "Удалено сообщений", value: `${messagesToDelete.length}`, inline: true }
-                          )
-                          .setFooter({ text: "Очистка завершена", iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
-                  
-                        await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
-                      } catch (error) {
-                        console.error('Ошибка при очистке сообщений:', error);
-                        await interaction.reply({ content: "Произошла ошибка при попытке удалить сообщения.", flags: MessageFlags.Ephemeral });
-                      }
-                    break;
+                        });
+                    }
+
+                    await channel.bulkDelete(userMessages, true);
+
+                    const reply = await interaction.reply({
+                        content: localeManager.get('moderation.message.messages.deleted_messages', lang, { count: userMessages.size }),
+                        flags: MessageFlags.Ephemeral
+                    });
+
+                    setTimeout(async () => {
+                        await reply.delete().catch(() => { });
+                    }, 5000);
+                } catch (error) {
+                    console.error(`[ERROR] Clear command: ${error}`);
+                    await interaction.reply({
+                        content: localeManager.get('moderation.message.messages.clear_error', lang),
+                        flags: MessageFlags.Ephemeral
+                    });
                 }
-                    
-                default:
-                    await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
-                    break;
+                break;
             }
+
+            case "pin": {
+                const messageId = interaction.options.getString('id');
+                if (isNaN(Number(messageId))) return await interaction.reply({
+                    content: localeManager.get('moderation.message.messages.id_not_number', lang),
+                    flags: MessageFlags.Ephemeral
+                });
+
+                try {
+                    await interaction.channel.messages.pin(messageId);
+                    await interaction.reply(localeManager.get('moderation.message.messages.pinned', lang));
+                } catch (error) {
+                    await interaction.reply({
+                        content: localeManager.get('moderation.message.messages.message_not_found', lang),
+                        flags: MessageFlags.Ephemeral
+                    });
+                }
+                break;
+            }
+
+            case "unpin": {
+                const messageId = interaction.options.getString('id');
+                if (isNaN(Number(messageId))) return await interaction.reply({
+                    content: localeManager.get('moderation.message.messages.id_not_number', lang),
+                    flags: MessageFlags.Ephemeral
+                });
+
+                try {
+                    await interaction.channel.messages.unpin(messageId);
+                    await interaction.reply(localeManager.get('moderation.message.messages.unpinned', lang));
+                } catch (error) {
+                    await interaction.reply({
+                        content: localeManager.get('moderation.message.messages.message_not_found', lang),
+                        flags: MessageFlags.Ephemeral
+                    });
+                }
+                break;
+            }
+
+            case "purge": {
+                const target = interaction.options.getUser('target', true);
+                const amount = interaction.options.getInteger('amount', true);
+                const channel = interaction.channel;
+
+                try {
+                    const fetchedMessages = await channel.messages.fetch({ limit: 100 });
+                    const targetMessages = fetchedMessages.filter(msg => msg.author.id === target.id);
+                    const messagesToDelete = targetMessages.first(amount);
+
+                    if (!messagesToDelete || messagesToDelete.length === 0) {
+                        await interaction.reply({
+                            content: localeManager.get('moderation.message.messages.purge_not_found', lang, { user: target.toString() }),
+                            flags: MessageFlags.Ephemeral
+                        });
+                        return;
+                    }
+
+                    await channel.bulkDelete(messagesToDelete, true);
+
+                    const embed = EmbedService.createBaseEmbed(interaction)
+                        .setTitle(localeManager.get('moderation.message.messages.purge_title', lang))
+                        .addFields(
+                            { name: localeManager.get('moderation.message.messages.purge_mod', lang), value: `<@${interaction.user.id}>`, inline: true },
+                            { name: localeManager.get('moderation.message.messages.purge_user', lang), value: `<@${target.id}>`, inline: true },
+                            { name: localeManager.get('moderation.message.messages.purge_channel', lang), value: `<#${channel.id}>`, inline: true },
+                            { name: localeManager.get('moderation.message.messages.purge_amount', lang), value: `${messagesToDelete.length}`, inline: true }
+                        )
+                        .setFooter({
+                            text: localeManager.get('moderation.message.messages.purge_footer', lang),
+                            iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                        });
+
+                    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+                } catch (error) {
+                    console.error('Ошибка при очистке сообщений:', error);
+                    await interaction.reply({
+                        content: localeManager.get('moderation.message.messages.purge_error', lang),
+                        flags: MessageFlags.Ephemeral
+                    });
+                }
+                break;
+            }
+
+            default:
+                await interaction.reply({
+                    content: localeManager.get('moderation.moderation.messages.unknown_sub', lang),
+                    flags: MessageFlags.Ephemeral
+                });
+                break;
         }
     }
+}

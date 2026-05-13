@@ -1,445 +1,169 @@
-const { SlashCommandBuilder, PermissionFlagsBits, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
-const SettingsDB = require('../../functions/db/settings');
-const EmbedService = require('../../services/EmbedService');
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
+const Settings = require('../../functions/db/settings');
+const localeManager = require('../../locales/localeManager');
 
-const Sdb = new SettingsDB();
-
-function parseEmoji(emojiInput) {
-    if (!emojiInput) return null;
-
-    const customEmojiMatch = emojiInput.match(/<a?:(\w+):(\d+)>/);
-    if (customEmojiMatch) {
-        const animated = emojiInput.startsWith('<a:');
-        const name = customEmojiMatch[1];
-        const id = customEmojiMatch[2];
-        return { id, animated, name };
-    } else if (/\p{Emoji}/u.test(emojiInput)) {
-        return { name: emojiInput };
-    }
-    return null;
-}
+const Sdb = new Settings();
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('rolemenu')
-        .setDescription('Создать или обновить сообщение с меню выбора ролей (кнопки или Select Menu).')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('create-select')
-                .setDescription('Создать новое сообщение с Select Menu выбора ролей.')
-                .addChannelOption(option =>
-                    option.setName('channel')
-                        .setDescription('Канал, куда будет отправлено сообщение с меню ролей.')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option.setName('title')
-                        .setDescription('Заголовок для эмбеда сообщения с меню ролей.')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option.setName('description')
-                        .setDescription('Описание для эмбеда сообщения с меню ролей.')
-                        .setRequired(false)
-                )
-                .addStringOption(option =>
-                    option.setName('placeholder')
-                        .setDescription('Текст-заглушка для Select Menu (по умолчанию: "Выберите ваши роли...").')
-                        .setRequired(false)
-                )
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('create-buttons')
-                .setDescription('Создать новое сообщение с кнопками для выдачи ролей.')
-                .addChannelOption(option =>
-                    option.setName('channel')
-                        .setDescription('Канал, куда будет отправлено сообщение с кнопками.')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option.setName('title')
-                        .setDescription('Заголовок для эмбеда сообщения с кнопками.')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option.setName('description')
-                        .setDescription('Описание для эмбеда сообщения с кнопками.')
-                        .setRequired(false)
-                )
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('add-role')
-                .setDescription('Добавить роль в существующее меню (кнопки или Select Menu).')
-                .addStringOption(option =>
-                    option.setName('message_id')
-                        .setDescription('ID сообщения с меню выбора ролей.')
-                        .setRequired(true)
-                )
-                .addRoleOption(option =>
-                    option.setName('role')
-                        .setDescription('Роль, которую нужно добавить.')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option.setName('label')
-                        .setDescription('Отображаемое имя роли в меню/на кнопке (по умолчанию: название роли).')
-                        .setRequired(false)
-                )
-                .addStringOption(option =>
-                    option.setName('description')
-                        .setDescription('Описание роли в Select Menu (не используется для кнопок).')
-                        .setRequired(false)
-                )
-                .addStringOption(option =>
-                    option.setName('emoji')
-                        .setDescription('Emoji для отображения рядом с ролью в меню/на кнопке. Формат: <:name:id> или стандартный.')
-                        .setRequired(false)
-                )
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('remove-role')
-                .setDescription('Удалить роль из существующего меню (кнопки или Select Menu).')
-                .addStringOption(option =>
-                    option.setName('message_id')
-                        .setDescription('ID сообщения с меню выбора ролей.')
-                        .setRequired(true)
-                )
-                .addRoleOption(option =>
-                    option.setName('role')
-                        .setDescription('Роль, которую нужно удалить.')
-                        .setRequired(true)
-                )
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('delete')
-                .setDescription('Удалить сообщение с меню выбора ролей и его данные.')
-                .addStringOption(option =>
-                    option.setName('message_id')
-                        .setDescription('ID сообщения с меню выбора ролей, которое нужно удалить.')
-                        .setRequired(true)
-                )
-        ),
-    async execute(interaction) {
-        const subcommand = interaction.options.getSubcommand();
-        const guildId = interaction.guild.id;
+  data: new SlashCommandBuilder()
+    .setName('rolemenu')
+    .setDescription(localeManager.get('utility.rolemenu.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.description'))
+    .addSubcommand(sub => 
+      sub.setName('create')
+        .setDescription(localeManager.get('utility.rolemenu.options.create.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.description'))
+        .addStringOption(opt => 
+          opt.setName('title')
+            .setDescription(localeManager.get('utility.rolemenu.options.create.options.title.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.title.description'))
+            .setRequired(true))
+        .addStringOption(opt => 
+          opt.setName('description')
+            .setDescription(localeManager.get('utility.rolemenu.options.create.options.description.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.description.description'))
+            .setRequired(true))
+        .addStringOption(opt =>
+          opt.setName('type')
+            .setDescription(localeManager.get('utility.rolemenu.options.create.options.type.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.create.options.type.description'))
+            .addChoices(
+              { name: localeManager.get('utility.rolemenu.options.create.options.type.choices.buttons', 'en-US'), value: 'buttons'},
+              { name: localeManager.get('utility.rolemenu.options.create.options.type.choices.select', 'en-US'), value: 'select'}
+            )
+            .setRequired(true))
+    )
+    .addSubcommand(sub =>
+      sub.setName('addrole')
+        .setDescription(localeManager.get('utility.rolemenu.options.addrole.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.addrole.description'))
+        .addStringOption(opt =>
+          opt.setName('message_id')
+            .setDescription(localeManager.get('utility.rolemenu.options.addrole.options.message_id.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.addrole.options.message_id.description'))
+            .setRequired(true))
+        .addRoleOption(opt =>
+          opt.setName('role')
+            .setDescription(localeManager.get('utility.rolemenu.options.addrole.options.role.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.addrole.options.role.description'))
+            .setRequired(true))
+        .addStringOption(opt =>
+          opt.setName('label')
+            .setDescription(localeManager.get('utility.rolemenu.options.addrole.options.label.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.addrole.options.label.description'))
+            .setRequired(true))
+        .addStringOption(opt =>
+          opt.setName('emoji')
+            .setDescription(localeManager.get('utility.rolemenu.options.addrole.options.emoji.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.rolemenu.options.addrole.options.emoji.description'))
+            .setRequired(false))
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
-        try {
-            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-        } catch (e) {
-            console.error(`[Команда RoleMenu] Не удалось отложить ответ для /${subcommand}:`, e);
-            return;
+  async execute(interaction) {
+    const lang = interaction.guildLocale || 'ru';
+    const sub = interaction.options.getSubcommand();
+
+    if (sub === 'create') {
+      const title = interaction.options.getString('title');
+      const desc = interaction.options.getString('description');
+      const type = interaction.options.getString('type');
+
+      const embed = new EmbedBuilder()
+        .setTitle(title)
+        .setDescription(desc)
+        .setColor('Blurple')
+        .setFooter({ text: localeManager.get('utility.rolemenu.messages.footer', lang) });
+
+      await interaction.reply({
+        content: localeManager.get('utility.rolemenu.messages.setup_start', lang),
+        flags: MessageFlags.Ephemeral
+      });
+
+      const menuMsg = await interaction.channel.send({ embeds: [embed] });
+      
+      Sdb.addRoleMenu(menuMsg.id, interaction.guild.id, interaction.channel.id, type, []);
+      
+      await interaction.editReply({
+        content: localeManager.get('utility.rolemenu.messages.setup_done', lang, { id: menuMsg.id })
+      });
+    } else if (sub === 'addrole') {
+      const messageId = interaction.options.getString('message_id');
+      const role = interaction.options.getRole('role');
+      const label = interaction.options.getString('label');
+      const emoji = interaction.options.getString('emoji');
+
+      const menuData = Sdb.getRoleMenu(messageId);
+      if (!menuData || menuData.guildId !== interaction.guild.id) {
+        return await interaction.reply({
+          content: localeManager.get('utility.rolemenu.messages.msg_not_found', lang, { id: messageId }),
+          flags: MessageFlags.Ephemeral
+        });
+      }
+
+      try {
+        const channel = await interaction.guild.channels.fetch(menuData.channelId);
+        const message = await channel.messages.fetch(messageId);
+
+        if (!message.editable) {
+          return await interaction.reply({
+            content: localeManager.get('utility.rolemenu.messages.not_role_menu', lang),
+            flags: MessageFlags.Ephemeral
+          });
         }
 
-        if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-            return await interaction.editReply({ content: 'У вас нет разрешения "Управление ролями" для использования этой команды.' });
+        const roles = menuData.roles;
+        roles.push({ id: role.id, label, emoji });
+
+        Sdb.addRoleMenu(messageId, interaction.guild.id, channel.id, menuData.type, roles);
+
+        const { ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
+        const rows = [];
+
+        if (menuData.type === 'buttons') {
+          for (let i = 0; i < roles.length; i += 5) {
+            const row = new ActionRowBuilder();
+            const chunk = roles.slice(i, i + 5);
+            chunk.forEach(r => {
+              const btn = new ButtonBuilder()
+                .setCustomId(`role_button_${r.id}`)
+                .setLabel(r.label)
+                .setStyle(ButtonStyle.Primary);
+              if (r.emoji) btn.setEmoji(r.emoji);
+              row.addComponents(btn);
+            });
+            rows.push(row);
+          }
+        } else {
+          const select = new StringSelectMenuBuilder()
+            .setCustomId('role_select_menu')
+            .setPlaceholder(localeManager.get('utility.rolemenu.messages.footer', lang))
+            .setMinValues(0)
+            .setMaxValues(roles.length);
+
+          roles.forEach(r => {
+            select.addOptions({
+              label: r.label,
+              value: r.id,
+              emoji: r.emoji || undefined
+            });
+          });
+          rows.push(new ActionRowBuilder().addComponents(select));
         }
 
-        if (subcommand === 'create-select') {
-            const channel = interaction.options.getChannel('channel');
-            const title = interaction.options.getString('title');
-            const description = interaction.options.getString('description') || 'Выберите роли, которые вы хотите получить или убрать.';
-            const placeholder = interaction.options.getString('placeholder') || 'Выберите ваши роли...';
+        await message.edit({ components: rows });
 
-            if (!channel || !channel.isTextBased()) {
-                return await interaction.editReply({ content: 'Вы должны указать текстовый канал!' });
-            }
-
-            const embed = EmbedService.createBaseEmbed(interaction)
-                .setTitle(title)
-                .setDescription(description + '\n\n**Доступные роли:**\nНет ролей в меню.')
-                .setFooter({ text: 'Используйте меню ниже для выбора ролей.', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
-
-            const selectMenu = new StringSelectMenuBuilder()
-                .setCustomId('role_select_menu')
-                .setPlaceholder(placeholder)
-                .setMinValues(0)
-                .setMaxValues(1);
-
-            selectMenu.addOptions(
-                new StringSelectMenuOptionBuilder()
-                    .setLabel('Пока нет доступных ролей')
-                    .setValue('no_roles_yet')
-                    .setDescription('Используйте команду /rolemenu add-role, чтобы добавить роли.')
-            );
-            selectMenu.setDisabled(true);
-
-
-            const row = new ActionRowBuilder().addComponents(selectMenu);
-
-            try {
-                const targetChannel = interaction.guild.channels.cache.get(channel.id);
-                if (!targetChannel || !targetChannel.isTextBased()) {
-                    return await interaction.editReply({ content: 'Указанный канал не является текстовым каналом или недоступен.' });
-                }
-
-                const message = await targetChannel.send({ embeds: [embed], components: [row] });
-                Sdb.addRoleMenu(message.id, guildId, channel.id, 'select', [], placeholder);
-                await interaction.editReply({ content: `Сообщение с **Select Menu** выбора ролей успешно создано в ${channel}! Его ID: \`${message.id}\`. Теперь используйте \`/rolemenu add-role\` для добавления ролей.` });
-            } catch (error) {
-                console.error('Ошибка при создании Select Menu ролей:', error);
-                let errorMessage = 'Произошла ошибка при создании сообщения с Select Menu. Проверьте права бота.';
-                if (error.code === 50001) {
-                    errorMessage += ' У меня нет достаточных прав для отправки сообщений в этом канале.';
-                }
-                await interaction.editReply({ content: errorMessage });
-            }
-
-        } else if (subcommand === 'create-buttons') {
-            const channel = interaction.options.getChannel('channel');
-            const title = interaction.options.getString('title');
-            const interactionDescription = interaction.options.getString('description') || 'Нажмите кнопку, чтобы получить/убрать роль.';
-
-            if (!channel || !channel.isTextBased()) {
-                return await interaction.editReply({ content: 'Вы должны указать текстовый канал!' });
-            }
-
-            const embed = EmbedService.createBaseEmbed(interaction)
-                .setTitle(title)
-                .setDescription(interactionDescription + '\n\n**Доступные роли:**\nНет ролей в меню.')
-                .setFooter({ text: 'Нажмите на кнопку, чтобы управлять ролью.', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
-
-            try {
-                const targetChannel = interaction.guild.channels.cache.get(channel.id);
-                if (!targetChannel || !targetChannel.isTextBased()) {
-                    return await interaction.editReply({ content: 'Указанный канал не является текстовым каналом или недоступен.' });
-                }
-
-                const message = await targetChannel.send({ embeds: [embed], components: [] });
-                Sdb.addRoleMenu(message.id, guildId, channel.id, 'buttons', [], null);
-                await interaction.editReply({ content: `Сообщение с **кнопками** для ролей успешно создано в ${channel}! Его ID: \`${message.id}\`. Теперь используйте \`/rolemenu add-role\` для добавления ролей (до 25 кнопок).` });
-            } catch (error) {
-                console.error('Ошибка при создании меню кнопок ролей:', error);
-                let errorMessage = 'Произошла ошибка при создании сообщения с кнопками ролей. Проверьте права бота.';
-                if (error.code === 50001) {
-                    errorMessage += ' У меня нет достаточных прав для отправки сообщений в этом канале.';
-                }
-                await interaction.editReply({ content: errorMessage });
-            }
-
-        } else if (subcommand === 'add-role' || subcommand === 'remove-role') {
-            const messageId = interaction.options.getString('message_id');
-            const roleToAddRemove = interaction.options.getRole('role');
-
-            const menuData = Sdb.getRoleMenu(messageId);
-
-            if (!menuData || menuData.guildId !== guildId) {
-                return await interaction.editReply({ content: 'Указанный ID сообщения не является действительным ID сообщения с меню ролей на этом сервере.' });
-            }
-
-            if (!roleToAddRemove.editable) {
-                return await interaction.editReply({ content: 'Я не могу управлять этой ролью (возможно, она выше моей в иерархии или является встроенной).' });
-            }
-            if (roleToAddRemove.managed) {
-                return await interaction.editReply({ content: 'Я не могу добавить управляемые роли (например, роли ботов или интеграций).' });
-            }
-
-            let updatedRoles = [...menuData.roles];
-            let confirmationMessage = '';
-
-            if (subcommand === 'add-role') {
-                if (updatedRoles.length >= 25) {
-                    return await interaction.editReply({ content: 'Вы достигли максимального количества ролей (25) для этого меню.' });
-                }
-
-                const label = interaction.options.getString('label') || roleToAddRemove.name;
-                const description = interaction.options.getString('description') || null;
-                const emojiInput = interaction.options.getString('emoji');
-                const emoji = parseEmoji(emojiInput);
-
-                if (emojiInput && !emoji) {
-                    return await interaction.editReply({ content: 'Неверный формат эмодзи. Используйте стандартный эмодзи или кастомный эмодзи в формате `<:name:id>` (для анимированных `<a:name:id>`).' });
-                }
-
-                if (updatedRoles.some(r => r.id === roleToAddRemove.id)) {
-                    return await interaction.editReply({ content: `Роль **${roleToAddRemove.name}** уже есть в этом меню.` });
-                }
-
-                updatedRoles.push({
-                    id: roleToAddRemove.id,
-                    label: label,
-                    description: description,
-                    emoji: emoji
-                });
-                confirmationMessage = `Роль **${roleToAddRemove.name}** добавлена в меню. Обновляю сообщение...`;
-
-            } else {
-                const initialLength = updatedRoles.length;
-                updatedRoles = updatedRoles.filter(r => r.id !== roleToAddRemove.id);
-
-                if (updatedRoles.length === initialLength) {
-                    return await interaction.editReply({ content: `Роль **${roleToAddRemove.name}** не найдена в этом меню.` });
-                }
-                confirmationMessage = `Роль **${roleToAddRemove.name}** удалена из меню. Обновляю сообщение...`;
-            }
-
-            if (confirmationMessage) {
-                await interaction.editReply({ content: confirmationMessage });
-            }
-
-            try {
-                const channel = interaction.guild.channels.cache.get(String(menuData.channelId));
-                if (!channel || !channel.isTextBased()) {
-                    Sdb.deleteRoleMenu(messageId);
-                    return await interaction.followUp({ content: 'Канал для этого меню не найден или не является текстовым. Данные меню были удалены.' });
-                }
-                const message = await channel.messages.fetch(messageId).catch(() => null);
-                if (!message) {
-                    Sdb.deleteRoleMenu(messageId);
-                    return await interaction.followUp({ content: 'Сообщение для этого меню не найдено. Данные меню были удалены.' });
-                }
-
-                const oldEmbedData = message.embeds[0];
-                const updatedEmbed = EmbedService.createBaseEmbed(interaction)
-                    .setTitle(oldEmbedData.title)
-                    .setFooter({ text: `Последнее обновление: ${new Date().toLocaleString()}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
-
-                const baseDescriptionMatch = (oldEmbedData.description || '').match(/(.*?)(?:\n\n\*\*Доступные роли:\*\*|$)/s);
-                const baseDescription = baseDescriptionMatch ? baseDescriptionMatch[1].trim() : (oldEmbedData.description || '');
-
-                if (updatedRoles.length > 0) {
-                    const rolesList = updatedRoles.map(r => {
-                        const roleMention = `<@&${r.id}>`;
-                        return `${roleMention} ${r.description ? `*(${r.description})*` : ''}`;
-                    }).join('\n');
-                    updatedEmbed.setDescription(`${baseDescription}\n\n**Доступные роли:**\n${rolesList}`);
-                } else {
-                    updatedEmbed.setDescription(`${baseDescription}\n\n**Доступные роли:**\nНет ролей в меню.`);
-                }
-
-                if (oldEmbedData.fields && oldEmbedData.fields.length > 0) {
-                    updatedEmbed.addFields(oldEmbedData.fields.map(field => ({
-                        name: field.name,
-                        value: field.value,
-                        inline: field.inline
-                    })));
-                }
-
-                let components = [];
-
-                if (menuData.type === 'select') {
-                    const selectMenu = new StringSelectMenuBuilder()
-                        .setCustomId('role_select_menu')
-                        .setPlaceholder(menuData.placeholder || 'Выберите ваши роли...')
-                        .setMinValues(0)
-                        .setMaxValues(updatedRoles.length > 0 ? updatedRoles.length : 1);
-
-                    if (updatedRoles.length === 0) {
-                        selectMenu.addOptions(
-                            new StringSelectMenuOptionBuilder()
-                                .setLabel('Пока нет доступных ролей')
-                                .setValue('no_roles_yet')
-                                .setDescription('Используйте команду /rolemenu add-role, чтобы добавить роли.')
-                        );
-                        selectMenu.setDisabled(true);
-                    } else {
-                        updatedRoles.forEach(role => {
-                            const option = new StringSelectMenuOptionBuilder()
-                                .setLabel(role.label)
-                                .setValue(role.id);
-                            if (role.description) option.setDescription(role.description);
-                            if (role.emoji) option.setEmoji(role.emoji);
-                            selectMenu.addOptions(option);
-                        });
-                        selectMenu.setDisabled(false);
-                    }
-                    components.push(new ActionRowBuilder().addComponents(selectMenu));
-
-                } else if (menuData.type === 'buttons') {
-                    const actionRows = [];
-                    let currentRow = new ActionRowBuilder();
-                    let buttonCountInRow = 0;
-
-                    if (updatedRoles.length === 0) {
-                        currentRow.addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('no_roles_button')
-                                .setLabel('Нет доступных ролей')
-                                .setStyle(ButtonStyle.Secondary)
-                                .setDisabled(true)
-                        );
-                        actionRows.push(currentRow);
-                    } else {
-                        updatedRoles.forEach((role, index) => {
-                            const button = new ButtonBuilder()
-                                .setCustomId(`role_button_${role.id}`)
-                                .setLabel(role.label)
-                                .setStyle(ButtonStyle.Primary);
-
-                            if (role.emoji) {
-                                button.setEmoji(role.emoji);
-                            }
-
-                            currentRow.addComponents(button);
-                            buttonCountInRow++;
-
-                            if (buttonCountInRow === 5 || index === updatedRoles.length - 1) {
-                                actionRows.push(currentRow);
-                                currentRow = new ActionRowBuilder();
-                                buttonCountInRow = 0;
-                            }
-                        });
-                    }
-                    components = actionRows;
-                }
-
-                await message.edit({ embeds: [updatedEmbed], components: components });
-
-                Sdb.addRoleMenu(messageId, guildId, String(menuData.channelId), menuData.type, updatedRoles, menuData.placeholder);
-                await interaction.editReply({ content: 'Сообщение с меню ролей успешно обновлено!' });
-
-            } catch (error) {
-                console.error('Ошибка при обновлении сообщения ролевого меню:', error);
-                let errorMessage = 'Произошла ошибка при обновлении сообщения с меню ролей. Проверьте права бота.';
-                if (error.code === 50001) {
-                    errorMessage += ' У меня нет достаточных прав для редактирования этого сообщения или оно было удалено.';
-                } else if (error.code === 10008) {
-                    errorMessage += ' Сообщение не найдено или было удалено. Данные меню были удалены.';
-                    Sdb.deleteRoleMenu(messageId);
-                }
-                await interaction.followUp({ content: errorMessage });
-            }
-
-        } else if (subcommand === 'delete') {
-            const messageId = interaction.options.getString('message_id');
-            const menuData = Sdb.getRoleMenu(messageId);
-
-            if (!menuData || menuData.guildId !== guildId) {
-                return await interaction.editReply({ content: 'Указанный ID сообщения не является действительным ID сообщения с меню ролей на этом сервере.' });
-            }
-
-            try {
-                const channel = interaction.guild.channels.cache.get(String(menuData.channelId));
-                if (!channel || !channel.isTextBased()) {
-                    Sdb.deleteRoleMenu(messageId);
-                    return await interaction.editReply({ content: 'Канал для этого меню не найден или не является текстовым. Данные меню были удалены.' });
-                }
-
-                const message = await channel.messages.fetch(messageId).catch(error => {
-                    console.warn(`[Удаление RoleMenu] Ошибка при получении сообщения ${messageId} (возможно, уже удалено):`, error.code);
-                    return null;
-                });
-
-                if (message) {
-                    await message.delete();
-                } else {
-                    console.warn(`[Удаление RoleMenu] Сообщение с ID ${messageId} не найдено или недоступно. Удаляем только данные из БД.`);
-                }
-
-                Sdb.deleteRoleMenu(messageId);
-                await interaction.editReply({ content: 'Сообщение с меню ролей и его данные успешно удалены.' });
-            } catch (error) {
-                console.error('Ошибка при удалении сообщения ролевого меню:', error);
-                let errorMessage = 'Произошла ошибка при удалении сообщения с меню ролей.';
-                if (error.code === 50001) {
-                    errorMessage += ' У меня нет достаточных прав для удаления этого сообщения. Проверьте разрешения "Управление сообщениями".';
-                }
-                await interaction.editReply({ content: errorMessage });
-            }
-        }
-    },
+        await interaction.reply({
+          content: localeManager.get('utility.rolemenu.messages.role_added_to_menu', lang, { role: role.name }),
+          flags: MessageFlags.Ephemeral
+        });
+      } catch (error) {
+        console.error(error);
+        await interaction.reply({
+          content: localeManager.get('events.errors.unexpected', lang),
+          flags: MessageFlags.Ephemeral
+        });
+      }
+    }
+  }
 };

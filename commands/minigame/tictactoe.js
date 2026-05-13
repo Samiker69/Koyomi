@@ -8,20 +8,20 @@ const {
     MessageFlags
 } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
+const localeManager = require('../../locales/localeManager');
 
 const activeGames = new Set();
-const {minigame} = require('../../locales/descriptions/minigame')
 
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
         .setName('tictactoe')
-        .setDescription(minigame.tictactoe.description.ru)
-        .setDescriptionLocalizations(minigame.tictactoe.description)
+        .setDescription('Play Tic Tac Toe with someone')
+        .setDescriptionLocalizations(localeManager.getLocalizations('minigame.tictactoe.description'))
         .addUserOption(opt =>
             opt.setName('opponent')
-                .setDescription(minigame.tictactoe.options.opponent.description.ru)
-                .setDescriptionLocalizations(minigame.tictactoe.options.opponent.description)
+                .setDescription('Select an opponent')
+                .setDescriptionLocalizations(localeManager.getLocalizations('minigame.tictactoe.options.opponent.description'))
                 .setRequired(true)
         ),
 
@@ -31,21 +31,21 @@ module.exports = {
 
         if (playerO.bot) {
             return interaction.reply({
-                content: 'Нельзя играть с ботами!',
+                content: localeManager.get('minigame.tictactoe.messages.no_bots', interaction.guildLocale || 'ru'),
                 flags: MessageFlags.Ephemeral
             });
         }
 
         if (playerX.id === playerO.id) {
             return interaction.reply({
-                content: 'Нельзя играть с самим собой!',
+                content: localeManager.get('minigame.tictactoe.messages.no_self', interaction.guildLocale || 'ru'),
                 flags: MessageFlags.Ephemeral
             });
         }
 
         if (activeGames.has(playerX.id) || activeGames.has(playerO.id)) {
             return interaction.reply({
-                content: 'У одного из игроков уже есть активная игра.',
+                content: localeManager.get('minigame.tictactoe.messages.already_in_game', interaction.guildLocale || 'ru'),
                 flags: MessageFlags.Ephemeral
             });
         }
@@ -56,17 +56,17 @@ module.exports = {
         const confirmRow = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
                 .setCustomId('accept')
-                .setLabel('✅ Принять вызов')
+                .setLabel('✅ ' + localeManager.get('minigame.tictactoe.messages.btn_accept', interaction.guildLocale || 'ru'))
                 .setStyle(ButtonStyle.Success),
             new ButtonBuilder()
                 .setCustomId('decline')
-                .setLabel('❌ Отклонить')
+                .setLabel('❌ ' + localeManager.get('minigame.tictactoe.messages.btn_decline', interaction.guildLocale || 'ru'))
                 .setStyle(ButtonStyle.Danger)
         );
 
         const confirmEmbed = EmbedService.createBaseEmbed(interaction)
-            .setTitle('Вызов на Крестики-нолики')
-            .setDescription(`${playerO}, ${playerX} вызывает вас на игру. Примите или отклоните.`);
+            .setTitle(localeManager.get('minigame.tictactoe.messages.invite_title', interaction.guildLocale || 'ru'))
+            .setDescription(localeManager.get('minigame.tictactoe.messages.invite_desc', interaction.guildLocale || 'ru', { opponent: playerO.toString(), user: playerX.toString() }));
 
         await interaction.reply({
             embeds: [confirmEmbed],
@@ -82,7 +82,7 @@ module.exports = {
         confirmCollector.on('collect', async btn => {
             if (btn.user.id !== playerO.id) {
                 return btn.reply({
-                    content: 'Это не ваш вызов!',
+                    content: localeManager.get('minigame.tictactoe.messages.not_your_challenge', interaction.guildLocale || 'ru'),
                     flags: MessageFlags.Ephemeral
                 });
             }
@@ -91,7 +91,7 @@ module.exports = {
                 activeGames.delete(playerX.id);
                 activeGames.delete(playerO.id);
                 return interaction.editReply({
-                    content: 'Вызов отклонён.',
+                    content: localeManager.get('minigame.tictactoe.messages.challenge_declined', interaction.guildLocale || 'ru'),
                     embeds: [],
                     components: []
                 });
@@ -107,7 +107,7 @@ module.exports = {
                 activeGames.delete(playerX.id);
                 activeGames.delete(playerO.id);
                 interaction.editReply({
-                    content: 'Время на принятие истекло.',
+                    content: localeManager.get('minigame.tictactoe.messages.challenge_timeout', interaction.guildLocale || 'ru'),
                     embeds: [],
                     components: []
                 });
@@ -155,7 +155,7 @@ module.exports = {
                     rows.push(new ActionRowBuilder().addComponents(
                         new ButtonBuilder()
                             .setCustomId('surrender')
-                            .setLabel('🏳️ Сдаться')
+                            .setLabel('🏳️ ' + localeManager.get('minigame.tictactoe.messages.btn_surrender', interaction.guildLocale || 'ru'))
                             .setStyle(ButtonStyle.Danger)
                     ));
                 }
@@ -163,8 +163,8 @@ module.exports = {
             };
 
             const embed = EmbedService.createBaseEmbed(interaction)
-                .setTitle('Крестики-нолики')
-                .setDescription(`Ходит: ${players[turn]}`);
+                .setTitle(localeManager.get('minigame.tictactoe.messages.invite_title', interaction.guildLocale || 'ru'))
+                .setDescription(localeManager.get(turn === 0 ? 'minigame.tictactoe.messages.turn_x' : 'minigame.tictactoe.messages.turn_o', interaction.guildLocale || 'ru', { user: players[turn].toString() }));
 
             const msg = await interaction.editReply({
                 embeds: [embed],
@@ -193,38 +193,38 @@ module.exports = {
                 if (btn.customId === 'surrender') {
                     if (user.id !== players[turn].id) {
                         return btn.reply({
-                            content: 'Сейчас не ваш ход.',
+                            content: localeManager.get('minigame.tictactoe.messages.not_your_turn', interaction.guildLocale || 'ru'),
                             flags: MessageFlags.Ephemeral
                         });
                     }
-                    embed.setDescription(`🏳️ ${user} сдался!\nПобедил ${players[1-turn]}!`);
+                    embed.setDescription(localeManager.get('minigame.tictactoe.messages.surrendered', interaction.guildLocale || 'ru', { user: user.toString(), winner: players[1-turn].toString() }));
                     collector.stop('surrender');
                     return btn.update({ embeds:[embed], components:disableBoard() });
                 }
 
                 if (user.id !== players[turn].id) {
                     return btn.reply({
-                        content: 'Сейчас не ваш ход.',
+                        content: localeManager.get('minigame.tictactoe.messages.not_your_turn', interaction.guildLocale || 'ru'),
                         flags: MessageFlags.Ephemeral
                     });
                 }
                 const idx = parseInt(btn.customId);
                 if (board[idx] !== '⬜') {
                     return btn.reply({
-                        content: 'Эта клетка уже занята.',
+                        content: localeManager.get('minigame.tictactoe.messages.cell_occupied', interaction.guildLocale || 'ru'),
                         flags: MessageFlags.Ephemeral
                     });
                 }
                 board[idx] = emojis[turn];
                 if (checkWin()) {
-                    embed.setDescription(`Победил ${players[turn]}!`);
+                    embed.setDescription(localeManager.get('minigame.tictactoe.messages.winner', interaction.guildLocale || 'ru', { user: players[turn].toString() }));
                     collector.stop('win');
                 } else if (!board.includes('⬜')) {
-                    embed.setDescription('Ничья!');
+                    embed.setDescription(localeManager.get('minigame.tictactoe.messages.draw', interaction.guildLocale || 'ru'));
                     collector.stop('tie');
                 } else {
                     turn = 1 - turn;
-                    embed.setDescription(`Ходит: ${players[turn]}`);
+                    embed.setDescription(localeManager.get(turn === 0 ? 'minigame.tictactoe.messages.turn_x' : 'minigame.tictactoe.messages.turn_o', interaction.guildLocale || 'ru', { user: players[turn].toString() }));
                 }
                 await btn.update({ embeds:[embed], components:getBoardComponents() });
             });
@@ -234,7 +234,7 @@ module.exports = {
                 activeGames.delete(playerO.id);
 
                 if (reason === 'time') {
-                    embed.setDescription('Время вышло. Игра окончена.');
+                    embed.setDescription(localeManager.get('minigame.tictactoe.messages.timeout', interaction.guildLocale || 'ru'));
                 }
                 await msg.edit({ embeds:[embed], components:disableBoard() });
             });

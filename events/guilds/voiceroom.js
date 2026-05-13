@@ -1,5 +1,6 @@
 const { Events, ChannelType, PermissionFlagsBits } = require('discord.js');
 const Settings = require('../../functions/db/settings');
+const localeManager = require('../../locales/localeManager');
 
 const Sdb = new Settings();
 const creatingChannels = new Set();
@@ -15,15 +16,11 @@ module.exports = {
     const mainVoiceChannelId = cfg.mainVoiceChannelId;
     const categoryId = cfg.voiceCategoryId;
 
-    if (!mainVoiceChannelId || !categoryId) {
-      if (!cfg._error) {
-        console.error(`[CONFIG ERROR] Guild ${newState.guild.id}: mainVoiceChannelId или voiceCategoryId не настроены.`);
-      }
-      return;
-    }
+    if (!mainVoiceChannelId || !categoryId) return;
 
     const member = newState.member;
     const guild = newState.guild;
+    const lang = guild.preferredLocale || 'ru';
 
     if (
       newState.channelId === mainVoiceChannelId &&
@@ -32,7 +29,7 @@ module.exports = {
       creatingChannels.add(member.id); 
 
       try {
-        const channelName = `Комната ${member.displayName}`;
+        const channelName = localeManager.get('events.voiceroom.channel_name', lang, { displayName: member.displayName });
         
         const newChannel = await guild.channels.create({
           name: channelName,

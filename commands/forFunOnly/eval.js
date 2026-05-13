@@ -1,27 +1,25 @@
 const { SlashCommandBuilder, MessageFlags, PresenceUpdateStatus, ActivityType, ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
 const { privateAccess, bot_log_channel } = require('../../config.json');
-const { forFunOnly } = require('../../locales/descriptions/forFunOnly');
-/*const { default: axios } = require('axios');
-const path = require('path');
-const fs = require('fs').promises*/
+const localeManager = require('../../locales/localeManager');
 
 const data = new SlashCommandBuilder()
     .setName('eval')
-    .setDescription(forFunOnly.eval.description.ru)
+    .setDescription(localeManager.get('forFunOnly.eval.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.description'))
         .addSubcommand(subcommand =>
             subcommand.setName('presence')
-            .setDescription("Устанавливает статус бота")
-            //.setDescriptionLocalizations(forFunOnly.eval.description)
+            .setDescription(localeManager.get('forFunOnly.eval.options.presence.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.description'))
             .addStringOption(option => 
                 option.setName('name-activity')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                .setDescription(localeManager.get('forFunOnly.eval.options.presence.options.name-activity.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.name-activity.description'))
             )
             .addStringOption(option => 
                 option.setName('status')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                .setDescription(localeManager.get('forFunOnly.eval.options.presence.options.status.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.status.description'))
                 .addChoices(
                     {name: 'online', value: PresenceUpdateStatus.Online},
                     {name: 'idle', value: PresenceUpdateStatus.Idle},
@@ -31,8 +29,8 @@ const data = new SlashCommandBuilder()
             )
             .addIntegerOption(option =>
                 option.setName('activity')
-                .setDescription(forFunOnly.eval.options.activity.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.activity.description)
+                .setDescription(localeManager.get('forFunOnly.eval.options.presence.options.activity.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.presence.options.activity.description'))
                 .addChoices(
                     {name: 'Wathing', value: ActivityType.Watching }, 
                     {name: 'Listening', value: ActivityType.Listening },
@@ -45,34 +43,38 @@ const data = new SlashCommandBuilder()
         )
         .addSubcommand(subcommand =>
             subcommand.setName('avatar')
-            .setDescription("Сменить аватар бота")
+            .setDescription(localeManager.get('forFunOnly.eval.options.avatar.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.avatar.description'))
             .addAttachmentOption(option =>
                 option.setName('file')
-                .setDescription(forFunOnly.eval.options.avatar.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.avatar.description)
+                .setDescription(localeManager.get('forFunOnly.eval.options.avatar.options.file.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.avatar.options.file.description'))
                 .setRequired(true)
             )
         )
         .addSubcommand(subcommand =>
             subcommand.setName('banner')
-            .setDescription("Сменить баннер бота")
+            .setDescription(localeManager.get('forFunOnly.eval.options.banner.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.banner.description'))
             .addAttachmentOption(option =>
                 option.setName('file')
-                .setDescription(forFunOnly.eval.options.avatar.description.ru)
-                .setDescriptionLocalizations(forFunOnly.eval.options.avatar.description)
+                .setDescription(localeManager.get('forFunOnly.eval.options.banner.options.file.description'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.banner.options.file.description'))
                 .setRequired(true)
             )
         )
         .addSubcommand(subcommand =>
             subcommand.setName('botinfo')
-            .setDescription("Показывает подробную информацию о боте")
+            .setDescription(localeManager.get('forFunOnly.eval.options.botinfo.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.eval.options.botinfo.description'))
         )
 
 module.exports = {
     cooldown: 5,
     data,
     async execute(interaction) {
-        if (!privateAccess.includes(interaction.user.id)) return await interaction.reply({ content: `Вы не можете использовать эту команду`, flags: MessageFlags.Ephemeral})
+        const lang = interaction.guildLocale || 'ru';
+        if (!privateAccess.includes(interaction.user.id)) return await interaction.reply({ content: localeManager.get('forFunOnly.eval.messages.no_access', lang), flags: MessageFlags.Ephemeral})
 
         switch (interaction.options.getSubcommand()) {
             case "presence": {
@@ -83,9 +85,9 @@ module.exports = {
                 try {
                     await interaction.client.user.setPresence({ activities: [{ name: nameactivity }], status: presence });
                     await interaction.client.user.setActivity(nameactivity, { type: activity })
-                    await interaction.reply({content: `Cтатус изменён. ${presence}, ${nameactivity}, ${activity}`, flags: MessageFlags.Ephemeral });
+                    await interaction.reply({content: localeManager.get('forFunOnly.eval.messages.presence_updated', lang, { presence, name: nameactivity, type: activity }), flags: MessageFlags.Ephemeral });
                 } catch (error) {
-                    await interaction.reply({content: `Не удалось изменить статус`, flags: MessageFlags.Ephemeral });
+                    await interaction.reply({content: localeManager.get('forFunOnly.eval.messages.presence_error', lang), flags: MessageFlags.Ephemeral });
                     const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
@@ -110,9 +112,9 @@ module.exports = {
                     //await fs.writeFile('images/avatar.png', file.data)
 
                     await interaction.client.user.setAvatar(image);
-                    await interaction.editReply({content: `Аватар изменён`, flags: MessageFlags.Ephemeral});
+                    await interaction.editReply({content: localeManager.get('forFunOnly.eval.messages.avatar_updated', lang), flags: MessageFlags.Ephemeral});
                 } catch (error) {
-                    await interaction.editReply({content: `Не удалось изменить аватар`, flags: MessageFlags.Ephemeral});
+                    await interaction.editReply({content: localeManager.get('forFunOnly.eval.messages.avatar_error', lang), flags: MessageFlags.Ephemeral});
                     const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
@@ -136,9 +138,9 @@ module.exports = {
                     //await fs.writeFile('images/banner.png', file.data)
 
                     await interaction.client.user.setBanner(image);
-                    await interaction.editReply({content: `Баннер изменён`, flags: MessageFlags.Ephemeral});
+                    await interaction.editReply({content: localeManager.get('forFunOnly.eval.messages.banner_updated', lang), flags: MessageFlags.Ephemeral});
                 } catch (error) {
-                    await interaction.editReply({content: `Не удалось изменить баннер`, flags: MessageFlags.Ephemeral});
+                    await interaction.editReply({content: localeManager.get('forFunOnly.eval.messages.banner_error', lang), flags: MessageFlags.Ephemeral});
                     const errorEmbed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(`Произошла ошибка при обработке команды`)
                     .addFields(
@@ -157,7 +159,7 @@ module.exports = {
                 const row = new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
                       .setCustomId(`eval_botinfo_guilds`)
-                      .setLabel('Сервера')
+                      .setLabel(localeManager.get('forFunOnly.eval.messages.buttons.guilds', lang))
                       .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
                       .setLabel('ъ')
@@ -166,11 +168,8 @@ module.exports = {
                   );
 
                 const embed = EmbedService.createBaseEmbed(interaction)
-                .setTitle("Информация о текущем клиенте бота")
-                .setDescription(
-                    "`Сервера` - на каких серверах находится этот бот\n"+
-                    "Здесь могла быть ваша реклама https://samiker.xyz"
-                )
+                .setTitle(localeManager.get('forFunOnly.eval.messages.botinfo_title', lang))
+                .setDescription(localeManager.get('forFunOnly.eval.messages.botinfo_description', lang))
 
                 return await interaction.editReply({
                     embeds: [embed],
@@ -180,7 +179,7 @@ module.exports = {
             }
         
             default:
-                await interaction.reply({content: 'Кажется, такой саб-команды не существует', flags: MessageFlags.Ephemeral})
+                await interaction.reply({content: localeManager.get('forFunOnly.eval.messages.unknown_sub', lang), flags: MessageFlags.Ephemeral})
                 break;
         }
     }
