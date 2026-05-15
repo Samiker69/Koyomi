@@ -1,10 +1,11 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
-        const data = Sdb.getSettings(member.guild.id);
+        const data = await DatabaseService.getSettings(member.guild.id);
         const lang = data.language || member.guild.preferredLocale || 'ru';
             
         const clientMe = member.guild.members.me;
@@ -13,7 +14,7 @@ module.exports = {
             const channel = await member.guild.channels.fetch(data.newMemberChannelId);
             if (!channel) {
                 console.error('[ERROR]: newMemberChannelId пуст либо указан неверно для данного сервера! отключаем функцию...')
-                Sdb.updateSetting(member.guild.id, 'allowLogingMembersAdd', false)
+                await DatabaseService.updateSetting(member.guild.id, 'allowLogingMembersAdd', false)
             }
 
             const embed = new EmbedBuilder()
@@ -48,7 +49,7 @@ module.exports = {
             const logChannel = await member.guild.channels.fetch(data.inviteLoggerChannel);
             if (!logChannel) {
                 console.error('[ERROR]: inviteLoggerChannel пуст либо указан неверно для данного сервера! отключаем функцию...')
-                Sdb.updateSetting(member.guild.id, 'allowInviteLogging', false)
+                await DatabaseService.updateSetting(member.guild.id, 'allowInviteLogging', false)
             }
 
             if (inviteUsed) {

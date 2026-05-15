@@ -6,9 +6,9 @@ module.exports = {
     name: Events.ClientReady,
     once: true,
     async execute(client) {
-        client.guilds.cache.forEach(guild => {
+        client.guilds.cache.forEach(async guild => {
             console.log(`Проверка настроек для сервера: ${guild.name} (${guild.id})`);
-            const currentSettings = DatabaseService.getSettings(guild.id);
+            const currentSettings = await DatabaseService.getSettings(guild.id);
             if (!currentSettings) {
                 console.log(`Сервер ${guild.id} не найден в БД, добавляем...`);
                 DatabaseService.addServer(guild.id);

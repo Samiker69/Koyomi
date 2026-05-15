@@ -1,6 +1,6 @@
 const express = require('express');
 const { requireGeminiAccess } = require('../middlewares/auth');
-const DatabaseService = require('../../utils/db/DatabaseService');
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = (botIPC) => {
     const router = express.Router();

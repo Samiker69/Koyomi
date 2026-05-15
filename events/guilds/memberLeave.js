@@ -1,10 +1,11 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
-        const data = Sdb.getSettings(member.guild.id);
+        const data = await DatabaseService.getSettings(member.guild.id);
         const lang = data.language || member.guild.preferredLocale || 'ru';
         const clientMe = member.guild.members.me;
         if (member.id === clientMe.user.id) return;
@@ -12,7 +13,7 @@ module.exports = {
         const channel = await member.guild.channels.fetch(data.newMemberChannelId);
         if (!channel) {
             console.error('[ERROR]: newMemberChannelId пуст либо указан неверно для данного сервера! отключаем функцию...')
-            Sdb.updateSetting(member.guild.id, 'allowLogingMembersAdd', false)
+            await DatabaseService.updateSetting(member.guild.id, 'allowLogingMembersAdd', false)
         }
 
         if (data.allowLogingMembersAdd === true) {

@@ -6,7 +6,7 @@ module.exports = {
     async execute(guild) {
         console.log(`[INFO]: Бот добавлен на сервер: ${guild.name} (${guild.id})`);
         try {
-            DatabaseService.addServer(guild.id);
+            await DatabaseService.addServer(guild.id);
 
         } catch (error) {
              console.error(`[ERROR]: Не удалось добавить сервер ${guild.id} в БД:`, error);

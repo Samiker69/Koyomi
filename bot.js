@@ -12,6 +12,7 @@ const CommandDeployer = require('./core/utils/deployCommands');
 const ApikeyManager = require('./lib/ApikeyManager/ApikeyManager');
 const loadApiKeys = require('./utils/loadKeysFromEnv');
 const BotIPCServer = require('./bot-ipc-server');
+const panelServer = require('./panel/panelServer')
 const DatabaseService = require('./services/DatabaseService');
 
 function setupApiKeys(client) {

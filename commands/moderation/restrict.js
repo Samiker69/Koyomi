@@ -95,23 +95,23 @@ module.exports = {
             if (action === 'disable') {
                  let isAlreadyDisabled;
                  if (userId === null) {
-                    isAlreadyDisabled = DatabaseService.isGuildDisabled(guildId, commandName);
+                    isAlreadyDisabled = await DatabaseService.isGuildDisabled(guildId, commandName);
                  } else {
-                    const userRestrictions = DatabaseService.getUserRestrictions(guildId, userId);
+                    const userRestrictions = await DatabaseService.getUserRestrictions(guildId, userId);
                     isAlreadyDisabled = userRestrictions.includes(commandName);
                  }
 
                 if (isAlreadyDisabled) {
                     replyContent = localeManager.get('moderation.restrict.messages.already_disabled', lang, { name: commandName, target });
                 } else {
-                    if (DatabaseService.add(guildId, commandName, userId)) {
+                    if (await DatabaseService.addDisabledCommand(guildId, commandName, userId)) {
                         replyContent = localeManager.get('moderation.restrict.messages.now_disabled', lang, { name: commandName, target });
                     } else {
                         replyContent = localeManager.get('moderation.restrict.messages.error_disable', lang, { name: commandName, target });
                     }
                 }
             } else if (action === 'enable') {
-                 if (DatabaseService.remove(guildId, commandName, userId)) {
+                 if (await DatabaseService.removeDisabledCommand(guildId, commandName, userId)) {
                      replyContent = localeManager.get('moderation.restrict.messages.now_enabled', lang, { name: commandName, target });
                  } else {
                      replyContent = localeManager.get('moderation.restrict.messages.not_disabled', lang, { name: commandName, target });
@@ -132,11 +132,11 @@ module.exports = {
             let footerText = '';
 
             if (userId === null) {
-                restrictionsList = DatabaseService.getGuildRestrictions(guildId);
+                restrictionsList = await DatabaseService.getGuildRestrictions(guildId);
                 embedTitle = localeManager.get('moderation.restrict.messages.list_title_server', lang, { server: interaction.guild.name });
                 footerText = localeManager.get('moderation.restrict.messages.footer_total', lang, { count: restrictionsList.length });
             } else {
-                restrictionsList = DatabaseService.getUserRestrictions(guildId, userId);
+                restrictionsList = await DatabaseService.getUserRestrictions(guildId, userId);
                 embedTitle = localeManager.get('moderation.restrict.messages.list_title_user', lang, { user: user.tag, server: interaction.guild.name });
                 footerText = localeManager.get('moderation.restrict.messages.footer_total', lang, { count: restrictionsList.length });
             }

@@ -23,20 +23,20 @@ module.exports = {
 
         if (reaction.emoji.name !== STAR_EMOJI_NAME) return;
 
-        const settings = DatabaseService.getSettings(guild.id);
+        const settings = await DatabaseService.getSettings(guild.id);
 
         if (!settings || !settings.enabled || !settings.starboardChannelId || !settings.minReactions) return;
 
         const messageId = message.id;
         const currentReactionCount = reaction.count;
 
-        if (!DatabaseService.isMessageOnStarboard(guild.id, messageId)) return;
+        if (!await DatabaseService.isMessageOnStarboard(guild.id, messageId)) return;
 
-        const starMessageId = DatabaseService.getStarboardMessageId(guild.id, messageId);
+        const starMessageId = await DatabaseService.getStarboardMessageId(guild.id, messageId);
 
         if (!starMessageId) {
             console.warn(`Запись о сообщении ${messageId} на старборде найдена, но ID сообщения старборда отсутствует. Удаляю запись.`);
-            DatabaseService.deleteStarboardEntry(guild.id, messageId);
+            await DatabaseService.deleteStarboardEntry(guild.id, messageId);
             return;
         }
 
@@ -45,7 +45,7 @@ module.exports = {
             starboardChannel = await guild.channels.fetch(settings.starboardChannelId);
             if (!starboardChannel) {
                 console.warn(`Канал старборда с ID ${settings.starboardChannelId} не найден в гильдии ${guild.name}. Удаляю связанные записи.`);
-                DatabaseService.deleteStarboardEntry(guild.id, messageId);
+                await DatabaseService.deleteStarboardEntry(guild.id, messageId);
                 return;
             }
             if (starboardChannel.type !== ChannelType.GuildText) {
@@ -62,14 +62,14 @@ module.exports = {
             starMessage = await starboardChannel.messages.fetch(starMessageId);
         } catch (error) {
             console.warn(`Сообщение старборда ${starMessageId} не найдено в канале ${starboardChannel.name}. Удаляю запись из БД.`);
-            DatabaseService.deleteStarboardEntry(guild.id, messageId);
+            await DatabaseService.deleteStarboardEntry(guild.id, messageId);
             return;
         }
 
         if (currentReactionCount < settings.minReactions) {
             try {
                 await starMessage.delete();
-                DatabaseService.deleteStarboardEntry(guild.id, messageId);
+                await DatabaseService.deleteStarboardEntry(guild.id, messageId);
             } catch (error) {
                 console.error(`Ошибка при удалении сообщения старборда ${starMessageId} для сообщения ${messageId} в гильдии ${guild.name}:`, error);
             }

@@ -1,5 +1,6 @@
 const { Events, ChannelType, PermissionFlagsBits } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
+const DatabaseService = require('../../services/DatabaseService');
 
 const creatingChannels = new Set();
 
@@ -10,7 +11,7 @@ module.exports = {
       return;
     }
 
-    const cfg = Sdb.getSettings(newState.guild.id);
+    const cfg = await DatabaseService.getSettings(newState.guild.id);
     const mainVoiceChannelId = cfg.mainVoiceChannelId;
     const categoryId = cfg.voiceCategoryId;
 

@@ -80,7 +80,7 @@ const data = new SlashCommandBuilder()
         switch (subcommand) {
             case "remove": {
                 const caseNum = interaction.options.getInteger('num');
-                const success = DatabaseService.deleteModCase(interaction.guild.id, caseNum);
+                const success = await DatabaseService.deleteModCase(interaction.guild.id, caseNum);
                 if (success) {
                     await interaction.reply(localeManager.get('moderation.case.messages.case_removed', lang, { num: caseNum }));
                 } else {
@@ -91,7 +91,7 @@ const data = new SlashCommandBuilder()
             case "reason": {
                 const caseNum = interaction.options.getInteger('num');
                 const reason = interaction.options.getString('reason');
-                const success = DatabaseService.updateModCaseReason(interaction.guild.id, caseNum, reason);
+                const success = await DatabaseService.updateModCaseReason(interaction.guild.id, caseNum, reason);
                 if (success) {
                     await interaction.reply(localeManager.get('moderation.case.messages.reason_updated', lang, { num: caseNum }));
                 } else {
@@ -101,7 +101,7 @@ const data = new SlashCommandBuilder()
             }
             case "view": {
                 const caseNum = interaction.options.getInteger('num');
-                const caseObj = DatabaseService.getModCase(interaction.guild.id, caseNum);
+                const caseObj = await DatabaseService.getModCase(interaction.guild.id, caseNum);
                 if (!caseObj) return await interaction.reply({ content: localeManager.get('moderation.case.messages.case_not_found', lang), flags: MessageFlags.Ephemeral });
 
                 const moderator = await interaction.guild.members.fetch(caseObj.moderatorId).catch(() => null);
@@ -124,7 +124,7 @@ const data = new SlashCommandBuilder()
             }
             case "user_punishments": {
                 const targetUser = interaction.options.getUser('user');
-                const modCases = DatabaseService.getTargetModCases(interaction.guild.id, targetUser.id);
+                const modCases = await DatabaseService.getTargetModCases(interaction.guild.id, targetUser.id);
 
                 const embed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(localeManager.get('moderation.case.messages.history_title', lang, { user: targetUser.username }))

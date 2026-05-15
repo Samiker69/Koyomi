@@ -1,5 +1,6 @@
 const { MessageFlags, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 const localeManager = require('../locales/localeManager');
+const DatabaseService = require('./DatabaseService');
 
 class ReportService {
     static async safeReply(interaction, key, lang, variables = {}, isEphemeral = true) {
@@ -34,7 +35,7 @@ class ReportService {
             return null;
         }
 
-        const guildSettings = await Sdb.getSettings(interaction.guild.id);
+        const guildSettings = await DatabaseService.getSettings(interaction.guild.id);
         const moderationChannelId = guildSettings?.reportsModerationChannelId;
 
         if (!moderationChannelId) {

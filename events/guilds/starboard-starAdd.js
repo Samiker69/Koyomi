@@ -28,7 +28,7 @@ module.exports = {
 
         if (message.author.bot) return;
 
-        const settings = DatabaseService.getSettings(guild.id);
+        const settings = await DatabaseService.getSettings(guild.id);
 
         if (!settings || !settings.enabled || !settings.starboardChannelId || !settings.minReactions) return;
 
@@ -54,8 +54,8 @@ module.exports = {
             return;
         }
 
-        if (DatabaseService.isMessageOnStarboard(guild.id, message.id)) {
-            const starMessageId = DatabaseService.getStarboardMessageId(guild.id, message.id);
+        if (await DatabaseService.isMessageOnStarboard(guild.id, message.id)) {
+            const starMessageId = await DatabaseService.getStarboardMessageId(guild.id, message.id);
             if (!starMessageId) {
                 console.error(`Запись о сообщении ${message.id} на старборде есть, но ID сообщения старборда отсутствует.`);
                 return;
@@ -65,7 +65,7 @@ module.exports = {
                 const starMessage = await boardChannel.messages.fetch(starMessageId);
                 if (!starMessage) {
                     console.warn(`Сообщение старборда ${starMessageId} не найдено. Удаляю запись из БД.`);
-                    DatabaseService.deleteStarboardEntry(guild.id, message.id);
+                    await DatabaseService.deleteStarboardEntry(guild.id, message.id);
                     return;
                 }
 
@@ -114,7 +114,7 @@ module.exports = {
                     content: `${STAR_EMOJI_NAME} **${currentReactionCount}** | <#${message.channel.id}>`,
                     embeds: [board]
                 });
-                DatabaseService.addStarboardEntry(guild.id, message.id, response.id);
+                await DatabaseService.addStarboardEntry(guild.id, message.id, response.id);
             } catch (error) {
                 console.error(`Ошибка при отправке сообщения на старборд в канал ${settings.starboardChannelId}:`, error);
             }

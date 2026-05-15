@@ -112,7 +112,7 @@ module.exports = {
             const channel = message.channel;
             if (!channel.isThread()) return;
 
-            const guildSettings = DatabaseService.getSettings(message.guildId);
+            const guildSettings = await DatabaseService.getSettings(message.guildId);
             if (!guildSettings || channel.parentId !== guildSettings.supportChannelId) return;
 
             const lang = guildSettings.language || message.guild.preferredLocale || 'ru';

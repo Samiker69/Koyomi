@@ -6,7 +6,7 @@ const DatabaseService = require('../../services/DatabaseService');
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        const settings = interaction.guild ? (DatabaseService.getSettings(interaction.guild.id) || {}) : {};
+        const settings = interaction.guild ? (await DatabaseService.getSettings(interaction.guild.id) || {}) : {};
         const preferredLang = settings.language || interaction.guildLocale || 'ru';
 
         Object.defineProperty(interaction, 'guildLocale', {
@@ -26,7 +26,7 @@ module.exports = {
             return;
         }
 
-        if (interaction.guild && DatabaseService.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
+        if (interaction.guild && await DatabaseService.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
             await interaction.reply({
                 content: localeManager.get('events.errors.command_disabled', lang, { commandName: interaction.commandName }),
                 flags: MessageFlags.Ephemeral

@@ -30,7 +30,7 @@ module.exports = {
         const serverId = interaction.guild.id;
         const targetUser = interaction.options.getUser('moderator');
 
-        const allModCases = DatabaseService.getServerModCases(serverId);
+        const allModCases = await DatabaseService.getServerModCases(serverId);
 
         if (!allModCases || allModCases.length === 0) {
             const noCasesEmbed = EmbedService.createBaseEmbed(interaction)

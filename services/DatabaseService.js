@@ -317,6 +317,108 @@ class DatabaseService {
     }
 
     // ==========================================
+    // ОГРАНИЧЕНИЯ КОМАНД (Disabled Commands)
+    // ==========================================
+
+    /**
+     * Проверяет, отключена ли команда для указанного пользователя.
+     * Учитывает как глобальные запреты на сервере, так и персональные запреты пользователя.
+     */
+    async isDisabled(guildId, commandName, userId) {
+        if (!guildId || !commandName || !userId) return false;
+
+        const restriction = await DisabledCommand.findOne({
+            where: {
+                guild_id: guildId,
+                command_name: commandName,
+                [Op.or]: [
+                    { user_id: null }, // Запрещено для всех на сервере
+                    { user_id: userId } // Запрещено персонально этому пользователю
+                ]
+            }
+        });
+
+        return !!restriction; // Возвращает true, если блокировка найдена
+    }
+
+    /**
+     * Проверяет, отключена ли команда строго для всей гильдии (игнорируя персональные запреты).
+     */
+    async isGuildDisabled(guildId, commandName) {
+        if (!guildId || !commandName) return false;
+
+        const restriction = await DisabledCommand.findOne({
+            where: {
+                guild_id: guildId,
+                command_name: commandName,
+                user_id: null
+            }
+        });
+        console.log(restriction, !!restriction)
+
+        return !!restriction;
+    }
+
+    /**
+     * Добавляет команду в список отключенных.
+     * @param {string|null} userId Передайте null, чтобы отключить для всего сервера.
+     */
+    async addDisabledCommand(guildId, commandName, userId = null) {
+        if (!guildId || !commandName) return false;
+        
+        try {
+            await DisabledCommand.findOrCreate({
+                where: { guild_id: guildId, command_name: commandName, user_id: userId }
+            });
+            return true;
+        } catch (error) {
+            console.error("Ошибка при добавлении ограничения:", error);
+            return false;
+        }
+    }
+
+    /**
+     * Удаляет ограничение команды.
+     */
+    async removeDisabledCommand(guildId, commandName, userId = null) {
+        if (!guildId || !commandName) return false;
+
+        const deleted = await DisabledCommand.destroy({
+            where: { guild_id: guildId, command_name: commandName, user_id: userId }
+        });
+
+        return deleted > 0;
+    }
+
+    /**
+     * Получает список всех отключенных команд для сервера (глобально).
+     */
+    async getGuildRestrictions(guildId) {
+        if (!guildId) return [];
+
+        const restrictions = await DisabledCommand.findAll({
+            where: { guild_id: guildId, user_id: null },
+            attributes: ['command_name'] // Вытаскиваем только колонку с именем команды
+        });
+
+        return restrictions.map(r => r.command_name);
+    }
+
+    /**
+     * Получает список команд, отключенных персонально для пользователя на сервере.
+     */
+    async getUserRestrictions(guildId, userId) {
+        if (!guildId || !userId) return [];
+
+        const restrictions = await DisabledCommand.findAll({
+            where: { guild_id: guildId, user_id: userId },
+            attributes: ['command_name']
+        });
+
+        return restrictions.map(r => r.command_name);
+    }
+
+    // ==========================================
     // ПРОЧИЕ МЕТОДЫ (Утилиты)
     // ==========================================
     

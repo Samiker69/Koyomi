@@ -1,4 +1,5 @@
 const { Events } = require('discord.js');
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -6,7 +7,7 @@ module.exports = {
         if (!interaction.isAutocomplete()) return;
 
         // Применяем локализацию
-        const settings = interaction.guild ? (sdb.getSettings(interaction.guild.id) || {}) : {};
+        const settings = interaction.guild ? (await DatabaseService.getSettings(interaction.guild.id) || {}) : {};
         const preferredLang = settings.language || interaction.guildLocale || 'ru';
         
         Object.defineProperty(interaction, 'guildLocale', {

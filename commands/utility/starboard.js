@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, MessageFlags } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -39,9 +40,9 @@ module.exports = {
       const channel = interaction.options.getChannel('channel');
       const min = interaction.options.getInteger('min') || 3;
 
-      Sdb.updateSetting(guildId, 'starboardChannelId', channel.id);
-      Sdb.updateSetting(guildId, 'starboardMinStars', min);
-      Sdb.updateSetting(guildId, 'starboardEnabled', true);
+      await DatabaseService.updateSetting(guildId, 'starboardChannelId', channel.id);
+      await DatabaseService.updateSetting(guildId, 'starboardMinStars', min);
+      await DatabaseService.updateSetting(guildId, 'starboardEnabled', true);
 
       return await interaction.reply({
         content: localeManager.get('utility.starboard.messages.setup_done', lang, { channel: channel.toString(), min }),
@@ -50,7 +51,7 @@ module.exports = {
     }
 
     if (sub === 'disable') {
-      Sdb.updateSetting(guildId, 'starboardEnabled', false);
+      await DatabaseService.updateSetting(guildId, 'starboardEnabled', false);
       return await interaction.reply({
         content: localeManager.get('utility.starboard.messages.disabled_done', lang),
         flags: MessageFlags.Ephemeral

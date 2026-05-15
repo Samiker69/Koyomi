@@ -6,7 +6,7 @@ module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (!interaction.guildLocale) {
-            const cfg = DatabaseService.getSettings(interaction.guild?.id);
+            const cfg = await DatabaseService.getSettings(interaction.guild?.id);
             Object.defineProperty(interaction, 'guildLocale', {
                 value: cfg?.language || 'ru',
                 writable: false,
