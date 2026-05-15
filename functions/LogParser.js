@@ -1,11 +1,14 @@
+const localeManager = require('../locales/localeManager');
+
 const classVersionToJava = {
     52: 8, 53: 9, 54: 10, 55: 11, 56: 12, 57: 13, 58: 14, 
     59: 15, 60: 16, 61: 17, 62: 18, 63: 19, 64: 20, 65: 21, 66: 22, 67: 23, 68: 24, 69: 25, 70: 26
 };
 
 class LogParser {
-    constructor(logContent) {
+    constructor(logContent, lang = 'ru') {
         this.rawContent = logContent;
+        this.lang = lang;
         this.content = this.normalizeLog(logContent);
         this.lines = this.content.split('\n');
         
@@ -251,36 +254,62 @@ class LogParser {
             const versionMatch = this.content.match(/class file version (\d+(?:\.\d+)?)/);
             if (versionMatch) {
                 const required = classVersionToJava[parseFloat(versionMatch[1])];
-                this.solutions.push(required ? `Используйте Java ${required}` : "Обновите Java. Неизвестная версия class file.");
+                this.solutions.push(required 
+                    ? localeManager.get('parser.solutions.java_version', this.lang, { version: required }) 
+                    : localeManager.get('parser.solutions.java_unknown', this.lang));
             } else {
-                this.solutions.push("Обновите Java. Не удалось определить точную версию.");
+                this.solutions.push(localeManager.get('parser.solutions.java_undetermined', this.lang));
             }
         }
 
         if (this.content.includes('[authlib-injector] [ERROR]') && this.content.includes('ely.by')) {
-            this.solutions.push('Система скинов ely.by временно недоступна. Используйте другой тип аккаунта либо подождите.');
+            this.solutions.push(localeManager.get('parser.solutions.ely_by', this.lang));
         }
 
         if (this.content.includes('GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT')) {
-            this.solutions.push('Смените визуализатор на LTW');
+            this.solutions.push(localeManager.get('parser.solutions.ltw_renderer', this.lang));
         }
 
         if (this.nativeCrashInfo && this.nativeCrashInfo.frame) {
             const frame = this.nativeCrashInfo.frame;
             if (frame.includes('libOSMesa.so')) {
-                this.solutions.push('Смените визуализатор с Zink на другой');
+                this.solutions.push(localeManager.get('parser.solutions.zink_other', this.lang));
             }
             if (frame.includes('libmali.so') || frame.includes('libAdreno')) {
-                this.solutions.push('Проблема драйвера. Для Adreno: включите/выключите Turnip в настройках графики. Иначе: не используйте шейдеры или смените визуализатор.');
+                this.solutions.push(localeManager.get('parser.solutions.driver_adreno', this.lang));
             }
             if (frame.includes('libgl4es') && this.modList.includes('sodium')) {
-                this.solutions.push('Смените визуализатор на LTW (конфликт Sodium и GL4ES)');
+                this.solutions.push(localeManager.get('parser.solutions.sodium_gl4es', this.lang));
             }
             if (frame.includes('libc.so') || this.content.includes('MESA:') || this.content.includes('Shader conversion failed!')) {
-                this.solutions.push('Вероятнее всего: Ошибка компиляции шейдеров (ресурспак/шейдер/мод используют неподдерживаемые функции устройства).');
+                this.solutions.push(localeManager.get('parser.solutions.shader_error', this.lang));
             }
         }
     }
 }
 
-module.exports = LogParser;
+// Статические функции для обратной совместимости
+function extractLogInfo(logText, lang = 'ru') {
+    const parser = new LogParser(logText, lang);
+    const result = parser.parse();
+    return result.system;
+}
+
+function extractCrashInfo(logText, lang = 'ru') {
+    const parser = new LogParser(logText, lang);
+    const result = parser.parse();
+    return result.crash;
+}
+
+function extractPotentialSolutions(logText, lang = 'ru') {
+    const parser = new LogParser(logText, lang);
+    const result = parser.parse();
+    return result.solutions;
+}
+
+module.exports = {
+    LogParser,
+    extractLogInfo,
+    extractCrashInfo,
+    extractPotentialSolutions
+};

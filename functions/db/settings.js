@@ -80,6 +80,35 @@ class SettingsDatabase {
                 roles TEXT NOT NULL -- JSON-строка [{id: 'roleId', label: 'Role Name', description: 'Desc'}, ...]
             );
         `);
+
+        // LogAnalyzer tables
+        this.db.exec(`
+            CREATE TABLE IF NOT EXISTS unsupported_mods (
+                mod_id TEXT PRIMARY KEY,
+                reason TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS banned_mods (
+                mod_id TEXT PRIMARY KEY
+            );
+            CREATE TABLE IF NOT EXISTS mods_mapping (
+                original_name TEXT PRIMARY KEY,
+                modrinth_id TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS allowed_launchers (
+                launcher_name TEXT PRIMARY KEY
+            );
+        `);
+        
+        // Populate default values if empty
+        const countLaunchers = this.db.prepare('SELECT count(*) as count FROM allowed_launchers').get();
+        if (countLaunchers.count === 0) {
+            this.db.prepare('INSERT INTO allowed_launchers (launcher_name) VALUES (?)').run('hebe');
+        }
+
+        const countMapping = this.db.prepare('SELECT count(*) as count FROM mods_mapping').get();
+        if (countMapping.count === 0) {
+            this.db.prepare('INSERT INTO mods_mapping (original_name, modrinth_id) VALUES (?, ?)').run('yet_another_config_lib_v3', 'yacl');
+        }
     }
 
     /**
@@ -140,6 +169,24 @@ class SettingsDatabase {
         this.statements.getRoleMenu = this.db.prepare("SELECT * FROM role_menus WHERE messageId = ?");
         this.statements.deleteRoleMenu = this.db.prepare("DELETE FROM role_menus WHERE messageId = ?");
         this.statements.getAllRoleMenus = this.db.prepare("SELECT * FROM role_menus WHERE guildId = ?"); // Для возможного получения всех меню на сервере
+
+        // LogAnalyzer statements
+        this.statements.getUnsupportedMods = this.db.prepare('SELECT mod_id, reason FROM unsupported_mods');
+        this.statements.getBannedMods = this.db.prepare('SELECT mod_id FROM banned_mods');
+        this.statements.getModsMapping = this.db.prepare('SELECT original_name, modrinth_id FROM mods_mapping');
+        this.statements.getAllowedLaunchers = this.db.prepare('SELECT launcher_name FROM allowed_launchers');
+        
+        this.statements.addUnsupportedMod = this.db.prepare('INSERT OR REPLACE INTO unsupported_mods (mod_id, reason) VALUES (?, ?)');
+        this.statements.removeUnsupportedMod = this.db.prepare('DELETE FROM unsupported_mods WHERE mod_id = ?');
+        
+        this.statements.addBannedMod = this.db.prepare('INSERT OR IGNORE INTO banned_mods (mod_id) VALUES (?)');
+        this.statements.removeBannedMod = this.db.prepare('DELETE FROM banned_mods WHERE mod_id = ?');
+        
+        this.statements.addModsMapping = this.db.prepare('INSERT OR REPLACE INTO mods_mapping (original_name, modrinth_id) VALUES (?, ?)');
+        this.statements.removeModsMapping = this.db.prepare('DELETE FROM mods_mapping WHERE original_name = ?');
+        
+        this.statements.addAllowedLauncher = this.db.prepare('INSERT OR IGNORE INTO allowed_launchers (launcher_name) VALUES (?)');
+        this.statements.removeAllowedLauncher = this.db.prepare('DELETE FROM allowed_launchers WHERE launcher_name = ?');
     }
 
     /**
@@ -294,6 +341,65 @@ class SettingsDatabase {
         });
     }
 
+    // --- LogAnalyzer методы ---
+
+    getUnsupportedMods() {
+        const rows = this.statements.getUnsupportedMods.all();
+        const result = {};
+        for (const row of rows) {
+            result[row.mod_id] = row.reason;
+        }
+        return result;
+    }
+
+    getBannedMods() {
+        const rows = this.statements.getBannedMods.all();
+        return rows.map(r => r.mod_id);
+    }
+
+    getModsMapping() {
+        const rows = this.statements.getModsMapping.all();
+        const result = {};
+        for (const row of rows) {
+            result[row.original_name] = row.modrinth_id;
+        }
+        return result;
+    }
+
+    getAllowedLaunchers() {
+        const rows = this.statements.getAllowedLaunchers.all();
+        return rows.map(r => r.launcher_name);
+    }
+
+    addBannedMod(modId) {
+        const res = this.statements.addBannedMod.run(modId);
+        return res.changes > 0;
+    }
+
+    removeBannedMod(modId) {
+        const res = this.statements.removeBannedMod.run(modId);
+        return res.changes > 0;
+    }
+
+    addUnsupportedMod(modId, reason) {
+        const res = this.statements.addUnsupportedMod.run(modId, reason);
+        return res.changes > 0;
+    }
+
+    removeUnsupportedMod(modId) {
+        const res = this.statements.removeUnsupportedMod.run(modId);
+        return res.changes > 0;
+    }
+
+    addAllowedLauncher(launcherName) {
+        const res = this.statements.addAllowedLauncher.run(launcherName);
+        return res.changes > 0;
+    }
+
+    removeAllowedLauncher(launcherName) {
+        const res = this.statements.removeAllowedLauncher.run(launcherName);
+        return res.changes > 0;
+    }
 
     /**
      * Закрывает соединение с базой данных.

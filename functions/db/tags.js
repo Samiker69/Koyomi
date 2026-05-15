@@ -221,17 +221,18 @@ class TagsDB {
     }
 
     /**
-     * Получает все конфигурации. Полезно для отладки или администрирования.
-     * @returns {Array<object>} Массив всех конфигураций.
+     * Получает все конфигурации для конкретного сервера.
+     * @param {string} serverId Идентификатор сервера.
+     * @returns {Array<object>} Массив конфигураций для сервера.
      */
-    getAllTags() {
-        const selectAllQuery = 'SELECT * FROM tags';
+    getTagsByServer(serverId) {
+        const selectQuery = 'SELECT * FROM tags WHERE serverId = ? ORDER BY name';
         try {
-            const stmt = this.db.prepare(selectAllQuery);
-            const rows = stmt.all();
+            const stmt = this.db.prepare(selectQuery);
+            const rows = stmt.all(serverId);
             return rows.map(row => this._formatOutput(row));
         } catch (error) {
-            console.error('[DB] Ошибка при получении всех конфигураций:', error);
+            console.error(`[DB] Ошибка при получении тегов для serverId ${serverId}:`, error);
             return [];
         }
     }

@@ -11,11 +11,11 @@ const {
     ComponentType
 } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
-const Settings = require('../../functions/db/settings');
+const DatabaseService = require('../../services/DatabaseService');
 const { bot_log_channel } = require('../../config.json');
 const localeManager = require('../../locales/localeManager');
 
-const Sdb = new Settings();
+// DatabaseService используется напрямую
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,11 +26,11 @@ module.exports = {
 
     async execute(interaction) {
         const guildId = interaction.guild.id;
-        const initialCfg = Sdb.getSettings(guildId) || {};
+        const initialCfg = DatabaseService.getSettings(guildId) || {};
         let lang = initialCfg.language || interaction.guildLocale || 'ru';
 
         const generateDashboard = () => {
-            const cfg = Sdb.getSettings(guildId) || {}; 
+            const cfg = DatabaseService.getSettings(guildId) || {}; 
             lang = cfg.language || interaction.guildLocale || 'ru';
 
             const statusInvites = cfg.allowInviteLogging ? localeManager.get('utility.settings.messages.enabled', lang) : localeManager.get('utility.settings.messages.disabled', lang);
@@ -156,8 +156,8 @@ module.exports = {
                     const selection = i.values[0];
                     
                     if (selection === 'act_reset') {
-                        Sdb.removeServer(guildId);
-                        Sdb.addServer(guildId);
+                        DatabaseService.removeServer(guildId);
+                        DatabaseService.addServer(guildId);
                         await i.update(generateDashboard());
                         return;
                     }
@@ -191,16 +191,16 @@ module.exports = {
 
                         const selectedId = selectionInteraction.values[0];
 
-                        if (selection === 'act_cat') Sdb.updateSetting(guildId, 'voiceCategoryId', selectedId);
-                        else if (selection === 'act_log') Sdb.updateSetting(guildId, 'inviteLoggerChannel', selectedId);
-                        else if (selection === 'act_sup') Sdb.updateSetting(guildId, 'supportChannelId', selectedId);
-                        else if (selection === 'act_rep') Sdb.updateSetting(guildId, 'reportsModerationChannelId', selectedId);
-                        else if (selection === 'act_verdict') Sdb.updateSetting(guildId, 'verdictChannelId', selectedId);
+                        if (selection === 'act_cat') DatabaseService.updateSetting(guildId, 'voiceCategoryId', selectedId);
+                        else if (selection === 'act_log') DatabaseService.updateSetting(guildId, 'inviteLoggerChannel', selectedId);
+                        else if (selection === 'act_sup') DatabaseService.updateSetting(guildId, 'supportChannelId', selectedId);
+                        else if (selection === 'act_rep') DatabaseService.updateSetting(guildId, 'reportsModerationChannelId', selectedId);
+                        else if (selection === 'act_verdict') DatabaseService.updateSetting(guildId, 'verdictChannelId', selectedId);
                         else if (selection === 'act_honeypot') {
-                            Sdb.updateSetting(guildId, 'honeypotChannelId', selectedId);
-                            Sdb.updateSetting(guildId, 'honeypotEnabled', true);
+                            DatabaseService.updateSetting(guildId, 'honeypotChannelId', selectedId);
+                            DatabaseService.updateSetting(guildId, 'honeypotEnabled', true);
                         }
-                        else if (selection === 'act_honeypot_log') Sdb.updateSetting(guildId, 'honeypotLogChannelId', selectedId);
+                        else if (selection === 'act_honeypot_log') DatabaseService.updateSetting(guildId, 'honeypotLogChannelId', selectedId);
 
                         await selectionInteraction.update({ content: localeManager.get('utility.settings.messages.saved', lang), components: [] });
                         await interaction.editReply(generateDashboard());
@@ -211,28 +211,28 @@ module.exports = {
                     return; 
                 }
 
-                const currentCfg = Sdb.getSettings(guildId) || {};
+                const currentCfg = DatabaseService.getSettings(guildId) || {};
                 
                 if (i.customId === 'select_welcome') {
-                    Sdb.updateSetting(guildId, 'newMemberChannelId', i.values[0]);
+                    DatabaseService.updateSetting(guildId, 'newMemberChannelId', i.values[0]);
                 } 
                 else if (i.customId === 'select_voice_main') {
-                    Sdb.updateSetting(guildId, 'mainVoiceChannelId', i.values[0]);
+                    DatabaseService.updateSetting(guildId, 'mainVoiceChannelId', i.values[0]);
                 }
                 else if (i.customId === 'toggle_invites') {
-                    Sdb.updateSetting(guildId, 'allowInviteLogging', !currentCfg.allowInviteLogging);
+                    DatabaseService.updateSetting(guildId, 'allowInviteLogging', !currentCfg.allowInviteLogging);
                 }
                 else if (i.customId === 'toggle_members') {
-                    Sdb.updateSetting(guildId, 'allowLogingMembersAdd', !currentCfg.allowLogingMembersAdd);
+                    DatabaseService.updateSetting(guildId, 'allowLogingMembersAdd', !currentCfg.allowLogingMembersAdd);
                 }
                 else if (i.customId === 'select_language') {
-                    Sdb.updateSetting(guildId, 'language', i.values[0]);
+                    DatabaseService.updateSetting(guildId, 'language', i.values[0]);
                 }
                 else if (i.customId === 'toggle_honeypot') {
                     if (!currentCfg.honeypotChannelId) {
                         return await i.reply({ content: localeManager.get('utility.settings.messages.honeypot_trap_required', lang), flags: MessageFlags.Ephemeral });
                     }
-                    Sdb.updateSetting(guildId, 'honeypotEnabled', !currentCfg.honeypotEnabled);
+                    DatabaseService.updateSetting(guildId, 'honeypotEnabled', !currentCfg.honeypotEnabled);
                 }
 
                 await i.update(generateDashboard());

@@ -1,4 +1,6 @@
 const LogParser = require('../functions/LogParser');
+const DatabaseService = require('./DatabaseService');
+const localeManager = require('../locales/localeManager');
 
 class LogAnalyzerService {
     constructor() {
@@ -7,45 +9,23 @@ class LogAnalyzerService {
     }
 
     // ==========================================
-    // ЗАГЛУШКИ ДЛЯ БАЗЫ ДАННЫХ (Mock DB methods)
+    // ИНТЕГРАЦИЯ С БАЗОЙ ДАННЫХ
     // ==========================================
 
-    /**
-     * Возвращает список модов, которые просто не поддерживаются 
-     * (бот выведет предупреждение, но не откажет в поддержке)
-     */
     async getUnsupportedMods() {
-        // Формат: { "mod_id": "Причина" }
-        return {
-            "optifine": "Используйте Sodium/Rubidium для лучшей производительности на мобильных устройствах.",
-            "betterfps": "Мод устарел и часто ломает рендер.",
-            // Сюда будете тянуть из БД
-        };
+        return DatabaseService.getUnsupportedMods();
     }
 
-    /**
-     * Возвращает список модов/читов, при нахождении которых поддержка АВТОМАТИЧЕСКИ отказывается
-     */
     async getBannedMods() {
-        return[
-            "meteor-client",
-            "wurst",
-            "bleachhack",
-            // Сюда будете тянуть читы из БД
-        ];
+        return DatabaseService.getBannedMods();
     }
 
     async getModsMapping() {
-        return {
-            "yet_another_config_lib_v3": "yacl"
-        }
+        return DatabaseService.getModsMapping();
     }
 
-    /**
-     * Возвращает разрешенные ключевые слова для версии лаунчера
-     */
     async getAllowedLaunchers() {
-        return ["hebe"];
+        return DatabaseService.getAllowedLaunchers();
     }
 
     // ==========================================
@@ -78,11 +58,12 @@ class LogAnalyzerService {
     /**
      * Парсит лог, извлекает решения из текста и сверяет с БД
      * @param {string} rawLogText - Сырой текст лога
+     * @param {string} lang - Язык
      * @returns {Object} Результат анализа
      */
-    async analyze(rawLogText) {
+    async analyze(rawLogText, lang = 'ru') {
         // 1. Прогоняем через парсер
-        const parser = new LogParser(rawLogText);
+        const parser = new LogParser(rawLogText, lang);
         const parsed = parser.parse();
 
         // 2. Проверка на "Свой" лаунчер
@@ -95,7 +76,7 @@ class LogAnalyzerService {
         if (!isAllowedLauncher) {
             return {
                 isDenied: true,
-                denyReason: "Обнаружен сторонний лаунчер. Поддержка оказывается только для официальных сборок лаунчера (hebe)."
+                denyReason: localeManager.get('parser.analyzer.denied_launcher', lang)
             };
         }
 
@@ -106,7 +87,7 @@ class LogAnalyzerService {
         if (foundBannedMod) {
             return {
                 isDenied: true,
-                denyReason: `В сборке обнаружен запрещенный мод/чит: ${foundBannedMod}. Использование подобных модификаций лишает вас поддержки.`
+                denyReason: localeManager.get('parser.analyzer.denied_banned_mod', lang, { mod: foundBannedMod })
             };
         }
 
@@ -121,7 +102,7 @@ class LogAnalyzerService {
         }
 
         // 5. Динамический парсинг решений (ошибки недостающих модов из крашей Форджа/Фабрика)
-        const dynamicSolutions = await this._extractDynamicSolutions(rawLogText);
+        const dynamicSolutions = await this._extractDynamicSolutions(rawLogText, lang);
 
         // 6. Объединяем решения (от парсера + из текста + Modrinth)
         const allSolutions = [...(parsed.solutions || []), ...dynamicSolutions];
@@ -145,19 +126,21 @@ class LogAnalyzerService {
     /**
      * Ищет в тексте ошибки зависимостей и генерирует решения со ссылками на Modrinth
      */
-    async _extractDynamicSolutions(rawText) {
+    async _extractDynamicSolutions(rawText, lang = 'ru') {
         const solutions = [];
-        const promises =[]; // Для параллельных запросов к API
+        const promises = []; // Для параллельных запросов к API
 
         // Ищем паттерн: "Install fabric-api,"
         const installRegex = /Install ([\w-]+),/gi;
-        const installMatches =[...rawText.matchAll(installRegex)];
-        
+        const installMatches = [...rawText.matchAll(installRegex)];
+
         for (const match of installMatches) {
             const modName = match[1];
             promises.push(
                 this.getModLink(modName).then(link => {
-                    return `Установите мод ${modName}` + (link ? `: [Скачать с Modrinth](<${link}>)` : '');
+                    return link 
+                        ? localeManager.get('parser.analyzer.install_modrinth', lang, { modName, link })
+                        : localeManager.get('parser.analyzer.install_modrinth_no_link', lang, { modName });
                 })
             );
         }
@@ -171,13 +154,17 @@ class LogAnalyzerService {
             promises.push(
                 Promise.all([this.getModLink(id), this.getModLink(name)]).then(([linkById, linkByName]) => {
                     const link = linkById || linkByName;
-                    let msg = `Обновите/Замените мод ${name}`;
                     const versionMatch = condition.match(/version ([\w.+-]+)/);
                     
-                    if (versionMatch) msg += ` до версии ${versionMatch[1]} (или новее)`;
-                    else msg += ` до версии, совместимой с вашей сборкой`;
-                    
-                    return msg + (link ? `: [Скачать с Modrinth](<${link}>)` : '');
+                    if (versionMatch) {
+                        return link 
+                            ? localeManager.get('parser.analyzer.update_modrinth_version', lang, { name, version: versionMatch[1], link })
+                            : localeManager.get('parser.analyzer.update_modrinth_version_no_link', lang, { name, version: versionMatch[1] });
+                    } else {
+                        return link 
+                            ? localeManager.get('parser.analyzer.update_modrinth_compat', lang, { name, link })
+                            : localeManager.get('parser.analyzer.update_modrinth_compat_no_link', lang, { name });
+                    }
                 })
             );
         }
@@ -187,6 +174,22 @@ class LogAnalyzerService {
         solutions.push(...resolvedSolutions);
 
         return solutions;
+    }
+
+    // ==========================================
+    // УТИЛИТЫ ДЛЯ DISCORD
+    // ==========================================
+
+    async FindTxtInMessage(message, fileNamePattern) {
+        const attachment = message.attachments.find(att => new RegExp(fileNamePattern, 'i').test(att.name));
+        if (!attachment) return null;
+        try {
+            const response = await fetch(attachment.url);
+            return await response.text();
+        } catch (err) {
+            console.error('Error in FindTxtInMessage:', err);
+            return null;
+        }
     }
 }
 

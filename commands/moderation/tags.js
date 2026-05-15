@@ -4,12 +4,12 @@ const {
     EmbedBuilder,
     MessageFlags
 } = require('discord.js');
-const TagsDB = require('../../functions/db/tags');
+const DatabaseService = require('../../services/DatabaseService');
 const EmbedService = require('../../services/EmbedService');
 
 const localeManager = require('../../locales/localeManager');
 
-const tags = new TagsDB()
+// DatabaseService используется напрямую
   
   module.exports = {
     data: new SlashCommandBuilder()
@@ -95,7 +95,7 @@ const tags = new TagsDB()
             const name = interaction.options.getString('name').toLowerCase();
             const content = interaction.options.getString('content');
   
-            const exists = tags.add(guildId, name, content)
+            const exists = DatabaseService.addTag(guildId, name, content)
   
             if (!exists) {
               return await interaction.reply({
@@ -112,7 +112,7 @@ const tags = new TagsDB()
   
           case 'remove': {
             const name = interaction.options.getString('name').toLowerCase();
-            const result = tags.remove(guildId, name)
+            const result = DatabaseService.removeTag(guildId, name)
   
             if (!result) {
               return await interaction.reply({
@@ -130,7 +130,7 @@ const tags = new TagsDB()
           case 'edit': {
             const name = interaction.options.getString('name').toLowerCase();
             const newContent = interaction.options.getString('content');
-            const result = tags.edit(guildId, name, { content: newContent} )
+            const result = DatabaseService.editTag(guildId, name, { content: newContent} )
   
             if (!result) {
               return await interaction.reply({
@@ -147,7 +147,7 @@ const tags = new TagsDB()
   
           case 'get': {
             const name = interaction.options.getString('name').toLowerCase();
-            const row = tags.get(guildId, name)
+            const row = DatabaseService.getTag(guildId, name)
   
             if (!row) {
               return await interaction.reply({
@@ -164,9 +164,8 @@ const tags = new TagsDB()
           }
   
           case 'list': {
-            const rows = tags.db
-              .prepare('SELECT name, content FROM tags WHERE serverId = ? ORDER BY name')
-              .all(guildId);
+            const rows = DatabaseService.getTagsByServer(guildId);
+
           
             if (rows.length === 0) {
               return interaction.reply({
