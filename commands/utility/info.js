@@ -75,7 +75,7 @@ module.exports = {
           { name: localeManager.get('utility.info.messages.owner', lang),      value: `<@${guild.ownerId}>`,                 inline: true },
           { name: localeManager.get('utility.info.messages.members', lang),    value: `${guild.memberCount}`,                 inline: true },
           { name: localeManager.get('utility.info.messages.roles', lang),      value: `${guild.roles.cache.size}`,            inline: true },
-          { name: localeManager.get('utility.info.messages.channels', lang),   value: `${guild.channels.cache.size}`,         inline: true },
+          { name: localeManager.get('utility.info.messages.channels', lang),   value: `${guild.channels.cache.filter(c => !c.isThread()).size}`, inline: true },
           { name: localeManager.get('utility.info.messages.locale', lang),     value: guild.preferredLocale,                 inline: true }
         );
 
