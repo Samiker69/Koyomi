@@ -1,8 +1,6 @@
 const { Events, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { fetchDoujin } = require('../../utils/fetchDoujin');
 const localeManager = require('../../locales/localeManager');
-const SettingsDB = require('../../utils/db/settings');
-const sdb = new SettingsDB();
 
 module.exports = {
     name: Events.InteractionCreate,

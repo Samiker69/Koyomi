@@ -1,7 +1,6 @@
 const { Events, EmbedBuilder, ChannelType } = require('discord.js');
-const starDB = require('../../utils/db/starboard');
 const localeManager = require('../../locales/localeManager');
-const db = new starDB();
+const DatabaseService = require('../../services/DatabaseService');
 
 const STAR_EMOJI_NAME = '⭐';
 const EMBED_COLOR = 'Gold';
@@ -29,7 +28,7 @@ module.exports = {
 
         if (message.author.bot) return;
 
-        const settings = db.getSettings(guild.id);
+        const settings = DatabaseService.getSettings(guild.id);
 
         if (!settings || !settings.enabled || !settings.starboardChannelId || !settings.minReactions) return;
 
@@ -55,8 +54,8 @@ module.exports = {
             return;
         }
 
-        if (db.isMessageOnStarboard(guild.id, message.id)) {
-            const starMessageId = db.getStarboardMessageId(guild.id, message.id);
+        if (DatabaseService.isMessageOnStarboard(guild.id, message.id)) {
+            const starMessageId = DatabaseService.getStarboardMessageId(guild.id, message.id);
             if (!starMessageId) {
                 console.error(`Запись о сообщении ${message.id} на старборде есть, но ID сообщения старборда отсутствует.`);
                 return;
@@ -66,7 +65,7 @@ module.exports = {
                 const starMessage = await boardChannel.messages.fetch(starMessageId);
                 if (!starMessage) {
                     console.warn(`Сообщение старборда ${starMessageId} не найдено. Удаляю запись из БД.`);
-                    db.deleteStarboardEntry(guild.id, message.id);
+                    DatabaseService.deleteStarboardEntry(guild.id, message.id);
                     return;
                 }
 
@@ -115,7 +114,7 @@ module.exports = {
                     content: `${STAR_EMOJI_NAME} **${currentReactionCount}** | <#${message.channel.id}>`,
                     embeds: [board]
                 });
-                db.addStarboardEntry(guild.id, message.id, response.id);
+                DatabaseService.addStarboardEntry(guild.id, message.id, response.id);
             } catch (error) {
                 console.error(`Ошибка при отправке сообщения на старборд в канал ${settings.starboardChannelId}:`, error);
             }

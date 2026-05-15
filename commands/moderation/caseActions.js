@@ -1,8 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const ModerationDB = require('../../utils/db/case');
-const db = new ModerationDB();
 const EmbedService = require('../../services/EmbedService');
 const localeManager = require('../../locales/localeManager');
+const DatabaseService = require('../../services/DatabaseService');
 
 const data = new SlashCommandBuilder()
     .setName('case')
@@ -81,7 +80,7 @@ const data = new SlashCommandBuilder()
         switch (subcommand) {
             case "remove": {
                 const caseNum = interaction.options.getInteger('num');
-                const success = db.deleteModCase(interaction.guild.id, caseNum);
+                const success = DatabaseService.deleteModCase(interaction.guild.id, caseNum);
                 if (success) {
                     await interaction.reply(localeManager.get('moderation.case.messages.case_removed', lang, { num: caseNum }));
                 } else {
@@ -92,7 +91,7 @@ const data = new SlashCommandBuilder()
             case "reason": {
                 const caseNum = interaction.options.getInteger('num');
                 const reason = interaction.options.getString('reason');
-                const success = db.updateModCaseReason(interaction.guild.id, caseNum, reason);
+                const success = DatabaseService.updateModCaseReason(interaction.guild.id, caseNum, reason);
                 if (success) {
                     await interaction.reply(localeManager.get('moderation.case.messages.reason_updated', lang, { num: caseNum }));
                 } else {
@@ -102,7 +101,7 @@ const data = new SlashCommandBuilder()
             }
             case "view": {
                 const caseNum = interaction.options.getInteger('num');
-                const caseObj = db.getModCase(interaction.guild.id, caseNum);
+                const caseObj = DatabaseService.getModCase(interaction.guild.id, caseNum);
                 if (!caseObj) return await interaction.reply({ content: localeManager.get('moderation.case.messages.case_not_found', lang), flags: MessageFlags.Ephemeral });
 
                 const moderator = await interaction.guild.members.fetch(caseObj.moderatorId).catch(() => null);
@@ -125,7 +124,7 @@ const data = new SlashCommandBuilder()
             }
             case "user_punishments": {
                 const targetUser = interaction.options.getUser('user');
-                const modCases = db.getTargetModCases(interaction.guild.id, targetUser.id);
+                const modCases = DatabaseService.getTargetModCases(interaction.guild.id, targetUser.id);
 
                 const embed = EmbedService.createBaseEmbed(interaction)
                     .setTitle(localeManager.get('moderation.case.messages.history_title', lang, { user: targetUser.username }))

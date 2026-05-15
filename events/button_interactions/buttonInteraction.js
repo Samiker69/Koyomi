@@ -1,8 +1,5 @@
 const { Events, MessageFlags } = require('discord.js');
-const SettingsDB = require('../../utils/db/settings'); 
 const localeManager = require('../../locales/localeManager');
-
-const Sdb = new SettingsDB();
 
 async function safeReply(interaction, key, lang, variables = {}) { 
     const flags = MessageFlags.Ephemeral; 
