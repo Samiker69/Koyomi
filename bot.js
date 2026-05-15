@@ -74,6 +74,7 @@ async function bootstrap() {
 
     // 3. Запуск IPC Сервера (WebSocket для админки)
     setupIPCServerAndGracefulShutdown(client);
+    panelServer.startPanel();
     await client.login(process.env.token || process.env.TOKEN);
 }
 
