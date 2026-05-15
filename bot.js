@@ -12,6 +12,7 @@ const CommandDeployer = require('./core/utils/deployCommands');
 const ApikeyManager = require('./lib/ApikeyManager/ApikeyManager');
 const loadApiKeys = require('./utils/loadKeysFromEnv');
 const BotIPCServer = require('./bot-ipc-server');
+const panelServer = require('./panel/panelServer');
 
 // --- [БЛОК СПЕЦИФИЧНОЙ ЛОГИКИ И ИНИЦИАЛИЗАЦИИ ВНЕШНИХ МОДУЛЕЙ] ---
 function setupDatabase() {
@@ -81,6 +82,7 @@ async function bootstrap() {
 
     // 3. Запуск IPC Сервера (WebSocket для админки)
     setupIPCServerAndGracefulShutdown(client);
+    panelServer.startPanel();
     await client.login(process.env.token || process.env.TOKEN);
 }
 
