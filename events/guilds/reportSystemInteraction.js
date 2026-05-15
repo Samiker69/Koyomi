@@ -5,7 +5,7 @@ module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (interaction.guild) {
-            const Settings = require('../../functions/db/settings');
+            const Settings = require('../../utils/db/settings');
             const sdb = new Settings();
             const guildSettings = sdb.getSettings(interaction.guildId);
             if (guildSettings && guildSettings.language) {

@@ -1,5 +1,5 @@
 const { Events, MessageFlags } = require('discord.js');
-const SettingsDB = require('../../functions/db/settings'); 
+const SettingsDB = require('../../utils/db/settings'); 
 const localeManager = require('../../locales/localeManager');
 
 const Sdb = new SettingsDB();

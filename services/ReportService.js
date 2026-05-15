@@ -1,5 +1,5 @@
 const { MessageFlags, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
-const SettingsDB = require('../functions/db/settings');
+const SettingsDB = require('../utils/db/settings');
 const localeManager = require('../locales/localeManager');
 
 const Sdb = new SettingsDB();

@@ -1,10 +1,10 @@
-const SettingsDatabase = require('../functions/db/settings');
-const TagsDB = require('../functions/db/tags');
-const GeminiDB = require('../functions/db/gemini_settings');
-const CaseDatabase = require('../functions/db/case');
-const UserPunishmentDB = require('../functions/db/user_punishment');
-const StarboardDB = require('../functions/db/starboard');
-const RestrictionsDB = require('../functions/db/restrictions');
+const SettingsDatabase = require('../utils/db/settings');
+const TagsDB = require('../utils/db/tags');
+const GeminiDB = require('../utils/db/gemini_settings');
+const CaseDatabase = require('../utils/db/case');
+const UserPunishmentDB = require('../utils/db/user_punishment');
+const StarboardDB = require('../utils/db/starboard');
+const RestrictionsDB = require('../utils/db/restrictions');
 
 class DatabaseService {
     constructor() {

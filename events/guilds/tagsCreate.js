@@ -1,7 +1,7 @@
 // events/messageCreate.js
 const { Events } = require('discord.js');
 const Database = require('better-sqlite3');
-const SettingsDatabase = require('../../functions/db/settings');
+const SettingsDatabase = require('../../utils/db/settings');
 
 const settings = new SettingsDatabase()
 

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const ModerationDB = require('../../functions/db/case');
+const ModerationDB = require('../../utils/db/case');
 const db = new ModerationDB();
 const ModerationService = require('../../services/ModerationService');
 const EmbedService = require('../../services/EmbedService');

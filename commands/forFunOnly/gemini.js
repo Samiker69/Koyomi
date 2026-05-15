@@ -8,7 +8,7 @@ const ApikeyManager = require('../../lib/ApikeyManager/ApikeyManager')
 
 const { GoogleGenAI } = require('@google/genai');
 const DatabaseService = require('../../services/DatabaseService');
-const geminiCrashHadler = require('../../functions/gemini_crash_handler');
+const geminiCrashHadler = require('../../utils/gemini_crash_handler');
 // DatabaseService используется напрямую
 
 module.exports = {

@@ -1,6 +1,6 @@
 const { Events, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
-const SettingsDB = require('../../functions/db/settings');
+const SettingsDB = require('../../utils/db/settings');
 const db = new SettingsDB();
 
 module.exports = {

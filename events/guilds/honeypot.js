@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
-const Settings = require('../../functions/db/settings');
+const Settings = require('../../utils/db/settings');
 const localeManager = require('../../locales/localeManager');
 
 const Sdb = new Settings();

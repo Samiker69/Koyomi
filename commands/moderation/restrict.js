@@ -7,7 +7,7 @@ const {
 const EmbedService = require('../../services/EmbedService');
 const localeManager = require('../../locales/localeManager');
 
-const DisabledCommandsDB = require('../../functions/db/restrictions');
+const DisabledCommandsDB = require('../../utils/db/restrictions');
 const db = new DisabledCommandsDB();
 
 module.exports = {

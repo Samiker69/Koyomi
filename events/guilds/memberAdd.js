@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const settings = require('../../functions/db/settings');
+const settings = require('../../utils/db/settings');
 const localeManager = require('../../locales/localeManager');
 
 const Sdb = new settings()

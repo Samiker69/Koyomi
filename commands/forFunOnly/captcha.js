@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
-const { generateCaptcha } = require('../../functions/createCaptcha');
+const { generateCaptcha } = require('../../utils/createCaptcha');
 const { privateAccess } = require('../../config.json');
 
 module.exports = {

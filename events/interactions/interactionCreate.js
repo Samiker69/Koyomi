@@ -2,8 +2,8 @@ const { Events, MessageFlags, Collection, EmbedBuilder } = require('discord.js')
 const { bot_log_channel } = require('../../config.json')
 const localeManager = require('../../locales/localeManager');
 
-const DisabledCommandsDB = require('../../functions/db/restrictions');
-const SettingsDB = require('../../functions/db/settings');
+const DisabledCommandsDB = require('../../utils/db/restrictions');
+const SettingsDB = require('../../utils/db/settings');
 const db = new DisabledCommandsDB();
 const sdb = new SettingsDB();
 

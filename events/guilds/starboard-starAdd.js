@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder, ChannelType } = require('discord.js');
-const starDB = require('../../functions/db/starboard');
+const starDB = require('../../utils/db/starboard');
 const localeManager = require('../../locales/localeManager');
 const db = new starDB();
 

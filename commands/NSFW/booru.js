@@ -1,8 +1,8 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
 const booru = require('booru');
-const { changePage, activeTime } = require('../../functions/changePage');
-const { uniqueSiteChoices, siteLookup } = require('../../functions/sites');
+const { changePage, activeTime } = require('../../utils/changePage');
+const { uniqueSiteChoices, siteLookup } = require('../../utils/sites');
 const localeManager = require('../../locales/localeManager');
 const { bot_log_channel } = require('../../config.json')
 

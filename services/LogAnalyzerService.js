@@ -1,4 +1,4 @@
-const LogParser = require('../functions/LogParser');
+const LogParser = require('../utils/LogParser');
 const DatabaseService = require('./DatabaseService');
 const localeManager = require('../locales/localeManager');
 

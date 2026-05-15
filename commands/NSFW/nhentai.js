@@ -5,7 +5,7 @@ const {
     ButtonStyle,
     MessageFlags
   } = require('discord.js');
-  const { fetchDoujin } = require('../../functions/fetchDoujin');
+  const { fetchDoujin } = require('../../utils/fetchDoujin');
   const localeManager = require('../../locales/localeManager');
   
   module.exports = {

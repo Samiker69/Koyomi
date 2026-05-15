@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
-const Settings = require('../../functions/db/settings');
+const Settings = require('../../utils/db/settings');
 const localeManager = require('../../locales/localeManager');
 
 const Sdb = new Settings();
