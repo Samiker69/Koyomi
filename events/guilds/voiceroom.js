@@ -1,8 +1,6 @@
 const { Events, ChannelType, PermissionFlagsBits } = require('discord.js');
-const Settings = require('../../utils/db/settings');
 const localeManager = require('../../locales/localeManager');
 
-const Sdb = new Settings();
 const creatingChannels = new Set();
 
 module.exports = {

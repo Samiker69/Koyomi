@@ -1,8 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const settings = require('../../utils/db/settings');
 const localeManager = require('../../locales/localeManager');
-
-const Sdb = new settings()
 
 module.exports = {
     name: Events.GuildMemberRemove,

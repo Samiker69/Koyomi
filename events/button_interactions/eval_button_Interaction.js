@@ -1,13 +1,12 @@
 const { Events, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
-const SettingsDB = require('../../utils/db/settings');
-const db = new SettingsDB();
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (!interaction.guildLocale) {
-            const cfg = db.getSettings(interaction.guild?.id);
+            const cfg = DatabaseService.getSettings(interaction.guild?.id);
             Object.defineProperty(interaction, 'guildLocale', {
                 value: cfg?.language || 'ru',
                 writable: false,

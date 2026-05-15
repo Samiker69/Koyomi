@@ -12,14 +12,7 @@ const CommandDeployer = require('./core/utils/deployCommands');
 const ApikeyManager = require('./lib/ApikeyManager/ApikeyManager');
 const loadApiKeys = require('./utils/loadKeysFromEnv');
 const BotIPCServer = require('./bot-ipc-server');
-
-// --- [БЛОК СПЕЦИФИЧНОЙ ЛОГИКИ И ИНИЦИАЛИЗАЦИИ ВНЕШНИХ МОДУЛЕЙ] ---
-function setupDatabase() {
-    if (!fs.existsSync('./database')) {
-        fs.mkdirSync('./database');
-        console.log('[INFO]: Папка database создана');
-    }
-}
+const DatabaseService = require('./services/DatabaseService');
 
 function setupApiKeys(client) {
     const keys = [];
@@ -60,7 +53,7 @@ function setupIPCServerAndGracefulShutdown(client) {
 // -----------------------------------------------------------------
 
 async function bootstrap() {
-    setupDatabase();
+    await DatabaseService.init();
 
     const client = new BaseBot();
     setupApiKeys(client);
@@ -86,4 +79,5 @@ async function bootstrap() {
 
 bootstrap().catch(error => {
     console.error('[FATAL ERROR]:', error);
+    process.exit(1)
 });
