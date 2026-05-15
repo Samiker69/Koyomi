@@ -1,9 +1,6 @@
 const { Events } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
-const Settings = require('../../utils/db/settings');
 const localeManager = require('../../locales/localeManager');
-
-const Sdb = new Settings();
 
 module.exports = {
     name: Events.MessageCreate,

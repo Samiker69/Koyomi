@@ -1,6 +1,4 @@
 const { Events } = require('discord.js');
-const SettingsDB = require('../../utils/db/settings');
-const sdb = new SettingsDB();
 
 module.exports = {
     name: Events.InteractionCreate,

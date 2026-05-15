@@ -1,7 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const Settings = require('../../utils/db/settings');
 const localeManager = require('../../locales/localeManager');
-const Sdb = new Settings();
 
 module.exports = {
   cooldown: 5,
