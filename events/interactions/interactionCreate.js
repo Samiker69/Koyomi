@@ -13,7 +13,7 @@ module.exports = {
     async execute(interaction) {
         const settings = interaction.guild ? (sdb.getSettings(interaction.guild.id) || {}) : {};
         const preferredLang = settings.language || interaction.guildLocale || 'ru';
-        
+
         Object.defineProperty(interaction, 'guildLocale', {
             get: () => preferredLang,
             configurable: true
@@ -72,14 +72,14 @@ module.exports = {
         } catch (error) {
             console.error(error);
             const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(localeManager.get('events.interaction_log.title', lang))
-            .addFields(
-                { name: localeManager.get('events.interaction_log.command_label', lang), value: `${interaction.commandName}`},
-                { name: localeManager.get('events.interaction_log.error_label', lang), value: `\`\`\`txt\n${(error.stack || error.message).slice(0, 1000)}\n\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            
+                .setColor('Red')
+                .setTitle(localeManager.get('events.interaction_log.title', lang))
+                .addFields(
+                    { name: localeManager.get('events.interaction_log.command_label', lang), value: `${interaction.commandName}` },
+                    { name: localeManager.get('events.interaction_log.error_label', lang), value: `\`\`\`txt\n${(error.stack || error.message).slice(0, 1000)}\n\`\`\`` }
+                )
+                .setTimestamp(new Date())
+
             try {
                 const logChannel = await interaction.client.channels.fetch(bot_log_channel).catch(() => null);
                 if (logChannel && logChannel.isTextBased()) {
@@ -88,12 +88,18 @@ module.exports = {
             } catch (logErr) {
                 console.error('[Logger Error] Could not send to log channel:', logErr.message);
             }
-            
+
+            if (error.code === 10062) return;
+
             const errorMessage = localeManager.get('events.errors.command_error', lang);
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
-            } else {
-                await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
+            try {
+                if (interaction.replied || interaction.deferred) {
+                    await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
+                } else {
+                    await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
+                }
+            } catch (replyError) {
+                console.error('[Error Handler] Failed to send error message to user:', replyError.message);
             }
         }
     },

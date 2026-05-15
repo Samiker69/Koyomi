@@ -217,6 +217,8 @@ module.exports = {
                         flags: MessageFlags.Ephemeral 
                     });
                 }
+                await interaction.deferReply();
+
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
@@ -224,7 +226,7 @@ module.exports = {
                 const result = await ModerationService.banUser(interaction, targetUser, reason, evidence);
 
                 if (!result.success) {
-                    return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
+                    return await interaction.editReply({ content: result.error });
                 }
 
                 const embed = EmbedService.createModerationEmbed({
@@ -238,7 +240,7 @@ module.exports = {
                     lang: lang
                 });
 
-                await interaction.reply({ embeds: [embed] });
+                await interaction.editReply({ embeds: [embed] });
                 break;
             }
             case "mute": {
@@ -282,13 +284,15 @@ module.exports = {
                         flags: MessageFlags.Ephemeral 
                     });
                 }
+                await interaction.deferReply();
+
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
                 const result = await ModerationService.kickUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
-                    return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
+                    return await interaction.editReply({ content: result.error });
                 }
 
                 const embed = EmbedService.createModerationEmbed({
@@ -302,7 +306,7 @@ module.exports = {
                     lang: lang
                 });
 
-                await interaction.reply({ embeds: [embed] });
+                await interaction.editReply({ embeds: [embed] });
                 break;
             }
             case "unmute": {
@@ -312,13 +316,15 @@ module.exports = {
                         flags: MessageFlags.Ephemeral 
                     });
                 }
+                await interaction.deferReply();
+
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
                 const result = await ModerationService.unmuteUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
-                    return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
+                    return await interaction.editReply({ content: result.error });
                 }
 
                 const embed = EmbedService.createModerationEmbed({
@@ -332,7 +338,7 @@ module.exports = {
                     lang: lang
                 });
 
-                await interaction.reply({ embeds: [embed] });
+                await interaction.editReply({ embeds: [embed] });
                 break;
             }
             case "unban": {
@@ -342,18 +348,20 @@ module.exports = {
                         flags: MessageFlags.Ephemeral 
                     });
                 }
+                await interaction.deferReply();
+
                 const userId = interaction.options.getString('userid');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
                 // Validate if it's a snowflake
                 if (!/^\d{17,20}$/.test(userId)) {
-                    return await interaction.reply({ content: localeManager.get('moderation.moderation.messages.invalid_user_id', lang), flags: MessageFlags.Ephemeral });
+                    return await interaction.editReply({ content: localeManager.get('moderation.moderation.messages.invalid_user_id', lang) });
                 }
 
                 const result = await ModerationService.unbanUser(interaction, userId, reason, evidence);
                 if (!result.success) {
-                    return await interaction.reply({ content: result.error, flags: MessageFlags.Ephemeral });
+                    return await interaction.editReply({ content: result.error });
                 }
 
                 const embed = EmbedService.createModerationEmbed({
@@ -367,7 +375,7 @@ module.exports = {
                     lang: lang
                 });
 
-                await interaction.reply({ embeds: [embed] });
+                await interaction.editReply({ embeds: [embed] });
                 break;
             }
             case "warn": {

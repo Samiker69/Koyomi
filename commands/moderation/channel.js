@@ -101,6 +101,7 @@ module.exports = {
                     return;
                 }
 
+                await interaction.deferReply();
                 try {
                     const permissionOverwrite = targetChannel.type === ChannelType.GuildVoice ?
                                                  PermissionFlagsBits.Speak :
@@ -116,13 +117,12 @@ module.exports = {
                             { name: localeManager.get('moderation.channel.messages.channel_label', lang), value: `${targetChannel}`, inline: true }
                         );
 
-                    await interaction.reply({ embeds: [embed] });
+                    await interaction.editReply({ embeds: [embed] });
 
                 } catch (error) {
                     console.error('Ошибка при блокировке канала:', error);
-                     await interaction.reply({ 
-                        content: localeManager.get('moderation.channel.messages.lock_error', lang, { channel: targetChannel.toString() }), 
-                        flags: MessageFlags.Ephemeral 
+                     await interaction.editReply({ 
+                        content: localeManager.get('moderation.channel.messages.lock_error', lang, { channel: targetChannel.toString() })
                     });
                 }
                 break;
@@ -139,6 +139,7 @@ module.exports = {
                      return;
                  }
 
+                await interaction.deferReply();
                 try {
                      const permissionOverwrite = targetChannel.type === ChannelType.GuildVoice ?
                                                   PermissionFlagsBits.Speak :
@@ -155,13 +156,12 @@ module.exports = {
                             { name: localeManager.get('moderation.channel.messages.channel_label', lang), value: `${targetChannel}`, inline: true }
                         );
 
-                    await interaction.reply({ embeds: [embed] });
+                    await interaction.editReply({ embeds: [embed] });
 
                 } catch (error) {
                     console.error('Ошибка при разблокировке канала:', error);
-                    await interaction.reply({ 
-                        content: localeManager.get('moderation.channel.messages.unlock_error', lang, { channel: targetChannel.toString() }), 
-                        flags: MessageFlags.Ephemeral 
+                    await interaction.editReply({ 
+                        content: localeManager.get('moderation.channel.messages.unlock_error', lang, { channel: targetChannel.toString() })
                     });
                 }
                 break;
@@ -181,6 +181,7 @@ module.exports = {
 
                 const seconds = interaction.options.getInteger('seconds');
 
+                await interaction.deferReply();
                 try {
                     await targetChannel.setRateLimitPerUser(seconds, `Slowmode by ${interaction.user.username}`);
 
@@ -199,13 +200,12 @@ module.exports = {
                      }
 
 
-                    await interaction.reply({ embeds: [embed] });
+                    await interaction.editReply({ embeds: [embed] });
 
                 } catch (error) {
                     console.error('Ошибка при установке слоумода:', error);
-                    await interaction.reply({ 
-                        content: localeManager.get('moderation.channel.messages.slowmode_error', lang, { channel: targetChannel.toString() }), 
-                        flags: MessageFlags.Ephemeral 
+                    await interaction.editReply({ 
+                        content: localeManager.get('moderation.channel.messages.slowmode_error', lang, { channel: targetChannel.toString() })
                     });
                 }
                 break;
