@@ -289,18 +289,6 @@ class LogParser {
 }
 
 // Статические функции для обратной совместимости
-async function FindTxtInMessage(message, fileNamePattern) {
-    const attachment = message.attachments.find(att => new RegExp(fileNamePattern, 'i').test(att.name));
-    if (!attachment) return null;
-    try {
-        const response = await fetch(attachment.url);
-        return await response.text();
-    } catch (err) {
-        console.error('Error in FindTxtInMessage:', err);
-        return null;
-    }
-}
-
 function extractLogInfo(logText, lang = 'ru') {
     const parser = new LogParser(logText, lang);
     const result = parser.parse();
@@ -321,7 +309,6 @@ function extractPotentialSolutions(logText, lang = 'ru') {
 
 module.exports = {
     LogParser,
-    FindTxtInMessage,
     extractLogInfo,
     extractCrashInfo,
     extractPotentialSolutions

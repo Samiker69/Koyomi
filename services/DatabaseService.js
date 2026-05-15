@@ -20,6 +20,7 @@ class DatabaseService {
         this._settingsCache = new Map();
         this._tagsCache = new Map(); // Ключ: serverId:tagName
         this._geminiUserCache = new Map();
+        this._logAnalyzerCache = null;
     }
 
     // --- Методы настроек с кэшированием ---
@@ -211,11 +212,82 @@ class DatabaseService {
         return this.caseDb.addCase(caseData);
     }
 
+    // --- Конфигурация LogAnalyzer ---
+
+    getLogAnalyzerConfig() {
+        if (this._logAnalyzerCache) {
+            return this._logAnalyzerCache;
+        }
+
+        const config = {
+            unsupportedMods: this.settingsDb.getUnsupportedMods(),
+            bannedMods: this.settingsDb.getBannedMods(),
+            modsMapping: this.settingsDb.getModsMapping(),
+            allowedLaunchers: this.settingsDb.getAllowedLaunchers()
+        };
+
+        this._logAnalyzerCache = config;
+        return config;
+    }
+
+    getUnsupportedMods() {
+        return this.getLogAnalyzerConfig().unsupportedMods;
+    }
+
+    getBannedMods() {
+        return this.getLogAnalyzerConfig().bannedMods;
+    }
+
+    getModsMapping() {
+        return this.getLogAnalyzerConfig().modsMapping;
+    }
+
+    getAllowedLaunchers() {
+        return this.getLogAnalyzerConfig().allowedLaunchers;
+    }
+
+    addBannedMod(modId) {
+        const result = this.settingsDb.addBannedMod(modId);
+        this._logAnalyzerCache = null;
+        return result;
+    }
+
+    removeBannedMod(modId) {
+        const result = this.settingsDb.removeBannedMod(modId);
+        this._logAnalyzerCache = null;
+        return result;
+    }
+
+    addUnsupportedMod(modId, reason) {
+        const result = this.settingsDb.addUnsupportedMod(modId, reason);
+        this._logAnalyzerCache = null;
+        return result;
+    }
+
+    removeUnsupportedMod(modId) {
+        const result = this.settingsDb.removeUnsupportedMod(modId);
+        this._logAnalyzerCache = null;
+        return result;
+    }
+
+    addAllowedLauncher(launcherName) {
+        const result = this.settingsDb.addAllowedLauncher(launcherName);
+        this._logAnalyzerCache = null;
+        return result;
+    }
+
+    removeAllowedLauncher(launcherName) {
+        const result = this.settingsDb.removeAllowedLauncher(launcherName);
+        this._logAnalyzerCache = null;
+        return result;
+    }
+
     // Утилита для полной очистки кэша
     clearCache() {
         this._settingsCache.clear();
         this._tagsCache.clear();
         this._geminiUserCache.clear();
+        this._logAnalyzerCache = null;
         console.log('[DB Service] Весь кэш очищен.');
     }
 }

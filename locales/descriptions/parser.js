@@ -136,6 +136,78 @@ const parser = {
       "ru": "Произошла ошибка при анализе лога. Пожалуйста, попробуйте еще раз или свяжитесь с администратором.",
       "uk": "Сталася помилка під час аналізу логу. Будь ласка, спробуйте ще раз або зверніться до адміністратора."
     }
+  },
+  "analyzer": {
+    "denied_launcher": {
+      "en-US": "A third-party launcher has been detected. Support is only provided for official launcher builds (hebe).",
+      "ru": "Обнаружен сторонний лаунчер. Поддержка оказывается только для официальных сборок лаунчера (hebe).",
+      "uk": "Виявлено сторонній лаунчер. Підтримка надається лише для офіційних збірок лаунчера (hebe)."
+    },
+    "denied_banned_mod": {
+      "en-US": "A banned mod/cheat was found in the modpack: {mod}. The use of such modifications voids your support.",
+      "ru": "В сборке обнаружен запрещенный мод/чит: {mod}. Использование подобных модификаций лишает вас поддержки.",
+      "uk": "У збірці знайдено заборонений мод/чіт: {mod}. Використання таких модифікацій позбавляє вас підтримки."
+    },
+    "install_modrinth": {
+      "en-US": "Install mod {modName}: [Download from Modrinth](<{link}>)",
+      "ru": "Установите мод {modName}: [Скачать с Modrinth](<{link}>)",
+      "uk": "Встановіть мод {modName}: [Завантажити з Modrinth](<{link}>)"
+    },
+    "install_modrinth_no_link": {
+      "en-US": "Install mod {modName}",
+      "ru": "Установите мод {modName}",
+      "uk": "Встановіть мод {modName}"
+    },
+    "update_modrinth_version": {
+      "en-US": "Update/Replace mod {name} to version {version} (or newer): [Download from Modrinth](<{link}>)",
+      "ru": "Обновите/Замените мод {name} до версии {version} (или новее): [Скачать с Modrinth](<{link}>)",
+      "uk": "Оновіть/Замініть мод {name} до версії {version} (або новішої): [Завантажити з Modrinth](<{link}>)"
+    },
+    "update_modrinth_compat": {
+      "en-US": "Update/Replace mod {name} to a version compatible with your modpack: [Download from Modrinth](<{link}>)",
+      "ru": "Обновите/Замените мод {name} до версии, совместимой с вашей сборкой: [Скачать с Modrinth](<{link}>)",
+      "uk": "Оновіть/Замініть мод {name} до версії, сумісної з вашою збіркою: [Завантажити з Modrinth](<{link}>)"
+    }
+  },
+  "commands": {
+    "description": {
+      "en-US": "Manage log parser configuration",
+      "ru": "Управление конфигурацией лог парсера",
+      "uk": "Управління конфігурацією лог парсера"
+    },
+    "options": {
+      "banned": {
+        "description": { "en-US": "Manage banned mods", "ru": "Управление запрещенными модами", "uk": "Управління забороненими модами" }
+      },
+      "unsupported": {
+        "description": { "en-US": "Manage unsupported mods", "ru": "Управление неподдерживаемыми модами", "uk": "Управління непідтримуваними модами" }
+      },
+      "add": {
+        "description": { "en-US": "Add an entry", "ru": "Добавить запись", "uk": "Додати запис" }
+      },
+      "remove": {
+        "description": { "en-US": "Remove an entry", "ru": "Удалить запись", "uk": "Видалити запис" }
+      },
+      "mod_id": {
+        "description": { "en-US": "Mod ID", "ru": "ID мода", "uk": "ID мода" }
+      },
+      "reason": {
+        "description": { "en-US": "Reason", "ru": "Причина", "uk": "Причина" }
+      },
+      "list": {
+        "description": { "en-US": "List configuration", "ru": "Вывести конфигурацию", "uk": "Вивести конфігурацію" }
+      }
+    },
+    "messages": {
+      "added": { "en-US": "Added successfully.", "ru": "Успешно добавлено.", "uk": "Успішно додано." },
+      "removed": { "en-US": "Removed successfully.", "ru": "Успешно удалено.", "uk": "Успішно видалено." },
+      "not_found": { "en-US": "Not found.", "ru": "Не найдено.", "uk": "Не знайдено." },
+      "list_banned": { "en-US": "Banned Mods", "ru": "Запрещенные моды", "uk": "Заборонені моди" },
+      "list_unsupported": { "en-US": "Unsupported Mods", "ru": "Неподдерживаемые моды", "uk": "Непідтримувані моди" },
+      "unknown_sub": { "en-US": "Unknown subcommand.", "ru": "Неизвестная подкоманда.", "uk": "Невідома підкоманда." },
+      "none": { "en-US": "None", "ru": "Нет", "uk": "Немає" },
+      "error": { "en-US": "Error processing command", "ru": "Ошибка при выполнении команды", "uk": "Помилка під час виконання команди" }
+    }
   }
 };
 

@@ -1,6 +1,7 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const { FindTxtInMessage, extractLogInfo, extractCrashInfo, extractPotentialSolutions } = require('../../functions/LogParser');
+const { extractLogInfo, extractCrashInfo, extractPotentialSolutions } = require('../../functions/LogParser');
 const DatabaseService = require('../../services/DatabaseService');
+const LogAnalyzerService = require('../../services/LogAnalyzerService');
 const localeManager = require('../../locales/localeManager');
 
 async function getModLink(modName) {
@@ -123,7 +124,7 @@ module.exports = {
             );
 
             if (logFile) {
-                const logText = await FindTxtInMessage(message, "(latestlog|crash|log)");
+                const logText = await LogAnalyzerService.FindTxtInMessage(message, "(latestlog|crash|log)");
                 if (logText) {
                     await sendAnalyzedLog(message, logText, lang);
                     return;
