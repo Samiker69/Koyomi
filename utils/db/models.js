@@ -196,6 +196,13 @@ const Tag = sequelize.define('Tag', {
     }
 }, { tableName: 'tags', timestamps: false });
 
+//panel
+const AdminUser = sequelize.define('AdminUser', {
+    user_id: { type: DataTypes.STRING, primaryKey: true },
+    username: DataTypes.STRING,
+    added_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+}, { tableName: 'admin_users', timestamps: false });
+
 // Экспорт всех моделей и инстанса БД
 module.exports = {
     sequelize,
@@ -213,5 +220,6 @@ module.exports = {
     GeminiToken,
     StarboardSetting,
     StarboardMessage,
-    Tag
+    Tag,
+    AdminUser
 };

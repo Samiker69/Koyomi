@@ -7,14 +7,7 @@ const DiscordStrategy = require('discord-strategy').Strategy || require('discord
 
 const path = require('path');
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../utils/db/models');
-
-// Инициализация AdminUser и кэша
-const AdminUser = sequelize.define('AdminUser', {
-    user_id: { type: DataTypes.STRING, primaryKey: true },
-    username: DataTypes.STRING,
-    added_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
-}, { tableName: 'admin_users', timestamps: false });
+const { sequelize, AdminUser } = require('../utils/db/models');
 
 const { CACHE_ADMINS } = require('./middlewares/auth');
 

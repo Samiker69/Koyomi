@@ -5,6 +5,7 @@ const {
     GeminiSafetySetting, GeminiToken, StarboardSetting, StarboardMessage, Tag
 } = require('../utils/db/models');
 const fs = require('fs');
+const { Umzug, SequelizeStorage } = require('umzug');
 
 class DatabaseService {
     constructor() {
@@ -20,16 +21,44 @@ class DatabaseService {
                 fs.mkdirSync('./database');
                 console.log('[INFO]: Папка database создана');
             }
-            await sequelize.sync();
+
+            await sequelize.sync(); 
+            const umzug = new Umzug({
+                migrations: { 
+                    glob: 'migrations/*.js',
+                    resolve: ({ name, path, context }) => {
+                        const migration = require(path);
+                        return {
+                            name,
+                            up: async () => migration.up(context, sequelize.Sequelize),
+                            down: async () => migration.down(context, sequelize.Sequelize),
+                        };
+                    }
+                },
+                context: sequelize.getQueryInterface(),
+                storage: new SequelizeStorage({ sequelize }),
+                logger: console,
+            });
+
+            const pendingMigrations = await umzug.pending();
+            if (pendingMigrations.length > 0) {
+                console.log(`[INFO]: Найдено миграций для применения: ${pendingMigrations.length}`);
+                await umzug.up();
+                console.log('[INFO]: Все миграции успешно применены.');
+            } else {
+                console.log('[INFO]: База данных актуальна, миграции не требуются.');
+            }
+
             const countLaunchers = await AllowedLauncher.count();
             if (countLaunchers === 0) await AllowedLauncher.create({ launcher_name: 'hebe' });
 
             const countMapping = await ModMapping.count();
             if (countMapping === 0) await ModMapping.create({ original_name: 'yet_another_config_lib_v3', modrinth_id: 'yacl' });
             
-            console.log('✅ База данных SQLite (Sequelize) успешно синхронизирована.');
+            console.log('✅ База данных SQLite (Sequelize) успешно синхронизирована и мигрирована.');
         } catch (error) {
-            console.error('❌ Ошибка синхронизации БД:', error);
+            console.error('❌ Ошибка синхронизации/миграции БД:', error);
+            process.exit(1); 
         }
     }
 

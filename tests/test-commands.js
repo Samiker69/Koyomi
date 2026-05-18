@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 const DatabaseService = require('../services/DatabaseService');
+const { Collection } = require('discord.js'); // Лучше использовать реальную Collection из discord.js
 
 function createMockInteraction(command, optionsData = {}) {
     const cmdName = command.data.name;
@@ -24,42 +25,111 @@ function createMockInteraction(command, optionsData = {}) {
         }
     }
 
-    // 1. Реальный мок client.user
+    // Вспомогательная функция для создания мок-коллекции (так как в Discord.js Map имеет доп. методы типа .filter)
+    const createMockCollection = (entries) => {
+        const map = new Map(entries);
+        map.filter = (fn) => {
+            const result = new Map();
+            for (const [k, v] of map) if (fn(v, k, map)) result.set(k, v);
+            return result;
+        };
+        return map;
+    };
+
+    // Мок сообщения
+    const mockMessage = {
+        id: '111122223333444455',
+        createdTimestamp: Date.now(),
+        content: 'Mocked Message',
+        edit: async () => mockMessage,
+        delete: async () => true,
+        react: async () => true,
+        // Исправление для /settings (collector)
+        createMessageComponentCollector: () => ({
+            on: () => {},
+            stop: () => {}
+        })
+    };
+
+    // Мок канала
+    const mockChannel = { 
+        id: '1264316836959223904', 
+        name: 'general', 
+        isTextBased: () => true, 
+        send: async() => mockMessage,
+        // Исправление для clear команды
+        messages: {
+            fetch: async () => createMockCollection()
+        }
+    };
+
+    // Мок клиента
     const mockClientUser = {
         id: "1312124121978765393",
         bot: true,
         system: false,
         username: "Koyomi",
         tag: "Koyomi#0638",
+        presence: { status: 'online', name: 'Testing' },
         displayAvatarURL: () => "https://cdn.discordapp.com/avatars/1312124121978765393/f20095c76dfc7fa8bfc4547e635e1f7d.webp",
-        avatarURL: () => "https://cdn.discordapp.com/avatars/1312124121978765393/f20095c76dfc7fa8bfc4547e635e1f7d.webp"
+        avatarURL: () => "https://cdn.discordapp.com/avatars/1312124121978765393/f20095c76dfc7fa8bfc4547e635e1f7d.webp",
+        // Исправление для /eval
+        setPresence: async () => true 
     };
 
-    // 2. Мок пользователя, который вызывает команду
+    // Мок пользователя
     const mockUser = { 
-        id: '691246997646213131', // ID из твоего дампа (owner)
+        id: '691246997646213131', 
         username: 'TestUser', 
         tag: 'TestUser#1234',
         bot: false,
+        // Исправление для /info
+        createdAt: new Date(), 
         displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png' 
     };
 
-    // 3. Мок GuildMember (участник сервера)
+    // Мок роли
+    const mockRole = { 
+        id: '1264317115620393123', 
+        name: 'Admin', 
+        position: 10,
+        editable: true,
+        // Исправление для /role
+        comparePositionTo: () => 1 
+    };
+
+    const mockEveryoneRole = { 
+        id: '1264316836414226464', 
+        name: '@everyone', 
+        position: 0,
+        editable: false,
+        comparePositionTo: () => -1 
+    };
+
+    // Мок Member
     const mockGuildMember = {
         id: mockUser.id,
         user: mockUser,
         displayName: 'TestUser',
         guildId: "1264316836414226464",
         roles: { 
-            cache: new Map([
-                ['1264316836414226464', { id: '1264316836414226464', name: '@everyone' }]
-            ])
+            cache: createMockCollection([
+                ['1264316836414226464', mockEveryoneRole],
+                ['1264317115620393123', mockRole]
+            ]),
+            highest: mockRole
         },
-        permissions: { has: () => true }, // Даем права
-        displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png'
+        permissions: { has: () => true }, 
+        displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png',
+        // Исправление для /room и /user
+        voice: {
+            channel: mockChannel,
+            selfDeaf: false,
+            selfMute: false
+        }
     };
 
-    // 4. Реальный мок сервера (Guild)
+    // Мок сервера (Guild)
     const mockGuild = { 
         id: "1264316836414226464",
         name: "Dev server",
@@ -68,9 +138,11 @@ function createMockInteraction(command, optionsData = {}) {
         premiumTier: 0,
         preferredLocale: 'ru',
         iconURL: () => "https://cdn.discordapp.com/icons/1264316836414226464/3bff75199c5f8af539b983c28404b12c.webp",
+        // Исправление для /guild
+        disableInvites: async () => true,
         members: {
             fetch: async () => mockGuildMember,
-            cache: new Map([[mockUser.id, mockGuildMember]]),
+            cache: createMockCollection([[mockUser.id, mockGuildMember]]),
             me: {
                 ...mockGuildMember,
                 id: mockClientUser.id,
@@ -79,39 +151,47 @@ function createMockInteraction(command, optionsData = {}) {
             }
         },
         roles: {
-            cache: new Map([
-                ['1264316836414226464', { id: '1264316836414226464', name: '@everyone', position: 0 }],
-                ['1264317115620393123', { id: '1264317115620393123', name: 'Admin', position: 10 }]
+            cache: createMockCollection([
+                ['1264316836414226464', mockEveryoneRole],
+                ['1264317115620393123', mockRole]
             ])
         },
         channels: {
-            cache: new Map([
-                ['1264316836959223904', { id: '1264316836959223904', name: 'general', isTextBased: () => true, send: async() => true }]
+            cache: createMockCollection([
+                ['1264316836959223904', mockChannel]
             ])
+        },
+        // Исправление для /automod
+        autoModerationRules: {
+            fetch: async () => createMockCollection()
         }
     };
 
-    const mockMessage = {
-        id: '111122223333444455',
-        createdTimestamp: Date.now(),
-        content: 'Mocked Message',
-        edit: async () => mockMessage,
-        delete: async () => true,
-        react: async () => true
-    };
-
     return {
-        // Заглушка Discord Client
+        // Исправления для Client
         client: {
             user: mockClientUser,
             helpCategoriesMap: { "general": [] },
-            guilds: { cache: new Map([[mockGuild.id, mockGuild]]) },
+            guilds: { cache: createMockCollection([[mockGuild.id, mockGuild]]) },
             users: { 
-                cache: new Map([
+                cache: createMockCollection([
                     [mockUser.id, mockUser], 
                     [mockClientUser.id, mockClientUser]
                 ]),
                 fetch: async () => mockUser
+            },
+            channels: {
+                // Исправление для /guild и /eval
+                fetch: async () => mockChannel
+            },
+            commands: {
+                // Исправление для /restrict и /help
+                has: () => true,
+                values: () => []
+            },
+            ws: {
+                // Исправление для /botstatus
+                ping: 42 
             }
         },
         
@@ -125,12 +205,7 @@ function createMockInteraction(command, optionsData = {}) {
         user: mockUser,
         member: mockGuildMember,
         memberPermissions: mockGuildMember.permissions,
-
-        channel: { 
-            id: '1264316836959223904', 
-            name: 'general',
-            send: async () => mockMessage 
-        },
+        channel: mockChannel,
         
         deferred: false,
         replied: false,
@@ -139,18 +214,25 @@ function createMockInteraction(command, optionsData = {}) {
         editReply: async function() { return mockMessage; },
         followUp: async function() { return mockMessage; },
         deleteReply: async function() { return true; },
+        // Исправление для /2048 и /guessthenumber
+        fetchReply: async function() { return mockMessage; },
 
         options: {
             getSubcommand: () => firstSubcommand || 'default_sub',
             getSubcommandGroup: () => firstSubcommandGroup,
-            getString: (name) => optionsData[name] !== undefined ? String(optionsData[name]) : 'test_string',
+            getString: (name) => {
+                if (optionsData[name] !== undefined) return String(optionsData[name]);
+                // Исправление для shapeshift /report: если просит url/link, возвращаем валидный url
+                if (name.toLowerCase().includes('url') || name.toLowerCase().includes('link')) return 'https://example.com/image.png';
+                return 'test_string';
+            },
             getInteger: (name) => optionsData[name] !== undefined ? Number(optionsData[name]) : 1,
             getNumber: (name) => optionsData[name] !== undefined ? Number(optionsData[name]) : 1.0,
             getBoolean: (name) => optionsData[name] !== undefined ? Boolean(optionsData[name]) : true,
             getUser: (name) => mockUser,
             getMember: (name) => mockGuildMember,
-            getChannel: (name) => mockGuild.channels.cache.get('1264316836959223904'),
-            getRole: (name) => mockGuild.roles.cache.get('1264317115620393123'),
+            getChannel: (name) => mockChannel,
+            getRole: (name) => mockRole,
             getAttachment: (name) => null
         }
     };
