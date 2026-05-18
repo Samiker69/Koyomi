@@ -259,6 +259,30 @@ class DatabaseService {
     }
 
     // ==========================================
+    // РОЛЬ-МЕНЮ (Role Menus)
+    // ==========================================
+
+    async addRoleMenu(messageId, guildId, channelId, type, roles) {
+        await RoleMenu.upsert({ messageId, guildId, channelId, type, roles });
+        return true;
+    }
+
+    async getRoleMenu(messageId) {
+        const menu = await RoleMenu.findByPk(messageId);
+        return menu ? menu.toJSON() : undefined;
+    }
+
+    async deleteRoleMenu(messageId) {
+        const deleted = await RoleMenu.destroy({ where: { messageId } });
+        return deleted > 0;
+    }
+
+    async getAllRoleMenus(guildId) {
+        const menus = await RoleMenu.findAll({ where: { guildId } });
+        return menus.map(m => m.toJSON());
+    }
+
+    // ==========================================
     // ЛОГ АНАЛИЗАТОР
     // ==========================================
 
