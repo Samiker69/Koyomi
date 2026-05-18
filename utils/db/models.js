@@ -112,6 +112,7 @@ const DisabledCommand = sequelize.define('DisabledCommand', {
     timestamps: false,
     indexes: [{ unique: true, fields: ['guild_id', 'user_id', 'command_name'] }]
 });
+DisabledCommand.removeAttribute('id');
 
 // =======================
 // МОДЕЛИ GEMINI
