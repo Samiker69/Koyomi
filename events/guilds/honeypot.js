@@ -1,18 +1,15 @@
 const { Events } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
-const Settings = require('../../functions/db/settings');
 const localeManager = require('../../locales/localeManager');
-
-const Sdb = new Settings();
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
-        // Пропускаем ботов и DM
         if (message.author.bot) return;
         if (!message.guild) return;
 
-        const cfg = Sdb.getSettings(message.guild.id);
+        const cfg = await DatabaseService.getSettings(message.guild.id);
 
         // Проверяем, что Honeypot включён и сообщение пришло в канал-ловушку
         if (!cfg || !cfg.honeypotEnabled || !cfg.honeypotChannelId) return;

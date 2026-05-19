@@ -1,4 +1,4 @@
-const LogParser = require('../functions/LogParser');
+const LogParser = require('../utils/LogParser');
 const DatabaseService = require('./DatabaseService');
 const localeManager = require('../locales/localeManager');
 
@@ -13,19 +13,19 @@ class LogAnalyzerService {
     // ==========================================
 
     async getUnsupportedMods() {
-        return DatabaseService.getUnsupportedMods();
+        return await DatabaseService.getUnsupportedMods();
     }
 
     async getBannedMods() {
-        return DatabaseService.getBannedMods();
+        return await DatabaseService.getBannedMods();
     }
 
     async getModsMapping() {
-        return DatabaseService.getModsMapping();
+        return await DatabaseService.getModsMapping();
     }
 
     async getAllowedLaunchers() {
-        return DatabaseService.getAllowedLaunchers();
+        return await DatabaseService.getAllowedLaunchers();
     }
 
     // ==========================================

@@ -1,8 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, EmbedBuilder } = require('discord.js');
-const Settings = require('../../functions/db/settings');
 const localeManager = require('../../locales/localeManager');
-
-const Sdb = new Settings();
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -82,7 +80,7 @@ module.exports = {
 
       const menuMsg = await interaction.channel.send({ embeds: [embed] });
       
-      Sdb.addRoleMenu(menuMsg.id, interaction.guild.id, interaction.channel.id, type, []);
+      await DatabaseService.addRoleMenu(menuMsg.id, interaction.guild.id, interaction.channel.id, type, []);
       
       await interaction.editReply({
         content: localeManager.get('utility.rolemenu.messages.setup_done', lang, { id: menuMsg.id })
@@ -93,7 +91,7 @@ module.exports = {
       const label = interaction.options.getString('label');
       const emoji = interaction.options.getString('emoji');
 
-      const menuData = Sdb.getRoleMenu(messageId);
+      const menuData = await DatabaseService.getRoleMenu(messageId);
       if (!menuData || menuData.guildId !== interaction.guild.id) {
         return await interaction.reply({
           content: localeManager.get('utility.rolemenu.messages.msg_not_found', lang, { id: messageId }),
@@ -115,7 +113,7 @@ module.exports = {
         const roles = menuData.roles;
         roles.push({ id: role.id, label, emoji });
 
-        Sdb.addRoleMenu(messageId, interaction.guild.id, channel.id, menuData.type, roles);
+        await DatabaseService.addRoleMenu(messageId, interaction.guild.id, channel.id, menuData.type, roles);
 
         const { ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
         const rows = [];

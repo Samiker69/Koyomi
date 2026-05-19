@@ -26,11 +26,11 @@ module.exports = {
 
     async execute(interaction) {
         const guildId = interaction.guild.id;
-        const initialCfg = DatabaseService.getSettings(guildId) || {};
+        const initialCfg = await DatabaseService.getSettings(guildId) || {};
         let lang = initialCfg.language || interaction.guildLocale || 'ru';
 
-        const generateDashboard = () => {
-            const cfg = DatabaseService.getSettings(guildId) || {}; 
+        const generateDashboard = async () => {
+            const cfg = await DatabaseService.getSettings(guildId) || {}; 
             lang = cfg.language || interaction.guildLocale || 'ru';
 
             const statusInvites = cfg.allowInviteLogging ? localeManager.get('utility.settings.messages.enabled', lang) : localeManager.get('utility.settings.messages.disabled', lang);
@@ -144,7 +144,7 @@ module.exports = {
         };
 
         const msg = await interaction.reply({ 
-            ...generateDashboard(), 
+            ...await generateDashboard(), 
             flags: MessageFlags.Ephemeral 
         });
 
@@ -156,8 +156,8 @@ module.exports = {
                     const selection = i.values[0];
                     
                     if (selection === 'act_reset') {
-                        DatabaseService.removeServer(guildId);
-                        DatabaseService.addServer(guildId);
+                        await DatabaseService.removeServer(guildId);
+                        await DatabaseService.addServer(guildId);
                         await i.update(generateDashboard());
                         return;
                     }
@@ -191,16 +191,16 @@ module.exports = {
 
                         const selectedId = selectionInteraction.values[0];
 
-                        if (selection === 'act_cat') DatabaseService.updateSetting(guildId, 'voiceCategoryId', selectedId);
-                        else if (selection === 'act_log') DatabaseService.updateSetting(guildId, 'inviteLoggerChannel', selectedId);
-                        else if (selection === 'act_sup') DatabaseService.updateSetting(guildId, 'supportChannelId', selectedId);
-                        else if (selection === 'act_rep') DatabaseService.updateSetting(guildId, 'reportsModerationChannelId', selectedId);
-                        else if (selection === 'act_verdict') DatabaseService.updateSetting(guildId, 'verdictChannelId', selectedId);
+                        if (selection === 'act_cat') await DatabaseService.updateSetting(guildId, 'voiceCategoryId', selectedId);
+                        else if (selection === 'act_log') await DatabaseService.updateSetting(guildId, 'inviteLoggerChannel', selectedId);
+                        else if (selection === 'act_sup') await DatabaseService.updateSetting(guildId, 'supportChannelId', selectedId);
+                        else if (selection === 'act_rep') await DatabaseService.updateSetting(guildId, 'reportsModerationChannelId', selectedId);
+                        else if (selection === 'act_verdict') await DatabaseService.updateSetting(guildId, 'verdictChannelId', selectedId);
                         else if (selection === 'act_honeypot') {
-                            DatabaseService.updateSetting(guildId, 'honeypotChannelId', selectedId);
-                            DatabaseService.updateSetting(guildId, 'honeypotEnabled', true);
+                            await DatabaseService.updateSetting(guildId, 'honeypotChannelId', selectedId);
+                            await DatabaseService.updateSetting(guildId, 'honeypotEnabled', true);
                         }
-                        else if (selection === 'act_honeypot_log') DatabaseService.updateSetting(guildId, 'honeypotLogChannelId', selectedId);
+                        else if (selection === 'act_honeypot_log') await DatabaseService.updateSetting(guildId, 'honeypotLogChannelId', selectedId);
 
                         await selectionInteraction.update({ content: localeManager.get('utility.settings.messages.saved', lang), components: [] });
                         await interaction.editReply(generateDashboard());
@@ -211,28 +211,28 @@ module.exports = {
                     return; 
                 }
 
-                const currentCfg = DatabaseService.getSettings(guildId) || {};
+                const currentCfg = await DatabaseService.getSettings(guildId) || {};
                 
                 if (i.customId === 'select_welcome') {
-                    DatabaseService.updateSetting(guildId, 'newMemberChannelId', i.values[0]);
+                    await DatabaseService.updateSetting(guildId, 'newMemberChannelId', i.values[0]);
                 } 
                 else if (i.customId === 'select_voice_main') {
-                    DatabaseService.updateSetting(guildId, 'mainVoiceChannelId', i.values[0]);
+                    await DatabaseService.updateSetting(guildId, 'mainVoiceChannelId', i.values[0]);
                 }
                 else if (i.customId === 'toggle_invites') {
-                    DatabaseService.updateSetting(guildId, 'allowInviteLogging', !currentCfg.allowInviteLogging);
+                    await DatabaseService.updateSetting(guildId, 'allowInviteLogging', !currentCfg.allowInviteLogging);
                 }
                 else if (i.customId === 'toggle_members') {
-                    DatabaseService.updateSetting(guildId, 'allowLogingMembersAdd', !currentCfg.allowLogingMembersAdd);
+                    await DatabaseService.updateSetting(guildId, 'allowLogingMembersAdd', !currentCfg.allowLogingMembersAdd);
                 }
                 else if (i.customId === 'select_language') {
-                    DatabaseService.updateSetting(guildId, 'language', i.values[0]);
+                    await DatabaseService.updateSetting(guildId, 'language', i.values[0]);
                 }
                 else if (i.customId === 'toggle_honeypot') {
                     if (!currentCfg.honeypotChannelId) {
                         return await i.reply({ content: localeManager.get('utility.settings.messages.honeypot_trap_required', lang), flags: MessageFlags.Ephemeral });
                     }
-                    DatabaseService.updateSetting(guildId, 'honeypotEnabled', !currentCfg.honeypotEnabled);
+                    await DatabaseService.updateSetting(guildId, 'honeypotEnabled', !currentCfg.honeypotEnabled);
                 }
 
                 await i.update(generateDashboard());

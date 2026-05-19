@@ -13,8 +13,6 @@ class ModerationService {
 
         const member = check.member;
         const banReason = reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` });
-        
-        // Отправляем ЛС перед баном
         await this._sendUserDM(interaction, targetUser, 'ban', reason);
 
         try {
@@ -24,7 +22,7 @@ class ModerationService {
                 await interaction.guild.members.ban(targetUser.id, { reason: banReason });
             }
             
-            await DatabaseService.addModCase({
+            var test = await DatabaseService.addModCase({
                 serverId: interaction.guild.id,
                 targetId: targetUser.id,
                 moderatorId: interaction.user.id,
@@ -33,7 +31,7 @@ class ModerationService {
                 timestamp: new Date()
             });
 
-            const latestCase = DatabaseService.getServerModCases(interaction.guild.id)[0];
+            const latestCase = (await DatabaseService.getServerModCases(interaction.guild.id))[0];
             await ModerationService.sendVerdict(interaction, 'ban', targetUser, latestCase, reason, null, evidence);
             return { success: true, caseData: latestCase };
         } catch (error) {
@@ -106,7 +104,7 @@ class ModerationService {
                 timestamp: new Date(),
                 duration: durationMs 
             });
-            const latestCase = DatabaseService.getServerModCases(interaction.guild.id)[0];
+            const latestCase = (await DatabaseService.getServerModCases(interaction.guild.id))[0];
             await ModerationService.sendVerdict(interaction, 'mute', targetUser, latestCase, reason, durationString, evidence);
             return { success: true, caseData: latestCase, durationString };
         } catch (error) {
@@ -132,7 +130,7 @@ class ModerationService {
                 reason: reason,
                 timestamp: new Date()
             });
-            const latestCase = DatabaseService.getServerModCases(interaction.guild.id)[0];
+            const latestCase = (await DatabaseService.getServerModCases(interaction.guild.id))[0];
             await ModerationService.sendVerdict(interaction, 'kick', targetUser, latestCase, reason, null, evidence);
             return { success: true, caseData: latestCase };
         } catch (error) {
@@ -158,7 +156,7 @@ class ModerationService {
                 reason: reason,
                 timestamp: new Date()
             });
-            const latestCase = DatabaseService.getServerModCases(interaction.guild.id)[0];
+            const latestCase = (await DatabaseService.getServerModCases(interaction.guild.id))[0];
             await ModerationService.sendVerdict(interaction, 'unmute', targetUser, latestCase, reason, null, evidence);
             return { success: true, caseData: latestCase };
         } catch (error) {
@@ -179,7 +177,7 @@ class ModerationService {
                 timestamp: new Date()
             });
             const targetUserObj = await interaction.client.users.fetch(userId).catch(() => ({ id: userId }));
-            const latestCase = DatabaseService.getServerModCases(interaction.guild.id)[0];
+            const latestCase = (await DatabaseService.getServerModCases(interaction.guild.id))[0];
             await ModerationService.sendVerdict(interaction, 'unban', targetUserObj, latestCase, reason, null, evidence);
             
             // Отправляем ЛС после разбана
@@ -206,7 +204,7 @@ class ModerationService {
                 reason: reason,
                 timestamp: new Date()
             });
-            const latestCase = DatabaseService.getServerModCases(interaction.guild.id)[0];
+            const latestCase = (await DatabaseService.getServerModCases(interaction.guild.id))[0];
             await ModerationService.sendVerdict(interaction, 'warn', targetUser, latestCase, reason, null, evidence);
             return { success: true, caseData: latestCase };
         } catch (error) {
@@ -221,14 +219,14 @@ class ModerationService {
         const lang = interaction.guildLocale;
 
         if (!targetUser) {
-            warnCase = DatabaseService.getModCase(interaction.guild.id, caseNum);
+            warnCase = await DatabaseService.getModCase(interaction.guild.id, caseNum);
             if (!warnCase) return { success: false, error: localeManager.get('moderation.moderation.messages.case_not_found', lang) };
             targetId = warnCase.targetId;
         } else {
-            const cases = DatabaseService.getTargetModCases(interaction.guild.id, targetUser.id);
+            const cases = await DatabaseService.getTargetModCases(interaction.guild.id, targetUser.id);
             const warnCases = cases.filter(i => i.action === "warn");
             if (warnCases.length === 0) return { success: false, error: localeManager.get('moderation.moderation.messages.no_warns', lang) };
-            warnCase = DatabaseService.getModCase(interaction.guild.id, warnCases[0].caseNum);
+            warnCase = await DatabaseService.getModCase(interaction.guild.id, warnCases[0].caseNum);
             targetId = targetUser.id;
         }
 
@@ -239,7 +237,7 @@ class ModerationService {
         const check = await PermissionService.checkModerationTarget(interaction, targetUserObj, 'unwarn');
         if (!check.allowed) return { success: false, error: localeManager.get(check.reasonKey, interaction.guildLocale) };
 
-        const warns = DatabaseService.getUserWarnings(interaction.guild.id, targetId);
+        const warns = await DatabaseService.getUserWarnings(interaction.guild.id, targetId);
         if (warns.true_warns <= 0) return { success: false, error: localeManager.get('moderation.moderation.messages.no_active_punishments', lang) };
 
         try {
@@ -251,7 +249,7 @@ class ModerationService {
                 reason: reason,
                 timestamp: new Date()
             });
-            const latestCase = DatabaseService.getServerModCases(interaction.guild.id)[0];
+            const latestCase = (await DatabaseService.getServerModCases(interaction.guild.id))[0];
             const tUser = await interaction.client.users.fetch(targetId).catch(() => ({ id: targetId }));
             await ModerationService.sendVerdict(interaction, 'unwarn', tUser, latestCase, reason, null, evidence);
 
@@ -283,7 +281,7 @@ class ModerationService {
 
 ModerationService.sendVerdict = async function(interaction, action, targetUser, caseData, reason, durationString = null, evidence = null) {
     try {
-        const cfg = DatabaseService.getSettings(interaction.guild.id);
+        const cfg = await DatabaseService.getSettings(interaction.guild.id);
         if (!cfg?.verdictChannelId) return;
 
         const channel = await interaction.client.channels.fetch(cfg.verdictChannelId).catch(() => null);

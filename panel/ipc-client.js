@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const { EventEmitter } = require('events');
 const { GoogleGenAI } = require('@google/genai');
-const getTextModelOutputLimitsMap = require('../functions/geminiutils');
+const getTextModelOutputLimitsMap = require('../utils/geminiutils');
 
 class BotIPCClient extends EventEmitter {
     constructor(host = 'localhost', port = 8765) {

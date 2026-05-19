@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const Settings = require('../../functions/db/settings');
 const localeManager = require('../../locales/localeManager');
-const Sdb = new Settings();
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
   cooldown: 5,
@@ -66,7 +65,7 @@ module.exports = {
     const lang = interaction.guildLocale || 'ru';
     const sub = interaction.options.getSubcommand();
     const guildId = interaction.guild.id;
-    const cfg = Sdb.getSettings(guildId);
+    const cfg = await DatabaseService.getSettings(guildId);
     const channel = interaction.member.voice.channel;
 
     if (!channel) {

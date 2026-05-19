@@ -1,13 +1,12 @@
 const { Events } = require('discord.js');
 const ReportService = require('../../services/ReportService');
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (interaction.guild) {
-            const Settings = require('../../functions/db/settings');
-            const sdb = new Settings();
-            const guildSettings = sdb.getSettings(interaction.guildId);
+            const guildSettings = await DatabaseService.getSettings(interaction.guildId);
             if (guildSettings && guildSettings.language) {
                 Object.defineProperty(interaction, 'guildLocale', {
                     get: () => guildSettings.language,

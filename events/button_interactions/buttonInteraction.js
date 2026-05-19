@@ -1,8 +1,6 @@
 const { Events, MessageFlags } = require('discord.js');
-const SettingsDB = require('../../functions/db/settings'); 
 const localeManager = require('../../locales/localeManager');
-
-const Sdb = new SettingsDB();
+const DatabaseService = require('../../services/DatabaseService');
 
 async function safeReply(interaction, key, lang, variables = {}) { 
     const flags = MessageFlags.Ephemeral; 
@@ -25,7 +23,7 @@ module.exports = {
             return;
         }
 
-        const settings = interaction.guild ? (Sdb.getSettings(interaction.guild.id) || {}) : {};
+        const settings = interaction.guild ? (await DatabaseService.getSettings(interaction.guild.id) || {}) : {};
         const preferredLang = settings.language || interaction.guildLocale || 'ru';
 
         Object.defineProperty(interaction, 'guildLocale', {
@@ -56,7 +54,7 @@ module.exports = {
                 case customId.startsWith('role_button_'): {
                     const roleId = customId.replace('role_button_', '');
                     try {
-                        const menuData = Sdb.getRoleMenu(interaction.message.id); 
+                        const menuData = await DatabaseService.getRoleMenu(interaction.message.id); 
 
                         if (!menuData || menuData.guildId !== guildId || menuData.type !== 'buttons') {
                             return await safeReply(interaction, 'events.role_menu.error_not_found', lang);
@@ -115,7 +113,7 @@ module.exports = {
                             return;
                         }
 
-                        const menuData = Sdb.getRoleMenu(interaction.message.id); 
+                        const menuData = await DatabaseService.getRoleMenu(interaction.message.id); 
 
                         if (!menuData || menuData.guildId !== guildId || menuData.type !== 'select') {
                             return await safeReply(interaction, 'events.role_menu.error_not_found', lang);

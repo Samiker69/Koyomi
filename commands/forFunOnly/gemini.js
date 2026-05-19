@@ -8,8 +8,7 @@ const ApikeyManager = require('../../lib/ApikeyManager/ApikeyManager')
 
 const { GoogleGenAI } = require('@google/genai');
 const DatabaseService = require('../../services/DatabaseService');
-const geminiCrashHadler = require('../../functions/gemini_crash_handler');
-// DatabaseService используется напрямую
+const geminiCrashHadler = require('../../utils/gemini_crash_handler');
 
 module.exports = {
     cooldown: 5,
@@ -208,8 +207,8 @@ module.exports = {
         const lang = interaction.guildLocale || 'ru';
         const userId = interaction.user.id;
 
-        const config = DatabaseService.getUserGeminiConfig(userId);
-        const SS = DatabaseService.getSafetySettings(userId);
+        const config = await DatabaseService.getUserGeminiConfig(userId);
+        const SS = await DatabaseService.getSafetySettings(userId);
 
         switch (interaction.options.getSubcommand()) {
             case "ask": {
@@ -219,7 +218,7 @@ module.exports = {
 
                 try {
                     const keys = [];
-                    const allKeys =  DatabaseService.getAllUserTokens(userId);
+                    const allKeys =  await DatabaseService.getAllUserTokens(userId);
                     if (!allKeys[0] && !privateAccess.includes(userId)) {
                         return await interaction.editReply(localeManager.get('forFunOnly.ai.messages.no_api_keys', lang))
                     } else if (allKeys[0] && !privateAccess.includes(userId)){
@@ -330,9 +329,9 @@ module.exports = {
                     
                         try {
                             if (!checkApiKey(key)) {
-                                DatabaseService.deleteToken(userId, key);
-                                const stats = DatabaseService.getUserStats(userId);
-                                if (stats.tokens < 1) DatabaseService.deleteUserConfig(userId);
+                                await DatabaseService.deleteToken(userId, key);
+                                const stats = await DatabaseService.getUserStats(userId);
+                                if (stats.tokens < 1) await DatabaseService.deleteUserConfig(userId);
                                 return { text: localeManager.get('forFunOnly.ai.messages.invalid_apikey', lang) };
                             }
                             const response = await ai.models.generateContent(ai_request_options);
@@ -350,9 +349,9 @@ module.exports = {
                     async function getMaxOutputTokens(key) {
                         const ai = new GoogleGenAI({ apiKey: key });
                         if (!checkApiKey(key)) {
-                            DatabaseService.deleteToken(userId, key);
-                            const stats = DatabaseService.getUserStats(userId);
-                            if (stats.tokens < 1) DatabaseService.deleteUserConfig(userId);
+                            await DatabaseService.deleteToken(userId, key);
+                            const stats = await DatabaseService.getUserStats(userId);
+                            if (stats.tokens < 1) await DatabaseService.deleteUserConfig(userId);
                             return { text: localeManager.get('forFunOnly.ai.messages.invalid_apikey', lang) };
                         }
                         try {
@@ -386,7 +385,7 @@ module.exports = {
             case "add-user": {
                 const user = interaction.options.getUser('user')
                 try {
-                    DatabaseService.addUserConfig(user.id)
+                    await DatabaseService.addUserConfig(user.id)
                     await interaction.reply({ content: localeManager.get('forFunOnly.ai.messages.user_added', lang, { user: user.toString() }), flags: MessageFlags.Ephemeral })
                 } catch (error) {
                     const errorEmbed = EmbedService.createBaseEmbed(interaction)
@@ -407,7 +406,7 @@ module.exports = {
             case "remove-user": {
                 const user = interaction.options.getMember('user');
                 try {
-                    const promise = DatabaseService.deleteUserConfig(user.id)
+                    const promise = await DatabaseService.deleteUserConfig(user.id)
                     await interaction.reply({ content: promise ? localeManager.get('forFunOnly.ai.messages.user_removed', lang, { user: user.toString() }) : localeManager.get('forFunOnly.ai.messages.not_in_db', lang), flags: MessageFlags.Ephemeral })
                 } catch (error) {
                     const errorEmbed = EmbedService.createBaseEmbed(interaction)
@@ -427,7 +426,7 @@ module.exports = {
 
             case "settings": {
                 if (!config) return await interaction.reply({ content: localeManager.get('forFunOnly.ai.messages.not_in_db', lang), flags: MessageFlags.Ephemeral });
-                const stats = DatabaseService.getUserStats(userId);
+                const stats = await DatabaseService.getUserStats(userId);
 
                 const embed = EmbedService.createBaseEmbed(interaction)
                 .setAuthor({ iconURL: interaction.user.displayAvatarURL({extension: "png"}), name: interaction.user.displayName })
@@ -472,7 +471,7 @@ module.exports = {
                     history_limit: interaction.options.getString('history_limit') || config.history_limit
                 }
 
-                const result = DatabaseService.updateUserGeminiConfig(userId, changes);
+                const result = await DatabaseService.updateUserGeminiConfig(userId, changes);
                 const reply = result.changes > 0 ? localeManager.get('forFunOnly.ai.messages.settings_updated', lang) : localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang);
                 await interaction.reply({ content: reply, flags: MessageFlags.Ephemeral })
                 break;
@@ -486,22 +485,22 @@ module.exports = {
 
                 switch (s_category) {
                     case "HARASSMENT":
-                        result = DatabaseService.updateSafetySettings(userId, { HARM_CATEGORY_HARASSMENT: s_value });
+                        result = await DatabaseService.updateSafetySettings(userId, { HARM_CATEGORY_HARASSMENT: s_value });
                         await interaction.reply({content: result.changes > 0 ? change : nothingСhanged, flags: MessageFlags.Ephemeral});
                         break;
 
                     case "HATE_SPEECH":
-                        result = DatabaseService.updateSafetySettings(userId, { HARM_CATEGORY_HATE_SPEECH: s_value });
+                        result = await DatabaseService.updateSafetySettings(userId, { HARM_CATEGORY_HATE_SPEECH: s_value });
                         await interaction.reply({content: result.changes > 0 ? change : nothingСhanged, flags: MessageFlags.Ephemeral});
                         break;
                     
                     case "SEXUALLY_EXPLICIT":
-                        result = DatabaseService.updateSafetySettings(userId, { HARM_CATEGORY_SEXUALLY_EXPLICIT: s_value });
+                        result = await DatabaseService.updateSafetySettings(userId, { HARM_CATEGORY_SEXUALLY_EXPLICIT: s_value });
                         await interaction.reply({content: result.changes > 0 ? change : nothingСhanged, flags: MessageFlags.Ephemeral});
                         break;
 
                     case "DANGEROUS_CONTENT":
-                        result = DatabaseService.updateSafetySettings(userId, { HARM_CATEGORY_DANGEROUS_CONTENT: s_value });
+                        result = await DatabaseService.updateSafetySettings(userId, { HARM_CATEGORY_DANGEROUS_CONTENT: s_value });
                         await interaction.reply({content: result.changes > 0 ? change : nothingСhanged, flags: MessageFlags.Ephemeral});
                         break;   
                     
@@ -518,8 +517,8 @@ module.exports = {
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
                 if (!await checkApiKey(apikey)) return await interaction.editReply({ content: localeManager.get('forFunOnly.ai.messages.invalid_apikey', lang), flags: MessageFlags.Ephemeral });
-                const result = DatabaseService.addToken(userId, apikey, public);
-                DatabaseService.addUserConfig(userId);
+                const result = await DatabaseService.addToken(userId, apikey, public);
+                await DatabaseService.addUserConfig(userId);
                 await interaction.editReply({ content: result.changes > 0 ? localeManager.get('forFunOnly.ai.messages.apikey_added', lang): result.message || localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang), flags: MessageFlags.Ephemeral });
                 break;
             }
@@ -531,13 +530,13 @@ module.exports = {
                 if (!apikey && !all) return await interaction.editReply({ content: localeManager.get('forFunOnly.ai.messages.apikey_required_non_all', lang), flags: MessageFlags.Ephemeral });
 
                 if (all) {
-                    const result = DatabaseService.deleteAllTokensByUser(userId);
-                    DatabaseService.deleteUserConfig(userId);
+                    const result = await DatabaseService.deleteAllTokensByUser(userId);
+                    await DatabaseService.deleteUserConfig(userId);
                     await interaction.editReply({ content: localeManager.get('forFunOnly.ai.messages.keys_deleted_count', lang, { count: result.changes }), flags: MessageFlags.Ephemeral });
                 } else {
-                    const result = DatabaseService.deleteToken(userId, apikey);
-                    const stats = DatabaseService.getUserStats(userId);
-                    if (stats.tokens < 1) DatabaseService.deleteUserConfig(userId);
+                    const result = await DatabaseService.deleteToken(userId, apikey);
+                    const stats = await DatabaseService.getUserStats(userId);
+                    if (stats.tokens < 1) await DatabaseService.deleteUserConfig(userId);
                     await interaction.editReply({ content: result.changes > 0 ? localeManager.get('forFunOnly.ai.messages.apikey_deleted', lang, { apikey: apikey }) : result.message || localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang), flags: MessageFlags.Ephemeral });
                 }
                 break;
@@ -547,7 +546,7 @@ module.exports = {
                 const public = interaction.options.getBoolean('for-public-use') || false;
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
-                const result = DatabaseService.updateTokenSettings(userId, apikey, { public_use: public });
+                const result = await DatabaseService.updateTokenSettings(userId, apikey, { public_use: public });
                 await interaction.editReply({ content: result.changes > 0 ? localeManager.get('forFunOnly.ai.messages.settings_updated', lang) : localeManager.get('forFunOnly.ai.messages.settings_not_changed', lang), flags: MessageFlags.Ephemeral });
                 break;
             }
@@ -557,7 +556,7 @@ module.exports = {
                 let info;
                 if (!privateAccess.includes(userId)) {
                     const keys = [];
-                    const allKeys =  DatabaseService.getAllUserTokens(userId);
+                    const allKeys =  await DatabaseService.getAllUserTokens(userId);
                     if (!allKeys[0]) return await interaction.editReply(localeManager.get('forFunOnly.ai.messages.model_info_no_keys', lang))
                     allKeys[0].forEach(key => {
                         keys.push({key, timeoutDuration: 60_000});
@@ -582,9 +581,9 @@ module.exports = {
                 async function getModelInfo(key) {
                     const ai = new GoogleGenAI({ apiKey: key });
                     if (!checkApiKey(key)) {
-                        DatabaseService.deleteToken(userId, key);
-                        const stats = DatabaseService.getUserStats(userId);
-                        if (stats.tokens < 1) DatabaseService.deleteUserConfig(userId);
+                        await DatabaseService.deleteToken(userId, key);
+                        const stats = await DatabaseService.getUserStats(userId);
+                        if (stats.tokens < 1) await DatabaseService.deleteUserConfig(userId);
                         return { text: localeManager.get('forFunOnly.ai.messages.invalid_apikey', lang) };
                     }
                     try {

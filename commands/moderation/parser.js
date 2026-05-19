@@ -86,13 +86,13 @@ module.exports = {
     const group = interaction.options.getSubcommandGroup(false);
     const sub = interaction.options.getSubcommand();
     
-    const guildSettings = DatabaseService.getSettings(interaction.guildId);
+    const guildSettings = await DatabaseService.getSettings(interaction.guildId);
     const lang = (guildSettings && guildSettings.language) || interaction.guildLocale || 'ru';
 
     try {
       if (sub === 'list') {
-        const banned = DatabaseService.getBannedMods();
-        const unsupported = DatabaseService.getUnsupportedMods();
+        const banned = await DatabaseService.getBannedMods();
+        const unsupported = await DatabaseService.getUnsupportedMods();
 
         const embed = EmbedService.createBaseEmbed(interaction)
           .setTitle(localeManager.get('parser.commands.options.list.description', lang));
@@ -119,7 +119,7 @@ module.exports = {
         const modId = interaction.options.getString('mod_id').toLowerCase();
         
         if (sub === 'add') {
-          const res = DatabaseService.addBannedMod(modId);
+          const res = await DatabaseService.addBannedMod(modId);
           return await interaction.reply({
             content: res ? localeManager.get('parser.commands.messages.added', lang) : localeManager.get('parser.commands.messages.not_found', lang),
             flags: MessageFlags.Ephemeral
@@ -127,7 +127,7 @@ module.exports = {
         }
         
         if (sub === 'remove') {
-          const res = DatabaseService.removeBannedMod(modId);
+          const res = await DatabaseService.removeBannedMod(modId);
           return await interaction.reply({
             content: res ? localeManager.get('parser.commands.messages.removed', lang) : localeManager.get('parser.commands.messages.not_found', lang),
             flags: MessageFlags.Ephemeral
@@ -140,7 +140,7 @@ module.exports = {
         
         if (sub === 'add') {
           const reason = interaction.options.getString('reason');
-          const res = DatabaseService.addUnsupportedMod(modId, reason);
+          const res = await DatabaseService.addUnsupportedMod(modId, reason);
           return await interaction.reply({
             content: res ? localeManager.get('parser.commands.messages.added', lang) : localeManager.get('parser.commands.messages.not_found', lang),
             flags: MessageFlags.Ephemeral
@@ -148,7 +148,7 @@ module.exports = {
         }
         
         if (sub === 'remove') {
-          const res = DatabaseService.removeUnsupportedMod(modId);
+          const res = await DatabaseService.removeUnsupportedMod(modId);
           return await interaction.reply({
             content: res ? localeManager.get('parser.commands.messages.removed', lang) : localeManager.get('parser.commands.messages.not_found', lang),
             flags: MessageFlags.Ephemeral

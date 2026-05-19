@@ -1,17 +1,12 @@
 const { Events, MessageFlags, Collection, EmbedBuilder } = require('discord.js');
 const { bot_log_channel } = require('../../config.json')
 const localeManager = require('../../locales/localeManager');
-
-const DisabledCommandsDB = require('../../functions/db/restrictions');
-const SettingsDB = require('../../functions/db/settings');
-const db = new DisabledCommandsDB();
-const sdb = new SettingsDB();
-
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        const settings = interaction.guild ? (sdb.getSettings(interaction.guild.id) || {}) : {};
+        const settings = interaction.guild ? (await DatabaseService.getSettings(interaction.guild.id) || {}) : {};
         const preferredLang = settings.language || interaction.guildLocale || 'ru';
 
         Object.defineProperty(interaction, 'guildLocale', {
@@ -31,7 +26,7 @@ module.exports = {
             return;
         }
 
-        if (interaction.guild && db.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
+        if (interaction.guild && await DatabaseService.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
             await interaction.reply({
                 content: localeManager.get('events.errors.command_disabled', lang, { commandName: interaction.commandName }),
                 flags: MessageFlags.Ephemeral

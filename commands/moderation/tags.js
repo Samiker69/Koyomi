@@ -95,7 +95,7 @@ const localeManager = require('../../locales/localeManager');
             const name = interaction.options.getString('name').toLowerCase();
             const content = interaction.options.getString('content');
   
-            const exists = DatabaseService.addTag(guildId, name, content)
+            const exists = await DatabaseService.addTag(guildId, name, content)
   
             if (!exists) {
               return await interaction.reply({
@@ -112,7 +112,7 @@ const localeManager = require('../../locales/localeManager');
   
           case 'remove': {
             const name = interaction.options.getString('name').toLowerCase();
-            const result = DatabaseService.removeTag(guildId, name)
+            const result = await DatabaseService.removeTag(guildId, name)
   
             if (!result) {
               return await interaction.reply({
@@ -130,7 +130,7 @@ const localeManager = require('../../locales/localeManager');
           case 'edit': {
             const name = interaction.options.getString('name').toLowerCase();
             const newContent = interaction.options.getString('content');
-            const result = DatabaseService.editTag(guildId, name, { content: newContent} )
+            const result = await DatabaseService.editTag(guildId, name, { content: newContent} )
   
             if (!result) {
               return await interaction.reply({
@@ -147,7 +147,7 @@ const localeManager = require('../../locales/localeManager');
   
           case 'get': {
             const name = interaction.options.getString('name').toLowerCase();
-            const row = DatabaseService.getTag(guildId, name)
+            const row = await DatabaseService.getTag(guildId, name)
   
             if (!row) {
               return await interaction.reply({
@@ -164,7 +164,7 @@ const localeManager = require('../../locales/localeManager');
           }
   
           case 'list': {
-            const rows = DatabaseService.getTagsByServer(guildId);
+            const rows = await DatabaseService.getTagsByServer(guildId);
 
           
             if (rows.length === 0) {

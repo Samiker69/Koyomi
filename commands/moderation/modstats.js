@@ -1,8 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
-const ModerationDB = require('../../functions/db/case');
-const db = new ModerationDB();
 const EmbedService = require('../../services/EmbedService');
 const localeManager = require('../../locales/localeManager');
+const DatabaseService = require('../../services/DatabaseService');
 
 module.exports = {
     cooldown: 5,
@@ -31,7 +30,7 @@ module.exports = {
         const serverId = interaction.guild.id;
         const targetUser = interaction.options.getUser('moderator');
 
-        const allModCases = db.getServerModCases(serverId);
+        const allModCases = await DatabaseService.getServerModCases(serverId);
 
         if (!allModCases || allModCases.length === 0) {
             const noCasesEmbed = EmbedService.createBaseEmbed(interaction)
