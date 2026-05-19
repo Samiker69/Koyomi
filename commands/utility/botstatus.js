@@ -12,11 +12,11 @@ module.exports = {
     
   async execute(interaction) {
     const lang = interaction.guildLocale || 'ru';
-    const sent = await interaction.reply({ 
+    await interaction.reply({ 
       content: localeManager.get('utility.botstatus.messages.wait', lang), 
-      fetchReply: true, 
       flags: MessageFlags.Ephemeral 
     });
+    const sent = await interaction.fetchReply();
     
     const timeToExec = sent.createdTimestamp - interaction.createdTimestamp;
     const uptimeSeconds = Math.floor(interaction.client.uptime / 1000);

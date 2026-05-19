@@ -166,11 +166,11 @@ module.exports = {
                 .setTitle(localeManager.get('minigame.tictactoe.messages.invite_title', interaction.guildLocale || 'ru'))
                 .setDescription(localeManager.get(turn === 0 ? 'minigame.tictactoe.messages.turn_x' : 'minigame.tictactoe.messages.turn_o', interaction.guildLocale || 'ru', { user: players[turn].toString() }));
 
-            const msg = await interaction.editReply({
+            await interaction.editReply({
                 embeds: [embed],
-                components: getBoardComponents(),
-                fetchReply: true
+                components: getBoardComponents()
             });
+            const msg = await interaction.fetchReply();
 
             const collector = msg.createMessageComponentCollector({
                 componentType: ComponentType.Button,

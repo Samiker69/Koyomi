@@ -183,7 +183,7 @@ const data = new SlashCommandBuilder()
             )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
-
+    .setDMPermission(false);
 
 module.exports = {
     cooldown: 3,

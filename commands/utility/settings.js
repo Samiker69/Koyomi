@@ -175,12 +175,12 @@ module.exports = {
                             .setChannelTypes(...typeFilter)
                     );
                     
-                    const tempMsg = await i.reply({ 
+                    await i.reply({ 
                         content: promptText, 
                         components: [tempSelect], 
-                        flags: MessageFlags.Ephemeral,
-                        fetchReply: true 
+                        flags: MessageFlags.Ephemeral
                     });
+                    const tempMsg = await i.fetchReply();
 
                     try {
                         const selectionInteraction = await tempMsg.awaitMessageComponent({
