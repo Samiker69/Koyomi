@@ -78,6 +78,33 @@ const utility = {
       "version": { "ru": "Версия бота {v}", "en-US": "Bot version {v}", "uk": "Версія бота {v}" }
     }
   },
+  "prefix": {
+    "name": { "en-US": "prefix", "ru": "префикс", "uk": "префікс" },
+    "description": { "en-US": "View or change the command prefix on this server", "ru": "Посмотреть или изменить префикс команд на этом сервере", "uk": "Переглянути або змінити префікс команд на цьому сервері" },
+    "options": {
+      "new_prefix": {
+        "name": { "en-US": "new_prefix", "ru": "новый_префикс", "uk": "новий_префікс" },
+        "description": { "en-US": "New prefix for commands (max 5 chars)", "ru": "Новый префикс для команд (макс. 5 символов)", "uk": "Новий префікс для команд (макс. 5 символів)" }
+      }
+    },
+    "messages": {
+      "current": { 
+        "ru": "Текущий префикс команд на этом сервере: `{prefix}`\nВы можете изменить его с помощью: `/prefix [новый_префикс]` или `{prefix}prefix [новый_префикс]`", 
+        "en-US": "The current command prefix on this server is: `{prefix}`\nYou can change it using: `/prefix [new_prefix]` or `{prefix}prefix [new_prefix]`", 
+        "uk": "Поточний префікс команд на цьому сервері: `{prefix}`\nВи можете змінити його за допомогою: `/prefix [новий_префікс]` или `{prefix}prefix [новий_префікс]`" 
+      },
+      "too_long": {
+        "ru": "Префикс не должен быть длиннее 5 символов!",
+        "en-US": "Prefix cannot be longer than 5 characters!",
+        "uk": "Префікс не повинен бути довшим за 5 символів!"
+      },
+      "success": {
+        "ru": "Префикс команд успешно изменен на: `{prefix}`\nТеперь вы можете вызывать команды с новым префиксом: например, `{prefix}botstatus`",
+        "en-US": "Command prefix successfully changed to: `{prefix}`\nYou can now run commands using the new prefix: e.g. `{prefix}botstatus`",
+        "uk": "Префікс команд успішно змінено на: `{prefix}`\nТепер ви можете викликати команди з новим префіксом: наприклад, `{prefix}botstatus`"
+      }
+    }
+  },
   "room": {
     "name": { "en-US": "room", "ru": "комната", "uk": "кімната" },
     "description": { "en-US": "Manage your dynamic voice room", "ru": "Управление вашей динамической голосовой комнатой", "uk": "Керування вашою динамічною голосовою кімнатою" },
@@ -366,6 +393,7 @@ const utility = {
       "disabled": { "ru": "Выключено", "en-US": "Disabled", "uk": "Вимкнено" },
       "not_set": { "ru": "Не задан", "en-US": "Not set", "uk": "Не задано" },
       "not_set_fem": { "ru": "Не задана", "en-US": "Not set", "uk": "Не задана" },
+      "prefix_label": { "ru": "Префикс команд", "en-US": "Command Prefix", "uk": "Префікс команд" },
       "welcome_logs": { "ru": "Приветствия и Логи", "en-US": "Welcome & Logs", "uk": "Привітання та Логи" },
       "welcome_channel": { "ru": "Канал приветствий", "en-US": "Welcome channel", "uk": "Канал привітань" },
       "invite_log": { "ru": "Лог приглашений", "en-US": "Invite log", "uk": "Лог запрошень" },
@@ -414,6 +442,10 @@ const utility = {
         "label": { "ru": "Honeypot: задать лог-канал", "en-US": "Honeypot: set log channel", "uk": "Honeypot: задати лог-канал" },
         "description": { "ru": "Куда отправлять уведомления о срабатывании", "en-US": "Where to send trigger notifications", "uk": "Куди надсилати сповіщення про спрацювання" }
       },
+      "act_prefix": { 
+        "label": { "ru": "Задать префикс команд", "en-US": "Set command prefix", "uk": "Задати префікс команд" },
+        "description": { "ru": "Изменить префикс для текстовых команд сервера", "en-US": "Change prefix for server text commands", "uk": "Змінити префікс для текстових команд сервера" }
+      },
       "act_reset": { 
         "label": { "ru": "СБРОСИТЬ ВСЁ", "en-US": "RESET ALL", "uk": "СКИНУТИ ВСЕ" },
         "description": { "ru": "Удалить все настройки (Опасно!)", "en-US": "Delete all settings (Dangerous!)", "uk": "Видалити всі налаштування (Небезпечно!)" }
@@ -431,7 +463,9 @@ const utility = {
       "lang_en": { "ru": "Английский (США)", "en-US": "English (US)", "uk": "Англійська (США)" },
       "lang_uk": { "ru": "Украинский", "en-US": "Ukrainian", "uk": "Українська" },
       "lang_title": { "ru": "Выберите язык", "en-US": "Select language", "uk": "Оберіть мову" },
-      "error_saving": { "ru": "Произошла ошибка при сохранении.", "en-US": "Error while saving.", "uk": "Сталася помилка при збереженні." }
+      "error_saving": { "ru": "Произошла ошибка при сохранении.", "en-US": "Error while saving.", "uk": "Сталася помилка при збереженні." },
+      "modal_prefix_title": { "ru": "Префикс команд", "en-US": "Command Prefix", "uk": "Префікс команд" },
+      "modal_prefix_input": { "ru": "Новый префикс (макс. 5 символов)", "en-US": "New prefix (max 5 chars)", "uk": "Новий префікс (макс. 5 символів)" }
     }
   },
   "starboard": {

@@ -49,6 +49,22 @@ class DatabaseService {
                 console.log('[INFO]: База данных актуальна, миграции не требуются.');
             }
 
+            // Автоматическое исправление некорректных форматов дат (числа вместо строк) в таблице mod_cases
+            try {
+                await sequelize.query(`
+                    UPDATE mod_cases 
+                    SET timestamp = datetime(timestamp / 1000, 'unixepoch') 
+                    WHERE (typeof(timestamp) = 'integer' OR typeof(timestamp) = 'real') AND timestamp > 100000000000;
+                `);
+                await sequelize.query(`
+                    UPDATE mod_cases 
+                    SET timestamp = datetime(timestamp, 'unixepoch') 
+                    WHERE (typeof(timestamp) = 'integer' OR typeof(timestamp) = 'real') AND timestamp <= 100000000000;
+                `);
+            } catch (err) {
+                console.error('[DB Service] Ошибка при автоматическом исправлении дат:', err);
+            }
+
             const countLaunchers = await AllowedLauncher.count();
             if (countLaunchers === 0) await AllowedLauncher.create({ launcher_name: 'hebe' });
 

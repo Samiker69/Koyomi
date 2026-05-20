@@ -52,6 +52,11 @@ module.exports = {
                 .setDescription(localeManager.get('utility.settings.messages.dashboard_desc', lang))
                 .addFields(
                     { 
+                        name: localeManager.get('utility.settings.messages.prefix_label', lang), 
+                        value: `> \`${cfg.prefix || '..'}\` *(${lang === 'ru' ? 'сменить в меню ниже' : 'change in the menu below'})*`, 
+                        inline: false 
+                    },
+                    { 
                         name: localeManager.get('utility.settings.messages.welcome_logs', lang), 
                         value: `> **${localeManager.get('utility.settings.messages.welcome_channel', lang)}:** ${valWelcome}\n` +
                                `> **${localeManager.get('utility.settings.messages.invite_log', lang)}:** ${valInvites}\n` +
@@ -108,6 +113,7 @@ module.exports = {
                         { label: localeManager.get('utility.settings.messages.act_verdict.label', lang), description: localeManager.get('utility.settings.messages.act_verdict.description', lang), value: 'act_verdict' },
                         { label: localeManager.get('utility.settings.messages.act_honeypot.label', lang), description: localeManager.get('utility.settings.messages.act_honeypot.description', lang), value: 'act_honeypot' },
                         { label: localeManager.get('utility.settings.messages.act_honeypot_log.label', lang), description: localeManager.get('utility.settings.messages.act_honeypot_log.description', lang), value: 'act_honeypot_log' },
+                        { label: localeManager.get('utility.settings.messages.act_prefix.label', lang), description: localeManager.get('utility.settings.messages.act_prefix.description', lang), value: 'act_prefix' },
                         { label: localeManager.get('utility.settings.messages.act_reset.label', lang), description: localeManager.get('utility.settings.messages.act_reset.description', lang), value: 'act_reset' }
                     )
             );
@@ -158,7 +164,46 @@ module.exports = {
                     if (selection === 'act_reset') {
                         await DatabaseService.removeServer(guildId);
                         await DatabaseService.addServer(guildId);
-                        await i.update(generateDashboard());
+                        await i.update(await generateDashboard());
+                        return;
+                    }
+
+                    if (selection === 'act_prefix') {
+                        const { ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+                        const modalId = `modal_prefix_${i.id}`;
+                        const modal = new ModalBuilder()
+                            .setCustomId(modalId)
+                            .setTitle(localeManager.get('utility.settings.messages.modal_prefix_title', lang));
+
+                        const settings = await DatabaseService.getSettings(guildId) || {};
+                        const currentPrefix = settings.prefix || '..';
+                        const prefixInput = new TextInputBuilder()
+                            .setCustomId('input_prefix')
+                            .setLabel(localeManager.get('utility.settings.messages.modal_prefix_input', lang))
+                            .setStyle(TextInputStyle.Short)
+                            .setMinLength(1)
+                            .setMaxLength(5)
+                            .setRequired(true)
+                            .setValue(currentPrefix);
+
+                        const row = new ActionRowBuilder().addComponents(prefixInput);
+                        modal.addComponents(row);
+
+                        await i.showModal(modal);
+
+                        try {
+                            const modalInteraction = await i.awaitModalSubmit({
+                                filter: (subI) => subI.customId === modalId && subI.user.id === i.user.id,
+                                time: 60000
+                            });
+
+                            const newPrefix = modalInteraction.fields.getTextInputValue('input_prefix');
+                            await DatabaseService.updateSetting(guildId, 'prefix', newPrefix);
+
+                            await modalInteraction.update(await generateDashboard());
+                        } catch (err) {
+                            // Игнорируем отмену или таймаут
+                        }
                         return;
                     }
 
@@ -203,7 +248,7 @@ module.exports = {
                         else if (selection === 'act_honeypot_log') await DatabaseService.updateSetting(guildId, 'honeypotLogChannelId', selectedId);
 
                         await selectionInteraction.update({ content: localeManager.get('utility.settings.messages.saved', lang), components: [] });
-                        await interaction.editReply(generateDashboard());
+                        await interaction.editReply(await generateDashboard());
 
                     } catch (err) {
                         await i.editReply({ content: localeManager.get('utility.settings.messages.select_timeout', lang), components: [] });
@@ -235,7 +280,7 @@ module.exports = {
                     await DatabaseService.updateSetting(guildId, 'honeypotEnabled', !currentCfg.honeypotEnabled);
                 }
 
-                await i.update(generateDashboard());
+                await i.update(await generateDashboard());
 
             } catch (err) {
                 console.error(err);
