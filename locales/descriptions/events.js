@@ -30,6 +30,21 @@ const events = {
       "en-US": "Missing arguments! This command requires the following parameters: {params}",
       "uk": "Недостатньо аргументів! Ця команда вимагає обов'язкові параметри: {params}"
     },
+    "subcommand_param": {
+      "ru": "<субкоманда>",
+      "en-US": "<subcommand>",
+      "uk": "<субкоманда>"
+    },
+    "usage": {
+      "ru": "Использование",
+      "en-US": "Usage",
+      "uk": "Використання"
+    },
+    "available_subcommands": {
+      "ru": "Доступные субкоманды",
+      "en-US": "Available subcommands",
+      "uk": "Доступні субкоманди"
+    },
     "interaction_log": {
       "title": {
         "ru": "Ошибка при обработке команды",

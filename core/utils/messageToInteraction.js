@@ -106,8 +106,11 @@ function getCommandOptions(commandOrSubcommand) {
     return commandOrSubcommand.options || [];
 }
 
-function buildOptionsMap(command, subcommandName, args, message) {
+function buildOptionsMap(command, subcommandGroupName, subcommandName, args, message) {
     const parsed = {};
+    if (subcommandGroupName) {
+        parsed._subcommandGroup = subcommandGroupName;
+    }
     if (subcommandName) {
         parsed._subcommand = subcommandName;
     }
@@ -115,7 +118,15 @@ function buildOptionsMap(command, subcommandName, args, message) {
     let activeOptions = [];
     const rootOptions = getCommandOptions(command.data);
 
-    if (subcommandName) {
+    if (subcommandGroupName) {
+        const groupOption = rootOptions.find(opt => opt.name === subcommandGroupName && isType(opt.type, 'SUB_COMMAND_GROUP'));
+        if (groupOption && subcommandName) {
+            const subOption = (groupOption.options || []).find(opt => opt.name === subcommandName && isType(opt.type, 'SUB_COMMAND'));
+            if (subOption) {
+                activeOptions = subOption.options || [];
+            }
+        }
+    } else if (subcommandName) {
         const subOption = rootOptions.find(opt => opt.name === subcommandName && isType(opt.type, 'SUB_COMMAND'));
         if (subOption) {
             activeOptions = subOption.options || [];
@@ -166,6 +177,10 @@ class MessageCommandOptions {
         this.client = client;
     }
 
+    getSubcommandGroup(required = true) {
+        return this.parsed._subcommandGroup || null;
+    }
+
     getSubcommand() {
         return this.parsed._subcommand || null;
     }
@@ -210,7 +225,7 @@ class MessageCommandOptions {
 }
 
 class MessageInteraction {
-    constructor(message, commandName, subcommandName, args, preferredLang) {
+    constructor(message, commandName, subcommandGroupName, subcommandName, args, preferredLang) {
         this.message = message;
         this.client = message.client;
         this.guild = message.guild;
@@ -230,7 +245,7 @@ class MessageInteraction {
         this._deleteTimeout = null;
 
         const command = this.client.commands.get(commandName);
-        const parsedOptions = buildOptionsMap(command, subcommandName, args, message);
+        const parsedOptions = buildOptionsMap(command, subcommandGroupName, subcommandName, args, message);
         this.options = new MessageCommandOptions(parsedOptions, message, this.client);
     }
 
@@ -278,9 +293,9 @@ class MessageInteraction {
             this.isEphemeral = true;
         }
 
-        let content = this.guildLocale === 'ru' ? '*Обработка запроса...*' : '*Processing request...*';
+        let content = '\u200B';
         if (this.isEphemeral && this.guild) {
-            content += this.guildLocale === 'ru' ? '\n*(Сообщение удалится автоматически)*' : '\n*(Message will auto-delete)*';
+            content = this.guildLocale === 'ru' ? '*(Сообщение удалится автоматически)*' : '*(Message will auto-delete)*';
         }
 
         this.replyMsg = await this._sendResponse({ content });
@@ -333,6 +348,11 @@ class MessageInteraction {
 
         if (payload.flags !== undefined) {
             delete payload.flags;
+        }
+
+        // Если контент не передан явно в payload, сбрасываем его в null, чтобы старый текст (например, '\u200B') стёрся
+        if (payload.content === undefined) {
+            payload.content = null;
         }
 
         if (this.isEphemeral && this.guild) {

@@ -349,6 +349,26 @@ class DatabaseService {
         return config;
     }
 
+    async getUnsupportedMods() {
+        const config = await this.getLogAnalyzerConfig();
+        return config.unsupportedMods;
+    }
+
+    async getBannedMods() {
+        const config = await this.getLogAnalyzerConfig();
+        return config.bannedMods;
+    }
+
+    async getModsMapping() {
+        const config = await this.getLogAnalyzerConfig();
+        return config.modsMapping;
+    }
+
+    async getAllowedLaunchers() {
+        const config = await this.getLogAnalyzerConfig();
+        return config.allowedLaunchers;
+    }
+
     async addBannedMod(modId) {
         await BannedMod.findOrCreate({ where: { mod_id: modId } });
         this._logAnalyzerCache = null;

@@ -27,22 +27,6 @@ class MojoTestService {
             return await interaction.editReply({ content: localeManager.get('services.mojotest.already_running', lang) });
         }
 
-        // Сохраняем и снимаем роли
-        const rolesToSave = targetMember.roles.cache
-            .filter(r => r.id !== guild.id && r.editable)
-            .map(r => r.id);
-
-        let rolesRemoved = false;
-        try {
-            if (rolesToSave.length > 0) {
-                await targetMember.roles.remove(rolesToSave, localeManager.get('services.mojotest.audit_log.started', lang));
-                rolesRemoved = true;
-            }
-        } catch (error) {
-            console.error('[MojoTest] Ошибка при снятии ролей:', error);
-            return await interaction.editReply({ content: localeManager.get('services.mojotest.role_error', lang) });
-        }
-
         // Добавляем юзера в "черный список" для отправки сообщений
         this.activeTests.add(targetUser.id);
 
@@ -55,13 +39,6 @@ class MojoTestService {
                     await targetMember.kick(reason);
                 } catch (e) {
                     console.error('[MojoTest] Ошибка при кике:', e);
-                }
-            } else if (rolesRemoved && rolesToSave.length > 0) {
-                try {
-                    // Возвращаем роли только если не кикаем (если кикнули, пользователя уже нет на сервере)
-                    await targetMember.roles.add(rolesToSave, localeManager.get('services.mojotest.audit_log.finished', lang));
-                } catch (e) {
-                    console.error('[MojoTest] Ошибка при возврате ролей:', e);
                 }
             }
         };
@@ -113,10 +90,6 @@ class MojoTestService {
         } catch (error) {
             console.error('[MojoTest] Failed to send initial test message:', error);
             this.activeTests.delete(targetUser.id);
-            // Если мы уже сняли роли, возвращаем их
-            if (rolesRemoved) {
-                await targetMember.roles.add(rolesToSave).catch(() => {});
-            }
             return;
         }
 

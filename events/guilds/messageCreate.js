@@ -9,36 +9,79 @@ function findCommandAndSubcommand(client, typedWord, parts) {
     const directCmd = client.commands.get(typedWord);
     if (directCmd) {
         const options = directCmd.data.toJSON ? directCmd.data.toJSON().options : directCmd.data.options || [];
-        const subcommands = (options || []).filter(opt => opt.type === 1);
 
-        if (subcommands.length > 0 && parts.length > 0) {
-            const possibleSubName = parts[0].toLowerCase();
-            const sub = subcommands.find(s => s.name === possibleSubName);
-            if (sub) {
+        // Проверяем первый параметр: это может быть группа субкоманд (тип 2)
+        if (parts.length > 0) {
+            const possibleGroupName = parts[0].toLowerCase();
+            const groupOpt = (options || []).find(opt => opt.name === possibleGroupName && opt.type === 2);
+            if (groupOpt) {
+                // Если это группа, то следующий параметр должен быть субкомандой (тип 1) в этой группе
+                if (parts.length > 1) {
+                    const possibleSubName = parts[1].toLowerCase();
+                    const subOpt = (groupOpt.options || []).find(opt => opt.name === possibleSubName && opt.type === 1);
+                    if (subOpt) {
+                        return {
+                            commandName: directCmd.data.name,
+                            subcommandGroupName: groupOpt.name,
+                            subcommandName: subOpt.name,
+                            args: parts.slice(2)
+                        };
+                    }
+                }
+                // Если субкоманда не передана или не найдена
                 return {
                     commandName: directCmd.data.name,
-                    subcommandName: sub.name,
+                    subcommandGroupName: groupOpt.name,
+                    subcommandName: null,
+                    args: parts.slice(1)
+                };
+            }
+
+            // Проверяем, может это прямая субкоманда (тип 1) без группы
+            const possibleSubName = parts[0].toLowerCase();
+            const subOpt = (options || []).find(opt => opt.name === possibleSubName && opt.type === 1);
+            if (subOpt) {
+                return {
+                    commandName: directCmd.data.name,
+                    subcommandGroupName: null,
+                    subcommandName: subOpt.name,
                     args: parts.slice(1)
                 };
             }
         }
-        
+
         return {
             commandName: directCmd.data.name,
+            subcommandGroupName: null,
             subcommandName: null,
             args: parts
         };
     }
 
-    // 2. Поиск субкоманды (короткий вызов)
+    // 2. Поиск субкоманды (короткий вызов по имени субкоманды)
     for (const [name, cmd] of client.commands) {
         const options = cmd.data.toJSON ? cmd.data.toJSON().options : cmd.data.options || [];
-        const subcommands = (options || []).filter(opt => opt.type === 1);
-        const sub = subcommands.find(s => s.name === typedWord);
-        
+
+        // Сначала ищем по группам субкоманд
+        const groups = (options || []).filter(opt => opt.type === 2);
+        for (const g of groups) {
+            const sub = (g.options || []).find(s => s.name === typedWord && s.type === 1);
+            if (sub) {
+                return {
+                    commandName: name,
+                    subcommandGroupName: g.name,
+                    subcommandName: sub.name,
+                    args: parts
+                };
+            }
+        }
+
+        // Если не в группах, ищем среди прямых субкоманд
+        const sub = (options || []).find(s => s.name === typedWord && s.type === 1);
         if (sub) {
             return {
                 commandName: name,
+                subcommandGroupName: null,
                 subcommandName: sub.name,
                 args: parts
             };
@@ -72,9 +115,28 @@ module.exports = {
 
         // 4. Ищем команду/субкоманду
         const match = findCommandAndSubcommand(message.client, typedWord, parts);
-        if (!match) return; // Если не команда - это префикс, игнорируем
+        if (!match) {
+            // Если не команда — проверяем, возможно это сохраненный тег!
+            try {
+                const tag = await DatabaseService.getTag(message.guild.id, typedWord);
+                if (tag) {
+                    const channelId = Number(message.channel.id);
+                    if (tag.allowedChannelId && tag.allowedChannelId.length > 0 && !tag.allowedChannelId.includes(channelId)) {
+                        return;
+                    }
+                    if (tag.disallowedChannelsId && tag.disallowedChannelsId.length > 0 && tag.disallowedChannelsId.includes(channelId)) {
+                        return;
+                    }
+                    await message.reply({ content: tag.content });
+                    return;
+                }
+            } catch (tagError) {
+                console.error('[Tags Error] Failed to retrieve tag:', tagError);
+            }
+            return; // Если и не тег - это префикс, игнорируем
+        }
 
-        const { commandName, subcommandName, args } = match;
+        const { commandName, subcommandGroupName, subcommandName, args } = match;
         const command = message.client.commands.get(commandName);
         const preferredLang = settings.language || message.guild.preferredLocale || 'ru';
 
@@ -115,12 +177,53 @@ module.exports = {
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
         // 7. Создаем mock-взаимодействие (MessageInteraction) и выполняем
-        const interactionMock = new MessageInteraction(message, commandName, subcommandName, args, preferredLang);
+        const interactionMock = new MessageInteraction(message, commandName, subcommandGroupName, subcommandName, args, preferredLang);
 
         // 7.5 Валидация обязательных параметров для префиксных команд
         const rootOptions = (command.data.toJSON ? command.data.toJSON().options : command.data.options) || [];
+
+        // Проверяем, требует ли команда вызова субкоманды (когда корневая команда содержит только субкоманды/группы)
+        const subcommands = rootOptions.filter(opt => opt.type === 1);
+        const subcommandGroups = rootOptions.filter(opt => opt.type === 2);
+        const hasSubcommandsOrGroups = subcommands.length > 0 || subcommandGroups.length > 0;
+
+        if (hasSubcommandsOrGroups && !subcommandName) {
+            const availableUsage = [];
+            for (const sub of subcommands) {
+                availableUsage.push(sub.name);
+            }
+            for (const group of subcommandGroups) {
+                const groupSubs = group.options || [];
+                for (const sub of groupSubs) {
+                    availableUsage.push(`${group.name} ${sub.name}`);
+                }
+            }
+
+            const paramText = localeManager.get('events.errors.subcommand_param', preferredLang);
+            const usageLabel = localeManager.get('events.errors.usage', preferredLang);
+            const availLabel = localeManager.get('events.errors.available_subcommands', preferredLang);
+
+            const header = localeManager.get('events.errors.missing_arguments', preferredLang, {
+                params: paramText
+            });
+
+            const availableList = availableUsage.map(cmd => `\`${cmd}\``).join(', ');
+            const errorText = `${header}\n**${usageLabel}:** \`${prefix}${commandName} ${paramText}\`\n**${availLabel}:** ${availableList}`;
+
+            await message.reply({ content: errorText });
+            return;
+        }
+
         let activeOptions = [];
-        if (subcommandName) {
+        if (subcommandGroupName) {
+            const groupOption = rootOptions.find(opt => opt.name === subcommandGroupName && opt.type === 2);
+            if (groupOption && subcommandName) {
+                const subOption = (groupOption.options || []).find(opt => opt.name === subcommandName && opt.type === 1);
+                if (subOption) {
+                    activeOptions = subOption.options || [];
+                }
+            }
+        } else if (subcommandName) {
             const subOption = rootOptions.find(opt => opt.name === subcommandName && opt.type === 1);
             if (subOption) {
                 activeOptions = subOption.options || [];
@@ -133,6 +236,9 @@ module.exports = {
         if (missingRequired.length > 0) {
             const paramsList = missingRequired.map(opt => `<${opt.name}>`).join(', ');
             let usage = `${prefix}${commandName}`;
+            if (subcommandGroupName) {
+                usage += ` ${subcommandGroupName}`;
+            }
             if (subcommandName) {
                 usage += ` ${subcommandName}`;
             }
