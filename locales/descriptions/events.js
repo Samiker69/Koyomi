@@ -25,6 +25,26 @@ const events = {
       "en-US": "Not so fast! You've used `{commandName}` too often. You can use it again <t:{timestamp}:R>.",
       "uk": "Не так швидко! Ви занадто часто використовували `{commandName}`. Ви знову зможете використовувати її <t:{timestamp}:R>."
     },
+    "missing_arguments": {
+      "ru": "Недостаточно аргументов! Эта команда требует следующие обязательные параметры: {params}",
+      "en-US": "Missing arguments! This command requires the following parameters: {params}",
+      "uk": "Недостатньо аргументів! Ця команда вимагає обов'язкові параметри: {params}"
+    },
+    "subcommand_param": {
+      "ru": "<субкоманда>",
+      "en-US": "<subcommand>",
+      "uk": "<субкоманда>"
+    },
+    "usage": {
+      "ru": "Использование",
+      "en-US": "Usage",
+      "uk": "Використання"
+    },
+    "available_subcommands": {
+      "ru": "Доступные субкоманды",
+      "en-US": "Available subcommands",
+      "uk": "Доступні субкоманди"
+    },
     "interaction_log": {
       "title": {
         "ru": "Ошибка при обработке команды",

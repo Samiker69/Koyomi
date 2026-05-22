@@ -6,7 +6,7 @@ const { Collection } = require('discord.js'); // Лучше использова
 
 function createMockInteraction(command, optionsData = {}) {
     const cmdName = command.data.name;
-    
+
     let firstSubcommand = null;
     let firstSubcommandGroup = null;
 
@@ -46,17 +46,17 @@ function createMockInteraction(command, optionsData = {}) {
         react: async () => true,
         // Исправление для /settings (collector)
         createMessageComponentCollector: () => ({
-            on: () => {},
-            stop: () => {}
+            on: () => { },
+            stop: () => { }
         })
     };
 
     // Мок канала
-    const mockChannel = { 
-        id: '1264316836959223904', 
-        name: 'general', 
-        isTextBased: () => true, 
-        send: async() => mockMessage,
+    const mockChannel = {
+        id: '1264316836959223904',
+        name: 'general',
+        isTextBased: () => true,
+        send: async () => mockMessage,
         // Исправление для clear команды
         messages: {
             fetch: async () => createMockCollection()
@@ -74,36 +74,36 @@ function createMockInteraction(command, optionsData = {}) {
         displayAvatarURL: () => "https://cdn.discordapp.com/avatars/1312124121978765393/f20095c76dfc7fa8bfc4547e635e1f7d.webp",
         avatarURL: () => "https://cdn.discordapp.com/avatars/1312124121978765393/f20095c76dfc7fa8bfc4547e635e1f7d.webp",
         // Исправление для /eval
-        setPresence: async () => true 
+        setPresence: async () => true
     };
 
     // Мок пользователя
-    const mockUser = { 
-        id: '691246997646213131', 
-        username: 'TestUser', 
+    const mockUser = {
+        id: '691246997646213131',
+        username: 'TestUser',
         tag: 'TestUser#1234',
         bot: false,
         // Исправление для /info
-        createdAt: new Date(), 
-        displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png' 
+        createdAt: new Date(),
+        displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png'
     };
 
     // Мок роли
-    const mockRole = { 
-        id: '1264317115620393123', 
-        name: 'Admin', 
+    const mockRole = {
+        id: '1264317115620393123',
+        name: 'Admin',
         position: 10,
         editable: true,
         // Исправление для /role
-        comparePositionTo: () => 1 
+        comparePositionTo: () => 1
     };
 
-    const mockEveryoneRole = { 
-        id: '1264316836414226464', 
-        name: '@everyone', 
+    const mockEveryoneRole = {
+        id: '1264316836414226464',
+        name: '@everyone',
         position: 0,
         editable: false,
-        comparePositionTo: () => -1 
+        comparePositionTo: () => -1
     };
 
     // Мок Member
@@ -112,14 +112,14 @@ function createMockInteraction(command, optionsData = {}) {
         user: mockUser,
         displayName: 'TestUser',
         guildId: "1264316836414226464",
-        roles: { 
+        roles: {
             cache: createMockCollection([
                 ['1264316836414226464', mockEveryoneRole],
                 ['1264317115620393123', mockRole]
             ]),
             highest: mockRole
         },
-        permissions: { has: () => true }, 
+        permissions: { has: () => true },
         displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png',
         // Исправление для /room и /user
         voice: {
@@ -130,7 +130,7 @@ function createMockInteraction(command, optionsData = {}) {
     };
 
     // Мок сервера (Guild)
-    const mockGuild = { 
+    const mockGuild = {
         id: "1264316836414226464",
         name: "Dev server",
         ownerId: "691246997646213131",
@@ -173,9 +173,9 @@ function createMockInteraction(command, optionsData = {}) {
             user: mockClientUser,
             helpCategoriesMap: { "general": [] },
             guilds: { cache: createMockCollection([[mockGuild.id, mockGuild]]) },
-            users: { 
+            users: {
                 cache: createMockCollection([
-                    [mockUser.id, mockUser], 
+                    [mockUser.id, mockUser],
                     [mockClientUser.id, mockClientUser]
                 ]),
                 fetch: async () => mockUser
@@ -191,31 +191,31 @@ function createMockInteraction(command, optionsData = {}) {
             },
             ws: {
                 // Исправление для /botstatus
-                ping: 42 
+                ping: 42
             }
         },
-        
+
         commandName: cmdName,
         isCommand: () => true,
         isChatInputCommand: () => true,
         guildId: mockGuild.id,
         guildLocale: 'ru',
-        
+
         guild: mockGuild,
         user: mockUser,
         member: mockGuildMember,
         memberPermissions: mockGuildMember.permissions,
         channel: mockChannel,
-        
+
         deferred: false,
         replied: false,
-        deferReply: async function() { this.deferred = true; return mockMessage; },
-        reply: async function() { this.replied = true; return mockMessage; },
-        editReply: async function() { return mockMessage; },
-        followUp: async function() { return mockMessage; },
-        deleteReply: async function() { return true; },
+        deferReply: async function () { this.deferred = true; return mockMessage; },
+        reply: async function () { this.replied = true; return mockMessage; },
+        editReply: async function () { return mockMessage; },
+        followUp: async function () { return mockMessage; },
+        deleteReply: async function () { return true; },
         // Исправление для /2048 и /guessthenumber
-        fetchReply: async function() { return mockMessage; },
+        fetchReply: async function () { return mockMessage; },
 
         options: {
             getSubcommand: () => firstSubcommand || 'default_sub',
@@ -249,7 +249,7 @@ async function runTests() {
 
     for (const file of commandFiles) {
         const command = require(file);
-        
+
         if (!command.data || !command.execute) continue;
 
         const cmdName = command.data.name;
@@ -271,7 +271,7 @@ async function runTests() {
 function getAllFiles(dirPath, arrayOfFiles) {
     const files = fs.readdirSync(dirPath);
     arrayOfFiles = arrayOfFiles || [];
-    files.forEach(function(file) {
+    files.forEach(function (file) {
         if (fs.statSync(dirPath + "/" + file).isDirectory()) {
             arrayOfFiles = getAllFiles(dirPath + "/" + file, arrayOfFiles);
         } else {
@@ -281,4 +281,4 @@ function getAllFiles(dirPath, arrayOfFiles) {
     return arrayOfFiles;
 }
 
-runTests();``
+runTests(); ``
