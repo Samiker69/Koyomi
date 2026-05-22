@@ -31,6 +31,15 @@ module.exports = {
             return await interaction.editReply({ content: localeManager.get('moderation.iqtest.messages.no_bots', lang) });
         }
 
+        if (targetUser.id === interaction.user.id) {
+            return await interaction.editReply({ content: localeManager.get('moderation.iqtest.messages.self_mod', lang) });
+        }
+
+        const isOwner = interaction.guild.ownerId === interaction.user.id;
+        if (!isOwner && targetMember.roles.highest.position >= interaction.member.roles.highest.position) {
+            return await interaction.editReply({ content: localeManager.get('moderation.iqtest.messages.hierarchy_error', lang) });
+        }
+
         // Передаём управление в сервис
         await MojoTestService.startTest(interaction, targetMember);
     }

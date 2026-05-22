@@ -86,7 +86,8 @@ class MojoTestService {
 
         let initialMsg;
         try {
-            initialMsg = await interaction.editReply(getQuestionData());
+            await interaction.deleteReply().catch(() => {});
+            initialMsg = await interaction.channel.send(getQuestionData());
         } catch (error) {
             console.error('[MojoTest] Failed to send initial test message:', error);
             this.activeTests.delete(targetUser.id);
@@ -155,11 +156,13 @@ class MojoTestService {
                     .setColor(0xff0000)
                     .setDescription(localeManager.get('services.mojotest.timeout_description', lang, { user: targetUser.id }));
 
-                interaction.editReply({ 
-                    content: localeManager.get('services.mojotest.timeout_content', lang), 
-                    embeds: [timeoutEmbed], 
-                    components: [] 
-                }).catch(() => { });
+                if (initialMsg) {
+                    await initialMsg.edit({ 
+                        content: localeManager.get('services.mojotest.timeout_content', lang), 
+                        embeds: [timeoutEmbed], 
+                        components: [] 
+                    }).catch(() => { });
+                }
             }
         });
     }

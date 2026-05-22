@@ -502,7 +502,8 @@ const moderation = {
       "list_empty": { "ru": "На этом сервере нет тегов.", "en-US": "There are no tags on this server.", "uk": "На цьому сервері немає тегів." },
       "list_title": { "ru": "Список тегов", "en-US": "Tags List", "uk": "Список тегів" },
       "unknown_sub": { "ru": "Неизвестная подкоманда.", "en-US": "Unknown subcommand.", "uk": "Невідома підкоманда." },
-      "error": { "ru": "Произошла ошибка при выполнении команды.", "en-US": "An error occurred while executing the command.", "uk": "Сталася помилка при виконанні команди." }
+      "error": { "ru": "Произошла ошибка при выполнении команды.", "en-US": "An error occurred while executing the command.", "uk": "Сталася помилка при виконанні команди." },
+      "no_perms": { "ru": "У вас нет прав для управления тегами.", "en-US": "You do not have permissions to manage tags.", "uk": "У вас немає прав для керування тегами." }
     }
   },
   "iqtest": {
@@ -513,7 +514,9 @@ const moderation = {
     },
     "messages": {
       "not_found": { "ru": "Пользователь не найден на сервере.", "en-US": "User not found on the server.", "uk": "Користувач не знайдений на сервері." },
-      "no_bots": { "ru": "Боты не могут проходить тесты!", "en-US": "Bots cannot take tests!", "uk": "Боти не можуть проходити тести!" }
+      "no_bots": { "ru": "Боты не могут проходить тесты!", "en-US": "Bots cannot take tests!", "uk": "Боти не можуть проходити тести!" },
+      "self_mod": { "ru": "Вы не можете запустить тест на самом себе!", "en-US": "You cannot run the test on yourself!", "uk": "Ви не можете запустити тест на самому собі!" },
+      "hierarchy_error": { "ru": "Вы не можете запустить тест на пользователя с равной или более высокой ролью!", "en-US": "You cannot run the test on a user with an equal or higher role!", "uk": "Ви не можете запустити тест на користувача з рівною або вищою роллю!" }
     }
   },
   "report": {

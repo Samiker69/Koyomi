@@ -81,13 +81,25 @@ const localeManager = require('../../locales/localeManager');
           .setName('list')
           .setDescription(localeManager.get('moderation.tag.options.list.description', 'en-US'))
           .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.list.description'))
-      )
-      .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
+      ),
   
     async execute(interaction) {
       const sub = interaction.options.getSubcommand();
       const guildId = interaction.guild.id;
       const lang = interaction.guildLocale || 'ru';
+  
+      if (['add', 'remove', 'edit'].includes(sub)) {
+        const hasPerms = interaction.memberPermissions?.has(PermissionFlagsBits.ManageMessages) ||
+                         interaction.memberPermissions?.has(PermissionFlagsBits.KickMembers) ||
+                         interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild) ||
+                         interaction.memberPermissions?.has(PermissionFlagsBits.Administrator);
+        if (!hasPerms) {
+          return await interaction.reply({
+            content: localeManager.get('moderation.tag.messages.no_perms', lang),
+            flags: MessageFlags.Ephemeral
+          });
+        }
+      }
   
       try {
         switch (sub) {
