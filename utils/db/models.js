@@ -93,6 +93,7 @@ const ModCase = sequelize.define('ModCase', {
         allowNull: false
     },
     reason: { type: DataTypes.STRING },
+    logMessageId: { type: DataTypes.STRING, allowNull: true },
     timestamp: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
 }, { tableName: 'mod_cases', timestamps: false });
 

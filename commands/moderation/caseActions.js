@@ -94,6 +94,45 @@ const data = new SlashCommandBuilder()
                 const success = await DatabaseService.updateModCaseReason(interaction.guild.id, caseNum, reason);
                 if (success) {
                     await interaction.reply(localeManager.get('moderation.case.messages.reason_updated', lang, { num: caseNum }));
+
+                    // Редактируем эмбед вердикта, если logMessageId сохранён в БД
+                    const caseObj = await DatabaseService.getModCase(interaction.guild.id, caseNum);
+                    if (caseObj && caseObj.logMessageId) {
+                        const cfg = await DatabaseService.getSettings(interaction.guild.id);
+                        if (cfg && cfg.verdictChannelId) {
+                            const channel = await interaction.client.channels.fetch(cfg.verdictChannelId).catch(() => null);
+                            if (channel && channel.isTextBased()) {
+                                const msg = await channel.messages.fetch(caseObj.logMessageId).catch(() => null);
+                                if (msg && msg.embeds && msg.embeds.length > 0) {
+                                    const oldEmbed = msg.embeds[0];
+                                    const fields = oldEmbed.fields ? [...oldEmbed.fields] : [];
+
+                                    const reasonFieldNameEn = localeManager.get('services.embed.reason', 'en-US');
+                                    const reasonFieldNameRu = localeManager.get('services.embed.reason', 'ru');
+                                    const reasonFieldNameUk = localeManager.get('services.embed.reason', 'uk');
+
+                                    const reasonFieldIndex = fields.findIndex(f => 
+                                        f.name === reasonFieldNameEn || 
+                                        f.name === reasonFieldNameRu || 
+                                        f.name === reasonFieldNameUk ||
+                                        f.name.toLowerCase() === 'reason' ||
+                                        f.name.toLowerCase() === 'причина'
+                                    );
+
+                                    if (reasonFieldIndex !== -1) {
+                                        fields[reasonFieldIndex].value = reason;
+                                    } else {
+                                        fields.push({ name: localeManager.get('services.embed.reason', lang), value: reason, inline: false });
+                                    }
+
+                                    const newEmbed = EmbedBuilder.from(oldEmbed).setFields(fields);
+                                    await msg.edit({ embeds: [newEmbed] }).catch(err => {
+                                        console.error('[CASE REASON] Failed to edit log embed:', err.message);
+                                    });
+                                }
+                            }
+                        }
+                    }
                 } else {
                     await interaction.reply(localeManager.get('moderation.case.messages.reason_update_error', lang, { num: caseNum }));
                 }

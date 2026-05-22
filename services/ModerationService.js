@@ -303,7 +303,12 @@ ModerationService.sendVerdict = async function(interaction, action, targetUser, 
             lang: interaction.guildLocale
         });
 
-        await channel.send({ embeds: [embed], allowedMentions: { parse: [] } });
+        const msg = await channel.send({ embeds: [embed], allowedMentions: { parse: [] } });
+        if (msg && caseData && caseData.caseNum) {
+            await DatabaseService.updateModCaseLogMessageId(interaction.guild.id, caseData.caseNum, msg.id).catch(err => {
+                console.error('[ModerationService] Failed to update mod case logMessageId:', err.message);
+            });
+        }
     } catch (err) {
         console.error('[ModerationService] sendVerdict error:', err.message);
     }

@@ -282,6 +282,11 @@ class DatabaseService {
         return updated > 0;
     }
 
+    async updateModCaseLogMessageId(serverId, caseNum, logMessageId) {
+        const [updated] = await ModCase.update({ logMessageId }, { where: { serverId, caseNum } });
+        return updated > 0;
+    }
+
     async deleteModCase(serverId, caseNum) {
         const deleted = await ModCase.destroy({ where: { serverId, caseNum } });
         return deleted > 0;
