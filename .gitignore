@@ -6,5 +6,5 @@ ai/
 ModerationAPIClient/
 ClientApi/
 
-pnpm-lock.yaml
+*-lock.*
 pnpm-workspace.yaml
