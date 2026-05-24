@@ -13,6 +13,8 @@ class DatabaseService {
         this._tagsCache = new Map();
         this._geminiUserCache = new Map();
         this._logAnalyzerCache = null;
+        this._starboardCache = new Map();
+        this._disabledCommandsCache = new Map();
     }
 
     async init() {
@@ -421,6 +423,11 @@ class DatabaseService {
     async isDisabled(guildId, commandName, userId) {
         if (!guildId || !commandName || !userId) return false;
 
+        const cacheKey = `${guildId}-${commandName}-${userId}`;
+        if (this._disabledCommandsCache.has(cacheKey)) {
+            return this._disabledCommandsCache.get(cacheKey);
+        }
+
         const restriction = await DisabledCommand.findOne({
             where: {
                 guild_id: guildId,
@@ -432,7 +439,9 @@ class DatabaseService {
             }
         });
 
-        return !!restriction; // Возвращает true, если блокировка найдена
+        const isDisabled = !!restriction;
+        this._disabledCommandsCache.set(cacheKey, isDisabled);
+        return isDisabled;
     }
 
     /**
@@ -464,6 +473,7 @@ class DatabaseService {
             await DisabledCommand.findOrCreate({
                 where: { guild_id: guildId, command_name: commandName, user_id: userId }
             });
+            this._disabledCommandsCache.clear();
             return true;
         } catch (error) {
             console.error("Ошибка при добавлении ограничения:", error);
@@ -481,6 +491,7 @@ class DatabaseService {
             where: { guild_id: guildId, command_name: commandName, user_id: userId }
         });
 
+        this._disabledCommandsCache.clear();
         return deleted > 0;
     }
 
@@ -513,6 +524,52 @@ class DatabaseService {
     }
 
     // ==========================================
+    // СТАРБОРД (Starboard)
+    // ==========================================
+
+    async getStarboardSettings(guildId) {
+        if (this._starboardCache.has(guildId)) return this._starboardCache.get(guildId);
+
+        const settings = await StarboardSetting.findByPk(guildId);
+        if (settings) {
+            const data = settings.toJSON();
+            this._starboardCache.set(guildId, data);
+            return data;
+        }
+
+        const newSettings = await StarboardSetting.create({ guildId });
+        const newData = newSettings.toJSON();
+        this._starboardCache.set(guildId, newData);
+        return newData;
+    }
+
+    async updateStarboardSetting(guildId, key, value) {
+        await StarboardSetting.upsert({ guildId, [key]: value });
+        this._starboardCache.delete(guildId);
+        return true;
+    }
+
+    async isMessageOnStarboard(guildId, messageId) {
+        const count = await StarboardMessage.count({ where: { guildId, messageId } });
+        return count > 0;
+    }
+
+    async getStarboardMessageId(guildId, messageId) {
+        const entry = await StarboardMessage.findOne({ where: { guildId, messageId } });
+        return entry ? entry.starboardMessageId : null;
+    }
+
+    async addStarboardEntry(guildId, messageId, starboardMessageId) {
+        await StarboardMessage.upsert({ guildId, messageId, starboardMessageId });
+        return true;
+    }
+
+    async deleteStarboardEntry(guildId, messageId) {
+        await StarboardMessage.destroy({ where: { guildId, messageId } });
+        return true;
+    }
+
+    // ==========================================
     // ПРОЧИЕ МЕТОДЫ (Утилиты)
     // ==========================================
     
@@ -520,6 +577,8 @@ class DatabaseService {
         this._settingsCache.clear();
         this._tagsCache.clear();
         this._geminiUserCache.clear();
+        this._starboardCache.clear();
+        this._disabledCommandsCache.clear();
         this._logAnalyzerCache = null;
         console.log('[DB Service] Весь кэш очищен.');
     }

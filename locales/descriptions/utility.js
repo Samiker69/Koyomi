@@ -88,10 +88,10 @@ const utility = {
       }
     },
     "messages": {
-      "current": { 
-        "ru": "Текущий префикс команд на этом сервере: `{prefix}`\nВы можете изменить его с помощью: `/prefix [новый_префикс]` или `{prefix}prefix [новый_префикс]`", 
-        "en-US": "The current command prefix on this server is: `{prefix}`\nYou can change it using: `/prefix [new_prefix]` or `{prefix}prefix [new_prefix]`", 
-        "uk": "Поточний префікс команд на цьому сервері: `{prefix}`\nВи можете змінити його за допомогою: `/prefix [новий_префікс]` или `{prefix}prefix [новий_префікс]`" 
+      "current": {
+        "ru": "Текущий префикс команд на этом сервере: `{prefix}`\nВы можете изменить его с помощью: `/prefix [новый_префикс]` или `{prefix}prefix [новый_префикс]`",
+        "en-US": "The current command prefix on this server is: `{prefix}`\nYou can change it using: `/prefix [new_prefix]` or `{prefix}prefix [new_prefix]`",
+        "uk": "Поточний префікс команд на цьому сервері: `{prefix}`\nВи можете змінити його за допомогою: `/prefix [новий_префікс]` или `{prefix}prefix [новий_префікс]`"
       },
       "too_long": {
         "ru": "Префикс не должен быть длиннее 5 символов!",
@@ -313,8 +313,8 @@ const utility = {
         "name": { "en-US": "contentfilterlevel", "ru": "фильтрконтента", "uk": "фільтрконтенту" },
         "description": { "en-US": "Change Content Filter", "ru": "Сменить уровень фильтрации", "uk": "Змінити рівень фільтрації" },
         "options": {
-          "value": { 
-            "name": { "en-US": "value", "ru": "значение", "uk": "значення" }, 
+          "value": {
+            "name": { "en-US": "value", "ru": "значение", "uk": "значення" },
             "description": { "en-US": "Level", "ru": "Уровень", "uk": "Рівень" },
             "choices": {
               "disabled": { "en-US": "Disabled", "ru": "Отключено", "uk": "Вимкнено" },
@@ -414,39 +414,39 @@ const utility = {
       "placeholder_welcome": { "ru": "Выбрать канал приветствий", "en-US": "Select welcome channel", "uk": "Обрати канал привітань" },
       "placeholder_voice": { "ru": "Выбрать канал \"Создать комнату\"", "en-US": "Select \"Create Room\" channel", "uk": "Обрати канал \"Створити кімнату\"" },
       "placeholder_extra": { "ru": "Дополнительные настройки каналов...", "en-US": "Extra channel settings...", "uk": "Додаткові налаштування каналів..." },
-      "act_cat": { 
+      "act_cat": {
         "label": { "ru": "Задать категорию войсов", "en-US": "Set voice category", "uk": "Встановити категорію войсів" },
         "description": { "ru": "Где будут создаваться личные комнаты", "en-US": "Where private rooms will be created", "uk": "Де будуть створюватися особисті кімнати" }
       },
-      "act_log": { 
+      "act_log": {
         "label": { "ru": "Задать канал логов", "en-US": "Set log channel", "uk": "Задати канал логів" },
         "description": { "ru": "Куда писать о приглашениях", "en-US": "Where to log invites", "uk": "Куди писати про запрошення" }
       },
-      "act_sup": { 
+      "act_sup": {
         "label": { "ru": "Задать канал поддержки", "en-US": "Set support channel", "uk": "Задати канал підтримки" },
         "description": { "ru": "Куда приходят тикеты", "en-US": "Where tickets arrive", "uk": "Куди приходять тікети" }
       },
-      "act_rep": { 
+      "act_rep": {
         "label": { "ru": "Задать канал жалоб", "en-US": "Set reports channel", "uk": "Задати канал скарг" },
         "description": { "ru": "Куда приходят репорты", "en-US": "Where reports arrive", "uk": "Куди приходять репорти" }
       },
-      "act_verdict": { 
+      "act_verdict": {
         "label": { "ru": "Задать канал наказаний (Verdict)", "en-US": "Set verdict channel", "uk": "Задати канал покарань (Verdict)" },
         "description": { "ru": "Лог банов, мютов, киков и т.д.", "en-US": "Log of bans, mutes, kicks, etc.", "uk": "Лог банів, мютів, кіків і т.д." }
       },
-      "act_honeypot": { 
+      "act_honeypot": {
         "label": { "ru": "Honeypot: задать канал-ловушку", "en-US": "Honeypot: set trap channel", "uk": "Honeypot: задати канал-пастку" },
         "description": { "ru": "Сообщения в этот канал → мгновенный бан", "en-US": "Messages in this channel → instant ban", "uk": "Повідомлення в цей канал → миттєвий бан" }
       },
-      "act_honeypot_log": { 
+      "act_honeypot_log": {
         "label": { "ru": "Honeypot: задать лог-канал", "en-US": "Honeypot: set log channel", "uk": "Honeypot: задати лог-канал" },
         "description": { "ru": "Куда отправлять уведомления о срабатывании", "en-US": "Where to send trigger notifications", "uk": "Куди надсилати сповіщення про спрацювання" }
       },
-      "act_prefix": { 
+      "act_prefix": {
         "label": { "ru": "Задать префикс команд", "en-US": "Set command prefix", "uk": "Задати префікс команд" },
         "description": { "ru": "Изменить префикс для текстовых команд сервера", "en-US": "Change prefix for server text commands", "uk": "Змінити префікс для текстових команд сервера" }
       },
-      "act_reset": { 
+      "act_reset": {
         "label": { "ru": "СБРОСИТЬ ВСЁ", "en-US": "RESET ALL", "uk": "СКИНУТИ ВСЕ" },
         "description": { "ru": "Удалить все настройки (Опасно!)", "en-US": "Delete all settings (Dangerous!)", "uk": "Видалити всі налаштування (Небезпечно!)" }
       },
@@ -470,41 +470,36 @@ const utility = {
   },
   "starboard": {
     "name": { "en-US": "starboard", "ru": "старборд", "uk": "старборд" },
-    "description": { "en-US": "Starboard management", "ru": "Управление старбордом", "uk": "Керування старбордом" },
-    "options": {
-      "setup": {
-        "name": { "en-US": "setup", "ru": "настроить", "uk": "налаштувати" },
-        "description": { "en-US": "Set up starboard", "ru": "Настроить старборд", "uk": "Налаштувати старборд" },
-        "options": {
-          "channel": { "name": { "en-US": "channel", "ru": "канал", "uk": "канал" }, "description": { "en-US": "Starboard channel", "ru": "Канал старборда", "uk": "Канал старборда" } },
-          "min": { "name": { "en-US": "min", "ru": "минимум", "uk": "мінімум" }, "description": { "en-US": "Minimum stars", "ru": "Минимум звезд", "uk": "Мінімум зірок" } }
-        }
+    "description": { "en-US": "Open Starboard settings panel", "ru": "Открыть панель управления Старбордом", "uk": "Открыть панель управления Старбордом" },
+    "messages": {
+      "dashboard_title": { "ru": "Настройки Старборда: {name}", "en-US": "Starboard Settings: {name}", "uk": "Налаштування Старборда: {name}" },
+      "dashboard_desc": { "ru": "Управляйте системой автоматического добавления лучших сообщений на доску почета с реакциями звезд.", "en-US": "Manage the system that automatically highlights best messages with star reactions on a leaderboard.", "uk": "Керуйте системою автоматичного додавання найкращих повідомлень на дошку пошани з реакціями зірок." },
+      "starboard_channel": { "ru": "Канал Старборда", "en-US": "Starboard channel", "uk": "Канал Старборда" },
+      "starboard_min": { "ru": "Минимум звезд", "en-US": "Minimum stars", "uk": "Мінімум зірок" },
+      "status": { "ru": "Статус", "en-US": "Status", "uk": "Статус" },
+      "enabled": { "ru": "ВКЛЮЧЕН", "en-US": "ENABLED", "uk": "УВІМКНЕНО" },
+      "disabled": { "ru": "ВЫКЛЮЧЕН", "en-US": "DISABLED", "uk": "ВИМКНЕНО" },
+      "not_set": { "ru": "Не установлен", "en-US": "Not set", "uk": "Не встановлено" },
+      "footer": { "ru": "Используйте меню и кнопки ниже для настройки системы", "en-US": "Use the menu and buttons below to configure the system", "uk": "Використовуйте меню та кнопки нижче для налаштування системи" },
+      "placeholder_starboard": { "ru": "Выбрать канал Старборда", "en-US": "Select Starboard channel", "uk": "Обрати канал Старборда" },
+      "placeholder_extra": { "ru": "Выбрать параметр для изменения...", "en-US": "Select parameter to change...", "uk": "Обрати параметр для зміни..." },
+      "act_starboard_channel": {
+        "label": { "ru": "Задать канал Старборда", "en-US": "Set starboard channel", "uk": "Задати канал Старборда" },
+        "description": { "ru": "Куда бот будет публиковать лучшие сообщения", "en-US": "Where the bot will post starred messages", "uk": "Куди бот буде публікувати найкращі повідомлення" }
       },
-      "disable": {
-        "name": { "en-US": "disable", "ru": "выключить", "uk": "вимкнути" },
-        "description": { "en-US": "Disable starboard", "ru": "Выключить старборд", "uk": "Вимкнути старборд" }
+      "act_starboard_min": {
+        "label": { "ru": "Задать порог звезд", "en-US": "Set star threshold", "uk": "Задати поріг зірок" },
+        "description": { "ru": "Минимальное количество звезд для попадания на доску", "en-US": "Minimum number of stars to get featured", "uk": "Мінімальна кількість зірок для потрапляння на дошку" }
       },
-      "channel": {
-        "name": { "en-US": "channel", "ru": "канал", "uk": "канал" },
-        "description": { "en-US": "Set starboard channel", "ru": "Установить канал старборда", "uk": "Встановити канал старборда" },
-        "options": {
-          "input": { "name": { "en-US": "input", "ru": "канал", "uk": "канал" }, "description": { "en-US": "Channel", "ru": "Канал", "uk": "Канал" } }
-        }
-      },
-      "emoji": {
-        "name": { "en-US": "emoji", "ru": "эмодзи", "uk": "емодзі" },
-        "description": { "en-US": "Set starboard emoji", "ru": "Установить эмодзи старборда", "uk": "Встановити емодзі старборда" },
-        "options": {
-          "input": { "name": { "en-US": "input", "ru": "эмодзи", "uk": "емодзі" }, "description": { "en-US": "Emoji", "ru": "Эмодзи", "uk": "Емодзі" } }
-        }
-      },
-      "threshold": {
-        "name": { "en-US": "threshold", "ru": "порог", "uk": "поріг" },
-        "description": { "en-US": "Set star threshold", "ru": "Установить порог звезд", "uk": "Встановити поріг зірок" },
-        "options": {
-          "input": { "name": { "en-US": "input", "ru": "число", "uk": "число" }, "description": { "en-US": "Number of stars", "ru": "Количество звезд", "uk": "Кількість зірок" } }
-        }
-      }
+      "toggle_starboard": { "ru": "Старборд: {state}", "en-US": "Starboard: {state}", "uk": "Старборд: {state}" },
+      "modal_starboard_min_title": { "ru": "Порог звезд", "en-US": "Star threshold", "uk": "Поріг зірок" },
+      "modal_starboard_min_input": { "ru": "Минимум звезд для доски (от 1 до 50)", "en-US": "Minimum stars to feature (1 to 50)", "uk": "Мінімум зірок для дошки (від 1 до 50)" },
+      "modal_starboard_min_invalid": { "ru": "Неверное значение! Введите число от 1 до 50.", "en-US": "Invalid value! Enter a number from 1 to 50.", "uk": "Невірне значення! Введіть число від 1 до 50." },
+      "on": { "ru": "ВКЛ", "en-US": "ON", "uk": "УВІМК" },
+      "off": { "ru": "ВЫКЛ", "en-US": "OFF", "uk": "ВИМК" },
+      "saved": { "ru": "Сохранено!", "en-US": "Saved!", "uk": "Збережено!" },
+      "select_timeout": { "ru": "Время ожидания выбора истекло.", "en-US": "Selection timeout expired.", "uk": "Час очікування вибору вичерпано." },
+      "error_saving": { "ru": "Произошла ошибка при сохранении.", "en-US": "Error while saving.", "uk": "Сталася помилка при збереженні." }
     }
   },
   "rolemenu": {
@@ -517,8 +512,8 @@ const utility = {
         "options": {
           "title": { "name": { "en-US": "title", "ru": "заголовок", "uk": "заголовок" }, "description": { "en-US": "Menu title", "ru": "Заголовок меню", "uk": "Заголовок меню" } },
           "description": { "name": { "en-US": "description", "ru": "описание", "uk": "опис" }, "description": { "en-US": "Menu description", "ru": "Описание меню", "uk": "Опис меню" } },
-          "type": { 
-            "name": { "en-US": "type", "ru": "тип", "uk": "тип" }, 
+          "type": {
+            "name": { "en-US": "type", "ru": "тип", "uk": "тип" },
             "description": { "en-US": "Buttons or Select Menu", "ru": "Кнопки или выпадающее меню", "uk": "Кнопки або випадаюче меню" },
             "choices": {
               "buttons": { "en-US": "Buttons", "ru": "Кнопки", "uk": "Кнопки" },
