@@ -190,7 +190,21 @@ class BotIPCServer {
         if (!channel) return { success: false, error: 'Channel not found' };
 
         const messages = [...(await channel.messages.fetch()).values()].map(msg => ({
-            id: msg.id, content: this._processMessageContent(msg), embeds: msg.embeds, timestamp: msg.createdTimestamp,
+            id: msg.id,
+            content: this._processMessageContent(msg),
+            embeds: msg.embeds && msg.embeds.length > 0 ? msg.embeds.map(embed => ({
+                author: embed.author ? { name: embed.author.name, iconURL: embed.author.iconURL || null } : null,
+                thumbnail: embed.thumbnail ? { url: embed.thumbnail.url } : null,
+                title: embed.title || null,
+                url: embed.url || null,
+                description: embed.description || null,
+                fields: embed.fields ? embed.fields.map(f => ({ name: f.name, value: f.value, inline: f.inline })) : [],
+                image: embed.image ? { url: embed.image.url } : null,
+                footer: embed.footer ? { text: embed.footer.text, iconURL: embed.footer.iconURL || null } : null,
+                timestamp: embed.timestamp || null,
+                color: embed.color || null
+            })) : [],
+            timestamp: msg.createdTimestamp,
             author: { displayName: msg.author.displayName, avatarURL: msg.author.avatarURL(), id: msg.author.id },
             attachments: msg.attachments.map(a => ({ id: a.id, filename: a.name, url: a.url, contentType: a.contentType })),
             stickers: msg.stickers.map(s => ({ id: s.id, name: s.name, url: s.url }))
