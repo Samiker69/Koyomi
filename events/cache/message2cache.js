@@ -11,7 +11,18 @@ module.exports = {
             MessagesCache.unshift({
                 id: msg.id,
                 content: processMessageContent(msg),
-                embeds: msg.embeds,
+                embeds: msg.embeds && msg.embeds.length > 0 ? msg.embeds.map(embed => ({
+                    author: embed.author ? { name: embed.author.name, iconURL: embed.author.iconURL || null } : null,
+                    thumbnail: embed.thumbnail ? { url: embed.thumbnail.url } : null,
+                    title: embed.title || null,
+                    url: embed.url || null,
+                    description: embed.description || null,
+                    fields: embed.fields ? embed.fields.map(f => ({ name: f.name, value: f.value, inline: f.inline })) : [],
+                    image: embed.image ? { url: embed.image.url } : null,
+                    footer: embed.footer ? { text: embed.footer.text, iconURL: embed.footer.iconURL || null } : null,
+                    timestamp: embed.timestamp || null,
+                    color: embed.color || null
+                })) : [],
                 attachments: msg.attachments.size > 0 ? Array.from(msg.attachments.values()).map(attachment => ({
                     id: attachment.id,
                     filename: attachment.name,
@@ -43,8 +54,12 @@ module.exports = {
                 id: channel.id,
                 name: channel.name,
                 type: channel.type,
-                lastMessage: channel.lastMessage
-            })
+                lastMessage: {
+                    id: msg.id,
+                    content: msg.content ? msg.content.slice(0, 100) : '',
+                    createdTimestamp: msg.createdTimestamp
+                }
+            });
         }
 
 

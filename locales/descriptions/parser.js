@@ -135,6 +135,26 @@ const parser = {
       "en-US": "An error occurred during log analysis. Please try again or contact an administrator.",
       "ru": "Произошла ошибка при анализе лога. Пожалуйста, попробуйте еще раз или свяжитесь с администратором.",
       "uk": "Сталася помилка під час аналізу логу. Будь ласка, спробуйте ще раз або зверніться до адміністратора."
+    },
+    "ticket_closed": {
+      "en-US": "**Ticket closed.**\n\n{reason}",
+      "ru": "**Обращение закрыто.**\n\n{reason}",
+      "uk": "**Звернення закрите.**\n\n{reason}"
+    },
+    "unsupported_mods": {
+      "en-US": "**Unsupported mods detected:** {modNames}\n\n{reasons}\n\nSupport may be limited.",
+      "ru": "**Обнаружены неподдерживаемые моды:** {modNames}\n\n{reasons}\n\nПоддержка может быть ограничена.",
+      "uk": "**Виявлено непідтримувані моди:** {modNames}\n\n{reasons}\n\nПідтримка може бути обмежена."
+    },
+    "prefix_closed": {
+      "en-US": "[Closed: {bannedMod}]",
+      "ru": "[Закрыто: {bannedMod}]",
+      "uk": "[Закрито: {bannedMod}]"
+    },
+    "prefix_warning": {
+      "en-US": "[Warning: {modNames}]",
+      "ru": "[Предупреждение: {modNames}]",
+      "uk": "[Попередження: {modNames}]"
     }
   },
   "analyzer": {
@@ -191,6 +211,12 @@ const parser = {
       "mod_id": {
         "description": { "en-US": "Mod ID", "ru": "ID мода", "uk": "ID мода" }
       },
+      "role": {
+        "description": { "en-US": "Set a role to assign to users when a banned mod is found", "ru": "Установить роль, выдаваемую при обнаружении запрещенного мода", "uk": "Встановити роль, що видається при виявленні забороненого мода" }
+      },
+      "role_val": {
+        "description": { "en-US": "Role to assign (leave empty to disable)", "ru": "Роль для выдачи (оставьте пустым для отключения)", "uk": "Роль для видачі (залиште порожнім для відключення)" }
+      },
       "reason": {
         "description": { "en-US": "Reason", "ru": "Причина", "uk": "Причина" }
       },
@@ -202,6 +228,8 @@ const parser = {
       "added": { "en-US": "Added successfully.", "ru": "Успешно добавлено.", "uk": "Успішно додано." },
       "removed": { "en-US": "Removed successfully.", "ru": "Успешно удалено.", "uk": "Успішно видалено." },
       "not_found": { "en-US": "Not found.", "ru": "Не найдено.", "uk": "Не знайдено." },
+      "role_set": { "en-US": "Banned mod role successfully set to: {role}", "ru": "Роль за запрещенные моды успешно установлена на: {role}", "uk": "Роль за заборонені моди успішно встановлена на: {role}" },
+      "role_removed": { "en-US": "Banned mod role assignment successfully disabled.", "ru": "Выдача роли за запрещенные моды успешно отключена.", "uk": "Видачу ролі за заборонені моди успішно відключено." },
       "list_banned": { "en-US": "Banned Mods", "ru": "Запрещенные моды", "uk": "Заборонені моди" },
       "list_unsupported": { "en-US": "Unsupported Mods", "ru": "Неподдерживаемые моды", "uk": "Непідтримувані моди" },
       "unknown_sub": { "en-US": "Unknown subcommand.", "ru": "Неизвестная подкоманда.", "uk": "Невідома підкоманда." },
