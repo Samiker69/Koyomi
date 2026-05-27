@@ -1,4 +1,4 @@
-const LogParser = require('../utils/LogParser');
+const { LogParser } = require('../utils/LogParser');
 const DatabaseService = require('./DatabaseService');
 const localeManager = require('../locales/localeManager');
 
@@ -76,17 +76,23 @@ class LogAnalyzerService {
         if (!isAllowedLauncher) {
             return {
                 isDenied: true,
+                isBannedLauncher: true,
                 denyReason: localeManager.get('parser.analyzer.denied_launcher', lang)
             };
         }
 
-        // 3. Проверка на читы (отказ в поддержке)
         const bannedMods = await this.getBannedMods();
-        const foundBannedMod = parsed.mods.find(mod => bannedMods.includes(mod.toLowerCase()));
+        let foundBannedMod = parsed.mods.find(mod => bannedMods.includes(mod.toLowerCase()));
+        if (!foundBannedMod) {
+            // Поиск по всему тексту лога на случай если список модов не удалось распарсить
+            foundBannedMod = bannedMods.find(mod => rawLogText.toLowerCase().includes(mod.toLowerCase()));
+        }
         
         if (foundBannedMod) {
             return {
                 isDenied: true,
+                isBannedMod: true,
+                bannedMod: foundBannedMod,
                 denyReason: localeManager.get('parser.analyzer.denied_banned_mod', lang, { mod: foundBannedMod })
             };
         }

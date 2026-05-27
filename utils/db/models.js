@@ -48,7 +48,8 @@ const GuildSetting = sequelize.define('GuildSetting', {
     honeypotLogChannelId: { type: DataTypes.STRING, defaultValue: '' },
     honeypotEnabled: { type: DataTypes.BOOLEAN, defaultValue: false },
     verdictChannelId: { type: DataTypes.STRING, defaultValue: '' },
-    language: { type: DataTypes.STRING, defaultValue: 'ru' }
+    language: { type: DataTypes.STRING, defaultValue: 'ru' },
+    parserBannedRoleId: { type: DataTypes.STRING, defaultValue: '' }
 }, { tableName: 'guild_settings', timestamps: false });
 
 const RoleMenu = sequelize.define('RoleMenu', {

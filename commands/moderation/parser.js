@@ -37,6 +37,18 @@ module.exports = {
                .setRequired(true)
             )
         )
+        .addSubcommand(sub =>
+          sub
+            .setName('role')
+            .setDescription(localeManager.get('parser.commands.options.role.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('parser.commands.options.role.description'))
+            .addRoleOption(o =>
+              o.setName('role')
+               .setDescription(localeManager.get('parser.commands.options.role_val.description', 'en-US'))
+               .setDescriptionLocalizations(localeManager.getLocalizations('parser.commands.options.role_val.description'))
+               .setRequired(false)
+            )
+        )
     )
     .addSubcommandGroup(group =>
       group
@@ -116,6 +128,19 @@ module.exports = {
       }
 
       if (group === 'banned') {
+        if (sub === 'role') {
+          const role = interaction.options.getRole('role');
+          const roleId = role ? role.id : '';
+          await DatabaseService.updateSetting(interaction.guildId, 'parserBannedRoleId', roleId);
+          
+          return await interaction.reply({
+            content: roleId 
+              ? localeManager.get('parser.commands.messages.role_set', lang, { role: role.name })
+              : localeManager.get('parser.commands.messages.role_removed', lang),
+            flags: MessageFlags.Ephemeral
+          });
+        }
+
         const modId = interaction.options.getString('mod_id').toLowerCase();
         
         if (sub === 'add') {
