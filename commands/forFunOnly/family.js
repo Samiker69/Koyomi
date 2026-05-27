@@ -72,9 +72,6 @@ module.exports = {
             if (authorFamily.parentIds.includes(target.id) || authorFamily.childrenIds.includes(target.id) || authorFamily.siblingIds.includes(target.id)) {
                 return interaction.reply({ content: getMsg('propose_family'), ephemeral: true });
             }
-            if (authorFamily.parentIds.length > 0) return interaction.reply({ content: getMsg('propose_has_parents'), ephemeral: true });
-            const targetFamily = await db.getFamily(guildId, target.id);
-            if (targetFamily.parentIds.length > 0) return interaction.reply({ content: getMsg('propose_target_has_parents'), ephemeral: true });
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder().setCustomId('accept').setLabel(lang === 'ru' ? 'Да, я согласен(на) 💍' : 'Yes, I do 💍').setStyle(ButtonStyle.Success),

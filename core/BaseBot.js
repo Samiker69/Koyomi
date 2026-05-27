@@ -21,9 +21,6 @@ class BaseBot extends Client {
                 ...Options.DefaultMakeCacheSettings,
                 MessageManager: 10, // Кэшировать только последние 10 сообщений на канал
                 StageInstanceManager: 0,
-                ReactionManager: 0,
-                ThreadManager: 0,
-                ThreadMemberManager: 0,
                 ApplicationCommandPermissionManager: 0,
                 GuildBanManager: 0,
                 GuildInviteManager: 0,
