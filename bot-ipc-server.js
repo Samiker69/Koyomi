@@ -170,8 +170,17 @@ class BotIPCServer {
     async getGuildChannels(guildId) {
         const guild = this.client.guilds.cache.get(guildId);
         if (!guild) return { success: false, error: 'Guild not found' };
-        
-        const channels = [...guild.channels.cache.values()].map(c => ({ id: c.id, name: c.name, type: c.type, lastMessage: c.lastMessage }));
+
+        const channels = [...guild.channels.cache.values()].map(c => ({ 
+            id: c.id, 
+            name: c.name, 
+            type: c.type, 
+            lastMessage: c.lastMessage ? {
+                id: c.lastMessage.id,
+                content: c.lastMessage.content ? c.lastMessage.content.slice(0, 100) : '',
+                createdTimestamp: c.lastMessage.createdTimestamp
+            } : null
+        }));
         this.client.lastChannels.set(guildId, channels);
         return { success: true, channels };
     }

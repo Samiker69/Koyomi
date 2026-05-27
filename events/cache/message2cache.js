@@ -43,8 +43,12 @@ module.exports = {
                 id: channel.id,
                 name: channel.name,
                 type: channel.type,
-                lastMessage: channel.lastMessage
-            })
+                lastMessage: {
+                    id: msg.id,
+                    content: msg.content ? msg.content.slice(0, 100) : '',
+                    createdTimestamp: msg.createdTimestamp
+                }
+            });
         }
 
 

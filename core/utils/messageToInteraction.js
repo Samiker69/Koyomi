@@ -431,6 +431,13 @@ class MessageInteraction {
         }
         return this.replyMsg;
     }
+
+    async deleteReply() {
+        if (this.replyMsg) {
+            await this.replyMsg.delete().catch(() => {});
+            this.replyMsg = null;
+        }
+    }
 }
 
 module.exports = {

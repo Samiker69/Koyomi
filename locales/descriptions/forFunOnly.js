@@ -1010,7 +1010,98 @@ const forFunOnly = {
       "pat_msg": { "ru": "{author} гладит {target} по голове!", "en-US": "{author} pats {target} on the head!", "uk": "{author} гладить {target} по голові!" },
       "kiss_msg": { "ru": "{author} целует {target}!", "en-US": "{author} kisses {target}!", "uk": "{author} цілує {target}!" },
       "self_action_error": { "ru": "Вы не можете сделать это с самим собой!", "en-US": "You cannot do this to yourself!", "uk": "Ви не можете зробити це з самим собою!" },
-      "gif_error": { "ru": "Не удалось найти подходящую гифку.", "en-US": "Could not find a suitable GIF.", "uk": "Не вдалося знайти відповідну гіфку." }
+      "gif_error": { "ru": "Не удалось найти подходящую гифку.", "en-US": "Could not find a suitable GIF.", "uk": "Не вдалося знайти відповідную гіфку." }
+    }
+  },
+  "family": {
+    "name": { "en-US": "family", "ru": "семья", "uk": "сім'я" },
+    "description": { "en-US": "Wedding and family system", "ru": "Система свадеб и отношений на сервере", "uk": "Система весіль та сімейних стосунків" },
+    "options": {
+      "propose": {
+        "name": { "en-US": "propose", "ru": "предложение", "uk": "пропозиція" },
+        "description": { "en-US": "Propose marriage to a user", "ru": "Сделать предложение руки и сердца игроку", "uk": "Зробити пропозицію руки та серця гравцеві" },
+        "options": {
+          "user": {
+            "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" },
+            "description": { "en-US": "Who do you want to marry?", "ru": "Кому вы хотите сделать предложение?", "uk": "Кому ви хотите зробити пропозицію?" }
+          }
+        }
+      },
+      "divorce": {
+        "name": { "en-US": "divorce", "ru": "развод", "uk": "розлучення" },
+        "description": { "en-US": "Divorce your current spouse", "ru": "Развестись со своим супругом", "uk": "Розлучитися зі своїм подружжям" }
+      },
+      "adopt": {
+        "name": { "en-US": "adopt", "ru": "усыновить", "uk": "усиновити" },
+        "description": { "en-US": "Propose to adopt a child", "ru": "Предложить игроку стать вашим ребёнком", "uk": "Запропонувати гравцеві стати вашою дитиною" },
+        "options": {
+          "user": {
+            "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" },
+            "description": { "en-US": "Who do you want to adopt?", "ru": "Кого вы хотите усыновить/удочерить?", "uk": "Кого ви хочете усиновити/удочерити?" }
+          }
+        }
+      },
+      "abandon": {
+        "name": { "en-US": "abandon", "ru": "отказаться", "uk": "відмовитися" },
+        "description": { "en-US": "Abandon (disown) one of your children", "ru": "Отказаться от одного из ваших детей", "uk": "Відмовитися від однієї зі своїх детей" },
+        "options": {
+          "user": {
+            "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" },
+            "description": { "en-US": "Which child to disown?", "ru": "От какого ребёнка вы хотите отказаться?", "uk": "Від якої дитини ви хочете відмовитися?" }
+          }
+        }
+      },
+      "leave": {
+        "name": { "en-US": "leave", "ru": "уйти", "uk": "піти" },
+        "description": { "en-US": "Leave your parents (emancipate)", "ru": "Уйти от своих родителей (эмансипироваться)", "uk": "Піти від своїх батьків (емансипуватися)" }
+      },
+      "tree": {
+        "name": { "en-US": "tree", "ru": "древо", "uk": "дерево" },
+        "description": { "en-US": "Render a visual family tree on Canvas", "ru": "Нарисовать красивое визуальное семейное древо на Canvas", "uk": "Намалювати красиве сімейне дерево на Canvas" },
+        "options": {
+          "user": {
+            "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" },
+            "description": { "en-US": "Whose family tree to view?", "ru": "Чьё семейное древо вы хотите посмотреть?", "uk": "Чиє сімейне дерево ви хочете подивитися?" }
+          }
+        }
+      }
+    },
+    "messages": {
+      "propose_self":       { "ru": "Вы не можете жениться на самом себе.", "en-US": "You cannot marry yourself.", "uk": "Ви не можете одружитися із самим собою." },
+      "propose_bot":        { "ru": "Нельзя жениться на боте - они не умеют любить.", "en-US": "You cannot marry a bot - they are incapable of love.", "uk": "Не можна одружуватися з ботом - вони не вміють кохати." },
+      "already_married":    { "ru": "Вы уже состоите в браке.", "en-US": "You are already married.", "uk": "Ви вже перебуваєте у шлюбі." },
+      "target_already_married": { "ru": "Этот пользователь уже состоит в браке.", "en-US": "This user is already married.", "uk": "Цей користувач вже перебуває у шлюбі." },
+      "propose_sent":       { "ru": "💍 {author} делает предложение руки и сердца {target}!\nОжидаем ответа...", "en-US": "💍 {author} has proposed to {target}!\nAwaiting their response...", "uk": "💍 {author} робить пропозицію руки та серця {target}!\nОчікуємо відповіді..." },
+      "propose_accepted":   { "ru": "🎉 {target} принял(а) предложение {author}! Поздравляем - теперь они официально в браке! 💖", "en-US": "🎉 {target} accepted {author}'s proposal! Congratulations - they are now officially married! 💖", "uk": "🎉 {target} прийняв(ла) пропозицію {author}! Вітаємо - тепер вони офіційно одружені! 💖" },
+      "propose_declined":   { "ru": "💔 {target} отклонил(а) предложение {author}.", "en-US": "💔 {target} declined {author}'s proposal.", "uk": "💔 {target} відхилив(ла) пропозицію {author}." },
+      "not_married":        { "ru": "Вы не состоите в браке.", "en-US": "You are not married.", "uk": "Ви не перебуваєте у шлюбі." },
+      "divorce_confirm":    { "ru": "Вы уверены, что хотите расторгнуть брак? Это действие необратимо.", "en-US": "Are you sure you want to divorce? This action cannot be undone.", "uk": "Ви впевнені, що хочете розлучитися? Цю дію неможливо скасувати." },
+      "divorce_success":    { "ru": "💔 Ваш брак официально расторгнут.", "en-US": "💔 Your marriage has been officially dissolved.", "uk": "💔 Ваш шлюб офіційно розірвано." },
+      "divorce_cancelled":  { "ru": "Развод отменён. Любовь победила! 🥰", "en-US": "Divorce cancelled. Love prevailed! 🥰", "uk": "Розлучення скасовано. Любов перемогла! 🥰" },
+      "adopt_self":         { "ru": "Вы не можете усыновить самого себя.", "en-US": "You cannot adopt yourself.", "uk": "Ви не можете усиновити самого себе." },
+      "adopt_bot":          { "ru": "Нельзя усыновить бота.", "en-US": "You cannot adopt a bot.", "uk": "Не можна усиновити бота." },
+      "adopt_spouse":       { "ru": "Нельзя усыновить собственного супруга.", "en-US": "You cannot adopt your own spouse.", "uk": "Не можна усиновити власного чоловіка/дружину." },
+      "adopt_no_spouse":    { "ru": "Усыновление доступно только для семейных пар. Сначала вступите в брак с помощью `/семья предложение`.", "en-US": "Adoption is only available to married couples. First get married using `/family propose`.", "uk": "Усиновлення доступне лише для одружених пар. Спочатку одружіться за допомогою `/сім'я пропозиція`." },
+      "already_parent":     { "ru": "Этот пользователь уже связан с вами семейными узами.", "en-US": "This user is already related to you.", "uk": "Цей користувач вже пов'язаний з вами родинними узами." },
+      "has_parents":        { "ru": "Этот пользователь уже является членом другой семьи.", "en-US": "This user is already part of another family.", "uk": "Цей користувач вже є членом іншої родини." },
+      "too_many_children":  { "ru": "Вы не можете взять больше детей - достигнут лимит (10).", "en-US": "You cannot take any more children - the limit of 10 has been reached.", "uk": "Ви не можете взяти більше дітей - досягнуто ліміт (10)." },
+      "adopt_sent":         { "ru": "👨‍👩‍👧 {author} предлагает {target} стать частью их семьи!\nОжидаем согласия...", "en-US": "👨‍👩‍👧 {author} is proposing to adopt {target}!\nAwaiting their consent...", "uk": "👨‍👩‍👧 {author} пропонує {target} стати частиною їхньої родини!\nОчікуємо згоди..." },
+      "adopt_accepted":     { "ru": "🎉 {target} теперь официально является ребёнком {author}! Добро пожаловать в семью! 💕", "en-US": "🎉 {target} is now officially a child of {author}! Welcome to the family! 💕", "uk": "🎉 {target} тепер офіційно є дитиною {author}! Ласкаво просимо до родини! 💕" },
+      "adopt_declined":     { "ru": "{target} отказался(лась) от предложения.", "en-US": "{target} declined the adoption offer.", "uk": "{target} відхилив(ла) пропозицію." },
+      "abandon_not_child":  { "ru": "Этот пользователь не является вашим ребёнком.", "en-US": "This user is not your child.", "uk": "Цей користувач не є вашою дитиною." },
+      "abandon_success":    { "ru": "💔 Вы отказались от {target}.", "en-US": "💔 You have disowned {target}.", "uk": "💔 Ви відмовились від {target}." },
+      "leave_no_parents":   { "ru": "У вас нет родителей, от которых можно уйти.", "en-US": "You have no parents to leave.", "uk": "У вас немає батьків, від яких можна піти." },
+      "leave_success":      { "ru": "Вы покинули родительскую семью и теперь независимы.", "en-US": "You have left your parents and are now independent.", "uk": "Ви залишили батьківську родину і тепер самостійні." },
+      "lonely_tree":        { "ru": "Вы пока одиноки. Сделайте предложение с помощью `/семья предложение`!", "en-US": "You are currently single. Propose to someone with `/family propose`!", "uk": "Ви поки самотні. Зробіть пропозицію за допомогою `/сім'я пропозиція`!" },
+      "propose_family":     { "ru": "Нельзя вступить в брак с собственным родственником.", "en-US": "You cannot marry a member of your own family.", "uk": "Не можна одружуватися з власним родичем." },
+      "adopt_married":      { "ru": "Нельзя усыновить пользователя, который состоит в браке.", "en-US": "You cannot adopt a user who is already married.", "uk": "Не можна усиновити користувача, який вже перебуває у шлюбі." },
+      "adopt_has_children": { "ru": "Нельзя усыновить пользователя, у которого уже есть дети.", "en-US": "You cannot adopt a user who already has children of their own.", "uk": "Не можна усиновити користувача, у якого вже є власні діти." },
+      "propose_has_parents": { "ru": "Вы не можете вступить в брак, пока живёте в чужой семье. Сначала покиньте её с помощью `/семья уйти`.", "en-US": "You cannot marry while you are still living with a family. First leave using `/family leave`.", "uk": "Ви не можете одружитися, поки перебуваєте в чужій родині. Спочатку покиньте її за допомогою `/сім'я піти`." },
+      "propose_target_has_parents": { "ru": "Этот пользователь ещё живёт в семье и не может вступить в брак.", "en-US": "This user is still living with a family and cannot get married.", "uk": "Цей користувач ще перебуває в родині і не може одружитися." },
+      "divorce_confirm_children": { "ru": "Вы уверены, что хотите расторгнуть брак? У вас {count} общих детей - они сохранят обоих родителей, но ваши семейные узы будут разорваны.", "en-US": "Are you sure you want to divorce? You have {count} children together - they will keep both parents, but your family bond will be broken.", "uk": "Ви впевнені, що хочете розлучитися? У вас {count} спільних дітей - вони збережуть обох батьків, але ваш родинний зв'язок буде розірвано." },
+      "abandon_self":  { "ru": "Вы не можете отказаться от самого себя.", "en-US": "You cannot disown yourself.", "uk": "Ви не можете відмовитися від самого себе." },
+      "abandon_bot":   { "ru": "Боты не могут быть членами семьи.", "en-US": "Bots cannot be family members.", "uk": "Боти не можуть бути членами родини." },
+      "leave_married": { "ru": "Вы не можете покинуть родительскую семью, пока состоите в браке. Сначала расторгните брак с помощью `/семья развод`.", "en-US": "You cannot leave your family while you are married. First divorce using `/family divorce`.", "uk": "Ви не можете покинути батьківську родину, поки перебуваєте у шлюбі. Спочатку розлучіться за допомогою `/сім'я розлучення`." }
     }
   }
 };

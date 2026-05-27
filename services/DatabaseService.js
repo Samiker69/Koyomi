@@ -2,7 +2,8 @@ const { Op } = require('sequelize');
 const {
     sequelize, GuildSetting, RoleMenu, UnsupportedMod, BannedMod, ModMapping,
     AllowedLauncher, ModCase, UserPunishment, DisabledCommand, GeminiUserSetting,
-    GeminiSafetySetting, GeminiToken, StarboardSetting, StarboardMessage, Tag
+    GeminiSafetySetting, GeminiToken, StarboardSetting, StarboardMessage, Tag,
+    Marriage, ParentChild
 } = require('../utils/db/models');
 const fs = require('fs');
 const { Umzug, SequelizeStorage } = require('umzug');
@@ -567,6 +568,82 @@ class DatabaseService {
     async deleteStarboardEntry(guildId, messageId) {
         await StarboardMessage.destroy({ where: { guildId, messageId } });
         return true;
+    }
+
+    // ==========================================
+    // СВАДЬБЫ И СЕМЬИ
+    // ==========================================
+
+    async getMarriage(guildId, userId) {
+        return await Marriage.findOne({ where: { guildId, userId } });
+    }
+
+    async marry(guildId, user1Id, user2Id) {
+        await Marriage.create({ guildId, userId: user1Id, spouseId: user2Id });
+        await Marriage.create({ guildId, userId: user2Id, spouseId: user1Id });
+    }
+
+    async divorce(guildId, userId) {
+        const marriage = await Marriage.findOne({ where: { guildId, userId } });
+        if (!marriage) return false;
+        const spouseId = marriage.spouseId;
+        await Marriage.destroy({ where: { guildId, userId } });
+        await Marriage.destroy({ where: { guildId, userId: spouseId } });
+        return true;
+    }
+
+    async adoptChild(guildId, parentId, childId) {
+        await ParentChild.create({ guildId, parentId, childId });
+    }
+
+    async abandonChild(guildId, parentId, childId) {
+        return await ParentChild.destroy({ where: { guildId, parentId, childId } });
+    }
+
+    async leaveParents(guildId, childId) {
+        return await ParentChild.destroy({ where: { guildId, childId } });
+    }
+
+    async getChildren(guildId, parentId) {
+        return await ParentChild.findAll({ where: { guildId, parentId } });
+    }
+
+    async getParents(guildId, childId) {
+        return await ParentChild.findAll({ where: { guildId, childId } });
+    }
+
+    async getSiblings(guildId, userId) {
+        const parents = await ParentChild.findAll({ where: { guildId, childId: userId } });
+        if (!parents.length) return [];
+        const parentIds = parents.map(p => p.parentId);
+        const siblings = await ParentChild.findAll({
+            where: {
+                guildId,
+                parentId: parentIds,
+                childId: { [Op.ne]: userId }
+            }
+        });
+        return [...new Set(siblings.map(s => s.childId))];
+    }
+
+    async getFamily(guildId, userId) {
+        const marriage = await Marriage.findOne({ where: { guildId, userId } });
+        const spouseId = marriage ? marriage.spouseId : null;
+        
+        const childrenRows = await ParentChild.findAll({ where: { guildId, parentId: userId } });
+        const childrenIds = childrenRows.map(c => c.childId);
+        
+        const parentsRows = await ParentChild.findAll({ where: { guildId, childId: userId } });
+        const parentIds = parentsRows.map(p => p.parentId);
+        
+        const siblingIds = await this.getSiblings(guildId, userId);
+        
+        return {
+            spouseId,
+            childrenIds,
+            parentIds,
+            siblingIds
+        };
     }
 
     // ==========================================
