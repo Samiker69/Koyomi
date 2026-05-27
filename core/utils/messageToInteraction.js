@@ -415,11 +415,7 @@ class MessageInteraction {
         const msg = await this._sendResponse(payload);
 
         if (isFollowUpEphemeral && this.guild) {
-            setTimeout(async () => {
-                try {
-                    await msg.delete().catch(() => {});
-                } catch (e) {}
-            }, 10000);
+            setTimeout(() => msg.delete().catch(() => {}), 10000);
         }
 
         return msg;
@@ -434,8 +430,7 @@ class MessageInteraction {
 
     async deleteReply() {
         if (this.replyMsg) {
-            await this.replyMsg.delete().catch(() => {});
-            this.replyMsg = null;
+            this.replyMsg.delete().catch(() => {}).then(() => { this.replyMsg = null; });
         }
     }
 }
