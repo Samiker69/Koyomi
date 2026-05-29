@@ -127,7 +127,22 @@ module.exports = {
                     if (tag.disallowedChannelsId && tag.disallowedChannelsId.length > 0 && tag.disallowedChannelsId.includes(channelId)) {
                         return;
                     }
-                    await message.reply({ content: tag.content });
+                    if (message.reference && message.reference.messageId) {
+                        try {
+                            const referencedMsg = await message.channel.messages.fetch(message.reference.messageId);
+                            const replyContent = referencedMsg.author.bot 
+                                ? tag.content 
+                                : `<@${referencedMsg.author.id}> ${tag.content}`;
+                            await referencedMsg.reply({ 
+                                content: replyContent,
+                                allowedMentions: { repliedUser: !referencedMsg.author.bot, parse: ['users'] }
+                            });
+                        } catch (refErr) {
+                            await message.reply({ content: tag.content });
+                        }
+                    } else {
+                        await message.reply({ content: tag.content });
+                    }
                     return;
                 }
             } catch (tagError) {
