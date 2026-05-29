@@ -485,7 +485,21 @@ const moderation = {
           "name": { "name": { "en-US": "name", "ru": "имя", "uk": "назва" }, "description": { "en-US": "Tag name", "ru": "Имя тега", "uk": "Назва тега" } }
         }
       },
-      "list": { "name": { "en-US": "list", "ru": "список", "uk": "список" }, "description": { "en-US": "Show all server tags", "ru": "Показать все теги сервера", "uk": "Показати всі теги сервера" } }
+      "list": { "name": { "en-US": "list", "ru": "список", "uk": "список" }, "description": { "en-US": "Show all server tags", "ru": "Показать все теги сервера", "uk": "Показати всі теги сервера" } },
+      "import": {
+        "name": { "en-US": "import", "ru": "импорт", "uk": "імпорт" },
+        "description": { "en-US": "Import tags from Carl-bot JSON", "ru": "Импортировать теги из JSON Carl-bot", "uk": "Імпортувати теги з JSON Carl-bot" },
+        "options": {
+          "file": {
+            "name": { "en-US": "file", "ru": "файл", "uk": "файл" },
+            "description": { "en-US": "JSON file with tags", "ru": "Файл JSON с тегами", "uk": "Файл JSON з тегами" }
+          },
+          "overwrite": {
+            "name": { "en-US": "overwrite", "ru": "перезаписать", "uk": "перезаписати" },
+            "description": { "en-US": "Overwrite existing tags? (default: false)", "ru": "Перезаписать существующие теги? (по умолчанию: нет)", "uk": "Перезаписати існуючі теги? (за замовчуванням: ні)" }
+          }
+        }
+      }
     },
     "messages": {
       "tag_not_found": { "ru": "Тег не найден.", "en-US": "Tag not found.", "uk": "Тег не знайдено." },
@@ -503,7 +517,32 @@ const moderation = {
       "list_title": { "ru": "Список тегов", "en-US": "Tags List", "uk": "Список тегів" },
       "unknown_sub": { "ru": "Неизвестная подкоманда.", "en-US": "Unknown subcommand.", "uk": "Невідома підкоманда." },
       "error": { "ru": "Произошла ошибка при выполнении команды.", "en-US": "An error occurred while executing the command.", "uk": "Сталася помилка при виконанні команди." },
-      "no_perms": { "ru": "У вас нет прав для управления тегами.", "en-US": "You do not have permissions to manage tags.", "uk": "У вас немає прав для керування тегами." }
+      "no_perms": { "ru": "У вас нет прав для управления тегами.", "en-US": "You do not have permissions to manage tags.", "uk": "У вас немає прав для керування тегами." },
+      "import_no_input": {
+        "ru": "Пожалуйста, предоставьте файл JSON, вставьте текст JSON или укажите локальный путь для импорта.",
+        "en-US": "Please provide either a JSON file, paste JSON text, or specify a local path to import.",
+        "uk": "Будь ласка, надайте файл JSON, вставте текст JSON або вкажіть локальний шлях для імпорту."
+      },
+      "import_invalid_json": {
+        "ru": "Неверный формат JSON или файл пуст. Пожалуйста, проверьте синтаксис.",
+        "en-US": "Invalid JSON format or file is empty. Please check the syntax.",
+        "uk": "Невірний формат JSON або файл порожній. Будь ласка, перевірте синтаксис."
+      },
+      "import_no_tags": {
+        "ru": "В предоставленных данных не найдено подходящих тегов.",
+        "en-US": "No suitable tags found in the provided data.",
+        "uk": "У наданих даних не знайдено відповідних тегів."
+      },
+      "import_success": {
+        "ru": "Импорт завершен!\nУспешно добавлено тегов: **{imported}**\nПропущено существующих: **{skipped}**\nПерезаписано тегов: **{overwritten}**\nВсего обработано: **{total}**",
+        "en-US": "Import completed!\nSuccessfully added tags: **{imported}**\nSkipped existing: **{skipped}**\nOverwritten tags: **{overwritten}**\nTotal processed: **{total}**",
+        "uk": "Імпорт завершено!\nУспішно додано тегів: **{imported}**\nПропущено існуючих: **{skipped}**\nПерезаписано тегів: **{overwritten}**\nВсього оброблено: **{total}**"
+      },
+      "import_error": {
+        "ru": "Произошла ошибка при импорте тегов: {error}",
+        "en-US": "An error occurred while importing tags: {error}",
+        "uk": "Сталася помилка при імпорті тегів: {error}"
+      }
     }
   },
   "iqtest": {

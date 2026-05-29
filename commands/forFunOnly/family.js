@@ -98,7 +98,7 @@ module.exports = {
                 col.stop();
             });
 
-            col.on('end', (_, r) => r === 'time' && interaction.editReply({ components: [] }).catch(() => { }));
+            col.on('end', (_, r) => r === 'time' && interaction.deleteReply().catch(() => { }));
         }
 
         // ==========================================
@@ -177,7 +177,7 @@ module.exports = {
                 col.stop();
             });
 
-            col.on('end', (_, r) => r === 'time' && interaction.editReply({ components: [] }).catch(() => { }));
+            col.on('end', (_, r) => r === 'time' && interaction.deleteReply().catch(() => { }));
         }
 
         // ==========================================
