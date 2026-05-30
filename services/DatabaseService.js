@@ -253,7 +253,7 @@ class DatabaseService {
     // ==========================================
 
     async addModCase(caseData) {
-        const { serverId, targetId, moderatorId, action, reason = null, timestamp = new Date() } = caseData;
+        const { serverId, targetId, moderatorId, action, reason = null, evidenceUrl = null, timestamp = new Date() } = caseData;
         
         // Транзакция для безопасного получения следующего ID
         return await sequelize.transaction(async (t) => {
@@ -261,7 +261,7 @@ class DatabaseService {
             const nextCaseNum = (maxCase || 0) + 1;
 
             const newCase = await ModCase.create({
-                serverId, caseNum: nextCaseNum, targetId, moderatorId, action, reason, timestamp
+                serverId, caseNum: nextCaseNum, targetId, moderatorId, action, reason, evidenceUrl, timestamp
             }, { transaction: t });
 
             return newCase.toJSON();
@@ -298,6 +298,11 @@ class DatabaseService {
 
     async updateModCaseReason(serverId, caseNum, newReason) {
         const [updated] = await ModCase.update({ reason: newReason }, { where: { serverId, caseNum } });
+        return updated > 0;
+    }
+
+    async updateModCaseEvidenceUrl(serverId, caseNum, newEvidenceUrl) {
+        const [updated] = await ModCase.update({ evidenceUrl: newEvidenceUrl }, { where: { serverId, caseNum } });
         return updated > 0;
     }
 

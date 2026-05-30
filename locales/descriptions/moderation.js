@@ -174,6 +174,11 @@ const moderation = {
           "reason": { "name": { "en-US": "reason", "ru": "причина", "uk": "причина" }, "description": { "en-US": "Specify the new reason", "ru": "Укажите новую причину", "uk": "Вкажіть нову причину" } }
         }
       },
+      "evidence": { "name": { "en-US": "evidence", "ru": "доказательства", "uk": "докази" }, "description": { "en-US": "Change case evidence (image)", "ru": "Сменить доказательства кейса (изображение)", "uk": "Змінити докази кейса (зображення)" }, "options": {
+          "num": { "name": { "en-US": "num", "ru": "номер", "uk": "номер" }, "description": { "en-US": "Case number", "ru": "Номер кейса", "uk": "Номер кейсу" } },
+          "evidence": { "name": { "en-US": "evidence", "ru": "доказательства", "uk": "докази" }, "description": { "en-US": "Attach the new evidence", "ru": "Прикрепите новые доказательства", "uk": "Прикріпіть нові докази" } }
+        }
+      },
       "view": { "name": { "en-US": "view", "ru": "просмотр", "uk": "перегляд" }, "description": { "en-US": "Show specified case", "ru": "Показывает указанный кейс", "uk": "Показує вказаний кейс" }, "options": {
           "num": { "name": { "en-US": "num", "ru": "номер", "uk": "номер" }, "description": { "en-US": "Case number", "ru": "Номер кейса", "uk": "Номер кейсу" } }
         }
@@ -188,6 +193,8 @@ const moderation = {
       "case_remove_error": { "ru": "Кейс `#{num}` не был удалён. Возможно, вы указали неверный номер кейса", "en-US": "Case `#{num}` was not removed. Maybe the case number is invalid", "uk": "Кейс `#{num}` не був видалений. Можливо, ви вказали невірний номер кейсу" },
       "reason_updated": { "ru": "Причина кейса `#{num}` обновлена", "en-US": "Reason for case `#{num}` updated", "uk": "Причину кейса `#{num}` оновлено" },
       "reason_update_error": { "ru": "Причина кейса `#{num}` не обновлена. Возможно, вы указали неверный номер кейса", "en-US": "Reason for case `#{num}` was not updated. Maybe the case number is invalid", "uk": "Причину кейса `#{num}` не оновлено. Можливо, ви вказали невірний номер кейсу" },
+      "evidence_updated": { "ru": "Доказательства кейса `#{num}` обновлены", "en-US": "Evidence for case `#{num}` updated", "uk": "Докази кейса `#{num}` оновлено" },
+      "evidence_update_error": { "ru": "Доказательства кейса `#{num}` не обновлены. Возможно, вы указали неверный номер кейса", "en-US": "Evidence for case `#{num}` was not updated. Maybe the case number is invalid", "uk": "Докази кейса `#{num}` не оновлено. Можливо, ви вказали невірний номер кейсу" },
       "case_not_found": { "ru": "Кейс не найден!", "en-US": "Case not found!", "uk": "Кейс не знайдено!" },
       "history_title": { "ru": "История наказаний для {user}", "en-US": "Punishment history for {user}", "uk": "Історія покарань для {user}" },
       "history_empty": { "ru": "У **{user}** нет зарегистрированных наказаний на этом сервере.", "en-US": "**{user}** has no registered punishments on this server.", "uk": "У **{user}** немає зареєстрованих покарань на цьому сервері." },
