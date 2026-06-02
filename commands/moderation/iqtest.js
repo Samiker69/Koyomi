@@ -41,6 +41,6 @@ module.exports = {
         }
 
         // Передаём управление в сервис
-        await MojoTestService.startTest(interaction, targetMember);
+        await MojoTestService.startTest(interaction, targetMember, interaction.user);
     }
 };
