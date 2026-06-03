@@ -289,29 +289,11 @@ class MessageInteraction {
 
     async _sendResponse(payload) {
         try {
-            if (this.message.reference?.messageId) {
-                try {
-                    const referencedMsg = await this.message.channel.messages.fetch(this.message.reference.messageId);
-                    const replyPayload = typeof payload === 'string' 
-                        ? { content: payload } 
-                        : { ...payload };
-                    
-                    if (!referencedMsg.author.bot) {
-                        const mention = `<@${referencedMsg.author.id}>`;
-                        if (replyPayload.content) {
-                            replyPayload.content = `${mention} ${replyPayload.content}`;
-                        } else {
-                            replyPayload.content = mention;
-                        }
-                    }
-                    
-                    replyPayload.allowedMentions = { repliedUser: !referencedMsg.author.bot, parse: ['users'] };
-                    return await referencedMsg.reply(replyPayload);
-                } catch {
-                    // Fallback to replying to the command triggering message if fetching fails
-                }
+            const replyPayload = typeof payload === 'string' ? { content: payload } : { ...payload };
+            if (!replyPayload.allowedMentions) {
+                replyPayload.allowedMentions = { repliedUser: false, parse: [] };
             }
-            return await this.message.reply(payload);
+            return await this.message.reply(replyPayload);
         } catch (err) {
             if (err.code === 50035 || err.code === 10008 || err.message?.includes('message_reference')) {
                 return await this.channel.send(payload);
