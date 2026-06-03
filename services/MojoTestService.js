@@ -17,10 +17,11 @@ class MojoTestService {
     /**
      * Основная логика тестирования
      */
-    static async startTest(interaction, targetMember) {
+    static async startTest(interaction, targetMember, moderator) {
         const guild = interaction.guild;
         const targetUser = targetMember.user;
         const lang = interaction.guildLocale || 'ru';
+        if (!moderator.permissions.has(PermissionFlagsBits.KickMembers)) return;
 
         // Если тест уже идёт для этого юзера
         if (this.activeTests.has(targetUser.id)) {
