@@ -21,7 +21,9 @@ class MojoTestService {
         const guild = interaction.guild;
         const targetUser = targetMember.user;
         const lang = interaction.guildLocale || 'ru';
-        if (!moderator.permissions.has(PermissionFlagsBits.KickMembers)) return;
+        if (!moderator.permissions.has(PermissionFlagsBits.KickMembers)) return {
+            content: localeManager.get('moderation.messages.no_perms', lang)
+        };
 
         // Если тест уже идёт для этого юзера
         if (this.activeTests.has(targetUser.id)) {

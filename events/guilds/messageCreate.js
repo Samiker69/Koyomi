@@ -132,7 +132,7 @@ module.exports = {
                             const referencedMsg = await message.channel.messages.fetch(message.reference.messageId);
                             const replyContent = referencedMsg.author.bot 
                                 ? tag.content 
-                                : `<@${referencedMsg.author.id}>\n ${tag.content}`;
+                                : `<@${referencedMsg.author.id}>\n${tag.content}`;
                             await referencedMsg.reply({ 
                                 content: replyContent,
                                 allowedMentions: { repliedUser: !referencedMsg.author.bot, parse: ['users'] }
