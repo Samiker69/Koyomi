@@ -176,7 +176,7 @@ const services = {
         "a": [
           { "en-US": "ARM64 (modern phones)", "ru": "ARM64 (современные телефоны)", "uk": "ARM64 (сучасні телефони)" },
           { "en-US": "x86 (old PCs)", "ru": "x86 (старые ПК)", "uk": "x86 (старі ПК)" },
-          { "en-US": "ARMv7 (very old smartphones)", "ru": "ARMv7 (очень старые смартфоны)", "uk": "ARMv7 (дуже старі смартфони)" },
+          { "en-US": "MIPS", "ru": "MIPS", "uk": "MIPS" },
           { "en-US": "PowerPC", "ru": "PowerPC", "uk": "PowerPC" }
         ],
         "c": 0
@@ -199,7 +199,7 @@ const services = {
           { "en-US": "No, only touch control", "ru": "Нет, только сенсорное управление", "uk": "Ні, тільки сенсорне управління" },
           { "en-US": "Only on specific Sony phones", "ru": "Только на определенных телефонах Sony", "uk": "Тільки на певних телефонах Sony" }
         ],
-        "c": 1
+        "c": 0
       },
       {
         "q": { "en-US": "What is the recommended RAM for stable gameplay?", "ru": "Какой объем ОЗУ рекомендуется для стабильной игры?", "uk": "Який обсяг ОЗП рекомендується для стабільної гри?" },
@@ -235,7 +235,7 @@ const services = {
         "q": { "en-US": "What is the official site of the project?", "ru": "Какой официальный сайт проекта?", "uk": "Який офіційний сайт проєкту?" },
         "a": [
           { "en-US": "minecraft.net", "ru": "minecraft.net", "uk": "minecraft.net" },
-          { "en-US": "google.com", "ru": "google.com", "uk": "google.com" },
+          { "en-US": "mojolauncher.com", "ru": "mojolauncher.com", "uk": "mojolauncher.com" },
           { "en-US": "mojolauncher.ru", "ru": "mojolauncher.ru", "uk": "mojolauncher.ru" },
           { "en-US": "mojang.com", "ru": "mojang.com", "uk": "mojang.com" }
         ],
