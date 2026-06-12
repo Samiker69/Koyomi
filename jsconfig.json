@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES6",
+    "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
+    "checkJs": false,
+    "maxNodeModuleJsDepth": 2
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

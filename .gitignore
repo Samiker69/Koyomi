@@ -8,3 +8,5 @@ ClientApi/
 
 *-lock.*
 pnpm-workspace.yaml
+
+koyomi_project.xml
