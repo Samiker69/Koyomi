@@ -127,7 +127,22 @@ module.exports = {
                     if (tag.disallowedChannelsId && tag.disallowedChannelsId.length > 0 && tag.disallowedChannelsId.includes(channelId)) {
                         return;
                     }
-                    await message.reply({ content: tag.content });
+                    if (message.reference && message.reference.messageId) {
+                        try {
+                            const referencedMsg = await message.channel.messages.fetch(message.reference.messageId);
+                            const replyContent = referencedMsg.author.bot 
+                                ? tag.content 
+                                : `<@${referencedMsg.author.id}>\n${tag.content}`;
+                            await referencedMsg.reply({ 
+                                content: replyContent,
+                                allowedMentions: { repliedUser: !referencedMsg.author.bot, parse: ['users'] }
+                            });
+                        } catch (refErr) {
+                            await message.reply({ content: tag.content, allowedMentions: { repliedUser: true, parse: ['users'] } });
+                        }
+                    } else {
+                        await message.reply({ content: tag.content, allowedMentions: { repliedUser: true, parse: ['users'] } });
+                    }
                     return;
                 }
             } catch (tagError) {
@@ -143,7 +158,8 @@ module.exports = {
         // 5. Проверяем, не отключена ли команда
         if (await DatabaseService.isDisabled(message.guild.id, commandName, message.author.id)) {
             await message.reply({
-                content: localeManager.get('events.errors.command_disabled', preferredLang, { commandName })
+                content: localeManager.get('events.errors.command_disabled', preferredLang, { commandName }),
+                allowedMentions: { repliedUser: false, parse: [] }
             });
             return;
         }
@@ -168,7 +184,8 @@ module.exports = {
                     content: localeManager.get('events.errors.cooldown', preferredLang, {
                         commandName: command.data.name,
                         timestamp: expiredTimestamp
-                    })
+                    }),
+                    allowedMentions: { repliedUser: false, parse: [] }
                 });
             }
         }
@@ -210,7 +227,7 @@ module.exports = {
             const availableList = availableUsage.map(cmd => `\`${cmd}\``).join(', ');
             const errorText = `${header}\n**${usageLabel}:** \`${prefix}${commandName} ${paramText}\`\n**${availLabel}:** ${availableList}`;
 
-            await message.reply({ content: errorText });
+            await message.reply({ content: errorText, allowedMentions: { repliedUser: false, parse: [] } });
             return;
         }
 
@@ -254,7 +271,7 @@ module.exports = {
                 params: paramsList
             }) + `\n**${preferredLang === 'ru' ? 'Использование' : 'Usage'}:** \`${usage}\``;
 
-            await message.reply({ content: errorText });
+            await message.reply({ content: errorText, allowedMentions: { repliedUser: false, parse: [] } });
             return;
         }
 

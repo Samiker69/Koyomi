@@ -1,4 +1,4 @@
-const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials, Options } = require('discord.js');
 
 class BaseBot extends Client {
     constructor() {
@@ -15,6 +15,37 @@ class BaseBot extends Client {
             partials: [Partials.Message, Partials.Reaction],
             allowedMentions: { 
                 parse: [] 
+            },
+            // Ограничение кэширования для снижения потребления ОЗУ
+            makeCache: Options.cacheWithLimits({
+                ...Options.DefaultMakeCacheSettings,
+                MessageManager: 10, // Кэшировать только последние 10 сообщений на канал
+                StageInstanceManager: 0,
+                ApplicationCommandPermissionManager: 0,
+                GuildBanManager: 0,
+                GuildInviteManager: 0,
+                GuildStickerManager: 0,
+                GuildScheduledEventManager: 0,
+            }),
+            // Периодическая очистка кэша от неактивных данных
+            sweepers: {
+                ...Options.DefaultSweeperSettings,
+                messages: {
+                    interval: 3600, // Раз в час
+                    lifetime: 1800, // Сообщения старше 30 минут удаляются
+                },
+                users: {
+                    interval: 3600,
+                    filter: () => (user) => user.id !== user.client.user?.id, // Удалять неактивных пользователей
+                },
+                guildMembers: {
+                    interval: 3600,
+                    filter: () => (member) => member.id !== member.guild.members.me?.id, // Удалять участников кроме самого бота
+                },
+                presences: {
+                    interval: 600, // Каждые 10 минут
+                    filter: () => () => true, // Полностью чистить кэш присутствий
+                }
             }
         });
 

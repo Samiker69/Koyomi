@@ -34,7 +34,7 @@ const services = {
       {
         "q": { "en-US": "What is Mojo Launcher?", "ru": "Что такое Mojo Launcher?", "uk": "Що таке Mojo Launcher?" },
         "a": [
-          { "en-US": "Java Edition emulator for Android", "ru": "Эмулятор Java Edition для Android", "uk": "Емулятор Java Edition для Android" },
+          { "en-US": "Java Edition launcher for Android", "ru": "Лаунчер Java Edition для Android", "uk": "Лаунчер Java Edition для Android" },
           { "en-US": "Launcher for Bedrock Edition", "ru": "Лаунчер для Bedrock Edition", "uk": "Лаунчер для Bedrock Edition" },
           { "en-US": "PC cheat client", "ru": "Чит-клиент для ПК", "uk": "Чит-клієнт для ПК" },
           { "en-US": "Server creation tool", "ru": "Программа для создания серверов", "uk": "Програма для створення серверів" }
@@ -145,7 +145,7 @@ const services = {
         "q": { "en-US": "How is Mojo Launcher different from Minecraft PE (Bedrock)?", "ru": "Чем Mojo Launcher принципиально отличается от Minecraft PE (Bedrock)?", "uk": "Чим Mojo Launcher принципово відрізняється від Minecraft PE (Bedrock)?" },
         "a": [
           { "en-US": "It has different graphics", "ru": "Там другая графика", "uk": "Там інша графіка" },
-          { "en-US": "It's emulation of full PC Java version", "ru": "Это эмуляция полноценной ПК-версии (Java)", "uk": "Це емуляція повноцінної ПК-версії (Java)" },
+          { "en-US": "It runs the official PC Java version", "ru": "Он запускает полноценную ПК-версию (Java)", "uk": "Він запускає повноцінну ПК-версію (Java)" },
           { "en-US": "Mojo has fewer blocks", "ru": "В Mojo меньше блоков", "uk": "У Mojo менше блоків" },
           { "en-US": "Mojo is just a texture pack", "ru": "Mojo — это просто набор текстур", "uk": "Mojo — це просто набір текстур" }
         ],
@@ -176,7 +176,7 @@ const services = {
         "a": [
           { "en-US": "ARM64 (modern phones)", "ru": "ARM64 (современные телефоны)", "uk": "ARM64 (сучасні телефони)" },
           { "en-US": "x86 (old PCs)", "ru": "x86 (старые ПК)", "uk": "x86 (старі ПК)" },
-          { "en-US": "ARMv7 (very old smartphones)", "ru": "ARMv7 (очень старые смартфоны)", "uk": "ARMv7 (дуже старі смартфони)" },
+          { "en-US": "MIPS", "ru": "MIPS", "uk": "MIPS" },
           { "en-US": "PowerPC", "ru": "PowerPC", "uk": "PowerPC" }
         ],
         "c": 0
@@ -199,7 +199,7 @@ const services = {
           { "en-US": "No, only touch control", "ru": "Нет, только сенсорное управление", "uk": "Ні, тільки сенсорне управління" },
           { "en-US": "Only on specific Sony phones", "ru": "Только на определенных телефонах Sony", "uk": "Тільки на певних телефонах Sony" }
         ],
-        "c": 1
+        "c": 0
       },
       {
         "q": { "en-US": "What is the recommended RAM for stable gameplay?", "ru": "Какой объем ОЗУ рекомендуется для стабильной игры?", "uk": "Який обсяг ОЗП рекомендується для стабільної гри?" },
@@ -235,7 +235,7 @@ const services = {
         "q": { "en-US": "What is the official site of the project?", "ru": "Какой официальный сайт проекта?", "uk": "Який офіційний сайт проєкту?" },
         "a": [
           { "en-US": "minecraft.net", "ru": "minecraft.net", "uk": "minecraft.net" },
-          { "en-US": "google.com", "ru": "google.com", "uk": "google.com" },
+          { "en-US": "mojolauncher.com", "ru": "mojolauncher.com", "uk": "mojolauncher.com" },
           { "en-US": "mojolauncher.ru", "ru": "mojolauncher.ru", "uk": "mojolauncher.ru" },
           { "en-US": "mojang.com", "ru": "mojang.com", "uk": "mojang.com" }
         ],
@@ -248,16 +248,6 @@ const services = {
           { "en-US": "Move files to system folder", "ru": "Перенести файлы в системную папку", "uk": "Перенести файли до системної папки" },
           { "en-US": "It's built-in, no need to install", "ru": "Оно встроено, устанавливать не нужно", "uk": "Воно вбудоване, встановлювати не потрібно" },
           { "en-US": "Installation is not supported", "ru": "Установка не поддерживается", "uk": "Встановлення не підтримується" }
-        ],
-        "c": 0
-      },
-      {
-        "q": { "en-US": "Does Mojo Launcher support Controller/Gamepad?", "ru": "Поддерживает ли Mojo Launcher контроллер/геймпад?", "uk": "Чи підтримує Mojo Launcher контролер/геймпад?" },
-        "a": [
-          { "en-US": "Yes, with special mods like Controllable", "ru": "Да, со специальными модами (Controllable)", "uk": "Так, зі спеціальними модами (Controllable)" },
-          { "en-US": "Yes, native support", "ru": "Да, нативная поддержка", "uk": "Так, нативна підтримка" },
-          { "en-US": "No, only touch control", "ru": "Нет, только сенсорное управление", "uk": "Ні, тільки сенсорне управління" },
-          { "en-US": "Only on specific Sony phones", "ru": "Только на определенных телефонах Sony", "uk": "Тільки на певних телефонах Sony" }
         ],
         "c": 0
       },

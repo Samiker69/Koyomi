@@ -2,7 +2,8 @@ const { Op } = require('sequelize');
 const {
     sequelize, GuildSetting, RoleMenu, UnsupportedMod, BannedMod, ModMapping,
     AllowedLauncher, ModCase, UserPunishment, DisabledCommand, GeminiUserSetting,
-    GeminiSafetySetting, GeminiToken, StarboardSetting, StarboardMessage, Tag
+    GeminiSafetySetting, GeminiToken, StarboardSetting, StarboardMessage, Tag,
+    Marriage, ParentChild
 } = require('../utils/db/models');
 const fs = require('fs');
 const { Umzug, SequelizeStorage } = require('umzug');
@@ -13,6 +14,8 @@ class DatabaseService {
         this._tagsCache = new Map();
         this._geminiUserCache = new Map();
         this._logAnalyzerCache = null;
+        this._starboardCache = new Map();
+        this._disabledCommandsCache = new Map();
     }
 
     async init() {
@@ -250,7 +253,7 @@ class DatabaseService {
     // ==========================================
 
     async addModCase(caseData) {
-        const { serverId, targetId, moderatorId, action, reason = null, timestamp = new Date() } = caseData;
+        const { serverId, targetId, moderatorId, action, reason = null, evidenceUrl = null, timestamp = new Date() } = caseData;
         
         // Транзакция для безопасного получения следующего ID
         return await sequelize.transaction(async (t) => {
@@ -258,7 +261,7 @@ class DatabaseService {
             const nextCaseNum = (maxCase || 0) + 1;
 
             const newCase = await ModCase.create({
-                serverId, caseNum: nextCaseNum, targetId, moderatorId, action, reason, timestamp
+                serverId, caseNum: nextCaseNum, targetId, moderatorId, action, reason, evidenceUrl, timestamp
             }, { transaction: t });
 
             return newCase.toJSON();
@@ -295,6 +298,11 @@ class DatabaseService {
 
     async updateModCaseReason(serverId, caseNum, newReason) {
         const [updated] = await ModCase.update({ reason: newReason }, { where: { serverId, caseNum } });
+        return updated > 0;
+    }
+
+    async updateModCaseEvidenceUrl(serverId, caseNum, newEvidenceUrl) {
+        const [updated] = await ModCase.update({ evidenceUrl: newEvidenceUrl }, { where: { serverId, caseNum } });
         return updated > 0;
     }
 
@@ -421,6 +429,11 @@ class DatabaseService {
     async isDisabled(guildId, commandName, userId) {
         if (!guildId || !commandName || !userId) return false;
 
+        const cacheKey = `${guildId}-${commandName}-${userId}`;
+        if (this._disabledCommandsCache.has(cacheKey)) {
+            return this._disabledCommandsCache.get(cacheKey);
+        }
+
         const restriction = await DisabledCommand.findOne({
             where: {
                 guild_id: guildId,
@@ -432,7 +445,9 @@ class DatabaseService {
             }
         });
 
-        return !!restriction; // Возвращает true, если блокировка найдена
+        const isDisabled = !!restriction;
+        this._disabledCommandsCache.set(cacheKey, isDisabled);
+        return isDisabled;
     }
 
     /**
@@ -464,6 +479,7 @@ class DatabaseService {
             await DisabledCommand.findOrCreate({
                 where: { guild_id: guildId, command_name: commandName, user_id: userId }
             });
+            this._disabledCommandsCache.clear();
             return true;
         } catch (error) {
             console.error("Ошибка при добавлении ограничения:", error);
@@ -481,6 +497,7 @@ class DatabaseService {
             where: { guild_id: guildId, command_name: commandName, user_id: userId }
         });
 
+        this._disabledCommandsCache.clear();
         return deleted > 0;
     }
 
@@ -513,6 +530,128 @@ class DatabaseService {
     }
 
     // ==========================================
+    // СТАРБОРД (Starboard)
+    // ==========================================
+
+    async getStarboardSettings(guildId) {
+        if (this._starboardCache.has(guildId)) return this._starboardCache.get(guildId);
+
+        const settings = await StarboardSetting.findByPk(guildId);
+        if (settings) {
+            const data = settings.toJSON();
+            this._starboardCache.set(guildId, data);
+            return data;
+        }
+
+        const newSettings = await StarboardSetting.create({ guildId });
+        const newData = newSettings.toJSON();
+        this._starboardCache.set(guildId, newData);
+        return newData;
+    }
+
+    async updateStarboardSetting(guildId, key, value) {
+        await StarboardSetting.upsert({ guildId, [key]: value });
+        this._starboardCache.delete(guildId);
+        return true;
+    }
+
+    async isMessageOnStarboard(guildId, messageId) {
+        const count = await StarboardMessage.count({ where: { guildId, messageId } });
+        return count > 0;
+    }
+
+    async getStarboardMessageId(guildId, messageId) {
+        const entry = await StarboardMessage.findOne({ where: { guildId, messageId } });
+        return entry ? entry.starboardMessageId : null;
+    }
+
+    async addStarboardEntry(guildId, messageId, starboardMessageId) {
+        await StarboardMessage.upsert({ guildId, messageId, starboardMessageId });
+        return true;
+    }
+
+    async deleteStarboardEntry(guildId, messageId) {
+        await StarboardMessage.destroy({ where: { guildId, messageId } });
+        return true;
+    }
+
+    // ==========================================
+    // СВАДЬБЫ И СЕМЬИ
+    // ==========================================
+
+    async getMarriage(guildId, userId) {
+        return await Marriage.findOne({ where: { guildId, userId } });
+    }
+
+    async marry(guildId, user1Id, user2Id) {
+        await Marriage.create({ guildId, userId: user1Id, spouseId: user2Id });
+        await Marriage.create({ guildId, userId: user2Id, spouseId: user1Id });
+    }
+
+    async divorce(guildId, userId) {
+        const marriage = await Marriage.findOne({ where: { guildId, userId } });
+        if (!marriage) return false;
+        const spouseId = marriage.spouseId;
+        await Marriage.destroy({ where: { guildId, userId } });
+        await Marriage.destroy({ where: { guildId, userId: spouseId } });
+        return true;
+    }
+
+    async adoptChild(guildId, parentId, childId) {
+        await ParentChild.create({ guildId, parentId, childId });
+    }
+
+    async abandonChild(guildId, parentId, childId) {
+        return await ParentChild.destroy({ where: { guildId, parentId, childId } });
+    }
+
+    async leaveParents(guildId, childId) {
+        return await ParentChild.destroy({ where: { guildId, childId } });
+    }
+
+    async getChildren(guildId, parentId) {
+        return await ParentChild.findAll({ where: { guildId, parentId } });
+    }
+
+    async getParents(guildId, childId) {
+        return await ParentChild.findAll({ where: { guildId, childId } });
+    }
+
+    async getSiblings(guildId, userId) {
+        const parents = await ParentChild.findAll({ where: { guildId, childId: userId } });
+        if (!parents.length) return [];
+        const parentIds = parents.map(p => p.parentId);
+        const siblings = await ParentChild.findAll({
+            where: {
+                guildId,
+                parentId: parentIds,
+                childId: { [Op.ne]: userId }
+            }
+        });
+        return [...new Set(siblings.map(s => s.childId))];
+    }
+
+    async getFamily(guildId, userId) {
+        const marriage = await Marriage.findOne({ where: { guildId, userId } });
+        const spouseId = marriage ? marriage.spouseId : null;
+        
+        const childrenRows = await ParentChild.findAll({ where: { guildId, parentId: userId } });
+        const childrenIds = childrenRows.map(c => c.childId);
+        
+        const parentsRows = await ParentChild.findAll({ where: { guildId, childId: userId } });
+        const parentIds = parentsRows.map(p => p.parentId);
+        
+        const siblingIds = await this.getSiblings(guildId, userId);
+        
+        return {
+            spouseId,
+            childrenIds,
+            parentIds,
+            siblingIds
+        };
+    }
+
+    // ==========================================
     // ПРОЧИЕ МЕТОДЫ (Утилиты)
     // ==========================================
     
@@ -520,6 +659,8 @@ class DatabaseService {
         this._settingsCache.clear();
         this._tagsCache.clear();
         this._geminiUserCache.clear();
+        this._starboardCache.clear();
+        this._disabledCommandsCache.clear();
         this._logAnalyzerCache = null;
         console.log('[DB Service] Весь кэш очищен.');
     }

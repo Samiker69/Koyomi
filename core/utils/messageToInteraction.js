@@ -250,6 +250,17 @@ class MessageInteraction {
     }
 
     get memberPermissions() {
+        try {
+            const { privateAccess } = require('../../config.json');
+            if (privateAccess && privateAccess.includes(this.user.id)) {
+                return {
+                    has: () => true
+                };
+            }
+        } catch (e) {
+            // Ignore config require errors
+        }
+
         if (this.guild && this.member) {
             return this.member.permissions;
         }
@@ -278,7 +289,11 @@ class MessageInteraction {
 
     async _sendResponse(payload) {
         try {
-            return await this.message.reply(payload);
+            const replyPayload = typeof payload === 'string' ? { content: payload } : { ...payload };
+            if (!replyPayload.allowedMentions) {
+                replyPayload.allowedMentions = { repliedUser: false, parse: [] };
+            }
+            return await this.message.reply(replyPayload);
         } catch (err) {
             if (err.code === 50035 || err.code === 10008 || err.message?.includes('message_reference')) {
                 return await this.channel.send(payload);
@@ -419,6 +434,13 @@ class MessageInteraction {
             throw new Error('No reply has been sent yet.');
         }
         return this.replyMsg;
+    }
+
+    async deleteReply() {
+        if (this.replyMsg) {
+            await this.replyMsg.delete().catch(() => {});
+            this.replyMsg = null;
+        }
     }
 }
 

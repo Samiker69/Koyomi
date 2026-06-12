@@ -6,6 +6,7 @@ const {
 } = require('discord.js');
 const DatabaseService = require('../../services/DatabaseService');
 const EmbedService = require('../../services/EmbedService');
+const { privateAccess } = require('../../config.json');
 
 const localeManager = require('../../locales/localeManager');
 
@@ -82,12 +83,52 @@ const localeManager = require('../../locales/localeManager');
           .setDescription(localeManager.get('moderation.tag.options.list.description', 'en-US'))
           .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.list.description'))
       )
-      .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
+      .addSubcommand(sub =>
+        sub
+          .setName('import')
+          .setDescription(localeManager.get('moderation.tag.options.import.description', 'en-US'))
+          .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.import.description'))
+          .addAttachmentOption(o =>
+            o.setName('file')
+             .setDescription(localeManager.get('moderation.tag.options.import.options.file.description', 'en-US'))
+             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.import.options.file.description'))
+             .setRequired(true)
+          )
+          .addBooleanOption(o =>
+            o.setName('overwrite')
+             .setDescription(localeManager.get('moderation.tag.options.import.options.overwrite.description', 'en-US'))
+             .setDescriptionLocalizations(localeManager.getLocalizations('moderation.tag.options.import.options.overwrite.description'))
+             .setRequired(false)
+          )
+      ),
   
     async execute(interaction) {
       const sub = interaction.options.getSubcommand();
       const guildId = interaction.guild.id;
       const lang = interaction.guildLocale || 'ru';
+  
+      if (sub === 'import') {
+        const isDeveloper = privateAccess.includes(interaction.user.id) || 
+                            interaction.user.id === interaction.client.application?.owner?.id ||
+                            interaction.client.application?.owner?.members?.has(interaction.user.id);
+        if (!isDeveloper) {
+          return await interaction.reply({
+            content: localeManager.get('moderation.tag.messages.no_perms', lang),
+            flags: MessageFlags.Ephemeral
+          });
+        }
+      } else if (['add', 'remove', 'edit'].includes(sub)) {
+        const hasPerms = interaction.memberPermissions?.has(PermissionFlagsBits.ManageMessages) ||
+                         interaction.memberPermissions?.has(PermissionFlagsBits.KickMembers) ||
+                         interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild) ||
+                         interaction.memberPermissions?.has(PermissionFlagsBits.Administrator);
+        if (!hasPerms) {
+          return await interaction.reply({
+            content: localeManager.get('moderation.tag.messages.no_perms', lang),
+            flags: MessageFlags.Ephemeral
+          });
+        }
+      }
   
       try {
         switch (sub) {
@@ -174,7 +215,7 @@ const localeManager = require('../../locales/localeManager');
               });
             }
           
-            const description = rows
+            let description = rows
               .map(r => {
                 const preview = r.content.length > 50
                   ? r.content.slice(0, 47) + '...'
@@ -183,13 +224,90 @@ const localeManager = require('../../locales/localeManager');
               })
               .join('\n');
           
+            if (description.length > 4000) {
+              description = rows.map(r => `\`${r.name}\``).join(', ');
+              if (description.length > 4000) {
+                description = description.slice(0, 3950) + '...';
+              }
+            }
+
             const embed = EmbedService.createBaseEmbed(interaction)
               .setTitle(localeManager.get('moderation.tag.messages.list_title', lang))
               .setDescription(description);
           
             return interaction.reply({ embeds: [embed] });
           }          
-  
+
+          case 'import': {
+            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+            const file = interaction.options.getAttachment('file');
+            const overwrite = interaction.options.getBoolean('overwrite') || false;
+
+            let parsedJson;
+            try {
+              const res = await fetch(file.url);
+              if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+              parsedJson = await res.json();
+            } catch (err) {
+              console.error('[ERROR] Failed to import tags:', err);
+              return await interaction.editReply({
+                content: localeManager.get('moderation.tag.messages.import_error', lang, { error: err.message })
+              });
+            }
+
+            const importedTags = [];
+            const items = Array.isArray(parsedJson) ? parsedJson : Object.entries(parsedJson || {}).map(([k, v]) => 
+              typeof v === 'string' ? { name: k, content: v } : { name: k, ...v }
+            );
+
+            for (const item of items) {
+              if (!item || typeof item !== 'object') continue;
+              const name = (item.name || item.tag || item.key || item.title || item.id || '').toString().trim();
+              const content = (item.content || item.value || item.response || item.text || item.val || item.msg || '').toString();
+              if (name && content) {
+                importedTags.push({ name, content });
+              }
+            }
+
+            if (importedTags.length === 0) {
+              return await interaction.editReply({
+                content: localeManager.get('moderation.tag.messages.import_no_tags', lang)
+              });
+            }
+
+            const existingTags = await DatabaseService.getTagsByServer(guildId);
+            const existingNames = new Set(existingTags.map(t => t.name.toLowerCase()));
+
+            let importedCount = 0;
+            let skippedCount = 0;
+            let overwrittenCount = 0;
+
+            for (const tag of importedTags) {
+              const name = tag.name.toLowerCase();
+              if (existingNames.has(name)) {
+                if (overwrite) {
+                  await DatabaseService.addTag(guildId, name, tag.content);
+                  overwrittenCount++;
+                } else {
+                  skippedCount++;
+                }
+              } else {
+                await DatabaseService.addTag(guildId, name, tag.content);
+                importedCount++;
+              }
+            }
+
+            return await interaction.editReply({
+              content: localeManager.get('moderation.tag.messages.import_success', lang, {
+                imported: importedCount,
+                skipped: skippedCount,
+                overwritten: overwrittenCount,
+                total: importedTags.length
+              })
+            });
+          }
+
           default:
             return await interaction.reply({
               content: localeManager.get('moderation.tag.messages.unknown_sub', lang),

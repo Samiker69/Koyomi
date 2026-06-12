@@ -1,5 +1,5 @@
 module.exports = {
-	name: 'message-cache-cleanup',
+	name: 'channels-cache-cleanup',
 	interval: 12 * 60 * 60 * 1000,
 	immediate: false,
 	execute(client) {
@@ -8,7 +8,7 @@ module.exports = {
         const cutoff = Date.now() - (6 * 60 * 60 * 1000);
 
 		for (const [guildId, channels] of client.lastChannels) {
-			const filtered = channels.filter(channel => channel.lastMessage.createdTimestamp > cutoff);
+			const filtered = channels.filter(channel => (channel.lastMessage?.createdTimestamp || 0) > cutoff);
 			
 			if (filtered.length === 0) {
 				client.lastChannels.delete(guildId);

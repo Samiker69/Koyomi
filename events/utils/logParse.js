@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const { extractLogInfo, extractCrashInfo, extractPotentialSolutions } = require('../../utils/LogParser');
+const { extractLogInfo, extractCrashInfo } = require('../../utils/LogParser');
 const DatabaseService = require('../../services/DatabaseService');
 const LogAnalyzerService = require('../../services/LogAnalyzerService');
 const localeManager = require('../../locales/localeManager');
@@ -14,8 +14,8 @@ async function getModLink(modName) {
         const modrinthData = await modrinthResponse.json();
 
         if (modrinthData.hits && modrinthData.hits.length > 0) {
-            const bestMatch = modrinthData.hits.find(hit => 
-                hit.title.toLowerCase() === modName.toLowerCase() || 
+            const bestMatch = modrinthData.hits.find(hit =>
+                hit.title.toLowerCase() === modName.toLowerCase() ||
                 hit.slug.toLowerCase() === modName.toLowerCase()
             ) || modrinthData.hits[0];
 
@@ -29,7 +29,83 @@ async function getModLink(modName) {
     return null;
 }
 
+async function handleBannedMod(message, bannedMod, reason, lang = 'ru') {
+    const thread = message.channel;
+    const originalName = thread.name
+        .replace(/^\[Закрыто:[^\]]+\]\s*/i, '')
+        .replace(/^\[Предупреждение:[^\]]+\]\s*/i, '')
+        .replace(/^\[Closed:[^\]]+\]\s*/i, '')
+        .replace(/^\[Warning:[^\]]+\]\s*/i, '')
+        .replace(/^\[Закрито:[^\]]+\]\s*/i, '')
+        .replace(/^\[Попередження:[^\]]+\]\s*/i, '')
+        .replace(/^[🔒⚠️]\s*/, '');
+
+    const prefix = localeManager.get('parser.messages.prefix_closed', lang, { bannedMod });
+    const newName = `${prefix} ${originalName}`.slice(0, 100);
+    await thread.setName(newName).catch(() => { });
+
+    // Выдача роли за бан-лист мод при наличии настройки
+    const guildSettings = await DatabaseService.getSettings(message.guildId);
+    if (guildSettings && guildSettings.parserBannedRoleId) {
+        const member = message.member || await message.guild.members.fetch(message.author.id).catch(() => null);
+        if (member) {
+            await member.roles.add(guildSettings.parserBannedRoleId).catch(err => {
+                console.error(`[LogParser] Не удалось выдать роль за бан-лист мод пользователю ${member.user.tag}:`, err.message);
+            });
+        }
+    }
+
+    await message.reply({
+        content: localeManager.get('parser.messages.ticket_closed', lang, { reason })
+    });
+
+    await thread.setArchived(true, reason).catch(() => { });
+}
+
+async function handleUnsupportedMods(message, unsupportedMods, lang = 'ru') {
+    const thread = message.channel;
+    const modNames = unsupportedMods.map(m => m.name).join(', ');
+    const reasons = unsupportedMods.map(m => `**${m.name}**: ${m.reason}`).join('\n');
+
+    const originalName = thread.name
+        .replace(/^\[Закрыто:[^\]]+\]\s*/i, '')
+        .replace(/^\[Предупреждение:[^\]]+\]\s*/i, '')
+        .replace(/^\[Closed:[^\]]+\]\s*/i, '')
+        .replace(/^\[Warning:[^\]]+\]\s*/i, '')
+        .replace(/^\[Закрито:[^\]]+\]\s*/i, '')
+        .replace(/^\[Попередження:[^\]]+\]\s*/i, '')
+        .replace(/^[🔒⚠️]\s*/, '');
+
+    const prefix = localeManager.get('parser.messages.prefix_warning', lang, { modNames });
+    const newName = `${prefix} ${originalName}`.slice(0, 100);
+    await thread.setName(newName).catch(() => { });
+
+    await message.reply({
+        content: localeManager.get('parser.messages.unsupported_mods', lang, { modNames, reasons })
+    });
+}
+
 async function sendAnalyzedLog(message, logText, lang = 'ru') {
+    const result = await LogAnalyzerService.analyze(logText, lang);
+
+    // 1. Проверка на читы (бан-лист)
+    if (result.isDenied && result.isBannedMod) {
+        await handleBannedMod(message, result.bannedMod, result.denyReason, lang);
+        return;
+    }
+
+    // 2. Проверка на сторонний лаунчер
+    if (result.isDenied) {
+        await message.reply({ content: result.denyReason });
+        return;
+    }
+
+    // 3. Проверка на неподдерживаемые моды
+    if (result.mods?.unsupported?.length > 0) {
+        await handleUnsupportedMods(message, result.mods.unsupported, lang);
+    }
+
+    // 4. Обычный вывод анализа лога
     const logInfo = extractLogInfo(logText, lang);
     const crashLogInfo = extractCrashInfo(logText, lang);
 
@@ -65,18 +141,47 @@ async function sendAnalyzedLog(message, logText, lang = 'ru') {
     const solutions = [];
     let counter = 1;
 
-    const installModRegex = /Install ([\w-]+), any version between/gi;
+    const installModRegex = /Install ([\w-]+),/gi;
     const matches = [...logText.matchAll(installModRegex)];
-    for (const match of matches) {
+
+    const installPromises = matches.map(async (match) => {
         const modName = match[1];
         const modLink = await getModLink(modName);
-        solutions.push(`${counter++}. ${localeManager.get('parser.solutions.install_mod', lang, { modName: modName, modLink: modLink || localeManager.get('parser.solutions.link_not_found', lang) })}`);
-    }
+        return localeManager.get('parser.solutions.install_mod', lang, {
+            modName: modName,
+            modLink: modLink || localeManager.get('parser.solutions.link_not_found', lang)
+        });
+    });
+
+    const installSolutions = await Promise.all(installPromises);
+    installSolutions.forEach(sol => solutions.push(`${counter++}. ${sol}`));
+
+    const replaceRegex = /\s-\sReplace mod '(?<name>[^']+)' \((?<id>[\w-]+)\) .+? with (?<condition>.+?)(?=\.$|:|\n|$)/gi;
+    const replaceMatches = [...logText.matchAll(replaceRegex)];
+    const replacePromises = replaceMatches.map(async (match) => {
+        const { name, id, condition } = match.groups;
+        const link = (await getModLink(id)) || (await getModLink(name));
+        const versionMatch = condition.match(/version ([\w.+-]+)/);
+
+        if (versionMatch) {
+            return link
+                ? localeManager.get('parser.analyzer.update_modrinth_version', lang, { name, version: versionMatch[1], link })
+                : localeManager.get('parser.analyzer.update_modrinth_version_no_link', lang, { name, version: versionMatch[1] });
+        } else {
+            return link
+                ? localeManager.get('parser.analyzer.update_modrinth_compat', lang, { name, link })
+                : localeManager.get('parser.analyzer.update_modrinth_compat_no_link', lang, { name });
+        }
+    });
+
+    const replaceSolutions = await Promise.all(replacePromises);
+    replaceSolutions.forEach(sol => solutions.push(`${counter++}. ${sol}`));
 
     if (logText.includes("The game failed to start because the currently active LWJGL version is not compatible.")) {
         solutions.push(`${counter++}. ${localeManager.get('parser.solutions.lwjgl_fix', lang)}`);
     }
 
+    const { extractPotentialSolutions } = require('../../utils/LogParser');
     const otherSolutions = extractPotentialSolutions(logText, lang);
     if (otherSolutions?.length > 0) {
         otherSolutions.forEach(sol => solutions.push(`${counter++}. ${sol}`));
@@ -117,31 +222,29 @@ module.exports = {
 
             const lang = guildSettings.language || message.guild.preferredLocale || 'ru';
 
-            // Ищем лог в текущем сообщении
-            const logFile = message.attachments.find(att => 
-                /(latestlog|crash|log)/i.test(att.name) && 
+            const logFile = message.attachments.find(att =>
+                /(latestlog|crash|log)/i.test(att.name) &&
                 (att.name.endsWith('.txt') || att.contentType?.startsWith('text/plain'))
             );
 
             if (logFile) {
-                const logText = await LogAnalyzerService.FindTxtInMessage(message, "(latestlog|crash|log)");
-                if (logText) {
-                    await sendAnalyzedLog(message, logText, lang);
+                const logText = await LogAnalyzerService.FindTxtInMessage(message, '(latestlog|crash|log)');
+                if (!logText) {
+                    await message.reply({ content: localeManager.get('parser.messages.error_read', lang) });
                     return;
                 }
+
+                await sendAnalyzedLog(message, logText, lang);
+                return;
             }
 
-            // Если лога нет, проверяем, нужно ли отправить инструкцию.
-            // Инструкция отправляется только если это первое сообщение пользователя в треде.
             const messages = await channel.messages.fetch({ limit: 5 });
             const userMessages = messages.filter(m => !m.author.bot);
-            
-            // Если это самое первое сообщение в треде (Starter Message или первое после него)
-            // и в нем не было лога (мы это уже проверили выше)
+
             if (userMessages.size === 1 && userMessages.first().id === message.id) {
                 await sendInstruction(channel, lang);
             }
-            
+
         } catch (error) {
             console.error('Error in unified log parser:', error);
         }

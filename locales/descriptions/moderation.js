@@ -174,6 +174,11 @@ const moderation = {
           "reason": { "name": { "en-US": "reason", "ru": "причина", "uk": "причина" }, "description": { "en-US": "Specify the new reason", "ru": "Укажите новую причину", "uk": "Вкажіть нову причину" } }
         }
       },
+      "evidence": { "name": { "en-US": "evidence", "ru": "доказательства", "uk": "докази" }, "description": { "en-US": "Change case evidence (image)", "ru": "Сменить доказательства кейса (изображение)", "uk": "Змінити докази кейса (зображення)" }, "options": {
+          "num": { "name": { "en-US": "num", "ru": "номер", "uk": "номер" }, "description": { "en-US": "Case number", "ru": "Номер кейса", "uk": "Номер кейсу" } },
+          "evidence": { "name": { "en-US": "evidence", "ru": "доказательства", "uk": "докази" }, "description": { "en-US": "Attach the new evidence", "ru": "Прикрепите новые доказательства", "uk": "Прикріпіть нові докази" } }
+        }
+      },
       "view": { "name": { "en-US": "view", "ru": "просмотр", "uk": "перегляд" }, "description": { "en-US": "Show specified case", "ru": "Показывает указанный кейс", "uk": "Показує вказаний кейс" }, "options": {
           "num": { "name": { "en-US": "num", "ru": "номер", "uk": "номер" }, "description": { "en-US": "Case number", "ru": "Номер кейса", "uk": "Номер кейсу" } }
         }
@@ -188,6 +193,8 @@ const moderation = {
       "case_remove_error": { "ru": "Кейс `#{num}` не был удалён. Возможно, вы указали неверный номер кейса", "en-US": "Case `#{num}` was not removed. Maybe the case number is invalid", "uk": "Кейс `#{num}` не був видалений. Можливо, ви вказали невірний номер кейсу" },
       "reason_updated": { "ru": "Причина кейса `#{num}` обновлена", "en-US": "Reason for case `#{num}` updated", "uk": "Причину кейса `#{num}` оновлено" },
       "reason_update_error": { "ru": "Причина кейса `#{num}` не обновлена. Возможно, вы указали неверный номер кейса", "en-US": "Reason for case `#{num}` was not updated. Maybe the case number is invalid", "uk": "Причину кейса `#{num}` не оновлено. Можливо, ви вказали невірний номер кейсу" },
+      "evidence_updated": { "ru": "Доказательства кейса `#{num}` обновлены", "en-US": "Evidence for case `#{num}` updated", "uk": "Докази кейса `#{num}` оновлено" },
+      "evidence_update_error": { "ru": "Доказательства кейса `#{num}` не обновлены. Возможно, вы указали неверный номер кейса", "en-US": "Evidence for case `#{num}` was not updated. Maybe the case number is invalid", "uk": "Докази кейса `#{num}` не оновлено. Можливо, ви вказали невірний номер кейсу" },
       "case_not_found": { "ru": "Кейс не найден!", "en-US": "Case not found!", "uk": "Кейс не знайдено!" },
       "history_title": { "ru": "История наказаний для {user}", "en-US": "Punishment history for {user}", "uk": "Історія покарань для {user}" },
       "history_empty": { "ru": "У **{user}** нет зарегистрированных наказаний на этом сервере.", "en-US": "**{user}** has no registered punishments on this server.", "uk": "У **{user}** немає зареєстрованих покарань на цьому сервері." },
@@ -485,7 +492,21 @@ const moderation = {
           "name": { "name": { "en-US": "name", "ru": "имя", "uk": "назва" }, "description": { "en-US": "Tag name", "ru": "Имя тега", "uk": "Назва тега" } }
         }
       },
-      "list": { "name": { "en-US": "list", "ru": "список", "uk": "список" }, "description": { "en-US": "Show all server tags", "ru": "Показать все теги сервера", "uk": "Показати всі теги сервера" } }
+      "list": { "name": { "en-US": "list", "ru": "список", "uk": "список" }, "description": { "en-US": "Show all server tags", "ru": "Показать все теги сервера", "uk": "Показати всі теги сервера" } },
+      "import": {
+        "name": { "en-US": "import", "ru": "импорт", "uk": "імпорт" },
+        "description": { "en-US": "Import tags from Carl-bot JSON", "ru": "Импортировать теги из JSON Carl-bot", "uk": "Імпортувати теги з JSON Carl-bot" },
+        "options": {
+          "file": {
+            "name": { "en-US": "file", "ru": "файл", "uk": "файл" },
+            "description": { "en-US": "JSON file with tags", "ru": "Файл JSON с тегами", "uk": "Файл JSON з тегами" }
+          },
+          "overwrite": {
+            "name": { "en-US": "overwrite", "ru": "перезаписать", "uk": "перезаписати" },
+            "description": { "en-US": "Overwrite existing tags? (default: false)", "ru": "Перезаписать существующие теги? (по умолчанию: нет)", "uk": "Перезаписати існуючі теги? (за замовчуванням: ні)" }
+          }
+        }
+      }
     },
     "messages": {
       "tag_not_found": { "ru": "Тег не найден.", "en-US": "Tag not found.", "uk": "Тег не знайдено." },
@@ -502,7 +523,33 @@ const moderation = {
       "list_empty": { "ru": "На этом сервере нет тегов.", "en-US": "There are no tags on this server.", "uk": "На цьому сервері немає тегів." },
       "list_title": { "ru": "Список тегов", "en-US": "Tags List", "uk": "Список тегів" },
       "unknown_sub": { "ru": "Неизвестная подкоманда.", "en-US": "Unknown subcommand.", "uk": "Невідома підкоманда." },
-      "error": { "ru": "Произошла ошибка при выполнении команды.", "en-US": "An error occurred while executing the command.", "uk": "Сталася помилка при виконанні команди." }
+      "error": { "ru": "Произошла ошибка при выполнении команды.", "en-US": "An error occurred while executing the command.", "uk": "Сталася помилка при виконанні команди." },
+      "no_perms": { "ru": "У вас нет прав для управления тегами.", "en-US": "You do not have permissions to manage tags.", "uk": "У вас немає прав для керування тегами." },
+      "import_no_input": {
+        "ru": "Пожалуйста, предоставьте файл JSON, вставьте текст JSON или укажите локальный путь для импорта.",
+        "en-US": "Please provide either a JSON file, paste JSON text, or specify a local path to import.",
+        "uk": "Будь ласка, надайте файл JSON, вставте текст JSON або вкажіть локальний шлях для імпорту."
+      },
+      "import_invalid_json": {
+        "ru": "Неверный формат JSON или файл пуст. Пожалуйста, проверьте синтаксис.",
+        "en-US": "Invalid JSON format or file is empty. Please check the syntax.",
+        "uk": "Невірний формат JSON або файл порожній. Будь ласка, перевірте синтаксис."
+      },
+      "import_no_tags": {
+        "ru": "В предоставленных данных не найдено подходящих тегов.",
+        "en-US": "No suitable tags found in the provided data.",
+        "uk": "У наданих даних не знайдено відповідних тегів."
+      },
+      "import_success": {
+        "ru": "Импорт завершен!\nУспешно добавлено тегов: **{imported}**\nПропущено существующих: **{skipped}**\nПерезаписано тегов: **{overwritten}**\nВсего обработано: **{total}**",
+        "en-US": "Import completed!\nSuccessfully added tags: **{imported}**\nSkipped existing: **{skipped}**\nOverwritten tags: **{overwritten}**\nTotal processed: **{total}**",
+        "uk": "Імпорт завершено!\nУспішно додано тегів: **{imported}**\nПропущено існуючих: **{skipped}**\nПерезаписано тегів: **{overwritten}**\nВсього оброблено: **{total}**"
+      },
+      "import_error": {
+        "ru": "Произошла ошибка при импорте тегов: {error}",
+        "en-US": "An error occurred while importing tags: {error}",
+        "uk": "Сталася помилка при імпорті тегів: {error}"
+      }
     }
   },
   "iqtest": {
@@ -513,7 +560,9 @@ const moderation = {
     },
     "messages": {
       "not_found": { "ru": "Пользователь не найден на сервере.", "en-US": "User not found on the server.", "uk": "Користувач не знайдений на сервері." },
-      "no_bots": { "ru": "Боты не могут проходить тесты!", "en-US": "Bots cannot take tests!", "uk": "Боти не можуть проходити тести!" }
+      "no_bots": { "ru": "Боты не могут проходить тесты!", "en-US": "Bots cannot take tests!", "uk": "Боти не можуть проходити тести!" },
+      "self_mod": { "ru": "Вы не можете запустить тест на самом себе!", "en-US": "You cannot run the test on yourself!", "uk": "Ви не можете запустити тест на самому собі!" },
+      "hierarchy_error": { "ru": "Вы не можете запустить тест на пользователя с равной или более высокой ролью!", "en-US": "You cannot run the test on a user with an equal or higher role!", "uk": "Ви не можете запустити тест на користувача з рівною або вищою роллю!" }
     }
   },
   "report": {

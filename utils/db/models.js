@@ -48,7 +48,8 @@ const GuildSetting = sequelize.define('GuildSetting', {
     honeypotLogChannelId: { type: DataTypes.STRING, defaultValue: '' },
     honeypotEnabled: { type: DataTypes.BOOLEAN, defaultValue: false },
     verdictChannelId: { type: DataTypes.STRING, defaultValue: '' },
-    language: { type: DataTypes.STRING, defaultValue: 'ru' }
+    language: { type: DataTypes.STRING, defaultValue: 'ru' },
+    parserBannedRoleId: { type: DataTypes.STRING, defaultValue: '' }
 }, { tableName: 'guild_settings', timestamps: false });
 
 const RoleMenu = sequelize.define('RoleMenu', {
@@ -93,6 +94,7 @@ const ModCase = sequelize.define('ModCase', {
         allowNull: false
     },
     reason: { type: DataTypes.STRING },
+    evidenceUrl: { type: DataTypes.STRING, allowNull: true },
     logMessageId: { type: DataTypes.STRING, allowNull: true },
     timestamp: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
 }, { tableName: 'mod_cases', timestamps: false });
@@ -205,6 +207,22 @@ const AdminUser = sequelize.define('AdminUser', {
     added_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
 }, { tableName: 'admin_users', timestamps: false });
 
+// Свадьбы и Семьи
+const Marriage = sequelize.define('Marriage', {
+    guildId: { type: DataTypes.STRING, allowNull: false },
+    userId: { type: DataTypes.STRING, primaryKey: true },
+    spouseId: { type: DataTypes.STRING, allowNull: false },
+    marriedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+}, { tableName: 'marriages', timestamps: false });
+
+const ParentChild = sequelize.define('ParentChild', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    guildId: { type: DataTypes.STRING, allowNull: false },
+    parentId: { type: DataTypes.STRING, allowNull: false },
+    childId: { type: DataTypes.STRING, allowNull: false },
+    adoptedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+}, { tableName: 'parent_children', timestamps: false });
+
 // Экспорт всех моделей и инстанса БД
 module.exports = {
     sequelize,
@@ -223,5 +241,7 @@ module.exports = {
     StarboardSetting,
     StarboardMessage,
     Tag,
-    AdminUser
+    AdminUser,
+    Marriage,
+    ParentChild
 };

@@ -38,6 +38,24 @@ const data = new SlashCommandBuilder()
         )
     )
     .addSubcommand(sub =>
+        sub.setName('evidence')
+        .setDescription(localeManager.get('moderation.case.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.evidence.description'))
+        .addIntegerOption(opt => 
+            opt.setName('num')
+            .setDescription(localeManager.get('moderation.case.options.evidence.options.num.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.evidence.options.num.description'))
+            .setMinValue(0)
+            .setRequired(true)
+        )
+        .addAttachmentOption(opt =>
+            opt.setName('evidence')
+            .setDescription(localeManager.get('moderation.case.options.evidence.options.evidence.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.evidence.options.evidence.description'))
+            .setRequired(true)
+        )
+    )
+    .addSubcommand(sub =>
         sub.setName('view')
         .setDescription(localeManager.get('moderation.case.description', 'en-US'))
         .setDescriptionLocalizations(localeManager.getLocalizations('moderation.case.options.view.description'))
@@ -138,6 +156,63 @@ const data = new SlashCommandBuilder()
                 }
                 break;
             }
+            case "evidence": {
+                const caseNum = interaction.options.getInteger('num');
+                const evidence = interaction.options.getAttachment('evidence');
+                const success = await DatabaseService.updateModCaseEvidenceUrl(interaction.guild.id, caseNum, evidence.url);
+                if (success) {
+                    await interaction.reply(localeManager.get('moderation.case.messages.evidence_updated', lang, { num: caseNum }));
+
+                    // Редактируем эмбед вердикта, если logMessageId сохранён в БД
+                    const caseObj = await DatabaseService.getModCase(interaction.guild.id, caseNum);
+                    if (caseObj && caseObj.logMessageId) {
+                        const cfg = await DatabaseService.getSettings(interaction.guild.id);
+                        if (cfg && cfg.verdictChannelId) {
+                            const channel = await interaction.client.channels.fetch(cfg.verdictChannelId).catch(() => null);
+                            if (channel && channel.isTextBased()) {
+                                const msg = await channel.messages.fetch(caseObj.logMessageId).catch(() => null);
+                                if (msg && msg.embeds && msg.embeds.length > 0) {
+                                    const oldEmbed = msg.embeds[0];
+                                    const fields = oldEmbed.fields ? [...oldEmbed.fields] : [];
+
+                                    const evidenceFieldNameEn = localeManager.get('services.embed.evidence', 'en-US');
+                                    const evidenceFieldNameRu = localeManager.get('services.embed.evidence', 'ru');
+                                    const evidenceFieldNameUk = localeManager.get('services.embed.evidence', 'uk');
+
+                                    const evidenceFieldIndex = fields.findIndex(f => 
+                                        f.name === evidenceFieldNameEn || 
+                                        f.name === evidenceFieldNameRu || 
+                                        f.name === evidenceFieldNameUk ||
+                                        f.name.toLowerCase() === 'evidence' ||
+                                        f.name.toLowerCase() === 'доказательства' ||
+                                        f.name.toLowerCase() === 'докази'
+                                    );
+
+                                    const clickToViewText = localeManager.get('services.embed.click_to_view', lang);
+                                    const fieldValue = `[${clickToViewText}](${evidence.url})`;
+
+                                    if (evidenceFieldIndex !== -1) {
+                                        fields[evidenceFieldIndex].value = fieldValue;
+                                    } else {
+                                        fields.push({ name: localeManager.get('services.embed.evidence', lang), value: fieldValue, inline: false });
+                                    }
+
+                                    const newEmbed = EmbedBuilder.from(oldEmbed)
+                                        .setFields(fields)
+                                        .setImage(evidence.url);
+
+                                    await msg.edit({ embeds: [newEmbed] }).catch(err => {
+                                        console.error('[CASE EVIDENCE] Failed to edit log embed:', err.message);
+                                    });
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    await interaction.reply(localeManager.get('moderation.case.messages.evidence_update_error', lang, { num: caseNum }));
+                }
+                break;
+            }
             case "view": {
                 const caseNum = interaction.options.getInteger('num');
                 const caseObj = await DatabaseService.getModCase(interaction.guild.id, caseNum);
@@ -151,6 +226,7 @@ const data = new SlashCommandBuilder()
                     caseNum: caseObj.caseNum,
                     targetId: caseObj.targetId,
                     reason: caseObj.reason,
+                    evidence: caseObj.evidenceUrl ? { url: caseObj.evidenceUrl } : null,
                     color: 0x808080,
                     footerText: localeManager.get('moderation.moderation.messages.action_done_template', lang, { action: actionLabel }) || `${actionLabel} выполнен`,
                     timestamp: caseObj.timestamp,
