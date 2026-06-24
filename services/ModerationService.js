@@ -263,6 +263,61 @@ class ModerationService {
         }
     }
 
+    static async supportBanUser(interaction, targetUser, reason, evidence = null) {
+        let targetId = targetUser.id;
+        let roleId = DatabaseService.getBannedRoleId(interaction.guild.id);
+        const lang = interaction.guildLocale;
+        // говнокод
+        // TODO: заменить первый try/catch на нормальные проверки. Мне лень
+        try { await targetUser.roles.add(roleId) } catch (error) {
+            console.error('Ошибка в ModerationService.supportBanUser при выдачи роли', error);
+            return { success: false, error: localeManager.get('moderation.moderation.messages.error_ban', lang) };
+        }
+        try {
+            const latestCase = await DatabaseService.addModCase({
+                serverId: interaction.guild.id,
+                targetId: targetUser.id,
+                moderatorId: interaction.user.id,
+                action: 'supportban',
+                reason: reason,
+                evidenceUrl: evidence?.url || null,
+                timestamp: new Date()
+            });
+        } catch (error) {
+            console.error('Ошибка в ModerationService.supportBanUser', error);
+            return { success: false, error: localeManager.get('moderation.moderation.messages.error_ban', lang) };
+        }
+        await ModerationService.sendVerdict(interaction, 'supportban', targetUser, latestCase, reason, null, evidence);
+        return { success: true, caseData: latestCase };
+    }
+
+    static async supportUnbanUser(interaction, targetUser, reason, evidence = null) {
+        let targetId = targetUser.id;
+        let roleId = DatabaseService.getBannedRoleId(interaction.guild.id);
+        const lang = interaction.guildLocale;
+        // TODO: заменить первый try/catch на нормальные проверки. Мне лень
+        try { await targetUser.roles.remove(roleId) } catch (error) {
+            console.error('Ошибка в ModerationService.supportUnbanUser при выдачи роли', error);
+            return { success: false, error: localeManager.get('moderation.moderation.messages.error_гтban', lang) };
+        }
+        try {
+            const latestCase = await DatabaseService.addModCase({
+                serverId: interaction.guild.id,
+                targetId: targetUser.id,
+                moderatorId: interaction.user.id,
+                action: 'supportunban',
+                reason: reason,
+                evidenceUrl: evidence?.url || null,
+                timestamp: new Date()
+            });
+        } catch (error) {
+            console.error('Ошибка в ModerationService.supportUnbanUser', error);
+            return { success: false, error: localeManager.get('moderation.moderation.messages.error_unban', lang) };
+        }
+        await ModerationService.sendVerdict(interaction, 'supportunban', targetUser, latestCase, reason, null, evidence);
+        return { success: true, caseData: latestCase };
+    }
+
     static async _sendUserDM(interaction, targetUser, action, reason, durationString = null) {
         if (!targetUser || !targetUser.send) return;
         try {
