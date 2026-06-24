@@ -389,6 +389,12 @@ const moderation = {
           "reason": { "name": { "en-US": "reason", "ru": "причина", "uk": "причина" }, "description": { "en-US": "Reason for support-banning", "ru": "Причина саппорт бана", "uk": "Причина саппорт бана" } },
           "evidence": { "name": { "en-US": "evidence", "ru": "доказательства", "uk": "докази" }, "description": { "en-US": "Attach evidence (if available)", "ru": "Прикрепите доказательства (если есть)", "uk": "Додайте докази (якщо є)" } }
         }
+      },
+      "supportunban": { "name": { "en-US": "supportunban", "ru": "саппорт-разбан", "uk": "саппорт-розбан" }, "description": { "en-US": "Remove supportban role from the user", "ru": "Удалить роль саппорт бана у пользователя", "uk": "Видалити роль саппорт бана у користувача" }, "options": {
+          "user": { "name": { "en-US": "user", "ru": "пользователь", "uk": "користувач" }, "description": { "en-US": "User to remove support-ban", "ru": "Пользователь для удаления саппорт бана", "uk": "Користувач для видалення саппорт бана" } },
+          "reason": { "name": { "en-US": "reason", "ru": "причина", "uk": "причина" }, "description": { "en-US": "Reason for removing support-ban", "ru": "Причина удаления саппорт бана", "uk": "Причина видалення саппорт бана" } },
+          "evidence": { "name": { "en-US": "evidence", "ru": "доказательства", "uk": "докази" }, "description": { "en-US": "Attach evidence (if available)", "ru": "Прикрепите доказательства (если есть)", "uk": "Додайте докази (якщо є)" } }
+        }
       }
     },
     "messages": {
