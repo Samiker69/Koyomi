@@ -406,6 +406,13 @@ class DatabaseService {
         return true;
     }
 
+    async getBannedRoleId(guildId) {
+        const settings = await this.getSettings(guildId);
+        if (settings) {
+            return settings.parserBannedRoleId || ''; // я честно хз че оно вернёт и по идее таким образом оно точно конвертируется в строку
+        }
+    }
+
     async addAllowedLauncher(launcherName) {
         await AllowedLauncher.findOrCreate({ where: { launcher_name: launcherName } });
         this._logAnalyzerCache = null;

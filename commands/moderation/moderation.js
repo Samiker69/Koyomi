@@ -180,6 +180,29 @@ const data = new SlashCommandBuilder()
                     .setRequired(false)
             )
     )
+    .addSubcommand(sub =>
+        sub.setName('supportban')
+            .setDescription(localeManager.get('moderation.moderation.options.supportban.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supportban.description'))
+            .addUserOption(option =>
+                option.setName('user')
+                    .setDescription(localeManager.get('moderation.moderation.options.supportban.options.user.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supportban.options.user.description'))
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('reason')
+                    .setDescription(localeManager.get('moderation.moderation.options.supportban.options.reason.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supportban.options.reason.description'))
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('evidence')
+                    .setDescription(localeManager.get('moderation.moderation.options.supportban.options.evidence.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supportban.options.evidence.description'))
+                    .setRequired(false)
+            )
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
 
 
@@ -435,6 +458,70 @@ module.exports = {
                     evidence,
                     color: EmbedService.BRAND_COLOR,
                     footerText: localeManager.get('moderation.moderation.messages.unwarn_done', lang),
+                    lang: lang
+                });
+
+                await interaction.editReply({ embeds: [embed] });
+                break;
+            }
+            case "supportban": {
+                if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
+                    return await interaction.reply({ 
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
+                        flags: MessageFlags.Ephemeral 
+                    });
+                }
+                await interaction.deferReply();
+
+                const targetUser = interaction.options.getUser('user');
+                const reason = interaction.options.getString('reason') || noReason;
+                const evidence = interaction.options.getAttachment('evidence');
+
+                const result = await ModerationService.supportBanUser(interaction, targetUser, caseNum, reason, evidence);
+                if (!result.success) {
+                    return await interaction.editReply({ content: result.error });
+                }
+
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: result.targetId,
+                    reason,
+                    evidence,
+                    color: EmbedService.BRAND_COLOR,
+                    footerText: localeManager.get('moderation.moderation.messages.ban_done', lang),
+                    lang: lang
+                });
+
+                await interaction.editReply({ embeds: [embed] });
+                break;
+            }
+            case "supportunban": {
+                if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
+                    return await interaction.reply({ 
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
+                        flags: MessageFlags.Ephemeral 
+                    });
+                }
+                await interaction.deferReply();
+
+                const targetUser = interaction.options.getUser('user');
+                const reason = interaction.options.getString('reason') || noReason;
+                const evidence = interaction.options.getAttachment('evidence');
+
+                const result = await ModerationService.supportUnbanUser(interaction, targetUser, caseNum, reason, evidence);
+                if (!result.success) {
+                    return await interaction.editReply({ content: result.error });
+                }
+
+                const embed = EmbedService.createModerationEmbed({
+                    interaction,
+                    caseNum: result.caseData.caseNum,
+                    targetId: result.targetId,
+                    reason,
+                    evidence,
+                    color: EmbedService.BRAND_COLOR,
+                    footerText: localeManager.get('moderation.moderation.messages.unban_done', lang),
                     lang: lang
                 });
 
