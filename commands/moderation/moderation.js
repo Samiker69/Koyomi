@@ -203,6 +203,29 @@ const data = new SlashCommandBuilder()
                     .setRequired(false)
             )
     )
+    .addSubcommand(sub =>
+        sub.setName('supportunban')
+            .setDescription(localeManager.get('moderation.moderation.options.supportunban.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supportunban.description'))
+            .addUserOption(option =>
+                option.setName('user')
+                    .setDescription(localeManager.get('moderation.moderation.options.supportunban.options.user.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supportunban.options.user.description'))
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('reason')
+                    .setDescription(localeManager.get('moderation.moderation.options.supportunban.options.reason.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supporuntban.options.reason.description'))
+                    .setRequired(false)
+            )
+            .addAttachmentOption(option =>
+                option.setName('evidence')
+                    .setDescription(localeManager.get('moderation.moderation.options.supportunban.options.evidence.description', 'en-US'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supportunban.options.evidence.description'))
+                    .setRequired(false)
+            )
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
 
 
@@ -477,7 +500,7 @@ module.exports = {
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.supportBanUser(interaction, targetUser, caseNum, reason, evidence);
+                const result = await ModerationService.supportBanUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
@@ -509,7 +532,7 @@ module.exports = {
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
 
-                const result = await ModerationService.supportUnbanUser(interaction, targetUser, caseNum, reason, evidence);
+                const result = await ModerationService.supportUnbanUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
