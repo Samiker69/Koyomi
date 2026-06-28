@@ -20,6 +20,14 @@ module.exports = {
         const lang = interaction.guildLocale;
         await interaction.deferReply({ withResponse: true });
 
+        const hasPerms = interaction.memberPermissions?.has(PermissionFlagsBits.ModerateMembers) || 
+                         interaction.memberPermissions?.has(PermissionFlagsBits.Administrator) ||
+                         interaction.memberPermissions?.has(PermissionFlagsBits.KickMembers);
+
+        if (!hasPerms) {
+            return await interaction.editReply({ content: localeManager.get('moderation.moderation.messages.no_perms', lang) });
+        }
+
         const targetUser = interaction.options.getUser('target');
         const targetMember = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
 

@@ -148,6 +148,8 @@ module.exports = {
             if (authorFamily.parentIds.includes(target.id) || authorFamily.childrenIds.includes(target.id) || authorFamily.siblingIds.includes(target.id)) return interaction.reply({ content: getMsg('already_parent'), ephemeral: true });
             if ((await db.getParents(guildId, target.id)).length > 0) return interaction.reply({ content: getMsg('has_parents'), ephemeral: true });
             if (authorFamily.childrenIds.length >= 10) return interaction.reply({ content: getMsg('too_many_children'), ephemeral: true });
+            if (await db.isAncestor(guildId, interaction.user.id, target.id)) return interaction.reply({ content: getMsg('adopt_is_ancestor'), ephemeral: true });
+            if (await db.isDescendant(guildId, interaction.user.id, target.id)) return interaction.reply({ content: getMsg('adopt_is_descendant'), ephemeral: true });
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder().setCustomId('accept').setLabel(lang === 'ru' ? 'Войти в семью 🥰' : 'Join family 🥰').setStyle(ButtonStyle.Success),

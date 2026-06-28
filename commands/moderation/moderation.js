@@ -216,7 +216,7 @@ const data = new SlashCommandBuilder()
             .addStringOption(option =>
                 option.setName('reason')
                     .setDescription(localeManager.get('moderation.moderation.options.supportunban.options.reason.description', 'en-US'))
-                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supporuntban.options.reason.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.supportunban.options.reason.description'))
                     .setRequired(false)
             )
             .addAttachmentOption(option =>
@@ -512,7 +512,7 @@ module.exports = {
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.ban_done', lang),
+                    footerText: localeManager.get('moderation.moderation.messages.supportban_done', lang),
                     lang: lang
                 });
 
@@ -544,7 +544,7 @@ module.exports = {
                     reason,
                     evidence,
                     color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.unban_done', lang),
+                    footerText: localeManager.get('moderation.moderation.messages.supportunban_done', lang),
                     lang: lang
                 });
 

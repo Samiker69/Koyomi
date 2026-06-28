@@ -90,7 +90,7 @@ const ModCase = sequelize.define('ModCase', {
     targetId: { type: DataTypes.STRING, allowNull: false },
     moderatorId: { type: DataTypes.STRING, allowNull: false },
     action: { 
-        type: DataTypes.ENUM('ban', 'mute', 'kick', 'unban', 'unmute', 'warn', 'unwarn'),
+        type: DataTypes.ENUM('ban', 'mute', 'kick', 'unban', 'unmute', 'warn', 'unwarn', 'supportban', 'supportunban'),
         allowNull: false
     },
     reason: { type: DataTypes.STRING },

@@ -1,23 +1,37 @@
 const { createCanvas } = require('canvas');
+const db = require('../../services/DatabaseService');
+
+const CARD_H = 32;
+const CARD_PAD = 24;
+const CARD_MIN_W = 75;
+const SPOUSE_GAP = 30;
+const SIBLING_GAP = 20;
+const CHILD_GAP = 30;
+const LEVEL_GAP = 130;
+const CANVAS_PAD = 50;
+const FONT = '13px Georgia, "Times New Roman", serif';
+const FONT_TARGET = 'italic bold 13px Georgia, "Times New Roman", serif';
+
+function measureCardWidth(ctx, text) {
+    ctx.font = FONT;
+    return Math.max(ctx.measureText(text).width + CARD_PAD, CARD_MIN_W);
+}
 
 function drawUserCard(ctx, text, x, y, isTarget = false) {
     ctx.save();
-    ctx.font = isTarget
-        ? 'italic bold 13px Georgia, "Times New Roman", serif'
-        : '13px Georgia, "Times New Roman", serif';
+    ctx.font = isTarget ? FONT_TARGET : FONT;
 
     const textWidth = ctx.measureText(text).width;
-    const cardWidth = Math.max(textWidth + 24, 75);
-    const cardHeight = 32;
+    const cardWidth = Math.max(textWidth + CARD_PAD, CARD_MIN_W);
     const startX = x - cardWidth / 2;
-    const startY = y - cardHeight / 2;
+    const startY = y - CARD_H / 2;
 
     ctx.fillStyle = isTarget ? '#3f51b5' : '#a0d5e8';
-    ctx.fillRect(startX, startY, cardWidth, cardHeight);
+    ctx.fillRect(startX, startY, cardWidth, CARD_H);
 
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 1;
-    ctx.strokeRect(startX, startY, cardWidth, cardHeight);
+    ctx.strokeRect(startX, startY, cardWidth, CARD_H);
 
     ctx.fillStyle = isTarget ? '#ffffff' : '#000000';
     ctx.textAlign = 'center';
@@ -25,14 +39,14 @@ function drawUserCard(ctx, text, x, y, isTarget = false) {
     ctx.fillText(text, x, y);
 
     ctx.restore();
-    return { startX, startY, width: cardWidth, height: cardHeight, x, y };
+    return { startX, startY, width: cardWidth, height: CARD_H, x, y };
 }
 
 function drawOrganicLine(ctx, x1, y1, x2, y2) {
     const dx = x2 - x1;
     const dy = y2 - y1;
     const len = Math.sqrt(dx * dx + dy * dy);
-    const steps = Math.floor(len / 4);
+    const steps = Math.max(Math.floor(len / 4), 1);
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     for (let i = 1; i <= steps; i++) {
@@ -40,8 +54,8 @@ function drawOrganicLine(ctx, x1, y1, x2, y2) {
         const cx = x1 + dx * t;
         const cy = y1 + dy * t;
         const wobble = (Math.sin(t * Math.PI * 3.5) * 0.4) + (Math.cos(t * Math.PI * 1.5) * 0.3);
-        const nx = -dy / len;
-        const ny = dx / len;
+        const nx = -dy / len || 0;
+        const ny = dx / len || 0;
         ctx.lineTo(cx + nx * wobble, cy + ny * wobble);
     }
     ctx.lineTo(x2, y2);
@@ -62,7 +76,7 @@ function drawCurve(ctx, x0, y0, x3, y3) {
         const by = mt*mt*mt*y0 + 3*mt*mt*t*y1 + 3*mt*t*t*y2 + t*t*t*y3;
         const tx = 3*mt*mt*(x1 - x0) + 6*mt*t*(x2 - x1) + 3*t*t*(x3 - x2);
         const ty = 3*mt*mt*(y1 - y0) + 6*mt*t*(y2 - y1) + 3*t*t*(y3 - y2);
-        const len = Math.sqrt(tx*tx + ty*ty);
+        const len = Math.sqrt(tx*tx + ty*ty) || 1;
         const nx = -ty / len;
         const ny = tx / len;
         const wobble = (Math.sin(t * Math.PI * 4) * 0.5) + (Math.cos(t * Math.PI * 2) * 0.3);
@@ -74,180 +88,339 @@ function drawCurve(ctx, x0, y0, x3, y3) {
     ctx.stroke();
 }
 
+async function fetchProfile(client, id) {
+    if (!id) return null;
+    try {
+        const fetched = await client.users.fetch(id);
+        return { id, username: fetched.username, displayName: fetched.displayName };
+    } catch (e) {
+        return { id, username: 'User', displayName: 'User' };
+    }
+}
+
+function getDisplayName(profile) {
+    return profile ? (profile.displayName || profile.username) : 'Unknown';
+}
+
+function computeSubtreeWidth(ctx, node, profiles) {
+    const profile = profiles.get(node.userId);
+    const name = getDisplayName(profile);
+    let nodeWidth = measureCardWidth(ctx, name);
+
+    if (node.spouseId) {
+        const spouseProfile = profiles.get(node.spouseId);
+        const spouseName = getDisplayName(spouseProfile);
+        nodeWidth += SPOUSE_GAP + measureCardWidth(ctx, spouseName);
+    }
+
+    if (!node.children || node.children.length === 0) {
+        return nodeWidth;
+    }
+
+    let childrenTotalWidth = 0;
+    for (let i = 0; i < node.children.length; i++) {
+        childrenTotalWidth += computeSubtreeWidth(ctx, node.children[i], profiles);
+        if (i < node.children.length - 1) childrenTotalWidth += CHILD_GAP;
+    }
+
+    return Math.max(nodeWidth, childrenTotalWidth);
+}
+
+function computeTreeDepth(node) {
+    if (!node || !node.children || node.children.length === 0) return 1;
+    let maxChildDepth = 0;
+    for (const child of node.children) {
+        maxChildDepth = Math.max(maxChildDepth, computeTreeDepth(child));
+    }
+    return 1 + maxChildDepth;
+}
+
+async function collectAllUserIds(node, ids = new Set()) {
+    if (!node) return ids;
+    ids.add(node.userId);
+    if (node.spouseId) ids.add(node.spouseId);
+    if (node.parentIds) node.parentIds.forEach(id => ids.add(id));
+    if (node.siblingIds) node.siblingIds.forEach(id => ids.add(id));
+    if (node.children) {
+        for (const child of node.children) {
+            await collectAllUserIds(child, ids);
+        }
+    }
+    return ids;
+}
+
+function layoutNode(ctx, node, centerX, y, profiles, positions) {
+    const profile = profiles.get(node.userId);
+    const name = getDisplayName(profile);
+    const nodeWidth = measureCardWidth(ctx, name);
+
+    let nodeX = centerX;
+    let spouseX = null;
+
+    if (node.spouseId) {
+        const spouseProfile = profiles.get(node.spouseId);
+        const spouseName = getDisplayName(spouseProfile);
+        const spouseWidth = measureCardWidth(ctx, spouseName);
+        const totalPairWidth = nodeWidth + SPOUSE_GAP + spouseWidth;
+        nodeX = centerX - totalPairWidth / 2 + nodeWidth / 2;
+        spouseX = centerX + totalPairWidth / 2 - spouseWidth / 2;
+
+        positions.set(node.spouseId, { x: spouseX, y, width: spouseWidth });
+    }
+
+    positions.set(node.userId, { x: nodeX, y, width: nodeWidth });
+
+    if (node.children && node.children.length > 0) {
+        const childY = y + LEVEL_GAP;
+        const childWidths = node.children.map(c => computeSubtreeWidth(ctx, c, profiles));
+        const totalChildrenWidth = childWidths.reduce((a, b) => a + b, 0) + (node.children.length - 1) * CHILD_GAP;
+
+        let currentX = centerX - totalChildrenWidth / 2;
+
+        for (let i = 0; i < node.children.length; i++) {
+            const childSubtreeW = childWidths[i];
+            const childCenterX = currentX + childSubtreeW / 2;
+            layoutNode(ctx, node.children[i], childCenterX, childY, profiles, positions);
+            currentX += childSubtreeW + CHILD_GAP;
+        }
+    }
+}
+
+function drawConnections(ctx, node, positions) {
+    const pos = positions.get(node.userId);
+    if (!pos) return;
+
+    if (node.spouseId) {
+        const spousePos = positions.get(node.spouseId);
+        if (spousePos) {
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1.2;
+            drawOrganicLine(ctx,
+                pos.x + pos.width / 2, pos.y,
+                spousePos.x - spousePos.width / 2, spousePos.y
+            );
+        }
+    }
+
+    if (node.children && node.children.length > 0) {
+        const parentSourceX = node.spouseId
+            ? (pos.x + (positions.get(node.spouseId)?.x || pos.x)) / 2
+            : pos.x;
+        const parentSourceY = pos.y + CARD_H / 2;
+        const dropY = parentSourceY + 35;
+
+        ctx.strokeStyle = '#555555';
+        ctx.lineWidth = 1.2;
+        drawOrganicLine(ctx, parentSourceX, parentSourceY, parentSourceX, dropY);
+
+        for (const child of node.children) {
+            const childPos = positions.get(child.userId);
+            if (childPos) {
+                drawCurve(ctx, parentSourceX, dropY, childPos.x, childPos.y - CARD_H / 2);
+            }
+        }
+    }
+
+    if (node.children) {
+        for (const child of node.children) {
+            drawConnections(ctx, child, positions);
+        }
+    }
+}
+
+function drawAllCards(ctx, node, targetUserId, profiles, positions) {
+    const pos = positions.get(node.userId);
+    if (pos) {
+        const name = getDisplayName(profiles.get(node.userId));
+        drawUserCard(ctx, name, pos.x, pos.y, node.userId === targetUserId);
+    }
+
+    if (node.spouseId) {
+        const spousePos = positions.get(node.spouseId);
+        if (spousePos) {
+            const spouseName = getDisplayName(profiles.get(node.spouseId));
+            drawUserCard(ctx, spouseName, spousePos.x, spousePos.y, false);
+        }
+    }
+
+    if (node.children) {
+        for (const child of node.children) {
+            drawAllCards(ctx, child, targetUserId, profiles, positions);
+        }
+    }
+}
+
 async function generateFamilyTree(client, guildId, targetUserId, familyData, lang = 'ru') {
-    const width = 1000;
-    const height = 550;
+    const treeData = await db.getFullFamilyTree(guildId, targetUserId);
+
+    if (!treeData) {
+        const width = 400;
+        const height = 100;
+        const canvas = createCanvas(width, height);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = '#000000';
+        ctx.font = FONT;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(lang === 'ru' ? 'Семья не найдена' : 'No family found', width / 2, height / 2);
+        return canvas.toBuffer();
+    }
+
+    const allIds = await collectAllUserIds(treeData);
+
+    const parentProfiles = [];
+    for (const pid of (treeData.parentIds || [])) {
+        allIds.add(pid);
+    }
+    for (const sid of (treeData.siblingIds || [])) {
+        allIds.add(sid);
+    }
+
+    const profiles = new Map();
+    for (const id of allIds) {
+        const p = await fetchProfile(client, id);
+        if (p) profiles.set(id, p);
+    }
+
+    const measureCanvas = createCanvas(1, 1);
+    const measureCtx = measureCanvas.getContext('2d');
+    measureCtx.font = FONT;
+
+    const parents = (treeData.parentIds || []).map(id => profiles.get(id)).filter(Boolean);
+    const siblings = (treeData.siblingIds || []).map(id => profiles.get(id)).filter(Boolean);
+
+    const treeDepth = computeTreeDepth(treeData);
+    const hasParents = parents.length > 0;
+    const hasSiblings = siblings.length > 0;
+
+    const totalLevels = (hasParents ? 1 : 0) + treeDepth;
+    const treeSubtreeWidth = computeSubtreeWidth(measureCtx, treeData, profiles);
+
+    let siblingsTotalWidth = 0;
+    if (hasSiblings) {
+        for (let i = 0; i < siblings.length; i++) {
+            siblingsTotalWidth += measureCardWidth(measureCtx, getDisplayName(siblings[i]));
+            if (i < siblings.length - 1) siblingsTotalWidth += SIBLING_GAP;
+        }
+    }
+
+    let parentsWidth = 0;
+    if (parents.length === 2) {
+        parentsWidth = measureCardWidth(measureCtx, getDisplayName(parents[0]))
+            + SPOUSE_GAP
+            + measureCardWidth(measureCtx, getDisplayName(parents[1]));
+    } else if (parents.length === 1) {
+        parentsWidth = measureCardWidth(measureCtx, getDisplayName(parents[0]));
+    }
+
+    const targetLevelWidth = treeSubtreeWidth + (hasSiblings ? siblingsTotalWidth + 80 : 0);
+    const totalWidth = Math.max(targetLevelWidth, parentsWidth, 400) + CANVAS_PAD * 2;
+    const totalHeight = totalLevels * LEVEL_GAP + CANVAS_PAD * 2 + 50;
+
+    const width = Math.min(Math.ceil(totalWidth), 4000);
+    const height = Math.min(Math.ceil(totalHeight), 4000);
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
+    ctx.font = FONT;
 
-    const fetchProfile = async (id) => {
-        if (!id) return null;
-        try {
-            const fetched = await client.users.fetch(id);
-            return { id, username: fetched.username, displayName: fetched.displayName };
-        } catch (e) {
-            return { id, username: 'User', displayName: 'User' };
-        }
-    };
+    const midX = width / 2;
+    const targetY = (hasParents ? CANVAS_PAD + LEVEL_GAP : CANVAS_PAD) + CARD_H;
 
-    const targetUser = await fetchProfile(targetUserId);
-    const spouse = await fetchProfile(familyData.spouseId);
+    const positions = new Map();
 
-    const parents = [];
-    for (const pid of familyData.parentIds || []) {
-        const p = await fetchProfile(pid);
-        if (p) parents.push(p);
-    }
+    layoutNode(ctx, treeData, midX, targetY, profiles, positions);
 
-    const children = [];
-    for (const cid of familyData.childrenIds || []) {
-        const c = await fetchProfile(cid);
-        if (c) children.push(c);
-    }
+    const drawLines = [];
+    const drawCards = [];
 
-    const siblings = [];
-    for (const sid of familyData.siblingIds || []) {
-        const s = await fetchProfile(sid);
-        if (s) siblings.push(s);
-    }
+    if (hasParents) {
+        const parentY = CANVAS_PAD + CARD_H / 2;
 
-    const targetName = targetUser.displayName || targetUser.username;
+        if (parents.length === 2) {
+            const p1Name = getDisplayName(parents[0]);
+            const p2Name = getDisplayName(parents[1]);
+            const p1W = measureCardWidth(ctx, p1Name);
+            const p2W = measureCardWidth(ctx, p2Name);
+            const totalPW = p1W + p2W + SPOUSE_GAP;
+            const p1X = midX - totalPW / 2 + p1W / 2;
+            const p2X = midX + totalPW / 2 - p2W / 2;
 
-    ctx.font = '13px Georgia, "Times New Roman", serif';
-    const measureWidth = (txt) => Math.max(ctx.measureText(txt).width + 24, 75);
+            drawCards.push(() => drawUserCard(ctx, p1Name, p1X, parentY));
+            drawCards.push(() => drawUserCard(ctx, p2Name, p2X, parentY));
 
-    const targetWidth = measureWidth(targetName);
-    const spouseWidth = spouse ? measureWidth(spouse.displayName || spouse.username) : 0;
-    const parentWidths = parents.map(p => measureWidth(p.displayName || p.username));
-    const siblingWidths = siblings.map(s => measureWidth(s.displayName || s.username));
-    const childrenWidths = children.map(c => measureWidth(c.displayName || c.username));
-
-    const yParents = 130;
-    const yTarget = 280;
-    const yChildren = 430;
-
-    const drawTasks = [];
-    const connectionLines = [];
-
-    let targetX = 500;
-    let spouseX = 500;
-
-    if (spouse) {
-        const gap = 35;
-        const totalMidWidth = targetWidth + spouseWidth + gap;
-        targetX = 500 - totalMidWidth / 2 + targetWidth / 2;
-        spouseX = 500 + totalMidWidth / 2 - spouseWidth / 2;
-
-        drawTasks.push(() => drawUserCard(ctx, targetName, targetX, yTarget, true));
-        drawTasks.push(() => drawUserCard(ctx, spouse.displayName || spouse.username, spouseX, yTarget));
-
-        connectionLines.push(() => {
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 1.2;
-            drawOrganicLine(ctx, targetX + targetWidth / 2, yTarget, spouseX - spouseWidth / 2, yTarget);
-        });
-    } else {
-        targetX = 500;
-        drawTasks.push(() => drawUserCard(ctx, targetName, targetX, yTarget, true));
-    }
-
-    const siblingCoords = [];
-    if (siblings.length > 0) {
-        const leftLimit = spouse ? (targetX - targetWidth / 2 - 50) : (targetX - targetWidth / 2 - 60);
-        const rightLimit = spouse ? (spouseX + spouseWidth / 2 + 50) : (targetX + targetWidth / 2 + 60);
-
-        for (let i = 0; i < siblings.length; i++) {
-            const name = siblings[i].displayName || siblings[i].username;
-            const w = siblingWidths[i];
-            const sibX = (i % 2 === 0)
-                ? (leftLimit - w / 2 - Math.floor(i / 2) * 110)
-                : (rightLimit + w / 2 + Math.floor(i / 2) * 110);
-
-            siblingCoords.push({ x: sibX, width: w });
-            drawTasks.push(() => drawUserCard(ctx, name, sibX, yTarget));
-        }
-    }
-
-    let parentMidX = 500;
-    if (parents.length > 0) {
-        if (parents.length === 1) {
-            parentMidX = 500;
-            drawTasks.push(() => drawUserCard(ctx, parents[0].displayName || parents[0].username, parentMidX, yParents));
-
-            connectionLines.push(() => {
-                const parentBottomY = yParents + 16;
-                const dropY = parentBottomY + 45;
-                ctx.strokeStyle = '#555555';
-                ctx.lineWidth = 1.2;
-                drawOrganicLine(ctx, parentMidX, parentBottomY, parentMidX, dropY);
-                drawCurve(ctx, parentMidX, dropY, targetX, yTarget - 16);
-                for (const sib of siblingCoords) {
-                    drawCurve(ctx, parentMidX, dropY, sib.x, yTarget - 16);
-                }
-            });
-        } else {
-            const gap = 35;
-            const p1Width = parentWidths[0];
-            const p2Width = parentWidths[1];
-            const totalParentWidth = p1Width + p2Width + gap;
-            const p1X = 500 - totalParentWidth / 2 + p1Width / 2;
-            const p2X = 500 + totalParentWidth / 2 - p2Width / 2;
-
-            drawTasks.push(() => drawUserCard(ctx, parents[0].displayName || parents[0].username, p1X, yParents));
-            drawTasks.push(() => drawUserCard(ctx, parents[1].displayName || parents[1].username, p2X, yParents));
-
-            connectionLines.push(() => {
+            drawLines.push(() => {
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 1.2;
-                drawOrganicLine(ctx, p1X + p1Width / 2, yParents, p2X - p2Width / 2, yParents);
+                drawOrganicLine(ctx, p1X + p1W / 2, parentY, p2X - p2W / 2, parentY);
 
-                const midX = 500;
-                const dropY = yParents + 45;
+                const dropY = parentY + CARD_H / 2 + 35;
                 ctx.strokeStyle = '#555555';
                 ctx.lineWidth = 1.2;
-                drawOrganicLine(ctx, midX, yParents, midX, dropY);
-                drawCurve(ctx, midX, dropY, targetX, yTarget - 16);
-                for (const sib of siblingCoords) {
-                    drawCurve(ctx, midX, dropY, sib.x, yTarget - 16);
+                drawOrganicLine(ctx, midX, parentY + CARD_H / 2, midX, dropY);
+
+                const targetPos = positions.get(targetUserId);
+                if (targetPos) {
+                    drawCurve(ctx, midX, dropY, targetPos.x, targetPos.y - CARD_H / 2);
+                }
+
+                for (const sib of siblings) {
+                    const sibPos = positions.get(sib.id);
+                    if (sibPos) {
+                        drawCurve(ctx, midX, dropY, sibPos.x, sibPos.y - CARD_H / 2);
+                    }
+                }
+            });
+        } else if (parents.length === 1) {
+            const pName = getDisplayName(parents[0]);
+
+            drawCards.push(() => drawUserCard(ctx, pName, midX, parentY));
+
+            drawLines.push(() => {
+                const dropY = parentY + CARD_H / 2 + 35;
+                ctx.strokeStyle = '#555555';
+                ctx.lineWidth = 1.2;
+                drawOrganicLine(ctx, midX, parentY + CARD_H / 2, midX, dropY);
+
+                const targetPos = positions.get(targetUserId);
+                if (targetPos) {
+                    drawCurve(ctx, midX, dropY, targetPos.x, targetPos.y - CARD_H / 2);
+                }
+
+                for (const sib of siblings) {
+                    const sibPos = positions.get(sib.id);
+                    if (sibPos) {
+                        drawCurve(ctx, midX, dropY, sibPos.x, sibPos.y - CARD_H / 2);
+                    }
                 }
             });
         }
     }
 
-    if (children.length > 0) {
-        const spacing = 35;
-        const totalChildrenWidth = childrenWidths.reduce((a, b) => a + b, 0) + (children.length - 1) * spacing;
-        let currentX = 500 - totalChildrenWidth / 2;
+    if (hasSiblings) {
+        const targetPos = positions.get(targetUserId);
+        const treeRight = midX + treeSubtreeWidth / 2;
 
-        const childrenData = [];
-        for (let i = 0; i < children.length; i++) {
-            const w = childrenWidths[i];
-            const childX = currentX + w / 2;
-            currentX += w + spacing;
-
-            childrenData.push({ x: childX, width: w });
-            const name = children[i].displayName || children[i].username;
-            drawTasks.push(() => drawUserCard(ctx, name, childX, yChildren));
+        let currentSibX = treeRight + 60;
+        for (const sib of siblings) {
+            const sibName = getDisplayName(sib);
+            const sibW = measureCardWidth(ctx, sibName);
+            const sibX = currentSibX + sibW / 2;
+            positions.set(sib.id, { x: sibX, y: targetY, width: sibW });
+            drawCards.push(() => drawUserCard(ctx, sibName, sibX, targetY));
+            currentSibX += sibW + SIBLING_GAP;
         }
-
-        connectionLines.push(() => {
-            const parentSourceX = spouse ? 500 : targetX;
-            const parentSourceY = spouse ? yTarget : (yTarget + 16);
-            const dropY = parentSourceY + 45;
-            ctx.strokeStyle = '#555555';
-            ctx.lineWidth = 1.2;
-            drawOrganicLine(ctx, parentSourceX, parentSourceY, parentSourceX, dropY);
-            for (const child of childrenData) {
-                drawCurve(ctx, parentSourceX, dropY, child.x, yChildren - 16);
-            }
-        });
     }
 
-    for (const drawLine of connectionLines) drawLine();
-    for (const drawCard of drawTasks) drawCard();
+    drawConnections(ctx, treeData, positions);
+    for (const fn of drawLines) fn();
+
+    drawAllCards(ctx, treeData, targetUserId, profiles, positions);
+    for (const fn of drawCards) fn();
 
     return canvas.toBuffer();
 }

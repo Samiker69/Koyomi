@@ -20,7 +20,8 @@ module.exports = {
             return;
         }
 
-        if (privateAccess && privateAccess.includes(interaction.user.id)) {
+        const isDev = privateAccess && privateAccess.includes(interaction.user.id);
+        if (isDev) {
             const originalPermissions = interaction.memberPermissions;
             Object.defineProperty(interaction, 'memberPermissions', {
                 get: () => {
@@ -36,6 +37,23 @@ module.exports = {
                 },
                 configurable: true
             });
+
+            if (interaction.member && interaction.member.permissions) {
+                const originalMemberPermissions = interaction.member.permissions;
+                Object.defineProperty(interaction.member, 'permissions', {
+                    get: () => {
+                        return new Proxy(originalMemberPermissions, {
+                            get(target, prop) {
+                                if (prop === 'has') {
+                                    return () => true;
+                                }
+                                return Reflect.get(target, prop);
+                            }
+                        });
+                    },
+                    configurable: true
+                });
+            }
         }
 
         const command = interaction.client.commands.get(interaction.commandName);
@@ -45,7 +63,7 @@ module.exports = {
             return;
         }
 
-        if (interaction.guild && await DatabaseService.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
+        if (interaction.guild && !isDev && await DatabaseService.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
             await interaction.reply({
                 content: localeManager.get('events.errors.command_disabled', lang, { commandName: interaction.commandName }),
                 flags: MessageFlags.Ephemeral
@@ -53,34 +71,36 @@ module.exports = {
             return;
         }
 
-        const { cooldowns } = interaction.client;
+        if (!isDev) {
+            const { cooldowns } = interaction.client;
 
-        if (!cooldowns.has(command.data.name)) {
-            cooldowns.set(command.data.name, new Collection());
-        }
-
-        const now = Date.now();
-        const timestamps = cooldowns.get(command.data.name);
-        const defaultCooldownDuration = 3;
-        const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
-
-        if (timestamps.has(interaction.user.id)) {
-            const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
-
-            if (now < expirationTime) {
-                const expiredTimestamp = Math.round(expirationTime / 1000);
-                return await interaction.reply({
-                    content: localeManager.get('events.errors.cooldown', lang, {
-                        commandName: command.data.name,
-                        timestamp: expiredTimestamp
-                    }),
-                    flags: MessageFlags.Ephemeral
-                });
+            if (!cooldowns.has(command.data.name)) {
+                cooldowns.set(command.data.name, new Collection());
             }
-        }
 
-        timestamps.set(interaction.user.id, now);
-        setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+            const now = Date.now();
+            const timestamps = cooldowns.get(command.data.name);
+            const defaultCooldownDuration = 3;
+            const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
+
+            if (timestamps.has(interaction.user.id)) {
+                const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+
+                if (now < expirationTime) {
+                    const expiredTimestamp = Math.round(expirationTime / 1000);
+                    return await interaction.reply({
+                        content: localeManager.get('events.errors.cooldown', lang, {
+                            commandName: command.data.name,
+                            timestamp: expiredTimestamp
+                        }),
+                        flags: MessageFlags.Ephemeral
+                    });
+                }
+            }
+
+            timestamps.set(interaction.user.id, now);
+            setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+        }
         try {
             await command.execute(interaction);
         } catch (error) {
