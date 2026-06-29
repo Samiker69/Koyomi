@@ -222,6 +222,14 @@ const parser = {
       },
       "list": {
         "description": { "en-US": "List configuration", "ru": "Вывести конфигурацию", "uk": "Вивести конфігурацію" }
+      },
+    },
+    "parse": {
+      "description": { "en-US": "Analyze the log", "ru": "Проанализировать лог", "uk": "Проаналізувати лог" },
+      "options": {
+        "file": {
+          "description": { "en-US": "Log file", "ru": "Файл лога", "uk": "Файл лога" },
+        }
       }
     },
     "messages": {
@@ -234,6 +242,8 @@ const parser = {
       "list_unsupported": { "en-US": "Unsupported Mods", "ru": "Неподдерживаемые моды", "uk": "Непідтримувані моди" },
       "unknown_sub": { "en-US": "Unknown subcommand.", "ru": "Неизвестная подкоманда.", "uk": "Невідома підкоманда." },
       "none": { "en-US": "None", "ru": "Нет", "uk": "Немає" },
+      "empty_file": { "en-US": "The log is empty. Please make sure you are sending the correct log file.", "ru": "Лог пустой. Убедитесь что вы отправляете нужный лог", "uk": "Лог порожній. Переконайтеся, що ви надсилаєте потрібний лог." },
+      "invalid_format": { "en-US": "Invalid log format. Please attach `latestlog.txt`.", "ru": "Неверный формат лога. Пожалуйста, приложите `latestlog.txt`", "uk": "Невірний формат лога. Будь ласка, додайте `latestlog.txt`." },
       "error": { "en-US": "Error processing command", "ru": "Ошибка при выполнении команды", "uk": "Помилка під час виконання команди" }
     }
   }
