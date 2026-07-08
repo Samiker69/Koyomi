@@ -203,11 +203,14 @@ function drawConnections(ctx, node, positions) {
     }
 
     if (node.children && node.children.length > 0) {
-        const parentSourceX = node.spouseId
-            ? (pos.x + (positions.get(node.spouseId)?.x || pos.x)) / 2
+        const spousePos = positions.get(node.spouseId);
+        const parentSourceX = spousePos
+            ? ((pos.x + pos.width / 2) + (spousePos.x - spousePos.width / 2)) / 2
             : pos.x;
-        const parentSourceY = pos.y + CARD_H / 2;
-        const dropY = parentSourceY + 35;
+        const parentSourceY = spousePos
+            ? pos.y
+            : pos.y + CARD_H / 2;
+        const dropY = pos.y + CARD_H / 2 + 35;
 
         ctx.strokeStyle = '#555555';
         ctx.lineWidth = 1.2;
@@ -358,20 +361,21 @@ async function generateFamilyTree(client, guildId, targetUserId, familyData, lan
                 ctx.lineWidth = 1.2;
                 drawOrganicLine(ctx, p1X + p1W / 2, parentY, p2X - p2W / 2, parentY);
 
+                const parentMidX = ((p1X + p1W / 2) + (p2X - p2W / 2)) / 2;
                 const dropY = parentY + CARD_H / 2 + 35;
                 ctx.strokeStyle = '#555555';
                 ctx.lineWidth = 1.2;
-                drawOrganicLine(ctx, midX, parentY + CARD_H / 2, midX, dropY);
+                drawOrganicLine(ctx, parentMidX, parentY, parentMidX, dropY);
 
                 const targetPos = positions.get(targetUserId);
                 if (targetPos) {
-                    drawCurve(ctx, midX, dropY, targetPos.x, targetPos.y - CARD_H / 2);
+                    drawCurve(ctx, parentMidX, dropY, targetPos.x, targetPos.y - CARD_H / 2);
                 }
 
                 for (const sib of siblings) {
                     const sibPos = positions.get(sib.id);
                     if (sibPos) {
-                        drawCurve(ctx, midX, dropY, sibPos.x, sibPos.y - CARD_H / 2);
+                        drawCurve(ctx, parentMidX, dropY, sibPos.x, sibPos.y - CARD_H / 2);
                     }
                 }
             });
