@@ -1,22 +1,17 @@
-// types.d.ts
-
-import { 
-  Client, 
-  Collection, 
-  Guild, 
-  GuildMember, 
-  TextBasedChannel, 
-  User, 
-  Message, 
-  Role, 
-  Channel, 
+import {
+  Client,
+  Collection,
+  Guild,
+  GuildMember,
+  TextBasedChannel,
+  User,
+  Message,
+  Role,
+  Channel,
   Attachment,
   AutocompleteInteraction
 } from 'discord.js';
 
-/**
- * Расширенный класс бота, используемый в проекте.
- */
 export class KoyomiBot extends Client {
   commands: Collection<string, Command>;
   cooldowns: Collection<string, Collection<string, number>>;
@@ -27,13 +22,10 @@ export class KoyomiBot extends Client {
   servicesCount: number;
   eventsCount: number;
   commandsCount: number;
-  keyManager?: ApiKeyManager;
-  ipcServer?: any; // BotIPCServer
+  keyManager?: KeyRotator;
+  ipcServer?: any;
 }
 
-/**
- * Интерфейс для создания периодических фоновых служб (сервисов).
- */
 export interface ServiceInstance {
   name: string;
   interval: NodeJS.Timeout | null;
@@ -41,20 +33,13 @@ export interface ServiceInstance {
   stop(): void;
 }
 
-/**
- * Структура экспортируемой команды.
- */
 export interface Command {
   cooldown?: number;
-  data: any; // Сюда передается SlashCommandBuilder или JSON-структура
+  data: any;
   execute(interaction: KoyomiInteraction): Promise<any> | any;
   autocomplete?(interaction: AutocompleteInteraction): Promise<any> | any;
 }
 
-/**
- * Интерфейс, объединяющий свойства оригинального ChatInputCommandInteraction 
- * и кастомного класса MessageInteraction для унифицированной разработки.
- */
 export interface KoyomiInteraction {
   client: KoyomiBot;
   guild: Guild | null;
@@ -69,8 +54,7 @@ export interface KoyomiInteraction {
   deferred: boolean;
   options: KoyomiInteractionOptions;
   memberPermissions: any;
-  message?: Message; // Присутствует, если команда вызвана через префикс
-
+  message?: Message;
   deferReply(options?: { ephemeral?: boolean, flags?: number, withResponse?: boolean }): Promise<any>;
   reply(options: string | any): Promise<any>;
   editReply(options: string | any): Promise<any>;
@@ -78,9 +62,6 @@ export interface KoyomiInteraction {
   fetchReply(): Promise<any>;
 }
 
-/**
- * Опции аргументов команд, поддерживающие как Slash, так и Message парсинг.
- */
 export interface KoyomiInteractionOptions {
   getSubcommand(required?: boolean): string | null;
   getSubcommandGroup(required?: boolean): string | null;
@@ -95,21 +76,10 @@ export interface KoyomiInteractionOptions {
   getChannel(name: string): Channel | null;
 }
 
-/**
- * Менеджер API ключей Gemini.
- */
-export interface ApiKeyConfig {
-  key: string;
-  requestsLimit?: number | null;
-  timeoutDuration?: number;
-  priority?: number;
-}
-
-export class ApiKeyManager {
-  constructor(keyConfigList: ApiKeyConfig[]);
-  getAvailableKey(): string | null;
-  call<T>(apiFn: (key: string) => Promise<T>): Promise<T>;
-  markKeyAsRateLimited(key: string): void;
-  resetRequestCounts(): void;
+export class KeyRotator {
+  constructor(keysSource: string | any[], fallbackType?: string);
+  getApiKey(type?: string): string;
+  call<T>(apiFn: (key: string) => Promise<T>, type?: string): Promise<T>;
+  resetUsageCounters(): void;
   destroy(): void;
 }

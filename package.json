@@ -20,9 +20,9 @@
   "homepage": "https://github.com/Samiker69/MojoAdministrator#readme",
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
-    "@google/genai": "^2.5.0",
+    "@google/genai": "^2.10.0",
     "are-we-there-yet": "^4.0.2",
-    "axios": "^1.16.1",
+    "axios": "^1.18.1",
     "booru": "^2.9.0",
     "bufferutil": "^4.1.0",
     "canvas": "^3.2.3",
@@ -43,7 +43,7 @@
     "sequelize": "^6.37.8",
     "sqlite3": "^6.0.1",
     "umzug": "^3.8.3",
-    "ws": "^8.20.1"
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
