@@ -1,33 +1,33 @@
 {
   "name": "koyomi",
-  "version": "0.7.0",
-  "description": "ъ",
+  "version": "0.8.5",
+  "description": "meow",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Samiker69/MojoAdministrator.git"
+    "url": "git+https://github.com/Samiker69/koyomi.git"
   },
   "keywords": [],
-  "author": "VinTeRuS, Samiker",
+  "author": "VinTeRuS, Samiker, Yarpopcat08",
   "license": "ARR",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/Samiker69/MojoAdministrator/issues"
+    "url": "https://github.com/Samiker69/koyomi/issues"
   },
-  "homepage": "https://github.com/Samiker69/MojoAdministrator#readme",
+  "homepage": "https://github.com/Samiker69/koyomi#readme",
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
-    "@google/genai": "^2.10.0",
+    "@google/genai": "^2.12.0",
     "are-we-there-yet": "^4.0.2",
     "axios": "^1.18.1",
     "booru": "^2.9.0",
     "bufferutil": "^4.1.0",
     "canvas": "^3.2.3",
     "discord-strategy": "^2.5.0",
-    "discord.js": "^14.26.4",
+    "discord.js": "^14.27.0",
     "dotenv": "^17.4.2",
     "ejs": "^5.0.2",
     "express": "^5.2.1",
@@ -43,7 +43,7 @@
     "sequelize": "^6.37.8",
     "sqlite3": "^6.0.1",
     "umzug": "^3.8.3",
-    "ws": "^8.21.0"
+    "ws": "^8.21.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
