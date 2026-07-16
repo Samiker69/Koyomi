@@ -6,13 +6,7 @@ const CommandHandler = require('./core/handlers/commandHandler');
 const EventHandler = require('./core/handlers/eventHandler');
 const ServiceHandler = require('./core/handlers/serviceHandler');
 const CommandDeployer = require('./core/utils/deployCommands');
-const KeyRotator = require('./lib/KeyRotator/KeyRotator');
 const DatabaseService = require('./services/DatabaseService');
-
-function setupApiKeys(client) {
-    var kr = new KeyRotator('keys.txt');
-    client.keyManager = kr;
-}
 
 async function bootstrap() {
     await DatabaseService.init();

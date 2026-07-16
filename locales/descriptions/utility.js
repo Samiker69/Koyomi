@@ -408,12 +408,18 @@ const utility = {
       "verdict_channel": { "ru": "Канал наказаний", "en-US": "Verdict channel", "uk": "Канал покарань" },
       "honeypot": { "ru": "Honeypot", "en-US": "Honeypot", "uk": "Honeypot" },
       "trap_channel": { "ru": "Канал-ловушка", "en-US": "Trap channel", "uk": "Канал-пастка" },
+      "antispam": { "ru": "AntiSpam", "en-US": "AntiSpam", "uk": "AntiSpam" },
+      "antispam_threshold": { "ru": "Порог (вес) для наказания", "en-US": "Punishment threshold (weight)", "uk": "Поріг для покарання" },
+      "antispam_action": { "ru": "Действие при превышении порога", "en-US": "Action upon exceeding the threshold", "uk": "Дія при перевищенні порога" },
+      "antispam_duration": { "ru": "Длительность", "en-US": "Duration", "uk": "Тривалість" },
+      "toggle_antispam": { "ru": "AntiSpam: {state}", "en-US": "AntiSpam: {state}", "uk": "AntiSpam: {state}" },
       "log_channel": { "ru": "Лог-канал", "en-US": "Log channel", "uk": "Лог-канал" },
       "status": { "ru": "Статус", "en-US": "Status", "uk": "Статус" },
       "footer": { "ru": "Настройки обновляются в реальном времени", "en-US": "Settings update in real-time", "uk": "Налаштування оновлюються в реальному часі" },
       "placeholder_welcome": { "ru": "Выбрать канал приветствий", "en-US": "Select welcome channel", "uk": "Обрати канал привітань" },
       "placeholder_voice": { "ru": "Выбрать канал \"Создать комнату\"", "en-US": "Select \"Create Room\" channel", "uk": "Обрати канал \"Створити кімнату\"" },
       "placeholder_extra": { "ru": "Дополнительные настройки каналов...", "en-US": "Extra channel settings...", "uk": "Додаткові налаштування каналів..." },
+      "select_action_placeholder": { "ru": "Выберите действие...", "en-US": "Select an action...", "uk": "Виберіть дію..." },
       "act_cat": {
         "label": { "ru": "Задать категорию войсов", "en-US": "Set voice category", "uk": "Встановити категорію войсів" },
         "description": { "ru": "Где будут создаваться личные комнаты", "en-US": "Where private rooms will be created", "uk": "Де будуть створюватися особисті кімнати" }
@@ -441,6 +447,18 @@ const utility = {
       "act_honeypot_log": {
         "label": { "ru": "Honeypot: задать лог-канал", "en-US": "Honeypot: set log channel", "uk": "Honeypot: задати лог-канал" },
         "description": { "ru": "Куда отправлять уведомления о срабатывании", "en-US": "Where to send trigger notifications", "uk": "Куди надсилати сповіщення про спрацювання" }
+      },
+      "act_antispam_threshold": {
+        "label": { "ru": "Antispam: Задать порог для наказания", "en-US": "Antispam: Set punishment threshold", "uk": "Antispam: Встановити поріг для покарання" },
+        "description": { "ru": "Вес, достигнув который участник будет наказан", "en-US": "The weight threshold upon which the user will be punished", "uk": "Вага, досягнувши якої учасник буде покараний" }
+      },
+      "act_antispam_action": {
+        "label": { "ru": "Antispam: Задать действие при достижении порога", "en-US": "Antispam: Set action on threshold", "uk": "Antispam: Встановити дію при досягненні порогу" },
+        "description": { "ru": "Что будет с участником при превышении порога", "en-US": "Action taken against the user when the threshold is exceeded", "uk": "Antispam: Що буде з учасником при перевищенні порогу" }
+      },
+      "act_antispam_duration": {
+        "label": { "ru": "Antispam: Задать длительность", "en-US": "Antispam: Set duration", "uk": "Antispam: Встановити тривалість" },
+        "description": { "ru": "Длительность мута/бана", "en-US": "Duration of mute/ban", "uk": "Тривалість муту/бану" }
       },
       "act_prefix": {
         "label": { "ru": "Задать префикс команд", "en-US": "Set command prefix", "uk": "Задати префікс команд" },
