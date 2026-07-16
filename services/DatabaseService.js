@@ -7,16 +7,10 @@ const {
 } = require('../utils/db/models');
 const fs = require('fs');
 const { Umzug, SequelizeStorage } = require('umzug');
+const CacheService = require('./CacheService');
 
 class DatabaseService {
-    constructor() {
-        this._settingsCache = new Map();
-        this._tagsCache = new Map();
-        this._geminiUserCache = new Map();
-        this._logAnalyzerCache = null;
-        this._starboardCache = new Map();
-        this._disabledCommandsCache = new Map();
-    }
+    constructor() {}
 
     async init() {
         try {
@@ -24,10 +18,9 @@ class DatabaseService {
                 fs.mkdirSync('./database');
                 console.log('[INFO]: Папка database создана');
             }
-
-            await sequelize.sync(); 
+            await sequelize.sync();
             const umzug = new Umzug({
-                migrations: { 
+                migrations: {
                     glob: 'migrations/*.js',
                     resolve: ({ name, path, context }) => {
                         const migration = require(path);
@@ -42,7 +35,6 @@ class DatabaseService {
                 storage: new SequelizeStorage({ sequelize }),
                 logger: console,
             });
-
             const pendingMigrations = await umzug.pending();
             if (pendingMigrations.length > 0) {
                 console.log(`[INFO]: Найдено миграций для применения: ${pendingMigrations.length}`);
@@ -51,90 +43,84 @@ class DatabaseService {
             } else {
                 console.log('[INFO]: База данных актуальна, миграции не требуются.');
             }
-
-            // Автоматическое исправление некорректных форматов дат (числа вместо строк) в таблице mod_cases
             try {
                 await sequelize.query(`
-                    UPDATE mod_cases 
-                    SET timestamp = datetime(timestamp / 1000, 'unixepoch') 
+                    UPDATE mod_cases
+                    SET timestamp = datetime(timestamp / 1000, 'unixepoch')
                     WHERE (typeof(timestamp) = 'integer' OR typeof(timestamp) = 'real') AND timestamp > 100000000000;
                 `);
                 await sequelize.query(`
-                    UPDATE mod_cases 
-                    SET timestamp = datetime(timestamp, 'unixepoch') 
+                    UPDATE mod_cases
+                    SET timestamp = datetime(timestamp, 'unixepoch')
                     WHERE (typeof(timestamp) = 'integer' OR typeof(timestamp) = 'real') AND timestamp <= 100000000000;
                 `);
             } catch (err) {
                 console.error('[DB Service] Ошибка при автоматическом исправлении дат:', err);
             }
-
             const countLaunchers = await AllowedLauncher.count();
             if (countLaunchers === 0) await AllowedLauncher.create({ launcher_name: 'hebe' });
-
             const countMapping = await ModMapping.count();
             if (countMapping === 0) await ModMapping.create({ original_name: 'yet_another_config_lib_v3', modrinth_id: 'yacl' });
-            
             console.log('✅ База данных SQLite (Sequelize) успешно синхронизирована и мигрирована.');
         } catch (error) {
             console.error('❌ Ошибка синхронизации/миграции БД:', error);
-            process.exit(1); 
+            process.exit(1);
         }
     }
 
-    // ==========================================
-    // НАСТРОЙКИ СЕРВЕРА (Guild Settings)
-    // ==========================================
-
     async getSettings(guildId) {
-        if (this._settingsCache.has(guildId)) return this._settingsCache.get(guildId);
-        
-        const settings = await GuildSetting.findByPk(guildId);
-        const data = settings ? settings.toJSON() : undefined;
-        if (data) this._settingsCache.set(guildId, data);
+        const cacheKey = `db:settings:${guildId}`;
+        let settings = CacheService.get(cacheKey);
+        if (settings) return settings;
+
+        const record = await GuildSetting.findByPk(guildId);
+        const data = record ? record.toJSON() : undefined;
+        if (data) {
+            CacheService.set(cacheKey, data);
+        }
         return data;
     }
 
     async updateSetting(guildId, settingName, value) {
         await GuildSetting.update({ [settingName]: value }, { where: { guildId } });
-        this._settingsCache.delete(guildId);
+        CacheService.delete(`db:settings:${guildId}`);
         return true;
     }
 
     async addServer(guildId) {
         await GuildSetting.findOrCreate({ where: { guildId } });
-        this._settingsCache.delete(guildId);
+        CacheService.delete(`db:settings:${guildId}`);
         return true;
     }
 
     async removeServer(guildId) {
         await GuildSetting.destroy({ where: { guildId } });
-        this._settingsCache.delete(guildId);
+        CacheService.deleteByPrefix(`db:settings:${guildId}`);
         return true;
     }
 
-    // ==========================================
-    // ТЕГИ (Tags)
-    // ==========================================
-
     async getTag(serverId, name) {
-        const cacheKey = `${serverId}:${name}`;
-        if (this._tagsCache.has(cacheKey)) return this._tagsCache.get(cacheKey);
+        const cacheKey = `db:tags:${serverId}:${name}`;
+        let tag = CacheService.get(cacheKey);
+        if (tag) return tag;
 
-        const tag = await Tag.findOne({ where: { serverId, name } });
-        const data = tag ? tag.toJSON() : null;
-        if (data) this._tagsCache.set(cacheKey, data);
+        const record = await Tag.findOne({ where: { serverId, name } });
+        const data = record ? record.toJSON() : null;
+        if (data) {
+            CacheService.set(cacheKey, data);
+        }
         return data;
     }
 
     async addTag(serverId, name, content, disallowedChannelsId = [], allowedChannelId = []) {
         await Tag.upsert({ serverId, name, content, disallowedChannelsId, allowedChannelId });
-        this._tagsCache.delete(`${serverId}:${name}`);
+        CacheService.delete(`db:tags:${serverId}:${name}`);
         return true;
     }
 
     async editTag(serverId, name, updates) {
         await Tag.update(updates, { where: { serverId, name } });
-        this._tagsCache.delete(`${serverId}:${name}`);
+        CacheService.delete(`db:tags:${serverId}:${name}`);
         return true;
     }
 
@@ -145,43 +131,44 @@ class DatabaseService {
 
     async removeTag(serverId, name) {
         await Tag.destroy({ where: { serverId, name } });
-        this._tagsCache.delete(`${serverId}:${name}`);
+        CacheService.delete(`db:tags:${serverId}:${name}`);
         return true;
     }
 
-    // ==========================================
-    // GEMINI
-    // ==========================================
-
     async getUserGeminiConfig(userId) {
-        if (this._geminiUserCache.has(userId)) return this._geminiUserCache.get(userId);
+        const cacheKey = `db:gemini:user:${userId}`;
+        let config = CacheService.get(cacheKey);
+        if (config) return config;
 
-        const config = await GeminiUserSetting.findByPk(userId);
-        const data = config ? config.toJSON() : undefined;
-        if (data) this._geminiUserCache.set(userId, data);
+        const record = await GeminiUserSetting.findByPk(userId);
+        const data = record ? record.toJSON() : undefined;
+        if (data) {
+            CacheService.set(cacheKey, data);
+        }
         return data;
     }
 
     async updateUserGeminiConfig(userId, updates) {
         await GeminiUserSetting.update(updates, { where: { user_id: userId } });
-        this._geminiUserCache.delete(userId);
+        CacheService.delete(`db:gemini:user:${userId}`);
         return true;
     }
 
     async getSafetySettings(userId) {
-        const cacheKey = `safety:${userId}`;
-        if (this._geminiUserCache.has(cacheKey)) return this._geminiUserCache.get(cacheKey);
+        const cacheKey = `db:gemini:safety:${userId}`;
+        let safety = CacheService.get(cacheKey);
+        if (safety) return safety;
 
-        const settings = await GeminiSafetySetting.findByPk(userId);
-        if (!settings) return null;
-        const { user_id, ...data } = settings.toJSON();
-        this._geminiUserCache.set(cacheKey, data);
+        const record = await GeminiSafetySetting.findByPk(userId);
+        if (!record) return null;
+        const { user_id, ...data } = record.toJSON();
+        CacheService.set(cacheKey, data);
         return data;
     }
 
     async updateSafetySettings(userId, updates) {
         await GeminiSafetySetting.update(updates, { where: { user_id: userId } });
-        this._geminiUserCache.delete(`safety:${userId}`);
+        CacheService.delete(`db:gemini:safety:${userId}`);
         return true;
     }
 
@@ -190,22 +177,21 @@ class DatabaseService {
             await GeminiUserSetting.upsert({ user_id: userId, ...overrides }, { transaction: t });
             await GeminiSafetySetting.findOrCreate({ where: { user_id: userId }, transaction: t });
         });
-        this._geminiUserCache.delete(userId);
-        this._geminiUserCache.delete(`safety:${userId}`);
+        CacheService.delete(`db:gemini:user:${userId}`);
+        CacheService.delete(`db:gemini:safety:${userId}`);
         return true;
     }
 
     async deleteUserConfig(userId) {
         await GeminiUserSetting.destroy({ where: { user_id: userId } });
-        this._geminiUserCache.delete(userId);
-        this._geminiUserCache.delete(`safety:${userId}`);
+        CacheService.delete(`db:gemini:user:${userId}`);
+        CacheService.delete(`db:gemini:safety:${userId}`);
         return true;
     }
 
     async getAllUserTokens(userId) {
         const tokens = await GeminiToken.findAll({ where: { user_id: userId } });
-        // Сохраняем формат отдачи как в старом коде [[decrypted], [encrypted]]
-        const decrypted = tokens.map(t => t.token); // Геттер автоматически расшифровывает
+        const decrypted = tokens.map(t => t.token);
         const encrypted = tokens.map(t => t.getDataValue('token'));
         return tokens.length > 0 ? [decrypted, encrypted] : [];
     }
@@ -213,7 +199,6 @@ class DatabaseService {
     async addToken(userId, token, publicUse) {
         const existing = await this.getAllUserTokens(userId);
         if (existing[0]?.includes(token)) return { changes: 0, message: 'Этот ключ уже добавлен в бд!' };
-        
         await GeminiToken.create({ user_id: userId, token, public_use: publicUse });
         return { changes: 1 };
     }
@@ -222,7 +207,6 @@ class DatabaseService {
         const tokens = await GeminiToken.findAll({ where: { user_id: userId } });
         const target = tokens.find(t => t.token === token);
         if (!target) return { changes: 0, message: "Этот ключ отсутствует в бд!" };
-        
         await target.destroy();
         return { changes: 1 };
     }
@@ -248,22 +232,14 @@ class DatabaseService {
         return { tokens, uses: usesSum || 0 };
     }
 
-    // ==========================================
-    // КЕЙСЫ МОДЕРАЦИИ (Mod Cases)
-    // ==========================================
-
     async addModCase(caseData) {
         const { serverId, targetId, moderatorId, action, reason = null, evidenceUrl = null, timestamp = new Date() } = caseData;
-        
-        // Транзакция для безопасного получения следующего ID
         return await sequelize.transaction(async (t) => {
             const maxCase = await ModCase.max('caseNum', { where: { serverId }, transaction: t });
             const nextCaseNum = (maxCase || 0) + 1;
-
             const newCase = await ModCase.create({
                 serverId, caseNum: nextCaseNum, targetId, moderatorId, action, reason, evidenceUrl, timestamp
             }, { transaction: t });
-
             return newCase.toJSON();
         });
     }
@@ -274,9 +250,9 @@ class DatabaseService {
     }
 
     async getTargetModCases(serverId, targetId) {
-        const cases = await ModCase.findAll({ 
-            where: { serverId, targetId }, 
-            order: [['caseNum', 'DESC']] 
+        const cases = await ModCase.findAll({
+            where: { serverId, targetId },
+            order: [['caseNum', 'DESC']]
         });
         return cases.map(c => c.toJSON());
     }
@@ -316,10 +292,6 @@ class DatabaseService {
         return deleted > 0;
     }
 
-    // ==========================================
-    // РОЛЬ-МЕНЮ (Role Menus)
-    // ==========================================
-
     async addRoleMenu(messageId, guildId, channelId, type, roles) {
         await RoleMenu.upsert({ messageId, guildId, channelId, type, roles });
         return true;
@@ -340,25 +312,21 @@ class DatabaseService {
         return menus.map(m => m.toJSON());
     }
 
-    // ==========================================
-    // ЛОГ АНАЛИЗАТОР
-    // ==========================================
-
     async getLogAnalyzerConfig() {
-        if (this._logAnalyzerCache) return this._logAnalyzerCache;
+        const cacheKey = 'db:log_analyzer';
+        let config = CacheService.get(cacheKey);
+        if (config) return config;
 
         const [unsupported, banned, mapping, launchers] = await Promise.all([
             UnsupportedMod.findAll(), BannedMod.findAll(), ModMapping.findAll(), AllowedLauncher.findAll()
         ]);
-
-        const config = {
+        config = {
             unsupportedMods: unsupported.reduce((acc, mod) => ({ ...acc, [mod.mod_id]: mod.reason }), {}),
             bannedMods: banned.map(m => m.mod_id),
             modsMapping: mapping.reduce((acc, m) => ({ ...acc, [m.original_name]: m.modrinth_id }), {}),
             allowedLaunchers: launchers.map(l => l.launcher_name)
         };
-
-        this._logAnalyzerCache = config;
+        CacheService.set(cacheKey, config);
         return config;
     }
 
@@ -384,85 +352,70 @@ class DatabaseService {
 
     async addBannedMod(modId) {
         await BannedMod.findOrCreate({ where: { mod_id: modId } });
-        this._logAnalyzerCache = null;
+        CacheService.delete('db:log_analyzer');
         return true;
     }
 
     async removeBannedMod(modId) {
         await BannedMod.destroy({ where: { mod_id: modId } });
-        this._logAnalyzerCache = null;
+        CacheService.delete('db:log_analyzer');
         return true;
     }
 
     async addUnsupportedMod(modId, reason) {
         await UnsupportedMod.upsert({ mod_id: modId, reason });
-        this._logAnalyzerCache = null;
+        CacheService.delete('db:log_analyzer');
         return true;
     }
 
     async removeUnsupportedMod(modId) {
         await UnsupportedMod.destroy({ where: { mod_id: modId } });
-        this._logAnalyzerCache = null;
+        CacheService.delete('db:log_analyzer');
         return true;
     }
 
     async getBannedRoleId(guildId) {
         const settings = await this.getSettings(guildId);
         if (settings) {
-            return settings.parserBannedRoleId || ''; // я честно хз че оно вернёт и по идее таким образом оно точно конвертируется в строку
+            return settings.parserBannedRoleId || '';
         }
     }
 
     async addAllowedLauncher(launcherName) {
         await AllowedLauncher.findOrCreate({ where: { launcher_name: launcherName } });
-        this._logAnalyzerCache = null;
+        CacheService.delete('db:log_analyzer');
         return true;
     }
 
     async removeAllowedLauncher(launcherName) {
         await AllowedLauncher.destroy({ where: { launcher_name: launcherName } });
-        this._logAnalyzerCache = null;
+        CacheService.delete('db:log_analyzer');
         return true;
     }
 
-    // ==========================================
-    // ОГРАНИЧЕНИЯ КОМАНД (Disabled Commands)
-    // ==========================================
-
-    /**
-     * Проверяет, отключена ли команда для указанного пользователя.
-     * Учитывает как глобальные запреты на сервере, так и персональные запреты пользователя.
-     */
     async isDisabled(guildId, commandName, userId) {
         if (!guildId || !commandName || !userId) return false;
-
-        const cacheKey = `${guildId}-${commandName}-${userId}`;
-        if (this._disabledCommandsCache.has(cacheKey)) {
-            return this._disabledCommandsCache.get(cacheKey);
-        }
+        const cacheKey = `db:disabled_commands:${guildId}:${commandName}:${userId}`;
+        let isDisabled = CacheService.get(cacheKey);
+        if (isDisabled !== undefined) return isDisabled;
 
         const restriction = await DisabledCommand.findOne({
             where: {
                 guild_id: guildId,
                 command_name: commandName,
                 [Op.or]: [
-                    { user_id: null }, // Запрещено для всех на сервере
-                    { user_id: userId } // Запрещено персонально этому пользователю
+                    { user_id: null },
+                    { user_id: userId }
                 ]
             }
         });
-
-        const isDisabled = !!restriction;
-        this._disabledCommandsCache.set(cacheKey, isDisabled);
+        isDisabled = !!restriction;
+        CacheService.set(cacheKey, isDisabled);
         return isDisabled;
     }
 
-    /**
-     * Проверяет, отключена ли команда строго для всей гильдии (игнорируя персональные запреты).
-     */
     async isGuildDisabled(guildId, commandName) {
         if (!guildId || !commandName) return false;
-
         const restriction = await DisabledCommand.findOne({
             where: {
                 guild_id: guildId,
@@ -470,23 +423,16 @@ class DatabaseService {
                 user_id: null
             }
         });
-        console.log(restriction, !!restriction)
-
         return !!restriction;
     }
 
-    /**
-     * Добавляет команду в список отключенных.
-     * @param {string|null} userId Передайте null, чтобы отключить для всего сервера.
-     */
     async addDisabledCommand(guildId, commandName, userId = null) {
         if (!guildId || !commandName) return false;
-        
         try {
             await DisabledCommand.findOrCreate({
                 where: { guild_id: guildId, command_name: commandName, user_id: userId }
             });
-            this._disabledCommandsCache.clear();
+            CacheService.deleteByPrefix(`db:disabled_commands:${guildId}`);
             return true;
         } catch (error) {
             console.error("Ошибка при добавлении ограничения:", error);
@@ -494,71 +440,53 @@ class DatabaseService {
         }
     }
 
-    /**
-     * Удаляет ограничение команды.
-     */
     async removeDisabledCommand(guildId, commandName, userId = null) {
         if (!guildId || !commandName) return false;
-
         const deleted = await DisabledCommand.destroy({
             where: { guild_id: guildId, command_name: commandName, user_id: userId }
         });
-
-        this._disabledCommandsCache.clear();
+        CacheService.deleteByPrefix(`db:disabled_commands:${guildId}`);
         return deleted > 0;
     }
 
-    /**
-     * Получает список всех отключенных команд для сервера (глобально).
-     */
     async getGuildRestrictions(guildId) {
         if (!guildId) return [];
-
         const restrictions = await DisabledCommand.findAll({
             where: { guild_id: guildId, user_id: null },
-            attributes: ['command_name'] // Вытаскиваем только колонку с именем команды
+            attributes: ['command_name']
         });
-
         return restrictions.map(r => r.command_name);
     }
 
-    /**
-     * Получает список команд, отключенных персонально для пользователя на сервере.
-     */
     async getUserRestrictions(guildId, userId) {
         if (!guildId || !userId) return [];
-
         const restrictions = await DisabledCommand.findAll({
             where: { guild_id: guildId, user_id: userId },
             attributes: ['command_name']
         });
-
         return restrictions.map(r => r.command_name);
     }
 
-    // ==========================================
-    // СТАРБОРД (Starboard)
-    // ==========================================
-
     async getStarboardSettings(guildId) {
-        if (this._starboardCache.has(guildId)) return this._starboardCache.get(guildId);
+        const cacheKey = `db:starboard:settings:${guildId}`;
+        let settings = CacheService.get(cacheKey);
+        if (settings) return settings;
 
-        const settings = await StarboardSetting.findByPk(guildId);
-        if (settings) {
-            const data = settings.toJSON();
-            this._starboardCache.set(guildId, data);
+        const record = await StarboardSetting.findByPk(guildId);
+        if (record) {
+            const data = record.toJSON();
+            CacheService.set(cacheKey, data);
             return data;
         }
-
         const newSettings = await StarboardSetting.create({ guildId });
         const newData = newSettings.toJSON();
-        this._starboardCache.set(guildId, newData);
+        CacheService.set(cacheKey, newData);
         return newData;
     }
 
     async updateStarboardSetting(guildId, key, value) {
         await StarboardSetting.upsert({ guildId, [key]: value });
-        this._starboardCache.delete(guildId);
+        CacheService.delete(`db:starboard:settings:${guildId}`);
         return true;
     }
 
@@ -581,10 +509,6 @@ class DatabaseService {
         await StarboardMessage.destroy({ where: { guildId, messageId } });
         return true;
     }
-
-    // ==========================================
-    // СВАДЬБЫ И СЕМЬИ
-    // ==========================================
 
     async getMarriage(guildId, userId) {
         return await Marriage.findOne({ where: { guildId, userId } });
@@ -641,15 +565,11 @@ class DatabaseService {
     async getFamily(guildId, userId) {
         const marriage = await Marriage.findOne({ where: { guildId, userId } });
         const spouseId = marriage ? marriage.spouseId : null;
-        
         const childrenRows = await ParentChild.findAll({ where: { guildId, parentId: userId } });
         const childrenIds = childrenRows.map(c => c.childId);
-        
         const parentsRows = await ParentChild.findAll({ where: { guildId, childId: userId } });
         const parentIds = parentsRows.map(p => p.parentId);
-        
         const siblingIds = await this.getSiblings(guildId, userId);
-        
         return {
             spouseId,
             childrenIds,
@@ -661,18 +581,13 @@ class DatabaseService {
     async getFullFamilyTree(guildId, userId, depth = 15, visited = new Set()) {
         if (depth <= 0 || visited.has(userId)) return null;
         visited.add(userId);
-
         const marriage = await Marriage.findOne({ where: { guildId, userId } });
         const spouseId = marriage ? marriage.spouseId : null;
-
         const childrenRows = await ParentChild.findAll({ where: { guildId, parentId: userId } });
         const childrenIds = [...new Set(childrenRows.map(c => c.childId))];
-
         const parentsRows = await ParentChild.findAll({ where: { guildId, childId: userId } });
         const parentIds = parentsRows.map(p => p.parentId);
-
         const siblingIds = await this.getSiblings(guildId, userId);
-
         const children = [];
         for (const childId of childrenIds) {
             if (spouseId) visited.add(spouseId);
@@ -685,7 +600,6 @@ class DatabaseService {
                 siblingIds: []
             });
         }
-
         return {
             userId,
             spouseId,
@@ -698,7 +612,6 @@ class DatabaseService {
     async isAncestor(guildId, userId, potentialAncestorId, visited = new Set()) {
         if (visited.has(userId)) return false;
         visited.add(userId);
-
         const parents = await ParentChild.findAll({ where: { guildId, childId: userId } });
         for (const p of parents) {
             if (p.parentId === potentialAncestorId) return true;
@@ -710,7 +623,6 @@ class DatabaseService {
     async isDescendant(guildId, userId, potentialDescendantId, visited = new Set()) {
         if (visited.has(userId)) return false;
         visited.add(userId);
-
         const children = await ParentChild.findAll({ where: { guildId, parentId: userId } });
         for (const c of children) {
             if (c.childId === potentialDescendantId) return true;
@@ -719,17 +631,8 @@ class DatabaseService {
         return false;
     }
 
-    // ==========================================
-    // ПРОЧИЕ МЕТОДЫ (Утилиты)
-    // ==========================================
-    
     clearCache() {
-        this._settingsCache.clear();
-        this._tagsCache.clear();
-        this._geminiUserCache.clear();
-        this._starboardCache.clear();
-        this._disabledCommandsCache.clear();
-        this._logAnalyzerCache = null;
+        CacheService.clear();
         console.log('[DB Service] Весь кэш очищен.');
     }
 }
