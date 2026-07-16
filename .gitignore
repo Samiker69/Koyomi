@@ -6,7 +6,7 @@ ai/
 ModerationAPIClient/
 ClientApi/
 
-*-lock.*
+*lock*
 pnpm-workspace.yaml
 
 koyomi_project.xml
