@@ -75,7 +75,10 @@ function resolveValue(arg, type, message) {
         const match = arg.match(/<@!?(\d{17,20})>/) || arg.match(/^(\d{17,20})$/);
         const id = match ? match[1] : null;
         if (id) {
-            return message.mentions.users.get(id) || message.client.users.cache.get(id) || null;
+            return message.mentions.users.get(id) || 
+                   (message.guild && message.guild.members.cache.get(id)?.user) || 
+                   message.client.users.cache.get(id) || 
+                   { id, username: 'User', tag: 'User', bot: false, partial: true };
         }
         return message.client.users.cache.find(u => u.username.toLowerCase() === arg.toLowerCase() || u.tag.toLowerCase() === arg.toLowerCase()) || null;
     }

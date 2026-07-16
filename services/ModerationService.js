@@ -12,19 +12,20 @@ class ModerationService {
         }
 
         const member = check.member;
+        const resolvedUser = member ? member.user : (await interaction.client.users.fetch(targetUser.id).catch(() => targetUser));
         const banReason = reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` });
-        await this._sendUserDM(interaction, targetUser, 'ban', reason);
+        await this._sendUserDM(interaction, resolvedUser, 'ban', reason);
 
         try {
             if (member) {
                 await member.ban({ reason: banReason });
             } else {
-                await interaction.guild.members.ban(targetUser.id, { reason: banReason });
+                await interaction.guild.members.ban(resolvedUser.id, { reason: banReason });
             }
             
             const latestCase = await DatabaseService.addModCase({
                 serverId: interaction.guild.id,
-                targetId: targetUser.id,
+                targetId: resolvedUser.id,
                 moderatorId: interaction.user.id,
                 action: 'ban',
                 reason: reason,
@@ -32,7 +33,7 @@ class ModerationService {
                 timestamp: new Date()
             });
 
-            await ModerationService.sendVerdict(interaction, 'ban', targetUser, latestCase, reason, null, evidence);
+            await ModerationService.sendVerdict(interaction, 'ban', resolvedUser, latestCase, reason, null, evidence);
             return { success: true, caseData: latestCase };
         } catch (error) {
             console.error('Ошибка в ModerationService.banUser:', error);
@@ -89,15 +90,16 @@ class ModerationService {
         if (parsedTime.error) return { success: false, error: parsedTime.error };
 
         const { durationMs, durationString } = parsedTime;
+        const resolvedUser = check.member.user;
 
         try {
             // Отправляем ЛС перед мутом
-            await this._sendUserDM(interaction, targetUser, 'mute', reason, durationString);
+            await this._sendUserDM(interaction, resolvedUser, 'mute', reason, durationString);
 
             await check.member.timeout(durationMs, reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }));
             const latestCase = await DatabaseService.addModCase({
                 serverId: interaction.guild.id,
-                targetId: targetUser.id,
+                targetId: resolvedUser.id,
                 moderatorId: interaction.user.id,
                 action: 'mute',
                 reason: reason,
@@ -105,7 +107,7 @@ class ModerationService {
                 timestamp: new Date(),
                 duration: durationMs 
             });
-            await ModerationService.sendVerdict(interaction, 'mute', targetUser, latestCase, reason, durationString, evidence);
+            await ModerationService.sendVerdict(interaction, 'mute', resolvedUser, latestCase, reason, durationString, evidence);
             return { success: true, caseData: latestCase, durationString };
         } catch (error) {
             console.error('Ошибка в ModerationService.muteUser:', error);
@@ -117,21 +119,23 @@ class ModerationService {
         const check = await PermissionService.checkModerationTarget(interaction, targetUser, 'kick');
         if (!check.allowed) return { success: false, error: localeManager.get(check.reasonKey, interaction.guildLocale) };
 
+        const resolvedUser = check.member.user;
+
         try {
             // Отправляем ЛС перед киком
-            await this._sendUserDM(interaction, targetUser, 'kick', reason);
+            await this._sendUserDM(interaction, resolvedUser, 'kick', reason);
 
             await check.member.kick(reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }));
             const latestCase = await DatabaseService.addModCase({
                 serverId: interaction.guild.id,
-                targetId: targetUser.id,
+                targetId: resolvedUser.id,
                 moderatorId: interaction.user.id,
                 action: 'kick',
                 reason: reason,
                 evidenceUrl: evidence?.url || null,
                 timestamp: new Date()
             });
-            await ModerationService.sendVerdict(interaction, 'kick', targetUser, latestCase, reason, null, evidence);
+            await ModerationService.sendVerdict(interaction, 'kick', resolvedUser, latestCase, reason, null, evidence);
             return { success: true, caseData: latestCase };
         } catch (error) {
             console.error('Ошибка в ModerationService.kickUser:', error);
@@ -143,21 +147,23 @@ class ModerationService {
         const check = await PermissionService.checkModerationTarget(interaction, targetUser, 'unmute');
         if (!check.allowed) return { success: false, error: localeManager.get(check.reasonKey, interaction.guildLocale) };
 
+        const resolvedUser = check.member.user;
+
         try {
             // Отправляем ЛС перед размутом
-            await this._sendUserDM(interaction, targetUser, 'unmute', reason);
+            await this._sendUserDM(interaction, resolvedUser, 'unmute', reason);
 
             await check.member.timeout(null, reason + localeManager.get('moderation.moderation.messages.by_moderator', interaction.guildLocale, { user: `${interaction.user.username}(${interaction.user.id})` }));
             const latestCase = await DatabaseService.addModCase({
                 serverId: interaction.guild.id,
-                targetId: targetUser.id,
+                targetId: resolvedUser.id,
                 moderatorId: interaction.user.id,
                 action: 'unmute',
                 reason: reason,
                 evidenceUrl: evidence?.url || null,
                 timestamp: new Date()
             });
-            await ModerationService.sendVerdict(interaction, 'unmute', targetUser, latestCase, reason, null, evidence);
+            await ModerationService.sendVerdict(interaction, 'unmute', resolvedUser, latestCase, reason, null, evidence);
             return { success: true, caseData: latestCase };
         } catch (error) {
             console.error('Ошибка в ModerationService.unmuteUser:', error);
@@ -195,17 +201,19 @@ class ModerationService {
         const check = await PermissionService.checkModerationTarget(interaction, targetUser, 'warn');
         if (!check.allowed) return { success: false, error: localeManager.get(check.reasonKey, interaction.guildLocale) };
 
+        const resolvedUser = check.member.user;
+
         try {
             const latestCase = await DatabaseService.addModCase({
                 serverId: interaction.guild.id,
-                targetId: targetUser.id,
+                targetId: resolvedUser.id,
                 moderatorId: interaction.user.id,
                 action: 'warn',
                 reason: reason,
                 evidenceUrl: evidence?.url || null,
                 timestamp: new Date()
             });
-            await ModerationService.sendVerdict(interaction, 'warn', targetUser, latestCase, reason, null, evidence);
+            await ModerationService.sendVerdict(interaction, 'warn', resolvedUser, latestCase, reason, null, evidence);
             return { success: true, caseData: latestCase };
         } catch (error) {
             console.error('Ошибка в ModerationService.warnUser:', error);
@@ -277,6 +285,8 @@ class ModerationService {
             return { success: false, error: localeManager.get('moderation.moderation.messages.user_not_found', lang) };
         }
 
+        const resolvedUser = member.user;
+
         try {
             await member.roles.add(roleId);
         } catch (error) {
@@ -287,7 +297,7 @@ class ModerationService {
         try {
             const latestCase = await DatabaseService.addModCase({
                 serverId: interaction.guild.id,
-                targetId: targetUser.id,
+                targetId: resolvedUser.id,
                 moderatorId: interaction.user.id,
                 action: 'supportban',
                 reason: reason,
@@ -295,9 +305,9 @@ class ModerationService {
                 timestamp: new Date()
             });
 
-            await this._sendUserDM(interaction, targetUser, 'supportban', reason);
-            await ModerationService.sendVerdict(interaction, 'supportban', targetUser, latestCase, reason, null, evidence);
-            return { success: true, caseData: latestCase, targetId: targetUser.id };
+            await this._sendUserDM(interaction, resolvedUser, 'supportban', reason);
+            await ModerationService.sendVerdict(interaction, 'supportban', resolvedUser, latestCase, reason, null, evidence);
+            return { success: true, caseData: latestCase, targetId: resolvedUser.id };
         } catch (error) {
             console.error('Ошибка в ModerationService.supportBanUser', error);
             return { success: false, error: localeManager.get('moderation.moderation.messages.error_supportban', lang) };
@@ -318,6 +328,8 @@ class ModerationService {
             return { success: false, error: localeManager.get('moderation.moderation.messages.user_not_found', lang) };
         }
 
+        const resolvedUser = member.user;
+
         try {
             await member.roles.remove(roleId);
         } catch (error) {
@@ -328,7 +340,7 @@ class ModerationService {
         try {
             const latestCase = await DatabaseService.addModCase({
                 serverId: interaction.guild.id,
-                targetId: targetUser.id,
+                targetId: resolvedUser.id,
                 moderatorId: interaction.user.id,
                 action: 'supportunban',
                 reason: reason,
@@ -336,9 +348,9 @@ class ModerationService {
                 timestamp: new Date()
             });
 
-            await this._sendUserDM(interaction, targetUser, 'supportunban', reason);
-            await ModerationService.sendVerdict(interaction, 'supportunban', targetUser, latestCase, reason, null, evidence);
-            return { success: true, caseData: latestCase, targetId: targetUser.id };
+            await this._sendUserDM(interaction, resolvedUser, 'supportunban', reason);
+            await ModerationService.sendVerdict(interaction, 'supportunban', resolvedUser, latestCase, reason, null, evidence);
+            return { success: true, caseData: latestCase, targetId: resolvedUser.id };
         } catch (error) {
             console.error('Ошибка в ModerationService.supportUnbanUser', error);
             return { success: false, error: localeManager.get('moderation.moderation.messages.error_supportunban', lang) };
