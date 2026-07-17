@@ -1,6 +1,6 @@
 const { Events, Collection, EmbedBuilder } = require('discord.js');
 const { bot_log_channel } = require('../../config.json');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 const localeManager = require('../../locales/localeManager');
 const { MessageInteraction, parseArgs } = require('../../core/utils/messageToInteraction');
 

@@ -6,7 +6,7 @@ const {
 } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
 const localeManager = require('../../locales/localeManager');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 
 module.exports = {
     data: new SlashCommandBuilder()

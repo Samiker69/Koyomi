@@ -1,7 +1,7 @@
 const { Events, MessageFlags, Collection, EmbedBuilder } = require('discord.js');
 const { bot_log_channel, privateAccess } = require('../../config.json');
 const localeManager = require('../../locales/localeManager');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 
 module.exports = {
     name: Events.InteractionCreate,

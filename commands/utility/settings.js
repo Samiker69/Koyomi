@@ -11,7 +11,7 @@ const {
     ComponentType
 } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 const { bot_log_channel } = require('../../config.json');
 const localeManager = require('../../locales/localeManager');
 
