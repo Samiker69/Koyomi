@@ -40,7 +40,7 @@ function roundRect(ctx, x, y, width, height, radius) {
 }
 
 module.exports = {
-    cooldown: 5,
+    cooldown: 30,
     data: new SlashCommandBuilder()
         .setName('love')
         .setDescription(localeManager.get('forFunOnly.love.description'))
