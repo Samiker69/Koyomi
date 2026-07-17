@@ -1,6 +1,6 @@
 const { Events, MessageFlags } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories/GuildSettingsRepository');
 
 async function safeReply(interaction, key, lang, variables = {}) { 
     const flags = MessageFlags.Ephemeral; 

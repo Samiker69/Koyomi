@@ -6,10 +6,10 @@ const CommandHandler = require('./core/handlers/commandHandler');
 const EventHandler = require('./core/handlers/eventHandler');
 const ServiceHandler = require('./core/handlers/serviceHandler');
 const CommandDeployer = require('./core/utils/deployCommands');
-const DatabaseService = require('./services/DatabaseService');
+const DatabaseConnection = require('./database/connection');
 
 async function bootstrap() {
-    await DatabaseService.init();
+    await DatabaseConnection.init();
     const client = new BaseBot();
     const commandsPath = path.join(__dirname, 'commands');
     const eventsPath = path.join(__dirname, 'events');
@@ -26,5 +26,5 @@ async function bootstrap() {
 
 bootstrap().catch(error => {
     console.error('[FATAL ERROR]:', error);
-    process.exit(1)
+    process.exit(1);
 });

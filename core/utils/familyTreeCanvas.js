@@ -1,5 +1,5 @@
 const { createCanvas } = require('canvas');
-const db = require('../../services/DatabaseService');
+const db = require('../../database/repositories/FamilyRepository');
 
 const CARD_H = 32;
 const CARD_PAD = 24;
