@@ -7,11 +7,11 @@ const DEFAULT_CONFIG = {
     action: 'mute',
     threshold: 18.0,
     muteDuration: 10 * 60 * 1000,
-    decayRate: 2.0,
-    baseMsgWeight: 1.5,
+    decayRate: 1.0,               // Снижено затухание для более долгого удержания очков
+    baseMsgWeight: 2.0,           // Слегка увеличен базовый вес
     channelHopWeight: 3.5,
     similarityThreshold: 0.8,
-    similarityWeight: 4.0,
+    similarityWeight: 4.5,
     mentionWeight: 1.0,
     maxMentionWeight: 5.0,
     linkWeight: 2.0,
@@ -58,9 +58,8 @@ class AntiSpamService {
         const member = msg.member;
         const guildId = msg.guild.id;
         const userId = msg.author.id;
-
-        // Группировка всех сообщений из окна истории по каналам для оптимизации удаления
         const channelsMap = new Map();
+
         for (const recent of recentMessages) {
             if (!channelsMap.has(recent.channelId)) {
                 channelsMap.set(recent.channelId, []);
@@ -68,28 +67,27 @@ class AntiSpamService {
             channelsMap.get(recent.channelId).push(recent.id);
         }
 
-        // Убеждаемся, что текущее триггерное сообщение также включено в список удаления
         if (!channelsMap.has(msg.channel.id)) {
             channelsMap.set(msg.channel.id, [msg.id]);
         } else if (!channelsMap.get(msg.channel.id).includes(msg.id)) {
             channelsMap.get(msg.channel.id).push(msg.id);
         }
 
-        // Удаление всех сообщений пользователя, находящихся в окне отслеживания
         for (const [chanId, msgIds] of channelsMap.entries()) {
             try {
                 const channel = msg.guild.channels.cache.get(chanId) || await msg.guild.channels.fetch(chanId).catch(() => null);
                 if (channel && channel.isTextBased()) {
                     if (msgIds.length > 1) {
-                        // Очистка через bulkDelete для минимизации лимитов запросов к API
+                        // Пытаемся удалить скопом без лишних запросов fetch
                         await channel.bulkDelete(msgIds, true).catch(async () => {
+                            // Если bulkDelete не сработал, удаляем поштучно, минимизируя fetch
                             for (const id of msgIds) {
-                                const m = await channel.messages.fetch(id).catch(() => null);
+                                const m = channel.messages.cache.get(id) || await channel.messages.fetch(id).catch(() => null);
                                 if (m) await m.delete().catch(() => {});
                             }
                         });
                     } else {
-                        const m = await channel.messages.fetch(msgIds[0]).catch(() => null);
+                        const m = channel.messages.cache.get(msgIds[0]) || await channel.messages.fetch(msgIds[0]).catch(() => null);
                         if (m) await m.delete().catch(() => {});
                     }
                 }
@@ -100,7 +98,6 @@ class AntiSpamService {
 
         const action = config.action || 'mute';
         const reason = `[System Anti-Spam] Penalty score exceeded limit (${score.toFixed(1)}/${config.threshold})`;
-        
         const mockInteraction = {
             guild: msg.guild,
             client: msg.client,
@@ -108,7 +105,6 @@ class AntiSpamService {
             guildLocale: lang
         };
 
-        // Очищаем локальный кэш спама для пользователя
         CacheService.delete(`spam:user:${guildId}:${userId}`);
 
         try {
@@ -122,7 +118,7 @@ class AntiSpamService {
                     timestamp: new Date()
                 });
                 await ModerationService.sendVerdict(mockInteraction, 'warn', msg.author, caseData, reason);
-            } 
+            }
             else if (action === 'mute') {
                 const duration = config.muteDuration || DEFAULT_CONFIG.muteDuration;
                 await member.timeout(duration, reason);
@@ -142,7 +138,7 @@ class AntiSpamService {
                     reason,
                     `${duration / 60000}m`
                 );
-            } 
+            }
             else if (action === 'kick') {
                 await member.kick(reason);
                 const caseData = await DatabaseService.addModCase({
@@ -154,7 +150,7 @@ class AntiSpamService {
                     timestamp: new Date()
                 });
                 await ModerationService.sendVerdict(mockInteraction, 'kick', msg.author, caseData, reason);
-            } 
+            }
             else if (action === 'ban') {
                 await member.ban({ reason });
                 const caseData = await DatabaseService.addModCase({
@@ -174,18 +170,20 @@ class AntiSpamService {
 
     static async processMessage(msg) {
         if (msg.author.bot || !msg.guild) return;
+
         const guildId = msg.guild.id;
         const settings = await DatabaseService.getSettings(guildId) || {};
         if (!settings.antiSpamEnabled) {
             return;
         }
+
         const member = msg.member || await msg.guild.members.fetch(msg.author.id).catch(() => null);
         if (!member) return;
+
         if (member.permissions.has(PermissionFlagsBits.Administrator) || member.permissions.has(PermissionFlagsBits.ManageGuild)) {
             return;
         }
 
-        // Парсинг конфигурации из БД
         let dbConfig = settings.antiSpamConfig || {};
         if (typeof dbConfig === 'string') {
             try { dbConfig = JSON.parse(dbConfig); } catch(e) { dbConfig = {}; }
@@ -219,34 +217,41 @@ class AntiSpamService {
             recentMessages: []
         };
 
-        // Затухание очков
         const elapsedMs = now - userData.lastMessageTimestamp;
         const elapsedSeconds = elapsedMs / 1000;
+        
+        // 1. Вычитаем затухание очков
         const decay = elapsedSeconds * config.decayRate;
         userData.score = Math.max(0, userData.score - decay);
-        
-        // Очистка старых сообщений из окна отслеживания
+
+        // 2. Фильтруем историю сообщений строго по времени (historyLifetime)
         userData.recentMessages = userData.recentMessages.filter(
             m => now - m.timestamp < config.historyLifetime
         );
 
+        // 3. Вычисляем базовый штраф
         let penalty = config.baseMsgWeight;
+
+        // НОВОЕ: Штраф за высокую скорость (Burst Penalty)
+        // Если сообщения отправляются быстрее чем раз в 2 секунды, начисляем прогрессивный штраф
+        if (elapsedMs < 2000) {
+            const speedFactor = (2000 - elapsedMs) / 2000; // От 0.0 до 1.0 (чем быстрее, тем ближе к 1)
+            penalty += speedFactor * 4.5; // Дополнительно до +4.5 очков за моментальный флуд
+        }
+
         if (channelId !== userData.lastChannelId && elapsedMs < 5000) {
             penalty += config.channelHopWeight;
         }
 
-        // Подсчет уникальных пингов
         const uniqueMentions = msg.mentions.users.size + msg.mentions.roles.size;
         if (uniqueMentions > 0) {
             penalty += Math.min(uniqueMentions * config.mentionWeight, config.maxMentionWeight);
         }
 
-        // Проверка наличия ссылок
         if (msg.content && /(https?:\/\/[^\s]+)/gi.test(msg.content)) {
             penalty += config.linkWeight;
         }
 
-        // Сбор текущих вложений
         const currentAttachments = Array.from(msg.attachments.values()).map(a => ({
             url: a.url,
             name: a.name,
@@ -256,9 +261,7 @@ class AntiSpamService {
         let highestSimilarity = 0;
         let isImageDuplicate = false;
 
-        // Поиск дубликатов по тексту и файлам/изображениям
         for (const recent of userData.recentMessages) {
-            // 1. Проверка текстовой схожести
             if (msg.content && msg.content.length > 0 && recent.content) {
                 const sim = this.getSimilarity(msg.content, recent.content);
                 if (sim > highestSimilarity) {
@@ -266,18 +269,13 @@ class AntiSpamService {
                 }
             }
 
-            // 2. Проверка схожести файлов/изображений
             if (currentAttachments.length > 0 && recent.attachments && recent.attachments.length > 0) {
                 for (const currentAtt of currentAttachments) {
                     for (const recentAtt of recent.attachments) {
-                        // Сравнение прямых ссылок (без динамических Query-параметров CDN Discord)
                         const currentCleanUrl = currentAtt.url ? currentAtt.url.split('?')[0] : '';
                         const recentCleanUrl = recentAtt.url ? recentAtt.url.split('?')[0] : '';
                         const urlMatch = currentCleanUrl && recentCleanUrl && (currentCleanUrl === recentCleanUrl);
-
-                        // Сравнение по имени файла и его точному размеру в байтах (при перезаливах)
                         const metaMatch = currentAtt.name === recentAtt.name && currentAtt.size === recentAtt.size;
-
                         if (urlMatch || metaMatch) {
                             isImageDuplicate = true;
                             break;
@@ -288,18 +286,17 @@ class AntiSpamService {
             }
         }
 
-        // Начисление штрафа за дублирование
         if (isImageDuplicate || highestSimilarity >= config.similarityThreshold) {
             penalty += config.similarityWeight;
         } else if (highestSimilarity > 0.5) {
             penalty += config.similarityWeight / 2;
         }
 
+        // Обновляем данные пользователя
         userData.score += penalty;
         userData.lastMessageTimestamp = now;
         userData.lastChannelId = channelId;
 
-        // Добавление текущего сообщения и его вложений в локальную историю
         userData.recentMessages.push({
             id: msg.id,
             channelId: channelId,
@@ -308,13 +305,13 @@ class AntiSpamService {
             timestamp: now
         });
 
-        if (userData.recentMessages.length > 10) {
+        // Безопасный ограничитель размера кэша для защиты оперативной памяти от ботов-кликеров
+        if (userData.recentMessages.length > 100) {
             userData.recentMessages.shift();
         }
 
         CacheService.set(cacheKey, userData);
 
-        // Исполнение наказания при превышении лимита очков
         if (userData.score >= config.threshold) {
             await this.handleViolation(msg, userData.score, config, lang, userData.recentMessages);
         }
