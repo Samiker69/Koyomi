@@ -483,7 +483,25 @@ const utility = {
       "lang_title": { "ru": "Выберите язык", "en-US": "Select language", "uk": "Оберіть мову" },
       "error_saving": { "ru": "Произошла ошибка при сохранении.", "en-US": "Error while saving.", "uk": "Сталася помилка при збереженні." },
       "modal_prefix_title": { "ru": "Префикс команд", "en-US": "Command Prefix", "uk": "Префікс команд" },
-      "modal_prefix_input": { "ru": "Новый префикс (макс. 5 символов)", "en-US": "New prefix (max 5 chars)", "uk": "Новий префікс (макс. 5 символів)" }
+      "modal_prefix_input": { "ru": "Новый префикс (макс. 5 символов)", "en-US": "New prefix (max 5 chars)", "uk": "Новий префікс (макс. 5 символів)" },
+      "back": { "ru": "Назад", "en-US": "Back", "uk": "Назад" },
+      "general": { "ru": "Общие настройки", "en-US": "General Settings", "uk": "Загальні налаштування" },
+      "set_threshold": { "ru": "Изменить порог", "en-US": "Set Threshold", "uk": "Змінити поріг" },
+      "set_duration": { "ru": "Изменить длительность", "en-US": "Set Duration", "uk": "Змінити тривалість" },
+      "confirm_reset_title": { "ru": "Подтвердите сброс", "en-US": "Confirm Reset", "uk": "Підтвердіть скидання" },
+      "confirm_reset_desc": { "ru": "Вы уверены, что хотите сбросить все настройки?", "en-US": "Are you sure you want to reset all settings?", "uk": "Ви впевнені, що хочете скинути всі налаштування?" },
+      "confirm_btn": { "ru": "Да, сбросить", "en-US": "Yes, Reset", "uk": "Так, скинути" },
+      "cancel_btn": { "ru": "Отмена", "en-US": "Cancel", "uk": "Скасувати" },
+      "reset_success": { "ru": "Все настройки сервера были сброшены.", "en-US": "All server settings have been reset.", "uk": "Усі налаштування сервера були скинуті." },
+      "select_chan_prompt": { "ru": "Выберите канал:", "en-US": "Select channel:", "uk": "Оберіть канал:" },
+      "select_cat_prompt": { "ru": "Выберите категорию:", "en-US": "Select category:", "uk": "Оберіть категорію:" },
+      "antispam_action_prompt": { "ru": "Выберите действие при нарушении антиспама:", "en-US": "Select action on spam violation:", "uk": "Виберіть дію при порушенні антиспаму:" },
+      "antispam_action_success": { "ru": "Успешно сохранено: {action}", "en-US": "Successfully saved: {action}", "uk": "Успішно збережено: {action}" },
+      "antispam_invalid_num": { "ru": "Некорректное число.", "en-US": "Invalid number.", "uk": "Некоректне число." },
+      "warn": { "ru": "Предупреждение", "en-US": "Warning", "uk": "Попередження" },
+      "mute": { "ru": "Таймаут", "en-US": "Timeout", "uk": "Таймаут" },
+      "kick": { "ru": "Кик", "en-US": "Kick", "uk": "Кік" },
+      "ban": { "ru": "Бан", "en-US": "Ban", "uk": "Бан" }
     }
   },
   "starboard": {
