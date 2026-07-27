@@ -1,6 +1,6 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { extractLogInfo, extractCrashInfo } = require('../../utils/LogParser');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 const LogAnalyzerService = require('../../services/LogAnalyzerService');
 const localeManager = require('../../locales/localeManager');
 

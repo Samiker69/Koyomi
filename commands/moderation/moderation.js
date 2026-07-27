@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, MessageFlags, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const ModerationService = require('../../services/ModerationService');
-const EmbedService = require('../../services/EmbedService');
+const ModerationViews = require('../../views/ModerationViews');
 const localeManager = require('../../locales/localeManager');
 
 const data = new SlashCommandBuilder()
@@ -72,7 +72,7 @@ const data = new SlashCommandBuilder()
             .addStringOption(option =>
                 option.setName('reason')
                     .setDescription(localeManager.get('moderation.moderation.options.kick.options.reason.description', 'en-US'))
-                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.kick.options.reason.description'))
+                    .setDescriptionLocalizations(localeManager.getLocalizations('moderation.moderation.options.kick.description'))
                     .setRequired(false)
             )
             .addAttachmentOption(option =>
@@ -226,337 +226,214 @@ const data = new SlashCommandBuilder()
                     .setRequired(false)
             )
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
-
+    .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers);
 
 module.exports = {
     cooldown: 3,
     data,
     async execute(interaction) {
         const lang = interaction.guildLocale;
-
         if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
-            await interaction.reply({ 
-                content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                flags: MessageFlags.Ephemeral 
+            await interaction.reply({
+                content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                flags: MessageFlags.Ephemeral
             });
             return;
         }
         if (!interaction.guild.members.me.permissions.has('BanMembers')) {
-            await interaction.reply({ 
-                content: localeManager.get('moderation.moderation.messages.me_no_perms', lang), 
-                flags: MessageFlags.Ephemeral 
+            await interaction.reply({
+                content: localeManager.get('moderation.moderation.messages.me_no_perms', lang),
+                flags: MessageFlags.Ephemeral
             });
             return;
         }
-
         const subcommand = interaction.options.getSubcommand();
         const noReason = localeManager.get('moderation.moderation.messages.no_reason', lang);
-
         switch (subcommand) {
             case "ban": {
                 if (!interaction.memberPermissions.has('BanMembers')) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
                 const result = await ModerationService.banUser(interaction, targetUser, reason, evidence);
-
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: targetUser.id,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.ban_done', lang),
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUser, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             case "mute": {
                 if (!(interaction.memberPermissions.has('MuteMembers') || interaction.memberPermissions.has(PermissionFlagsBits.ModerateMembers))) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const targetUser = interaction.options.getUser('user');
                 const timeInput = interaction.options.getString('time');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
                 const result = await ModerationService.muteUser(interaction, targetUser, timeInput, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: targetUser.id,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.mute_done', lang),
-                    durationString: result.durationString,
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUser, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             case "kick": {
                 if (!interaction.memberPermissions.has('KickMembers')) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
                 const result = await ModerationService.kickUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: targetUser.id,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.kick_done', lang),
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUser, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             case "unmute": {
                 if (!interaction.memberPermissions.has('ModerateMembers') && !interaction.memberPermissions.has('MuteMembers')) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
                 const result = await ModerationService.unmuteUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: targetUser.id,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.unmute_done', lang),
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUser, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             case "unban": {
                 if (!interaction.memberPermissions.has('BanMembers')) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const userId = interaction.options.getString('userid');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
-                // Validate if it's a snowflake
                 if (!/^\d{17,20}$/.test(userId)) {
                     return await interaction.editReply({ content: localeManager.get('moderation.moderation.messages.invalid_user_id', lang) });
                 }
-
                 const result = await ModerationService.unbanUser(interaction, userId, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: userId,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.unban_done', lang),
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const targetUserObj = await interaction.client.users.fetch(userId).catch(() => ({ id: userId }));
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUserObj, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             case "warn": {
                 if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
                 const result = await ModerationService.warnUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: targetUser.id,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.warn_done', lang),
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUser, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             case "unwarn": {
                 if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const targetUser = interaction.options.getUser('user');
                 const caseNum = interaction.options.getNumber('case');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
                 const result = await ModerationService.unwarnUser(interaction, targetUser, caseNum, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: result.targetId,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.unwarn_done', lang),
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const targetUserObj = await interaction.client.users.fetch(result.targetId).catch(() => ({ id: result.targetId }));
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUserObj, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             case "supportban": {
                 if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
                 const result = await ModerationService.supportBanUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: result.targetId,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.supportban_done', lang),
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUser, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             case "supportunban": {
                 if (!(interaction.memberPermissions.has('KickMembers') || interaction.memberPermissions.has('Administrator'))) {
-                    return await interaction.reply({ 
-                        content: localeManager.get('moderation.moderation.messages.no_perms', lang), 
-                        flags: MessageFlags.Ephemeral 
+                    return await interaction.reply({
+                        content: localeManager.get('moderation.moderation.messages.no_perms', lang),
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 await interaction.deferReply();
-
                 const targetUser = interaction.options.getUser('user');
                 const reason = interaction.options.getString('reason') || noReason;
                 const evidence = interaction.options.getAttachment('evidence');
-
                 const result = await ModerationService.supportUnbanUser(interaction, targetUser, reason, evidence);
                 if (!result.success) {
                     return await interaction.editReply({ content: result.error });
                 }
-
-                const embed = EmbedService.createModerationEmbed({
-                    interaction,
-                    caseNum: result.caseData.caseNum,
-                    targetId: result.targetId,
-                    reason,
-                    evidence,
-                    color: EmbedService.BRAND_COLOR,
-                    footerText: localeManager.get('moderation.moderation.messages.supportunban_done', lang),
-                    lang: lang
-                });
-
-                await interaction.editReply({ embeds: [embed] });
+                const payload = ModerationViews.caseVerdict(result.caseData, targetUser, interaction.user, lang);
+                await interaction.editReply(payload);
                 break;
             }
             default:
-                await interaction.reply({ 
-                    content: localeManager.get('moderation.moderation.messages.unknown_sub', lang), 
-                    flags: MessageFlags.Ephemeral 
-                })
+                await interaction.reply({
+                    content: localeManager.get('moderation.moderation.messages.unknown_sub', lang),
+                    flags: MessageFlags.Ephemeral
+                });
                 break;
         }
     }
-}
+};

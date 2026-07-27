@@ -1,140 +1,62 @@
-const { Events, MessageFlags, Collection, EmbedBuilder } = require('discord.js');
-const { bot_log_channel, privateAccess } = require('../../config.json');
-const localeManager = require('../../locales/localeManager');
-const DatabaseService = require('../../services/DatabaseService');
-
+const { Events, MessageFlags, EmbedBuilder } = require('discord.js');
+const { bot_log_channel } = require('../../config.json');
+const Pipeline = require('../../core/middlewares/Pipeline');
+const ContextMiddleware = require('../../core/middlewares/ContextMiddleware');
+const PermissionMiddleware = require('../../core/middlewares/PermissionMiddleware');
+const CooldownMiddleware = require('../../core/middlewares/CooldownMiddleware');
+const componentHandler = require('../../core/handlers/componentHandler');
+const ReportService = require('../../services/ReportService');
+const pipeline = new Pipeline()
+    .use(ContextMiddleware)
+    .use(PermissionMiddleware)
+    .use(CooldownMiddleware);
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        const settings = interaction.guild ? (await DatabaseService.getSettings(interaction.guild.id) || {}) : {};
-        const preferredLang = settings.language || interaction.guildLocale || 'ru';
-
-        Object.defineProperty(interaction, 'guildLocale', {
-            get: () => preferredLang,
-            configurable: true
-        });
-
-        const lang = preferredLang;
-
-        if (!interaction.isChatInputCommand()) {
-            return;
-        }
-
-        const isDev = privateAccess && privateAccess.includes(interaction.user.id);
-        if (isDev) {
-            const originalPermissions = interaction.memberPermissions;
-            Object.defineProperty(interaction, 'memberPermissions', {
-                get: () => {
-                    if (!originalPermissions) return null;
-                    return new Proxy(originalPermissions, {
-                        get(target, prop) {
-                            if (prop === 'has') {
-                                return () => true;
-                            }
-                            return Reflect.get(target, prop);
-                        }
-                    });
-                },
-                configurable: true
-            });
-
-            if (interaction.member && interaction.member.permissions) {
-                const originalMemberPermissions = interaction.member.permissions;
-                Object.defineProperty(interaction.member, 'permissions', {
-                    get: () => {
-                        return new Proxy(originalMemberPermissions, {
-                            get(target, prop) {
-                                if (prop === 'has') {
-                                    return () => true;
-                                }
-                                return Reflect.get(target, prop);
-                            }
-                        });
-                    },
-                    configurable: true
+        if (interaction.isChatInputCommand()) {
+            const command = interaction.client.commands.get(interaction.commandName);
+            if (!command) {
+                console.error(`Команда ${interaction.commandName} не найдена.`);
+                return;
+            }
+            try {
+                await pipeline.execute(interaction, async (ctx) => {
+                    await command.execute(ctx);
                 });
-            }
-        }
-
-        const command = interaction.client.commands.get(interaction.commandName);
-
-        if (!command) {
-            console.error(`Команда ${interaction.commandName} не найдена.`);
-            return;
-        }
-
-        if (interaction.guild && !isDev && await DatabaseService.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
-            await interaction.reply({
-                content: localeManager.get('events.errors.command_disabled', lang, { commandName: interaction.commandName }),
-                flags: MessageFlags.Ephemeral
-            });
-            return;
-        }
-
-        if (!isDev) {
-            const { cooldowns } = interaction.client;
-
-            if (!cooldowns.has(command.data.name)) {
-                cooldowns.set(command.data.name, new Collection());
-            }
-
-            const now = Date.now();
-            const timestamps = cooldowns.get(command.data.name);
-            const defaultCooldownDuration = 3;
-            const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
-
-            if (timestamps.has(interaction.user.id)) {
-                const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
-
-                if (now < expirationTime) {
-                    const expiredTimestamp = Math.round(expirationTime / 1000);
-                    return await interaction.reply({
-                        content: localeManager.get('events.errors.cooldown', lang, {
-                            commandName: command.data.name,
-                            timestamp: expiredTimestamp
-                        }),
-                        flags: MessageFlags.Ephemeral
-                    });
+            } catch (error) {
+                console.error(error);
+                const errorEmbed = new EmbedBuilder()
+                    .setColor('Red')
+                    .setTitle(interaction.t('events.interaction_log.title') || 'Error')
+                    .addFields(
+                        { name: interaction.t('events.interaction_log.command_label') || 'Command', value: `${interaction.commandName}` },
+                        { name: interaction.t('events.interaction_log.error_label') || 'Error', value: `\`\`\`txt\n${(error.stack || error.message).slice(0, 1000)}\n\`\`\`` }
+                    )
+                    .setTimestamp(new Date());
+                try {
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel).catch(() => null);
+                    if (logChannel && logChannel.isTextBased()) {
+                        await logChannel.send({ embeds: [errorEmbed] });
+                    }
+                } catch (logErr) {
+                    console.error(logErr.message);
+                }
+                if (error.code === 10062) return;
+                const errorMessage = interaction.t('events.errors.command_error') || 'An error occurred while executing the command.';
+                try {
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
+                    } else {
+                        await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
+                    }
+                } catch (replyError) {
+                    console.error(replyError.message);
                 }
             }
-
-            timestamps.set(interaction.user.id, now);
-            setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
-        }
-        try {
-            await command.execute(interaction);
-        } catch (error) {
-            console.error(error);
-            const errorEmbed = new EmbedBuilder()
-                .setColor('Red')
-                .setTitle(localeManager.get('events.interaction_log.title', lang))
-                .addFields(
-                    { name: localeManager.get('events.interaction_log.command_label', lang), value: `${interaction.commandName}` },
-                    { name: localeManager.get('events.interaction_log.error_label', lang), value: `\`\`\`txt\n${(error.stack || error.message).slice(0, 1000)}\n\`\`\`` }
-                )
-                .setTimestamp(new Date())
-
-            try {
-                const logChannel = await interaction.client.channels.fetch(bot_log_channel).catch(() => null);
-                if (logChannel && logChannel.isTextBased()) {
-                    await logChannel.send({ embeds: [errorEmbed] });
-                }
-            } catch (logErr) {
-                console.error('[Logger Error] Could not send to log channel:', logErr.message);
-            }
-
-            if (error.code === 10062) return;
-
-            const errorMessage = localeManager.get('events.errors.command_error', lang);
-            try {
-                if (interaction.replied || interaction.deferred) {
-                    await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
-                } else {
-                    await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
-                }
-            } catch (replyError) {
-                console.error('[Error Handler] Failed to send error message to user:', replyError.message);
-            }
+        } else if (interaction.isMessageContextMenuCommand() && interaction.commandName === 'Пожаловаться на сообщение') {
+            await ReportService.handleContextMenuReport(interaction);
+        } else {
+            await componentHandler.handle(interaction);
         }
     },
 };

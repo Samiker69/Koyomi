@@ -1,6 +1,6 @@
 const { Events, ChannelType, PermissionFlagsBits } = require('discord.js');
 const localeManager = require('../../locales/localeManager');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 
 const creatingChannels = new Set();
 

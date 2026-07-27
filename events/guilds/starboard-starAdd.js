@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder, ChannelType } = require('discord.js');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 
 const STAR_EMOJI_NAME = '⭐';
 const EMBED_COLOR = 0xFFD700; // типо золотой
