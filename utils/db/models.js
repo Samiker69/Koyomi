@@ -51,7 +51,8 @@ const GuildSetting = sequelize.define('GuildSetting', {
     language: { type: DataTypes.STRING, defaultValue: 'ru' },
     parserBannedRoleId: { type: DataTypes.STRING, defaultValue: '' },
     antiSpamEnabled: { type: DataTypes.BOOLEAN, defaultValue: false },
-    antiSpamConfig: { type: DataTypes.JSON, defaultValue: {} }
+    antiSpamConfig: { type: DataTypes.JSON, defaultValue: {} },
+    defaultThreadAutoClose: { type: DataTypes.INTEGER, defaultValue: 0 }
 }, { tableName: 'guild_settings', timestamps: false });
 
 const RoleMenu = sequelize.define('RoleMenu', {

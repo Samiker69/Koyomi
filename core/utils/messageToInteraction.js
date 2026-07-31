@@ -65,7 +65,26 @@ function resolveValue(arg, type, message) {
         return arg;
     }
     if (isType(type, 'INTEGER') || isType(type, 'NUMBER')) {
-        const num = Number(arg);
+        let num = Number(arg);
+        if (isNaN(num) && typeof arg === 'string') {
+            const timeMatch = arg.toLowerCase().match(/^(\d+)\s*([mhdw]|мин|мин\.|ч|час|часа|часов|д|дн|день|дня|дней|н|нед|неделя|недели|недель)?$/);
+            if (timeMatch) {
+                const val = parseInt(timeMatch[1], 10);
+                const unit = timeMatch[2] || 'm';
+                if (['m', 'мин', 'мин.'].includes(unit)) num = val;
+                else if (['h', 'ч', 'час', 'часа', 'часов'].includes(unit)) num = val * 60;
+                else if (['d', 'д', 'дн', 'день', 'дня', 'дней'].includes(unit)) num = val * 1440;
+                else if (['w', 'н', 'нед', 'неделя', 'недели', 'недель'].includes(unit)) num = val * 10080;
+            }
+        }
+
+        if (!isNaN(num)) {
+            // Если передан положительный таймер, округляем до наиближайшего допустимого Discord API значения (60, 1440, 4320, 10080)
+            const allowed = [60, 1440, 4320, 10080];
+            if (num > 0 && !allowed.includes(num)) {
+                num = allowed.reduce((prev, curr) => Math.abs(curr - num) < Math.abs(prev - num) ? curr : prev);
+            }
+        }
         return isNaN(num) ? null : num;
     }
     if (isType(type, 'BOOLEAN')) {
