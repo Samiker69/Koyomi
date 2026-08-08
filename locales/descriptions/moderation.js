@@ -755,6 +755,60 @@ const moderation = {
       "empty_server": { "ru": "На этом сервере нет запрещенных команд для всех.", "en-US": "There are no server-wide restricted commands.", "uk": "На цьому сервері немає заборонених команд для всіх." },
       "empty_user": { "ru": "Для пользователя {user} нет персонально запрещенных команд.", "en-US": "There are no personal command restrictions for {user}.", "uk": "Для користувача {user} немає персонально заборонених команд." }
     }
+  },
+  "thread": {
+    "name": { "en-US": "thread", "ru": "тред", "uk": "тред" },
+    "description": { "en-US": "Thread moderation and auto-close management", "ru": "Управление и автозакрытие тредов", "uk": "Керування та автозакриття тредів" },
+    "options": {
+      "close": {
+        "name": { "en-US": "close", "ru": "закрыть", "uk": "закрити" },
+        "description": { "en-US": "Close (archive) a thread channel", "ru": "Закрыть (архивировать) тред", "uk": "Закрити (архівувати) тред" },
+        "options": {
+          "thread": { "name": { "en-US": "thread", "ru": "тред", "uk": "тред" }, "description": { "en-US": "Target thread (defaults to current)", "ru": "Целевой тред (по умолчанию текущий)", "uk": "Цільовий тред (за замовчуванням поточний)" } },
+          "reason": { "name": { "en-US": "reason", "ru": "причина", "uk": "причина" }, "description": { "en-US": "Reason for closing the thread", "ru": "Причина закрытия треда", "uk": "Причина закриття треду" } },
+          "lock": { "name": { "en-US": "lock", "ru": "заблокировать", "uk": "заблокувати" }, "description": { "en-US": "Also lock the thread so non-mods cannot un-archive it", "ru": "Также заблокировать тред", "uk": "Також заблокувати тред" } }
+        }
+      },
+      "autoclose": {
+        "name": { "en-US": "autoclose", "ru": "автозакрытие", "uk": "автозакриття" },
+        "description": { "en-US": "Set auto-close inactivity timer for a thread", "ru": "Настроить таймер автозакрытия треда при неактивности", "uk": "Налаштувати таймер автозакриття треду при неактивності" },
+        "options": {
+          "minutes": { "name": { "en-US": "minutes", "ru": "минуты", "uk": "хвилини" }, "description": { "en-US": "Inactivity duration before auto-close", "ru": "Период неактивности в минутах", "uk": "Період неактивності у хвилинах" } },
+          "thread": { "name": { "en-US": "thread", "ru": "тред", "uk": "тред" }, "description": { "en-US": "Target thread (defaults to current)", "ru": "Целевой тред (по умолчанию текущий)", "uk": "Цільовий тред (за замовчуванням поточний)" } }
+        }
+      },
+      "reopen": {
+        "name": { "en-US": "reopen", "ru": "открыть", "uk": "відкрити" },
+        "description": { "en-US": "Re-open (un-archive) a closed thread channel", "ru": "Открыть (разархивировать) закрытый тред", "uk": "Відкрити (розархівувати) закритий тред" },
+        "options": {
+          "thread": { "name": { "en-US": "thread", "ru": "тред", "uk": "тред" }, "description": { "en-US": "Target thread (defaults to current)", "ru": "Целевой тред (по умолчанию текущий)", "uk": "Цільовий тред (за замовчуванням поточний)" } },
+          "reason": { "name": { "en-US": "reason", "ru": "причина", "uk": "причина" }, "description": { "en-US": "Reason for re-opening", "ru": "Причина открытия треда", "uk": "Причина відкриття треду" } }
+        }
+      }
+    },
+    "messages": {
+      "no_perms": { "ru": "У вас недостаточно прав (Управление тредами) для использования этой команды.", "en-US": "You lack permissions (Manage Threads) to use this command.", "uk": "У вас недостатньо прав (Керування тредами) для використання цієї команди." },
+      "bot_no_perms": { "ru": "У бота недостаточно прав (Управление тредами) для выполнения действия.", "en-US": "Bot lacks permissions (Manage Threads) to perform this action.", "uk": "У бота недостатньо прав (Керування тредами) для виконання дії." },
+      "not_a_thread": { "ru": "Указанный канал не является тредом (веткой). Вызовите команду внутри треда или укажите тред.", "en-US": "The specified channel is not a thread. Run inside a thread or specify one.", "uk": "Вказаний канал не є тредом (гілкою). Викличте команду всередині треду або вкажіть тред." },
+      "no_reason": { "ru": "Причина не указана", "en-US": "No reason provided", "uk": "Причина не вказана" },
+      "close_desc": { "ru": "Тред {thread} успешно закрыт (архивирован).", "en-US": "Thread {thread} closed (archived).", "uk": "Тред {thread} успішно закрито (архівовано)." },
+      "close_locked_desc": { "ru": "Тред {thread} успешно закрыт и заблокирован.", "en-US": "Thread {thread} closed and locked.", "uk": "Тред {thread} успішно закрито та заблоковано." },
+      "close_error": { "ru": "Не удалось закрыть тред {thread}: {error}", "en-US": "Failed to close thread {thread}: {error}", "uk": "Не вдалося закрити тред {thread}: {error}" },
+      "autoclose_desc": { "ru": "Для треда {thread} установлено время автозакрытия: **{duration}** неактивности.", "en-US": "Auto-close timer for {thread} set to **{duration}** of inactivity.", "uk": "Для треду {thread} встановлено час автозакриття: **{duration}** неактивності." },
+      "autoclose_server_desc": { "ru": "Стандартное время автозакрытия для всех новых тредов сервера установлено: **{duration}**.", "en-US": "Default auto-close timer for all new server threads set to: **{duration}**.", "uk": "Стандартний час автозакриття для всіх нових тредів сервера встановлено: **{duration}**." },
+      "autoclose_error": { "ru": "Не удалось настроить автозакрытие для треда {thread}: {error}", "en-US": "Failed to configure auto-close for thread {thread}: {error}", "uk": "Не вдалося налаштувати автозакриття для треду {thread}: {error}" },
+      "reopen_desc": { "ru": "Тред {thread} успешно открыт (разархивирован).", "en-US": "Thread {thread} re-opened (un-archived).", "uk": "Тред {thread} успішно відкрито (розархівовано)." },
+      "reopen_error": { "ru": "Не удалось открыть тред {thread}: {error}", "en-US": "Failed to re-open thread {thread}: {error}", "uk": "Не вдалося відкрити тред {thread}: {error}" },
+      "mod_label": { "ru": "Модератор", "en-US": "Moderator", "uk": "Модератор" },
+      "reason_label": { "ru": "Причина", "en-US": "Reason", "uk": "Причина" },
+      "thread_label": { "ru": "Тред", "en-US": "Thread", "uk": "Тред" },
+      "autoclose_label": { "ru": "Автозакрытие через", "en-US": "Auto-close after", "uk": "Автозакриття через" },
+      "duration_0": { "ru": "Отключено (по умолчанию Discord)", "en-US": "Disabled (Discord default)", "uk": "Вимкнено (за замовчуванням Discord)" },
+      "duration_60": { "ru": "1 час", "en-US": "1 hour", "uk": "1 година" },
+      "duration_1440": { "ru": "24 часа (1 день)", "en-US": "24 hours (1 day)", "uk": "24 години (1 день)" },
+      "duration_4320": { "ru": "3 дня", "en-US": "3 days", "uk": "3 дні" },
+      "duration_10080": { "ru": "1 неделя", "en-US": "1 week", "uk": "1 тиждень" }
+    }
   }
 }
 
