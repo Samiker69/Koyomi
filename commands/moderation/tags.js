@@ -4,7 +4,7 @@ const {
     EmbedBuilder,
     MessageFlags
 } = require('discord.js');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 const EmbedService = require('../../services/EmbedService');
 const { privateAccess } = require('../../config.json');
 

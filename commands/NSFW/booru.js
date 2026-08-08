@@ -101,15 +101,16 @@ module.exports = {
         };
 
         try {
+            await interaction.deferReply()
             const siteOfbooru = await interaction.options.getString('site');
             let tags = await interaction.options.getString('tags');
             const limit = await interaction.options.getNumber('limit') | 1;
             const pageOfBooru = await interaction.options.getNumber('page') | null;
             const no_ai = await interaction.options.getBoolean('no_ai') | false;
 
-            if (!siteOfbooru) return await interaction.reply({ content: localeManager.get('nsfw.booru.messages.invalid_site', lang) });
+            if (!siteOfbooru) return await interaction.edit({ content: localeManager.get('nsfw.booru.messages.invalid_site', lang) });
             const canonicalSite = siteLookup.get(siteOfbooru.toLowerCase());
-            if (!canonicalSite) return await interaction.reply({ content: localeManager.get('nsfw.booru.messages.site_not_found', lang, { site: siteOfbooru }), flags: MessageFlags.Ephemeral });
+            if (!canonicalSite) return await interaction.edit({ content: localeManager.get('nsfw.booru.messages.site_not_found', lang, { site: siteOfbooru }), flags: MessageFlags.Ephemeral });
             const site = booru.forSite(canonicalSite);
             let result, lastartlink; 
             if (no_ai) tags += ' -ai_generated -thick -lactation -fart -futanari -peeing -big_belly -breast_bigger_than_head -pregnant -gigantic_breasts -huge_breasts -thick_thighs -thick_ass -gigantic_ass -huge_ass'

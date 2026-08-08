@@ -1,37 +1,11 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const crypto = require('crypto');
 
-// Инициализация подключения
 const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: './database/main.db',
-    logging: false, // отключить логгирование SQL в консоль (можно включить для дебага)
+    logging: false,
 });
 
-// Функции шифрования для токенов
-const encryptToken = (text) => {
-    if (!text) return text;
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(process.env.ENCRYPTION_KEY, 'hex'), iv);
-    let encrypted = cipher.update(text);
-    encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return iv.toString('hex') + ':' + encrypted.toString('hex');
-};
-
-const decryptToken = (text) => {
-    if (!text) return text;
-    const textParts = text.split(':');
-    const iv = Buffer.from(textParts.shift(), 'hex');
-    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(process.env.ENCRYPTION_KEY, 'hex'), iv);
-    let decrypted = decipher.update(encryptedText);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return decrypted.toString();
-};
-
-// =======================
-// МОДЕЛИ НАСТРОЕК СЕРВЕРА
-// =======================
 const GuildSetting = sequelize.define('GuildSetting', {
     guildId: { type: DataTypes.STRING, primaryKey: true },
     logchannel: { type: DataTypes.STRING, defaultValue: '' },
@@ -60,12 +34,9 @@ const RoleMenu = sequelize.define('RoleMenu', {
     guildId: { type: DataTypes.STRING, allowNull: false },
     channelId: { type: DataTypes.STRING, allowNull: false },
     type: { type: DataTypes.STRING, allowNull: false },
-    roles: { type: DataTypes.JSON, allowNull: false } // Sequelize сам сделает JSON.stringify/parse
+    roles: { type: DataTypes.JSON, allowNull: false }
 }, { tableName: 'role_menus', timestamps: false });
 
-// =======================
-// МОДЕЛИ ЛОГ-АНАЛИЗАТОРА
-// =======================
 const UnsupportedMod = sequelize.define('UnsupportedMod', {
     mod_id: { type: DataTypes.STRING, primaryKey: true },
     reason: { type: DataTypes.STRING, allowNull: false }
@@ -84,15 +55,12 @@ const AllowedLauncher = sequelize.define('AllowedLauncher', {
     launcher_name: { type: DataTypes.STRING, primaryKey: true }
 }, { tableName: 'allowed_launchers', timestamps: false });
 
-// =======================
-// МОДЕЛИ МОДЕРАЦИИ
-// =======================
 const ModCase = sequelize.define('ModCase', {
     serverId: { type: DataTypes.STRING, primaryKey: true },
     caseNum: { type: DataTypes.INTEGER, primaryKey: true },
     targetId: { type: DataTypes.STRING, allowNull: false },
     moderatorId: { type: DataTypes.STRING, allowNull: false },
-    action: { 
+    action: {
         type: DataTypes.ENUM('ban', 'mute', 'kick', 'unban', 'unmute', 'warn', 'unwarn', 'supportban', 'supportunban'),
         allowNull: false
     },
@@ -113,55 +81,13 @@ const DisabledCommand = sequelize.define('DisabledCommand', {
     guild_id: { type: DataTypes.STRING, allowNull: false },
     user_id: { type: DataTypes.STRING, allowNull: true },
     command_name: { type: DataTypes.STRING, allowNull: false }
-}, { 
-    tableName: 'disabled_commands', 
+}, {
+    tableName: 'disabled_commands',
     timestamps: false,
     indexes: [{ unique: true, fields: ['guild_id', 'user_id', 'command_name'] }]
 });
 DisabledCommand.removeAttribute('id');
 
-// =======================
-// МОДЕЛИ GEMINI
-// =======================
-const GeminiUserSetting = sequelize.define('GeminiUserSetting', {
-    user_id: { type: DataTypes.STRING, primaryKey: true },
-    model: { type: DataTypes.STRING, defaultValue: "gemini-2.0-flash" },
-    system_instructions: { type: DataTypes.TEXT, defaultValue: "" },
-    max_output_tokens: { type: DataTypes.INTEGER, defaultValue: 1000 },
-    temperature: { type: DataTypes.FLOAT, defaultValue: 1.0 },
-    top_p: { type: DataTypes.FLOAT },
-    top_k: { type: DataTypes.INTEGER },
-    history_limit: { type: DataTypes.INTEGER, defaultValue: 100 }
-}, { tableName: 'gemini_user_settings', timestamps: false });
-
-const GeminiSafetySetting = sequelize.define('GeminiSafetySetting', {
-    user_id: { type: DataTypes.STRING, primaryKey: true },
-    HARM_CATEGORY_HARASSMENT: { type: DataTypes.STRING, defaultValue: "BLOCK_MEDIUM_AND_ABOVE" },
-    HARM_CATEGORY_HATE_SPEECH: { type: DataTypes.STRING, defaultValue: "BLOCK_MEDIUM_AND_ABOVE" },
-    HARM_CATEGORY_SEXUALLY_EXPLICIT: { type: DataTypes.STRING, defaultValue: "BLOCK_MEDIUM_AND_ABOVE" },
-    HARM_CATEGORY_DANGEROUS_CONTENT: { type: DataTypes.STRING, defaultValue: "BLOCK_MEDIUM_AND_ABOVE" }
-}, { tableName: 'gemini_safety_settings', timestamps: false });
-
-const GeminiToken = sequelize.define('GeminiToken', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    user_id: { type: DataTypes.STRING, allowNull: false },
-    token: { 
-        type: DataTypes.STRING, 
-        allowNull: false,
-        set(val) { this.setDataValue('token', encryptToken(val)); },
-        get() { return decryptToken(this.getDataValue('token')); }
-    },
-    public_use: { type: DataTypes.BOOLEAN, defaultValue: false },
-    uses: { type: DataTypes.INTEGER, defaultValue: 0 }
-}, { tableName: 'tokens', timestamps: false });
-
-// Отношения Gemini
-GeminiUserSetting.hasOne(GeminiSafetySetting, { foreignKey: 'user_id', onDelete: 'CASCADE' });
-GeminiSafetySetting.belongsTo(GeminiUserSetting, { foreignKey: 'user_id' });
-
-// =======================
-// ПРОЧЕЕ (Starboard, Теги)
-// =======================
 const StarboardSetting = sequelize.define('StarboardSetting', {
     guildId: { type: DataTypes.STRING, primaryKey: true },
     starboardChannelId: { type: DataTypes.STRING },
@@ -179,38 +105,36 @@ const Tag = sequelize.define('Tag', {
     serverId: { type: DataTypes.STRING, primaryKey: true },
     name: { type: DataTypes.STRING, primaryKey: true },
     content: { type: DataTypes.TEXT },
-    disallowedChannelsId: { 
-        type: DataTypes.STRING, 
+    disallowedChannelsId: {
+        type: DataTypes.STRING,
         defaultValue: '',
-        get() { 
+        get() {
             const val = this.getDataValue('disallowedChannelsId');
-            return val ? val.split(' ').map(Number) : []; 
+            return val ? val.split(' ').map(Number) : [];
         },
-        set(val) { 
-            this.setDataValue('disallowedChannelsId', Array.isArray(val) ? val.join(' ') : ''); 
+        set(val) {
+            this.setDataValue('disallowedChannelsId', Array.isArray(val) ? val.join(' ') : '');
         }
     },
-    allowedChannelId: { 
-        type: DataTypes.STRING, 
+    allowedChannelId: {
+        type: DataTypes.STRING,
         defaultValue: '',
-        get() { 
+        get() {
             const val = this.getDataValue('allowedChannelId');
-            return val ? val.split(' ').map(Number) : []; 
+            return val ? val.split(' ').map(Number) : [];
         },
-        set(val) { 
-            this.setDataValue('allowedChannelId', Array.isArray(val) ? val.join(' ') : ''); 
+        set(val) {
+            this.setDataValue('allowedChannelId', Array.isArray(val) ? val.join(' ') : '');
         }
     }
 }, { tableName: 'tags', timestamps: false });
 
-//panel
 const AdminUser = sequelize.define('AdminUser', {
     user_id: { type: DataTypes.STRING, primaryKey: true },
     username: DataTypes.STRING,
     added_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
 }, { tableName: 'admin_users', timestamps: false });
 
-// Свадьбы и Семьи
 const Marriage = sequelize.define('Marriage', {
     guildId: { type: DataTypes.STRING, allowNull: false },
     userId: { type: DataTypes.STRING, primaryKey: true },
@@ -226,7 +150,6 @@ const ParentChild = sequelize.define('ParentChild', {
     adoptedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
 }, { tableName: 'parent_children', timestamps: false });
 
-// Экспорт всех моделей и инстанса БД
 module.exports = {
     sequelize,
     GuildSetting,
@@ -238,9 +161,6 @@ module.exports = {
     ModCase,
     UserPunishment,
     DisabledCommand,
-    GeminiUserSetting,
-    GeminiSafetySetting,
-    GeminiToken,
     StarboardSetting,
     StarboardMessage,
     Tag,

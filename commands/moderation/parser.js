@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 const EmbedService = require('../../services/EmbedService');
 const localeManager = require('../../locales/localeManager');
 

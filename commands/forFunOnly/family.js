@@ -1,7 +1,7 @@
 const {
     SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, AttachmentBuilder, ComponentType
 } = require('discord.js');
-const db = require('../../services/DatabaseService');
+const db = require('../../database/repositories');
 const localeManager = require('../../locales/localeManager');
 const { generateFamilyTree } = require('../../core/utils/familyTreeCanvas');
 

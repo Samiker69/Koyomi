@@ -21,9 +21,6 @@ class MojoTestService {
         const guild = interaction.guild;
         const targetUser = targetMember.user;
         const lang = interaction.guildLocale || 'ru';
-        if (!moderator.permissions.has(PermissionFlagsBits.KickMembers)) return {
-            content: localeManager.get('moderation.moderation.messages.no_perms', lang)
-        };
 
         // Если тест уже идёт для этого юзера
         if (this.activeTests.has(targetUser.id)) {
@@ -89,8 +86,7 @@ class MojoTestService {
 
         let initialMsg;
         try {
-            await interaction.deleteReply().catch(() => {});
-            initialMsg = await interaction.channel.send(getQuestionData());
+            initialMsg = await interaction.editReply(getQuestionData());
         } catch (error) {
             console.error('[MojoTest] Failed to send initial test message:', error);
             this.activeTests.delete(targetUser.id);
