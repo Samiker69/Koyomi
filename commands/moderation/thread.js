@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits, ChannelType } = require('discord.js');
 const EmbedService = require('../../services/EmbedService');
 const localeManager = require('../../locales/localeManager');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 
 const VALID_DURATIONS = [60, 1440, 4320, 10080];
 const getNearestDuration = (mins) => mins <= 0 ? 0 : VALID_DURATIONS.reduce((prev, curr) => Math.abs(curr - mins) < Math.abs(prev - mins) ? curr : prev);
