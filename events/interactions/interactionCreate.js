@@ -1,77 +1,62 @@
-const { Events, MessageFlags, Collection, EmbedBuilder } = require('discord.js');
-const { bot_log_channel } = require('../../config.json')
-
-const DisabledCommandsDB = require('../../functions/db/restrictions');
-const db = new DisabledCommandsDB();
-
-
+const { Events, MessageFlags, EmbedBuilder } = require('discord.js');
+const { bot_log_channel } = require('../../config.json');
+const Pipeline = require('../../core/middlewares/Pipeline');
+const ContextMiddleware = require('../../core/middlewares/ContextMiddleware');
+const PermissionMiddleware = require('../../core/middlewares/PermissionMiddleware');
+const CooldownMiddleware = require('../../core/middlewares/CooldownMiddleware');
+const componentHandler = require('../../core/handlers/componentHandler');
+const ReportService = require('../../services/ReportService');
+const pipeline = new Pipeline()
+    .use(ContextMiddleware)
+    .use(PermissionMiddleware)
+    .use(CooldownMiddleware);
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        if (!interaction.isChatInputCommand()) {
-            return;
-        }
-
-        const command = interaction.client.commands.get(interaction.commandName);
-
-        if (!command) {
-            console.error(`Команда ${interaction.commandName} не найдена.`);
-            return;
-        }
-
-        if (interaction.guild && db.isDisabled(interaction.guild.id, interaction.commandName, interaction.user.id)) {
-            await interaction.reply({
-                content: `Команда \`${interaction.commandName}\` запрещена для вас на этом сервере.`,
-                flags: MessageFlags.Ephemeral
-            });
-            return;
-        }
-
-        const { cooldowns } = interaction.client;
-
-        if (!cooldowns.has(command.data.name)) {
-            cooldowns.set(command.data.name, new Collection());
-        }
-
-        const now = Date.now();
-        const timestamps = cooldowns.get(command.data.name);
-        const defaultCooldownDuration = 3;
-        const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
-
-        if (timestamps.has(interaction.user.id)) {
-            const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
-
-            if (now < expirationTime) {
-                const expiredTimestamp = Math.round(expirationTime / 1000);
-                return await interaction.reply({
-                    content: `Не так быстро! Вы слишком часто использовали \`${command.data.name}\`. Ты снова сможешь использовать её <t:${expiredTimestamp}:R>.`,
-                    flags: MessageFlags.Ephemeral
+        if (interaction.isChatInputCommand()) {
+            const command = interaction.client.commands.get(interaction.commandName);
+            if (!command) {
+                console.error(`Команда ${interaction.commandName} не найдена.`);
+                return;
+            }
+            try {
+                await pipeline.execute(interaction, async (ctx) => {
+                    await command.execute(ctx);
                 });
+            } catch (error) {
+                console.error(error);
+                const errorEmbed = new EmbedBuilder()
+                    .setColor('Red')
+                    .setTitle(interaction.t('events.interaction_log.title') || 'Error')
+                    .addFields(
+                        { name: interaction.t('events.interaction_log.command_label') || 'Command', value: `${interaction.commandName}` },
+                        { name: interaction.t('events.interaction_log.error_label') || 'Error', value: `\`\`\`txt\n${(error.stack || error.message).slice(0, 1000)}\n\`\`\`` }
+                    )
+                    .setTimestamp(new Date());
+                try {
+                    const logChannel = await interaction.client.channels.fetch(bot_log_channel).catch(() => null);
+                    if (logChannel && logChannel.isTextBased()) {
+                        await logChannel.send({ embeds: [errorEmbed] });
+                    }
+                } catch (logErr) {
+                    console.error(logErr.message);
+                }
+                if (error.code === 10062) return;
+                const errorMessage = interaction.t('events.errors.command_error') || 'An error occurred while executing the command.';
+                try {
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
+                    } else {
+                        await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
+                    }
+                } catch (replyError) {
+                    console.error(replyError.message);
+                }
             }
-        }
-
-        timestamps.set(interaction.user.id, now);
-        setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
-        try {
-            await command.execute(interaction);
-        } catch (error) {
-            console.error(error);
-            const errorEmbed = new EmbedBuilder()
-            .setColor('Red')
-            .setTitle(`Произошла ошибка при обработке команды`)
-            .addFields(
-                { name: `Команда`, value: `${interaction.commandName}`},
-                { name: 'Ошибка', value: `\`\`\`txt\n${error.message}\n${error.stack || ''}\`\`\`` }
-            )
-            .setTimestamp(new Date())
-            
-            const logChannel = await interaction.client.channels.fetch(bot_log_channel)
-            await logChannel.send({ embeds: [errorEmbed] })
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({ content: 'Произошла ошибка при обработке команды!', flags: MessageFlags.Ephemeral });
-            } else {
-                await interaction.reply({ content: 'Произошла ошибка при обработке команды!', flags: MessageFlags.Ephemeral });
-            }
+        } else if (interaction.isMessageContextMenuCommand() && interaction.commandName === 'Пожаловаться на сообщение') {
+            await ReportService.handleContextMenuReport(interaction);
+        } else {
+            await componentHandler.handle(interaction);
         }
     },
 };

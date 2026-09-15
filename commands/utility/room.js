@@ -1,81 +1,90 @@
-// commands/room.js
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const Settings = require('../../functions/db/settings');
-const Sdb = new Settings();
+const localeManager = require('../../locales/localeManager');
+const DatabaseService = require('../../database/repositories');
 
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('room')
-    .setDescription('Управление вашей динамической голосовой комнатой')
+    .setDescription(localeManager.get('utility.room.description'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.description'))
     .addSubcommand(sub =>
       sub
         .setName('rename')
-        .setDescription('Переименовать комнату')
+        .setDescription(localeManager.get('utility.room.options.rename.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.rename.description'))
         .addStringOption(opt =>
           opt
             .setName('name')
-            .setDescription('Новое название')
+            .setDescription(localeManager.get('utility.room.options.rename.options.name.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.rename.options.name.description'))
             .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub
         .setName('limit')
-        .setDescription('Установить лимит участников')
+        .setDescription(localeManager.get('utility.room.options.limit.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.limit.description'))
         .addIntegerOption(opt =>
           opt
             .setName('number')
-            .setDescription('Максимальное число участников (0 — без лимита)')
+            .setDescription(localeManager.get('utility.room.options.limit.options.number.description'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.limit.options.number.description'))
             .setRequired(true)
-            .setMinValue(0) // Добавлено минимальное значение для ясности
+            .setMinValue(0)
         )
     )
     .addSubcommand(sub =>
       sub
         .setName('lock')
-        .setDescription('Закрыть комнату (запретить подключение для @everyone)')
+        .setDescription(localeManager.get('utility.room.options.lock.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.lock.description'))
     )
     .addSubcommand(sub =>
       sub
         .setName('unlock')
-        .setDescription('Открыть комнату (разрешить подключение для @everyone)')
+        .setDescription(localeManager.get('utility.room.options.unlock.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.unlock.description'))
     )
     .addSubcommand(sub =>
       sub
         .setName('private')
-        .setDescription('Сделать комнату приватной (видимой только для роли)')
+        .setDescription(localeManager.get('utility.room.options.private.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.private.description'))
     )
     .addSubcommand(sub =>
       sub
         .setName('public')
-        .setDescription('Сделать комнату публичной (видимой для всех)')
+        .setDescription(localeManager.get('utility.room.options.public.description'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('utility.room.options.public.description'))
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Connect),
 
   async execute(interaction) {
+    const lang = interaction.guildLocale || 'ru';
     const sub = interaction.options.getSubcommand();
     const guildId = interaction.guild.id;
-    const cfg = Sdb.getSettings(guildId);
+    const cfg = await DatabaseService.getSettings(guildId);
     const channel = interaction.member.voice.channel;
 
     if (!channel) {
       return await interaction.reply({
-        content: 'Вы не находитесь в голосовом канале.',
+        content: localeManager.get('utility.room.messages.not_in_voice', lang),
         flags: MessageFlags.Ephemeral
       });
     }
 
     if (channel.parentId !== cfg.voiceCategoryId || channel.id === cfg.mainVoiceChannelId) {
       return await interaction.reply({
-        content: 'Эту команду можно использовать только в созданной вами динамической комнате.',
+        content: localeManager.get('utility.room.messages.not_dynamic', lang),
         flags: MessageFlags.Ephemeral
       });
     }
 
     if (!interaction.member.permissionsIn(channel).has(PermissionFlagsBits.ManageChannels)) {
       return await interaction.reply({
-        content: 'Только создатель этой комнаты может управлять её настройками.',
+        content: localeManager.get('utility.room.messages.not_creator', lang),
         flags: MessageFlags.Ephemeral
       });
     }
@@ -86,15 +95,18 @@ module.exports = {
           const newName = interaction.options.getString('name');
           await channel.setName(newName);
           return await interaction.reply({
-            content: `Название комнаты изменено на «${newName}».`,
+            content: localeManager.get('utility.room.messages.renamed', lang, { newName }),
             flags: MessageFlags.Ephemeral
           });
         }
         case 'limit': {
           const num = interaction.options.getInteger('number');
           await channel.setUserLimit(num);
+          const content = num === 0 
+            ? localeManager.get('utility.room.messages.limit_reset', lang)
+            : localeManager.get('utility.room.messages.limit_set', lang, { num });
           return await interaction.reply({
-            content: num === 0 ? 'Лимит участников снят.' : `Лимит участников установлен: ${num}.`,
+            content: content,
             flags: MessageFlags.Ephemeral
           });
         }
@@ -103,7 +115,7 @@ module.exports = {
             Connect: false
           });
           return await interaction.reply({
-            content: 'Комната закрыта. Никто (кроме вас) не сможет подключиться.',
+            content: localeManager.get('utility.room.messages.locked', lang),
             flags: MessageFlags.Ephemeral
           });
         }
@@ -112,14 +124,14 @@ module.exports = {
             Connect: true
           });
           return await interaction.reply({
-            content: 'Комната открыта для подключения.',
+            content: localeManager.get('utility.room.messages.unlocked', lang),
             flags: MessageFlags.Ephemeral
           });
         }
         case 'private': {
           if (!cfg.allowedRoleId) {
             return await interaction.reply({
-              content: 'Ошибка: Приватная роль не настроена в конфигурации бота.',
+              content: localeManager.get('utility.room.messages.private_role_not_set', lang),
               flags: MessageFlags.Ephemeral
             });
           }
@@ -134,7 +146,7 @@ module.exports = {
             Connect: true
           });
           return await interaction.reply({
-            content: 'Комната сделана приватной и видна только избранной роли.',
+            content: localeManager.get('utility.room.messages.made_private', lang),
             flags: MessageFlags.Ephemeral
           });
         }
@@ -152,26 +164,27 @@ module.exports = {
           }
           
           return await interaction.reply({
-            content: 'Комната сделана публичной и видна всем.',
+            content: localeManager.get('utility.room.messages.made_public', lang),
             flags: MessageFlags.Ephemeral
           });
         }
         default:
           return await interaction.reply({
-            content: 'Неизвестная подкоманда.',
+            content: localeManager.get('utility.room.messages.unknown_sub', lang),
             flags: MessageFlags.Ephemeral
           });
       }
     } catch (err) {
       console.error('[ERROR] /room command failed:', err);
+      const errorMsg = localeManager.get('utility.room.messages.error', lang);
       if (interaction.replied || interaction.deferred) {
         return await interaction.followUp({
-            content: 'Произошла ошибка при выполнении команды.',
+            content: errorMsg,
             flags: MessageFlags.Ephemeral
         });
       }
       return await interaction.reply({
-        content: 'Произошла ошибка при выполнении команды.',
+        content: errorMsg,
         flags: MessageFlags.Ephemeral
       });
     }

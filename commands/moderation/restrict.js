@@ -4,48 +4,57 @@ const {
     MessageFlags,
     EmbedBuilder,
 } = require('discord.js');
-
-const DisabledCommandsDB = require('../../functions/db/restrictions');
-const db = new DisabledCommandsDB();
+const EmbedService = require('../../services/EmbedService');
+const localeManager = require('../../locales/localeManager');
+const DatabaseService = require('../../database/repositories');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('restrict')
-        .setDescription('Управляет ограничениями команд на сервере.')
+        .setDescription(localeManager.get('moderation.restrict.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.description'))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addSubcommand(subcommand =>
             subcommand
                 .setName('set')
-                .setDescription('Включить или отключить команду для сервера или пользователя.')
+                .setDescription(localeManager.get('moderation.restrict.options.set.description', 'en-US'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.description'))
                 .addStringOption(option =>
                     option.setName('action')
-                        .setDescription('Действие: disable (отключить) или enable (включить)')
+                        .setDescription(localeManager.get('moderation.restrict.options.set.options.action.description', 'en-US'))
+                        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.action.description'))
                         .setRequired(true)
                         .addChoices(
-                            { name: 'Отключить', value: 'disable' },
-                            { name: 'Включить', value: 'enable' },
+                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.disable', 'en-US'), value: 'disable' },
+                            { name: localeManager.get('moderation.restrict.options.set.options.action.choices.enable', 'en-US'), value: 'enable' },
                         ))
                 .addStringOption(option =>
                     option.setName('command')
-                        .setDescription('Название команды, которую нужно ограничить.')
-                        .setRequired(true))
+                        .setDescription(localeManager.get('moderation.restrict.options.set.options.command.description', 'en-US'))
+                        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.command.description'))
+                        .setRequired(true)
+                        .setAutocomplete(true))
                 .addUserOption(option => 
                     option.setName('user')
-                        .setDescription('Пользователь, для которого применяется ограничение (оставьте пустым для всего сервера).')
+                        .setDescription(localeManager.get('moderation.restrict.options.set.options.user.description', 'en-US'))
+                        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.set.options.user.description'))
                         .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
-                .setDescription('Показывает список команд, запрещенных на сервере или для пользователя.')
+                .setDescription(localeManager.get('moderation.restrict.options.list.description', 'en-US'))
+                .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.description'))
                  .addUserOption(option =>
                     option.setName('user')
-                        .setDescription('Показать ограничения для этого пользователя (оставьте пустым для всего сервера).')
+                        .setDescription(localeManager.get('moderation.restrict.options.list.options.user.description', 'en-US'))
+                        .setDescriptionLocalizations(localeManager.getLocalizations('moderation.restrict.options.list.options.user.description'))
                         .setRequired(false))),
 
     async execute(interaction) {
+        const lang = interaction.guildLocale || 'ru';
         if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageGuild)) {
             return interaction.reply({
-                content: 'У вас нет прав для использования этой команды.',
+                content: localeManager.get('moderation.restrict.messages.no_perms', lang),
                 flags: MessageFlags.Ephemeral
             });
         }
@@ -61,51 +70,51 @@ module.exports = {
 
             if (commandName === this.data.name) {
                 return interaction.reply({
-                    content: 'Нельзя запретить эту команду.',
+                    content: localeManager.get('moderation.restrict.messages.cannot_restrict_self', lang),
                     flags: MessageFlags.Ephemeral
                 });
             }
 
             if (!interaction.client.commands.has(commandName)) {
                 return interaction.reply({
-                    content: `Команда \`${commandName}\` не найдена.`,
+                    content: localeManager.get('moderation.restrict.messages.cmd_not_found', lang, { name: commandName }),
                     flags: MessageFlags.Ephemeral
                 });
             }
 
              if (userId && userId === interaction.user.id) {
                  return interaction.reply({
-                     content: 'Вы не можете запретить команду самому себе.',
+                     content: localeManager.get('moderation.restrict.messages.restrict_self_error', lang),
                      flags: MessageFlags.Ephemeral
                  });
              }
 
             let replyContent = '';
-            const target = user ? `для пользователя ${user.tag}` : 'на этом сервере';
+            const target = user ? localeManager.get('moderation.restrict.messages.target_user', lang, { user: user.tag }) : localeManager.get('moderation.restrict.messages.target_server', lang);
 
             if (action === 'disable') {
                  let isAlreadyDisabled;
                  if (userId === null) {
-                    isAlreadyDisabled = db.isGuildDisabled(guildId, commandName);
+                    isAlreadyDisabled = await DatabaseService.isGuildDisabled(guildId, commandName);
                  } else {
-                    const userRestrictions = db.getUserRestrictions(guildId, userId);
+                    const userRestrictions = await DatabaseService.getUserRestrictions(guildId, userId);
                     isAlreadyDisabled = userRestrictions.includes(commandName);
                  }
 
                 if (isAlreadyDisabled) {
-                    replyContent = `Команда \`${commandName}\` уже была запрещена ${target}.`;
+                    replyContent = localeManager.get('moderation.restrict.messages.already_disabled', lang, { name: commandName, target });
                 } else {
-                    if (db.add(guildId, commandName, userId)) {
-                        replyContent = `Команда \`${commandName}\` теперь **запрещена** ${target}.`;
+                    if (await DatabaseService.addDisabledCommand(guildId, commandName, userId)) {
+                        replyContent = localeManager.get('moderation.restrict.messages.now_disabled', lang, { name: commandName, target });
                     } else {
-                        replyContent = `Произошла ошибка при попытке запретить команду \`${commandName}\` ${target}.`;
+                        replyContent = localeManager.get('moderation.restrict.messages.error_disable', lang, { name: commandName, target });
                     }
                 }
             } else if (action === 'enable') {
-                 if (db.remove(guildId, commandName, userId)) {
-                     replyContent = `Команда \`${commandName}\` теперь **разрешена** ${target}.`;
+                 if (await DatabaseService.removeDisabledCommand(guildId, commandName, userId)) {
+                     replyContent = localeManager.get('moderation.restrict.messages.now_enabled', lang, { name: commandName, target });
                  } else {
-                     replyContent = `Команда \`${commandName}\` не была запрещена ${target}.`;
+                     replyContent = localeManager.get('moderation.restrict.messages.not_disabled', lang, { name: commandName, target });
                  }
             }
 
@@ -123,26 +132,25 @@ module.exports = {
             let footerText = '';
 
             if (userId === null) {
-                restrictionsList = db.getGuildRestrictions(guildId);
-                embedTitle = `Запрещенные команды на ${interaction.guild.name}`;
-                footerText = `Всего: ${restrictionsList.length} команд(а)`;
+                restrictionsList = await DatabaseService.getGuildRestrictions(guildId);
+                embedTitle = localeManager.get('moderation.restrict.messages.list_title_server', lang, { server: interaction.guild.name });
+                footerText = localeManager.get('moderation.restrict.messages.footer_total', lang, { count: restrictionsList.length });
             } else {
-                restrictionsList = db.getUserRestrictions(guildId, userId);
-                embedTitle = `Запрещенные команды для пользователя ${user.tag} на ${interaction.guild.name}`;
-                footerText = `Всего: ${restrictionsList.length} команд(а)`;
+                restrictionsList = await DatabaseService.getUserRestrictions(guildId, userId);
+                embedTitle = localeManager.get('moderation.restrict.messages.list_title_user', lang, { user: user.tag, server: interaction.guild.name });
+                footerText = localeManager.get('moderation.restrict.messages.footer_total', lang, { count: restrictionsList.length });
             }
 
 
-            const embed = new EmbedBuilder()
-                .setColor(0x9B59B6)
+            const embed = EmbedService.createBaseEmbed(interaction)
                 .setTitle(embedTitle)
-                .setFooter({ text: footerText });
+                .setFooter({ text: footerText, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
             if (restrictionsList.length === 0) {
                  if (userId === null) {
-                    embed.setDescription('На этом сервере нет запрещенных команд для всех.');
+                    embed.setDescription(localeManager.get('moderation.restrict.messages.empty_server', lang));
                  } else {
-                    embed.setDescription(`Для пользователя ${user.tag} нет персонально запрещенных команд.`);
+                    embed.setDescription(localeManager.get('moderation.restrict.messages.empty_user', lang, { user: user.tag }));
                  }
 
             } else {
@@ -161,4 +169,27 @@ module.exports = {
             });
         }
     },
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused().toLowerCase();
+        const lang = interaction.guildLocale || 'ru';
+        const commands = interaction.client.commands;
+
+        const choices = [];
+        for (const [name, command] of commands) {
+            const cmdData = command.data;
+            const cmdName = name;
+            const cmdDesc = cmdData.description_localizations?.[lang] || cmdData.description || '';
+            const localizedName = cmdName.toLowerCase();
+            
+            if (name.toLowerCase().includes(focusedValue) || localizedName.includes(focusedValue)) {
+                choices.push({
+                    name: `${cmdName} — ${cmdDesc}`.substring(0, 100),
+                    value: name
+                });
+            }
+            if (choices.length >= 25) break;
+        }
+
+        await interaction.respond(choices);
+    }
 };

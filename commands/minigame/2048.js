@@ -7,6 +7,8 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
+const localeManager = require('../../locales/localeManager');
 
 const activeGames = new Set();
 const cooldowns = new Map();
@@ -99,7 +101,8 @@ function isGameOver(board) {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('2048')
-        .setDescription('Начать одиночную игру 2048'),
+        .setDescription('Play 2048 game')
+        .setDescriptionLocalizations(localeManager.getLocalizations('minigame.2048.description')),
 
     async execute(interaction) {
         const playerId = interaction.user.id;
@@ -107,7 +110,7 @@ module.exports = {
         const last = cooldowns.get(playerId);
         if (last && now - last < 10000) {
             return interaction.reply({
-                content: `Подожди ${(10 - Math.floor((now - last) / 1000))} сек.`,
+                content: localeManager.get('minigame.2048.messages.cooldown', interaction.guildLocale || 'ru', { time: (10 - Math.floor((now - last) / 1000)) }),
                 flags: MessageFlags.Ephemeral
             });
         }
@@ -115,7 +118,7 @@ module.exports = {
 
         if (activeGames.has(playerId)) {
             return interaction.reply({
-                content: 'У тебя уже идёт игра!',
+                content: localeManager.get('minigame.2048.messages.already_active', interaction.guildLocale || 'ru'),
                 flags: MessageFlags.Ephemeral
             });
         }
@@ -134,15 +137,14 @@ module.exports = {
                 new ButtonBuilder().setCustomId('restart').setEmoji('🔁').setStyle(ButtonStyle.Success).setDisabled(disabled)
             ),
             new ActionRowBuilder().addComponents(
-                new ButtonBuilder().setCustomId('end').setLabel('Сдаться').setStyle(ButtonStyle.Danger).setDisabled(disabled)
+                new ButtonBuilder().setCustomId('end').setLabel(localeManager.get('minigame.2048.messages.btn_surrender', interaction.guildLocale || 'ru')).setStyle(ButtonStyle.Danger).setDisabled(disabled)
             )
         ];
 
-        const embed = new EmbedBuilder()
+        const embed = EmbedService.createBaseEmbed(interaction)
             .setTitle('🎮 2048')
-            .setColor(0xf39c12)
             .setDescription(renderBoard(board))
-            .setFooter({ text: 'Стрелки — ход, 🔁 — начать заново, 🏳️ — сдаться.' });
+            .setFooter({ text: localeManager.get('minigame.2048.messages.footer', interaction.guildLocale || 'ru') });
 
         await interaction.reply({ embeds: [embed], components: getComponents() });
         const msg = await interaction.fetchReply();
@@ -154,14 +156,14 @@ module.exports = {
 
         collector.on('collect', async btn => {
             if (btn.user.id !== playerId) {
-                return btn.reply({ content: 'Это не твоя игра!', flags: MessageFlags.Ephemeral });
+                return btn.reply({ content: localeManager.get('minigame.2048.messages.not_your_game', interaction.guildLocale || 'ru'), flags: MessageFlags.Ephemeral });
             }
 
             try {
                 if (btn.customId === 'end') {
                     collector.stop('surrendered');
                     return await btn.update({
-                        embeds: [embed.setDescription(renderBoard(board) + '\n\n🏳️ Ты сдался.')],
+                        embeds: [embed.setDescription(renderBoard(board) + localeManager.get('minigame.2048.messages.surrendered', interaction.guildLocale || 'ru'))],
                         components: getComponents(true)
                     });
                 }
@@ -183,7 +185,7 @@ module.exports = {
                 if (isGameOver(board)) {
                     collector.stop('gameover');
                     return await btn.update({
-                        embeds: [embed.setDescription(renderBoard(board) + '\n\n💀 Игра окончена.')],
+                        embeds: [embed.setDescription(renderBoard(board) + localeManager.get('minigame.2048.messages.game_over', interaction.guildLocale || 'ru'))],
                         components: getComponents(true)
                     });
                 }

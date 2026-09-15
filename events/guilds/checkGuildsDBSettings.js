@@ -1,19 +1,20 @@
 const { Events } = require('discord.js');
-const settings = require('../../functions/db/settings')
+const DatabaseService = require('../../database/repositories');
 
-const Sdb = new settings()
 
 module.exports = {
-    name: Events.ClientReady,
+    name: 'clientReady',
     once: true,
     async execute(client) {
-        client.guilds.cache.forEach(guild => {
-            console.log(`Проверка настроек для сервера: ${guild.name} (${guild.id})`);
-            const currentSettings = Sdb.getSettings(guild.id);
+        for (const [guildId, guild] of client.guilds.cache) {
+            console.log(`Проверка настроек для сервера: ${guild.name} (${guildId})`);
+            const currentSettings = await DatabaseService.getSettings(guildId);
+            
             if (!currentSettings) {
-                console.log(`Сервер ${guild.id} не найден в БД, добавляем...`);
-                Sdb.addServer(guild.id);
+                console.log(`Сервер ${guildId} не найден в БД, добавляем...`);
+                await DatabaseService.addServer(guildId); 
             }
-        });
+        }
+        console.log('✅ Синхронизация серверов завершена.');
     },
 };

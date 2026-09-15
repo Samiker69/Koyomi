@@ -1,169 +1,252 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const { FindTxtInMessage, extractLogInfo, extractCrashInfo, extractPotentialSolutions } = require('../../functions/parse');
-const settings = require('../../functions/db/settings')
-
-const Sdb = new settings()
+const { extractLogInfo, extractCrashInfo } = require('../../utils/LogParser');
+const DatabaseService = require('../../database/repositories');
+const LogAnalyzerService = require('../../services/LogAnalyzerService');
+const localeManager = require('../../locales/localeManager');
 
 async function getModLink(modName) {
     try {
-        const modrinthResponse = await fetch(`httpshttps://api.modrinth.com/v2/search?query=${encodeURIComponent(modName)}&facets=[["project_type:mod"]]`);
+        const modrinthResponse = await fetch(`https://api.modrinth.com/v2/search?query=${encodeURIComponent(modName)}&facets=[["project_type:mod"]]`, {
+            headers: {
+                'User-Agent': 'KoyomiBot/1.0 (https://github.com/Samiker69/Koyomi)'
+            }
+        });
         const modrinthData = await modrinthResponse.json();
-        
+
         if (modrinthData.hits && modrinthData.hits.length > 0) {
-            const exactMatch = modrinthData.hits.find(hit => hit.title.toLowerCase() === modName.toLowerCase());
-            if (exactMatch) {
-                return `https://modrinth.com/mod/${exactMatch.slug}`;
+            const bestMatch = modrinthData.hits.find(hit =>
+                hit.title.toLowerCase() === modName.toLowerCase() ||
+                hit.slug.toLowerCase() === modName.toLowerCase()
+            ) || modrinthData.hits[0];
+
+            if (bestMatch) {
+                return `https://modrinth.com/mod/${bestMatch.slug}`;
             }
         }
     } catch (error) {
         console.error(`Ошибка при поиске ссылки для мода ${modName} на Modrinth:`, error);
     }
-
     return null;
 }
 
-async function sendAnalyzedLog(message, logText) {
-    const logInfo = extractLogInfo(logText);
-    const crashLogInfo = extractCrashInfo(logText);
+async function handleBannedMod(message, bannedMod, reason, lang = 'ru') {
+    const thread = message.channel;
+    const originalName = thread.name
+        .replace(/^\[Закрыто:[^\]]+\]\s*/i, '')
+        .replace(/^\[Предупреждение:[^\]]+\]\s*/i, '')
+        .replace(/^\[Closed:[^\]]+\]\s*/i, '')
+        .replace(/^\[Warning:[^\]]+\]\s*/i, '')
+        .replace(/^\[Закрито:[^\]]+\]\s*/i, '')
+        .replace(/^\[Попередження:[^\]]+\]\s*/i, '')
+        .replace(/^[🔒⚠️]\s*/, '');
+
+    const prefix = localeManager.get('parser.messages.prefix_closed', lang, { bannedMod });
+    const newName = `${prefix} ${originalName}`.slice(0, 100);
+    await thread.setName(newName).catch(() => { });
+
+    // Выдача роли за бан-лист мод при наличии настройки
+    const guildSettings = await DatabaseService.getSettings(message.guildId);
+    if (guildSettings && guildSettings.parserBannedRoleId) {
+        const member = message.member || await message.guild.members.fetch(message.author.id).catch(() => null);
+        if (member) {
+            await member.roles.add(guildSettings.parserBannedRoleId).catch(err => {
+                console.error(`[LogParser] Не удалось выдать роль за бан-лист мод пользователю ${member.user.tag}:`, err.message);
+            });
+        }
+    }
+
+    await message.reply({
+        content: localeManager.get('parser.messages.ticket_closed', lang, { reason })
+    });
+
+    await thread.setArchived(true, reason).catch(() => { });
+}
+
+async function handleUnsupportedMods(message, unsupportedMods, lang = 'ru') {
+    const thread = message.channel;
+    const modNames = unsupportedMods.map(m => m.name).join(', ');
+    const reasons = unsupportedMods.map(m => `**${m.name}**: ${m.reason}`).join('\n');
+
+    const originalName = thread.name
+        .replace(/^\[Закрыто:[^\]]+\]\s*/i, '')
+        .replace(/^\[Предупреждение:[^\]]+\]\s*/i, '')
+        .replace(/^\[Closed:[^\]]+\]\s*/i, '')
+        .replace(/^\[Warning:[^\]]+\]\s*/i, '')
+        .replace(/^\[Закрито:[^\]]+\]\s*/i, '')
+        .replace(/^\[Попередження:[^\]]+\]\s*/i, '')
+        .replace(/^[🔒⚠️]\s*/, '');
+
+    const prefix = localeManager.get('parser.messages.prefix_warning', lang, { modNames });
+    const newName = `${prefix} ${originalName}`.slice(0, 100);
+    await thread.setName(newName).catch(() => { });
+
+    await message.reply({
+        content: localeManager.get('parser.messages.unsupported_mods', lang, { modNames, reasons })
+    });
+}
+
+async function sendAnalyzedLog(message, logText, lang = 'ru') {
+    const result = await LogAnalyzerService.analyze(logText, lang);
+
+    // 1. Проверка на читы (бан-лист)
+    if (result.isDenied && result.isBannedMod) {
+        await handleBannedMod(message, result.bannedMod, result.denyReason, lang);
+        return;
+    }
+
+    // 2. Проверка на сторонний лаунчер
+    if (result.isDenied) {
+        await message.reply({ content: result.denyReason });
+        return;
+    }
+
+    // 3. Проверка на неподдерживаемые моды
+    if (result.mods?.unsupported?.length > 0) {
+        await handleUnsupportedMods(message, result.mods.unsupported, lang);
+    }
+
+    // 4. Обычный вывод анализа лога
+    const logInfo = extractLogInfo(logText, lang);
+    const crashLogInfo = extractCrashInfo(logText, lang);
 
     const embed = new EmbedBuilder()
-        .setTitle('Информация о логе Minecraft')
+        .setTitle(localeManager.get('parser.embed.title', lang))
         .setColor(0x9B59B6);
 
     const systemInfoMap = {
-        'Launcher version': 'Версия лаунчера',
-        'Architecture': 'Архитектура',
-        'Device model': 'Модель устройства',
-        'API version': 'Версия API',
-        'Selected Minecraft version': 'Версия Minecraft',
-        'Custom Java arguments': 'Аргументы Java',
-        'RAM allocated': 'Выделено RAM',
-        'Graphics device': 'Графическое устройство',
-        'MOJO_RENDERER': 'MOJO_RENDERER',
-        'JAVA_HOME': 'JAVA_HOME'
+        'Launcher version': 'parser.labels.launcher_version',
+        'Architecture': 'parser.labels.architecture',
+        'Device model': 'parser.labels.device_model',
+        'API version': 'parser.labels.api_version',
+        'Selected Minecraft version': 'parser.labels.mc_version',
+        'Custom Java arguments': 'parser.labels.java_args',
+        'RAM allocated': 'parser.labels.ram',
+        'Graphics device': 'parser.labels.graphics',
+        'MOJO_RENDERER': 'parser.labels.mojo',
+        'JAVA_HOME': 'parser.labels.java_home'
     };
 
-    const systemFields = [];
     for (const key in systemInfoMap) {
         if (logInfo[key]) {
-            systemFields.push(`**${systemInfoMap[key]}:** ${logInfo[key]}`);
+            embed.addFields({ name: localeManager.get(systemInfoMap[key], lang), value: String(logInfo[key]), inline: true });
         }
-    }
-    if (systemFields.length > 0) {
-        embed.addFields({ name: 'Информация о системе', value: systemFields.join('\n') });
     }
 
     if (crashLogInfo) {
-        if (crashLogInfo.description) {
-            embed.addFields({ name: 'Описание краша', value: `\`\`\`${crashLogInfo.description}\`\`\`` });
-        }
-        if (crashLogInfo.mainException) {
-            embed.addFields({ name: 'Исключение', value: `\`\`\`${crashLogInfo.mainException}\`\`\`` });
-        }
-        if (crashLogInfo.causedByException) {
-            embed.addFields({ name: 'Причина', value: `\`\`\`${crashLogInfo.causedByException}\`\`\`` });
-        }
+        if (crashLogInfo.description) embed.addFields({ name: localeManager.get('parser.embed.crash_desc', lang), value: `\`\`\`${crashLogInfo.description}\`\`\`` });
+        if (crashLogInfo.mainException) embed.addFields({ name: localeManager.get('parser.embed.exception', lang), value: `\`\`\`${crashLogInfo.mainException}\`\`\`` });
+        if (crashLogInfo.causedByException) embed.addFields({ name: localeManager.get('parser.embed.reason', lang), value: `\`\`\`${crashLogInfo.causedByException}\`\`\`` });
     }
 
     const solutions = [];
-    let solutionCounter = 1;
+    let counter = 1;
 
-    const installModRegex = /Install ([\w-]+), any version between/gi;
+    const installModRegex = /Install ([\w-]+),/gi;
     const matches = [...logText.matchAll(installModRegex)];
-    for (const match of matches) {
+
+    const installPromises = matches.map(async (match) => {
         const modName = match[1];
         const modLink = await getModLink(modName);
-        
-        solutions.push(`${solutionCounter++}. Установите данный мод: [${modName}](${modLink ? modLink : 'ссылка не найдена'})`);
+        return localeManager.get('parser.solutions.install_mod', lang, {
+            modName: modName,
+            modLink: modLink || localeManager.get('parser.solutions.link_not_found', lang)
+        });
+    });
+
+    const installSolutions = await Promise.all(installPromises);
+    installSolutions.forEach(sol => solutions.push(`${counter++}. ${sol}`));
+
+    const replaceRegex = /\s-\sReplace mod '(?<name>[^']+)' \((?<id>[\w-]+)\) .+? with (?<condition>.+?)(?=\.$|:|\n|$)/gi;
+    const replaceMatches = [...logText.matchAll(replaceRegex)];
+    const replacePromises = replaceMatches.map(async (match) => {
+        const { name, id, condition } = match.groups;
+        const link = (await getModLink(id)) || (await getModLink(name));
+        const versionMatch = condition.match(/version ([\w.+-]+)/);
+
+        if (versionMatch) {
+            return link
+                ? localeManager.get('parser.analyzer.update_modrinth_version', lang, { name, version: versionMatch[1], link })
+                : localeManager.get('parser.analyzer.update_modrinth_version_no_link', lang, { name, version: versionMatch[1] });
+        } else {
+            return link
+                ? localeManager.get('parser.analyzer.update_modrinth_compat', lang, { name, link })
+                : localeManager.get('parser.analyzer.update_modrinth_compat_no_link', lang, { name });
+        }
+    });
+
+    const replaceSolutions = await Promise.all(replacePromises);
+    replaceSolutions.forEach(sol => solutions.push(`${counter++}. ${sol}`));
+
+    if (logText.includes("The game failed to start because the currently active LWJGL version is not compatible.")) {
+        solutions.push(`${counter++}. ${localeManager.get('parser.solutions.lwjgl_fix', lang)}`);
     }
 
-    const lwjglErrorString = "The game failed to start because the currently active LWJGL version is not compatible.";
-    if (logText.includes(lwjglErrorString)) {
-        solutions.push(`${solutionCounter++}. 'Найдено решение\nВставьте аргумент \`-Dsodium.checks.issue2561=false\``);
+    const { extractPotentialSolutions } = require('../../utils/LogParser');
+    const otherSolutions = extractPotentialSolutions(logText, lang);
+    if (otherSolutions?.length > 0) {
+        otherSolutions.forEach(sol => solutions.push(`${counter++}. ${sol}`));
     }
-
-    const otherSolutions = extractPotentialSolutions(logText);
-    if (otherSolutions?.length > 0) solutions.push(otherSolutions.join(','))
 
     if (solutions.length > 0) {
-        embed.addFields({ name: 'Решения', value: solutions.join('\n') });
+        embed.addFields({ name: localeManager.get('parser.embed.solutions', lang), value: solutions.join('\n') });
     }
 
-    await message.reply({ embeds: [embed] });                
+    await message.reply({ embeds: [embed] });
 }
 
-async function sendInstruction (thread) {
+async function sendInstruction(channel, lang = 'ru') {
     const instructionEmbed = new EmbedBuilder()
-      .setColor(0x9B59B6)
-      .setDescription("Инструкция: прикрепите файл `latestlog.txt`. Ниже изображение, где его можно найти.")
-      .setImage("https://media.discordapp.net/attachments/962263128253546517/1365054081877409904/87_20250425005645.png?ex=680be92e&is=680a97ae&hm=889a1b2f44728452267938d2333a6c26d6e9ebed3c5e5f20e78877b975b5b434&=&format=webp&quality=lossless&width=363&height=670")
-      .setFooter({ text: "Прикрепление файла поможет быстрее решить проблему." })
-      .setTimestamp();
+        .setColor(0x9B59B6)
+        .setDescription(localeManager.get('parser.messages.instruction_desc', lang))
+        .setImage("https://media.discordapp.net/attachments/962263128253546517/1365054081877409904/87_20250425005645.png")
+        .setFooter({ text: localeManager.get('parser.messages.instruction_footer', lang) })
+        .setTimestamp();
 
-    await thread.send({
-      content: "Пожалуйста, прикрепите файл `latestlog.txt` для ускорения решения вашей проблемы.",
-      embeds: [instructionEmbed],
+    await channel.send({
+        content: localeManager.get('parser.messages.instruction_content', lang),
+        embeds: [instructionEmbed],
     });
-};
+}
 
 module.exports = {
-    name: Events.ThreadCreate,
-    async execute(thread) {
+    name: Events.MessageCreate,
+    async execute(message) {
+        if (message.author.bot) return;
+
         try {
-            const guildSettings = Sdb.getSettings(thread.guildId);
-            if (thread.parentId !== guildSettings.supportChannelId) return;
-            const message = await thread.fetchStarterMessage();
-            if (message.author.bot) return;
+            const channel = message.channel;
+            if (!channel.isThread()) return;
 
-            const logAttachments = message.attachments.filter(att => /latestlog/i.test(att.name));
-            let logText = null;
+            const guildSettings = await DatabaseService.getSettings(message.guildId);
+            if (!guildSettings || channel.parentId !== guildSettings.supportChannelId) return;
 
-            if (logAttachments.size > 0) {
-                const validLog = logAttachments.find(att => 
-                    att.name.endsWith('.txt') || 
-                    att.contentType?.startsWith('text/plain')
-                );
+            const lang = guildSettings.language || message.guild.preferredLocale || 'ru';
 
-                if (validLog) {
-                    logText = await FindTxtInMessage(message, "latestlog");
+            const logFile = message.attachments.find(att =>
+                /(latestlog|crash|log)/i.test(att.name) &&
+                (att.name.endsWith('.txt') || att.contentType?.startsWith('text/plain'))
+            );
+
+            if (logFile) {
+                const logText = await LogAnalyzerService.FindTxtInMessage(message, '(latestlog|crash|log)');
+                if (!logText) {
+                    await message.reply({ content: localeManager.get('parser.messages.error_read', lang) });
+                    return;
                 }
+
+                await sendAnalyzedLog(message, logText, lang);
+                return;
             }
 
-            if (!logText) {
-                await sendInstruction(thread)
-                const collector = thread.createMessageCollector();
-                collector.on('collect', async (msg) => {
-                    
-                
-                    const attachment = msg.attachments.find(att => 
-                        /latestlog/i.test(att.name) && 
-                        (att.name.endsWith('.txt') || att.contentType?.startsWith('text/plain'))
-                    );
+            const messages = await channel.messages.fetch({ limit: 5 });
+            const userMessages = messages.filter(m => !m.author.bot);
 
-                    if (attachment) {
-                        const collectedLogText = await FindTxtInMessage(msg, "latestlog");
-                        
-                        if (collectedLogText) {
-                            await sendAnalyzedLog(msg, collectedLogText);
-                            collector.stop("Файл найден");
-                        } else {
-                            await msg.reply("Не удалось прочитать файл лога. Попробуйте отправить его снова.");
-                        }
-                    }
-                });
-
-                collector.on('end', async (_, reason) => {
-                    if (reason !== "Файл найден") {
-                        await thread.send("Коллектор завершил работу. Если хотите отправить лог-файл, создайте новый тред.");
-                    }
-                });                
-            } else {
-                await sendAnalyzedLog(message, logText);
+            if (userMessages.size === 1 && userMessages.first().id === message.id) {
+                await sendInstruction(channel, lang);
             }
+
         } catch (error) {
-            if (error?.code === 10003) return;
-            console.error('Ошибка при обработке лога:', error);
-            await thread.send('Произошла ошибка при анализе лога. Пожалуйста, попробуйте еще раз или свяжитесь с администратором.');
+            console.error('Error in unified log parser:', error);
         }
     }
 };

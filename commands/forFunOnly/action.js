@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const localeManager = require('../../locales/localeManager');
 const TENOR_API_KEY = process.env.TENOR_API_KEY || 'LIVDSRZULELA';
 
 async function getActionGif(query) {
@@ -18,44 +19,62 @@ async function getActionGif(query) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('action')
-    .setDescription('Различные действия с пользователями в аниме стиле.')
+    .setDescription(localeManager.get('forFunOnly.action.description', 'en-US'))
+    .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.description'))
     .addSubcommand(sub =>
       sub.setName('hug')
-        .setDescription('Обнять пользователя.')
+        .setDescription(localeManager.get('forFunOnly.action.options.hug.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.description'))
         .addUserOption(opt =>
-          opt.setName('user').setDescription('Кого обнять?').setRequired(true)
+          opt.setName('user')
+            .setDescription(localeManager.get('forFunOnly.action.options.hug.options.user.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.hug.options.user.description'))
+            .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub.setName('slap')
-        .setDescription('Ударить пользователя пощёчиной.')
+        .setDescription(localeManager.get('forFunOnly.action.options.slap.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.description'))
         .addUserOption(opt =>
-          opt.setName('user').setDescription('Кого ударить?').setRequired(true)
+          opt.setName('user')
+            .setDescription(localeManager.get('forFunOnly.action.options.slap.options.user.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.slap.options.user.description'))
+            .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub.setName('pat')
-        .setDescription('Погладить пользователя.')
+        .setDescription(localeManager.get('forFunOnly.action.options.pat.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.description'))
         .addUserOption(opt =>
-          opt.setName('user').setDescription('Кого погладить?').setRequired(true)
+          opt.setName('user')
+            .setDescription(localeManager.get('forFunOnly.action.options.pat.options.user.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.pat.options.user.description'))
+            .setRequired(true)
         )
     )
     .addSubcommand(sub =>
       sub.setName('kiss')
-        .setDescription('Поцеловать пользователя.')
+        .setDescription(localeManager.get('forFunOnly.action.options.kiss.description', 'en-US'))
+        .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.description'))
         .addUserOption(opt =>
-          opt.setName('user').setDescription('Kого поцеловать?').setRequired(true)
+          opt.setName('user')
+            .setDescription(localeManager.get('forFunOnly.action.options.kiss.options.user.description', 'en-US'))
+            .setDescriptionLocalizations(localeManager.getLocalizations('forFunOnly.action.options.kiss.options.user.description'))
+            .setRequired(true)
         )
     ),
 
   async execute(interaction) {
+    const lang = interaction.guildLocale || 'ru';
     const sub = interaction.options.getSubcommand();
     const target = interaction.options.getUser('user');
     const author = interaction.user;
 
     if (target.id === author.id) {
       return interaction.reply({
-        content: 'Ты не можешь сделать это с самим собой!',
+        content: localeManager.get('forFunOnly.action.messages.self_action_error', lang),
         flags: MessageFlags.Ephemeral
       });
     }
@@ -66,26 +85,26 @@ module.exports = {
     switch (sub) {
       case 'hug':
         searchQuery = 'anime+hug';
-        text = `${author} обнимает ${target}! 🫂`;
+        text = localeManager.get('forFunOnly.action.messages.hug_msg', lang, { author: author.toString(), target: target.toString() });
         break;
       case 'slap':
         searchQuery = 'anime+slap';
-        text = `${author} даёт пощёчину ${target}! 👋`;
+        text = localeManager.get('forFunOnly.action.messages.slap_msg', lang, { author: author.toString(), target: target.toString() });
         break;
       case 'pat':
         searchQuery = 'anime+pat';
-        text = `${author} гладит ${target}! 🐾`;
+        text = localeManager.get('forFunOnly.action.messages.pat_msg', lang, { author: author.toString(), target: target.toString() });
         break;
       case 'kiss':
         searchQuery = 'anime+kiss';
-        text = `${author} целует ${target}! 💋`;
+        text = localeManager.get('forFunOnly.action.messages.kiss_msg', lang, { author: author.toString(), target: target.toString() });
         break;
     }
 
     const gifUrl = await getActionGif(searchQuery);
     if (!gifUrl) {
       return interaction.reply({
-        content: 'Не удалось найти подходящую гифку, попробуй позже!',
+        content: localeManager.get('forFunOnly.action.messages.gif_error', lang),
         flags: MessageFlags.Ephemeral
       });
     }

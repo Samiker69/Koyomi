@@ -1,14 +1,16 @@
 const { Events, EmbedBuilder, ChannelType } = require('discord.js');
-const starDB = require('../../functions/db/starboard');
-const db = new starDB();
+const DatabaseService = require('../../database/repositories');
 
 const STAR_EMOJI_NAME = '⭐';
+
+const activeOperations = new Set();
 
 module.exports = {
     name: Events.MessageReactionRemove,
     async execute(reaction) {
         const { message } = reaction;
         const guild = message.guild;
+        if (!guild) return;
 
         if (reaction.partial) {
             try {
@@ -20,76 +22,77 @@ module.exports = {
             }
         }
 
-        if (!guild) return;
-
         if (reaction.emoji.name !== STAR_EMOJI_NAME) return;
 
-        const settings = db.getSettings(guild.id);
-
-        if (!settings || !settings.enabled || !settings.starboardChannelId || !settings.minReactions) return;
+        const settings = await DatabaseService.getStarboardSettings(guild.id);
+        if (!settings || !settings.enabled || !settings.starboardChannelId) return;
 
         const messageId = message.id;
         const currentReactionCount = reaction.count;
 
-        if (!db.isMessageOnStarboard(guild.id, messageId)) return;
+        if (!await DatabaseService.isMessageOnStarboard(guild.id, messageId)) return;
 
-        const starMessageId = db.getStarboardMessageId(guild.id, messageId);
-
+        const starMessageId = await DatabaseService.getStarboardMessageId(guild.id, messageId);
         if (!starMessageId) {
             console.warn(`Запись о сообщении ${messageId} на старборде найдена, но ID сообщения старборда отсутствует. Удаляю запись.`);
-            db.deleteStarboardEntry(guild.id, messageId);
+            await DatabaseService.deleteStarboardEntry(guild.id, messageId);
             return;
         }
 
-        let starboardChannel;
+        const opKey = `${guild.id}-${message.id}`;
+        if (activeOperations.has(opKey)) return;
+        activeOperations.add(opKey);
+
         try {
-            starboardChannel = await guild.channels.fetch(settings.starboardChannelId);
-            if (!starboardChannel) {
-                console.warn(`Канал старборда с ID ${settings.starboardChannelId} не найден в гильдии ${guild.name}. Удаляю связанные записи.`);
-                db.deleteStarboardEntry(guild.id, messageId);
+            let starboardChannel;
+            try {
+                starboardChannel = await guild.channels.fetch(settings.starboardChannelId);
+                if (!starboardChannel) {
+                    console.warn(`Канал старборда с ID ${settings.starboardChannelId} не найден в гильдии ${guild.name}. Удаляю связанные записи.`);
+                    await DatabaseService.deleteStarboardEntry(guild.id, messageId);
+                    return;
+                }
+                if (starboardChannel.type !== ChannelType.GuildText) {
+                    console.warn(`Канал старборда ${settings.starboardChannelId} не является текстовым каналом в гильдии ${guild.name}.`);
+                    return;
+                }
+            } catch (error) {
+                console.error(`Ошибка при получении канала старборда ${settings.starboardChannelId} для гильдии ${guild.name}:`, error);
                 return;
             }
-            if (starboardChannel.type !== ChannelType.GuildText) {
-                console.warn(`Канал старборда ${settings.starboardChannelId} не является текстовым каналом в гильдии ${guild.name}.`);
+
+            let starMessage;
+            try {
+                starMessage = await starboardChannel.messages.fetch(starMessageId);
+            } catch (error) {
+                console.warn(`Сообщение старборда ${starMessageId} не найдено в канале ${starboardChannel.name}. Удаляю запись из БД.`);
+                await DatabaseService.deleteStarboardEntry(guild.id, messageId);
                 return;
             }
-        } catch (error) {
-            console.error(`Ошибка при получении канала старборда ${settings.starboardChannelId} для гильдии ${guild.name}:`, error);
-            return;
-        }
 
-        let starMessage;
-        try {
-            starMessage = await starboardChannel.messages.fetch(starMessageId);
-        } catch (error) {
-            console.warn(`Сообщение старборда ${starMessageId} не найдено в канале ${starboardChannel.name}. Удаляю запись из БД.`);
-            db.deleteStarboardEntry(guild.id, messageId);
-            return;
-        }
+            const minReactions = settings.minReactions || 5;
 
-        if (currentReactionCount < settings.minReactions) {
-            try {
-                await starMessage.delete();
-                db.deleteStarboardEntry(guild.id, messageId);
-            } catch (error) {
-                console.error(`Ошибка при удалении сообщения старборда ${starMessageId} для сообщения ${messageId} в гильдии ${guild.name}:`, error);
+            if (currentReactionCount < minReactions) {
+                try {
+                    await starMessage.delete();
+                    await DatabaseService.deleteStarboardEntry(guild.id, messageId);
+                } catch (error) {
+                    console.error(`Ошибка при удалении сообщения старборда ${starMessageId} для сообщения ${messageId} в гильдии ${guild.name}:`, error);
+                }
+            } else {
+                try {
+                    const starEmoji = STAR_EMOJI_NAME;
+                    const updatedContent = `${starEmoji} **${currentReactionCount}** | <#${message.channel.id}>`;
+
+                    await starMessage.edit({
+                        content: updatedContent
+                    });
+                } catch (error) {
+                    console.error(`Ошибка при обновлении сообщения старборда ${starMessageId} для сообщения ${messageId} в гильдии ${guild.name}:`, error);
+                }
             }
-        } else {
-            try {
-                const updatedContent = `${STAR_EMOJI_NAME} **${currentReactionCount}** | <#${message.channel.id}>`;
-                
-                const existingEmbed = starMessage.embeds[0];
-                const updatedEmbed = new EmbedBuilder(existingEmbed.toJSON())
-                    .setFooter({ text: `${STAR_EMOJI_NAME} | ${messageId}` })
-                    .setTimestamp(message.createdAt);
-
-                await starMessage.edit({
-                    content: updatedContent,
-                    embeds: [updatedEmbed]
-                });
-            } catch (error) {
-                console.error(`Ошибка при обновлении сообщения старборда ${starMessageId} для сообщения ${messageId} в гильдии ${guild.name}:`, error);
-            }
+        } finally {
+            activeOperations.delete(opKey);
         }
     },
 };

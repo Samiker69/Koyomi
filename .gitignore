@@ -1,10 +1,14 @@
 .env
 node_modules/
-database/
 config.json
 ai/
 ModerationAPIClient/
 ClientApi/
 
-pnpm-lock.yaml
+*lock*
+*.db*
 pnpm-workspace.yaml
+
+koyomi_project.xml
+keys.txt
+agent_plan.txt

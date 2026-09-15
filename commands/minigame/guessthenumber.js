@@ -7,6 +7,8 @@ const {
     ComponentType,
     MessageFlags
 } = require('discord.js');
+const EmbedService = require('../../services/EmbedService');
+const localeManager = require('../../locales/localeManager');
 
 const activeGames = new Set();
 
@@ -14,12 +16,13 @@ module.exports = {
     cooldown: 15,
     data: new SlashCommandBuilder()
         .setName('guessthenumber')
-        .setDescription('Угадай число на скорость'),
+        .setDescription('Guess the number game')
+        .setDescriptionLocalizations(localeManager.getLocalizations('minigame.guessthenumber.description')),
 
     async execute(interaction) {
         const channelId = interaction.channelId;
         if (activeGames.has(channelId)) {
-            return interaction.reply({ content: 'В этом канале уже идёт игра «Угадай число». Подождите её окончания.', flags: MessageFlags.Ephemeral });
+            return interaction.reply({ content: localeManager.get('minigame.guessthenumber.messages.already_active', interaction.guildLocale || 'ru'), flags: MessageFlags.Ephemeral });
         }
         activeGames.add(channelId);
 
@@ -31,15 +34,14 @@ module.exports = {
         const cancelRow = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
                 .setCustomId('cancel')
-                .setLabel('Отменить игру')
+                .setLabel(localeManager.get('minigame.guessthenumber.messages.btn_cancel', interaction.guildLocale || 'ru'))
                 .setStyle(ButtonStyle.Danger)
         );
 
-        const embed = new EmbedBuilder()
-            .setTitle('Угадай число')
-            .setDescription(`Я загадал число от ${low} до ${high}. У вас ${timeLimit / 1000} секунд, чтобы угадать его.`)
-            .setColor(0x9B59B6)
-            .setFooter({ text: 'Попыток: 0 | Игроков: 0' });
+        const embed = EmbedService.createBaseEmbed(interaction)
+            .setTitle(localeManager.get('minigame.guessthenumber.messages.title', interaction.guildLocale || 'ru'))
+            .setDescription(localeManager.get('minigame.guessthenumber.messages.start_desc', interaction.guildLocale || 'ru', { low, high, time: timeLimit / 1000 }))
+            .setFooter({ text: localeManager.get('minigame.guessthenumber.messages.footer', interaction.guildLocale || 'ru', { attempts: 0, players: 0 }) });
 
         await interaction.reply({ embeds: [embed], components: [cancelRow] });
         const message = await interaction.fetchReply();
@@ -60,9 +62,9 @@ module.exports = {
         btnCollector.on('collect', btn => {
             if (btn.user.id === interaction.user.id) {
                 finished = true;
-                finishGame('Игра отменена инициатором.');
+                finishGame(localeManager.get('minigame.guessthenumber.messages.game_cancelled', interaction.guildLocale || 'ru'));
             } else {
-                btn.reply({ content: 'Только инициатор может отменить игру.', flags: MessageFlags.Ephemeral });
+                btn.reply({ content: localeManager.get('minigame.guessthenumber.messages.only_initiator_cancel', interaction.guildLocale || 'ru'), flags: MessageFlags.Ephemeral });
             }
         });
 
@@ -75,25 +77,25 @@ module.exports = {
 
             if (guess === target) {
                 finished = true;
-                finishGame(`Победитель: ${msg.author.username}\nЧисло: ${target}\nПопыток: ${attempts}`);
+                finishGame(localeManager.get('minigame.guessthenumber.messages.winner_desc', interaction.guildLocale || 'ru', { user: msg.author.username, target, attempts }));
             } else {
                 if (guess > target) high = guess - 1;
                 else low = guess + 1;
-                embed.setDescription(`Число находится между ${low} и ${high}.`)
-                     .setFooter({ text: `Попыток: ${attempts} | Игроков: ${players.size}` });
+                embed.setDescription(localeManager.get('minigame.guessthenumber.messages.range_hint', interaction.guildLocale || 'ru', { low, high }))
+                     .setFooter({ text: localeManager.get('minigame.guessthenumber.messages.footer', interaction.guildLocale || 'ru', { attempts, players: players.size }) });
                 await message.edit({ embeds: [embed] });
             }
         });
 
         guessCollector.on('end', () => {
             if (!finished) {
-                finishGame(`Время вышло! Было загадано: ${target}`);
+                finishGame(localeManager.get('minigame.guessthenumber.messages.timeout_desc', interaction.guildLocale || 'ru', { target }));
             }
         });
 
         async function finishGame(resultText) {
             embed.setDescription(resultText)
-                 .setFooter({ text: `Попыток: ${attempts} | Игроков: ${players.size}` });
+                 .setFooter({ text: localeManager.get('minigame.guessthenumber.messages.footer', interaction.guildLocale || 'ru', { attempts, players: players.size }) });
             await message.edit({ embeds: [embed], components: [] });
             btnCollector.stop();
             guessCollector.stop();
