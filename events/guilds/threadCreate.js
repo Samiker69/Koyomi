@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-const DatabaseService = require('../../services/DatabaseService');
+const DatabaseService = require('../../database/repositories');
 
 const VALID_DURATIONS = [60, 1440, 4320, 10080];
 const getNearestDuration = (mins) => VALID_DURATIONS.reduce((prev, curr) => Math.abs(curr - mins) < Math.abs(prev - mins) ? curr : prev);
